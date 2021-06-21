@@ -1,8 +1,17 @@
-lsCool <- function(file) {
+lsCoolFiles <- function(file, full.list = FALSE) {
     `%>%` <- magrittr::`%>%`
     x <- rhdf5::h5ls(file)
     message("\nPossible paths:\n", paste0('\t', x$group, '/', x$name, '\n') %>% unique() %>% stringr::str_replace('//', ''))
-    x
+    if (full.list) x
+}
+
+lsCoolResolutions <- function(file, full.list = FALSE) {
+    if (tools::file_ext(file) != 'mcool') stop("Provided file is not .mcool multi-resolution map. Aborting now.")
+    `%>%` <- magrittr::`%>%`
+    x <- rhdf5::h5ls(file)
+    rez <- unique(grep(gsub('/resolutions/', '', x$group), pattern = '/', invert = TRUE, value = TRUE))
+    message("\nAvailable resolutions:\n", paste0(rez, collapse = ', '))
+    if (full.list) x
 }
 
 peekCool <- function(file, path, res = NULL) {
