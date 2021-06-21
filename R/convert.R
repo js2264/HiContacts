@@ -19,13 +19,14 @@ cool2gi <- function(file, balanced = 'cooler', coords = NULL, coords2 = NULL, re
     gi$bin2 <- cnts$bin2_id
 
     if ({!is.null(gi$anchor1.weight) & !is.null(gi$anchor2.weight)} & balanced == 'cooler') {
-        gi$score <- gi$count * gi$anchor1.weight * gi$anchor2.weight
+        gi$score <- log10(gi$count * gi$anchor1.weight * gi$anchor2.weight)
     } 
     else if (balanced == 'ICE') {
         gi <- iceGis(gi)
+        gi$score <- log10(gi$score + 1)
     } 
     else {
-        gi$score <- gi$count
+        gi$score <- log10(gi$count + 1)
     }
     InteractionSet::regions(gi)$chr <- GenomicRanges::seqnames(InteractionSet::regions(gi))
     InteractionSet::regions(gi)$center <- GenomicRanges::start(GenomicRanges::resize(InteractionSet::regions(gi), fix = 'center', width = 1))
@@ -37,6 +38,6 @@ gi2cm <- function(gi) {
         gi, 
         rows = 1:length(InteractionSet::regions(gi)), 
         columns = 1:length(InteractionSet::regions(gi)), 
-        fill = ifelse('norm_count' %in% names(GenomicRanges::mcols(gi)), gi$norm_count, gi$count)
+        fill = gi$count
     )
 }
