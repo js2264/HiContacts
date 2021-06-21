@@ -35,6 +35,11 @@ getCounts <- function(
         coords_start <- 1
         coords_end <- GenomeInfoDb::seqlengths(anchors)[coords_chr]
     }
+
+    if (! coords_chr %in% as.vector(GenomicRanges::seqnames(anchors))) {
+        sn <- paste0(unique(as.vector(GenomicRanges::seqnames(anchors))), collapse = ', ')
+        stop(glue::glue("{coords_chr} not in file. Available seqnames: {sn}"))
+    }
     
     ## Get chunks to parse --------------------------This was adapted from `dovetail-genomics/coolR`
     if (is.na(coords_chr)){
