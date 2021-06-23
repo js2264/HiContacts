@@ -5,7 +5,7 @@
 [![pkgdown](https://github.com/js2264/coolerr/workflows/pkgdown/badge.svg)](https://github.com/js2264/coolerr/actions)
 <!-- badges: end -->
 
-coolerr provides tools to import `cool` matrices in R.  
+coolerr provides tools to import `cool` matrices in R and work with them there. 
 
 Rather than creating redundant classes, it relies on pre-existing Bioconductor objects, namely `InteractionSet`, `GenomicInterations` and `ContactMatrix` (`Lun, Perry & Ing-Simmons, F1000Research 2016`).
 

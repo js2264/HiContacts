@@ -1,4 +1,4 @@
-plotMatrix <- function(gis, limits = NULL, dpi = 500) {
+plotMatrix <- function(gis, limits = NULL, dpi = 500, rasterize = TRUE) {
 
     `%>%` <- magrittr::`%>%`
 
@@ -12,8 +12,17 @@ plotMatrix <- function(gis, limits = NULL, dpi = 500) {
         limits <- c(m, M)
     }
 
-    nseqnames <- length(unique(as.vector(GenomicRanges::seqnames(InteractionSet::anchors(gis)[[1]]))))
+    # -- Define plotting approach
+    if (rasterize) {
+        plotFun <- ggrastr::geom_tile_rast(raster.dpi = dpi)
+    }
+    else {
+        plotFun <- ggplot2::geom_tile()
+    }
 
+    # -- Check number of chromosomes that were extracted
+    nseqnames <- length(unique(as.vector(GenomicRanges::seqnames(InteractionSet::anchors(gis)[[1]]))))
+    
     if (nseqnames == 1) {
 
         mat <- gis %>% 
@@ -26,22 +35,12 @@ plotMatrix <- function(gis, limits = NULL, dpi = 500) {
         mat <- rbind(mat, mat %>% dplyr::mutate(x2 = y, y = x, x = x2) %>% dplyr::select(-x2))
 
         ## -- Plot matrix
-        p <- ggplot2::ggplot(mat, ggplot2::aes(x, y, fill = score)) + 
-            ggrastr::geom_tile_rast(raster.dpi = dpi) + 
-            # geom_tile() + 
-            ggplot2::scale_x_continuous(expand = c(0, 0), labels = scales::unit_format(unit = "M", scale = 1e-6)) + 
-            ggplot2::scale_y_reverse(expand = c(0, 0), labels = scales::unit_format(unit = "M", scale = 1e-6)) + 
-            ggplot2::guides(fill = ggplot2::guide_colorbar(barheight = ggplot2::unit(5, 'cm'), barwidth = 0.5, frame.colour = "black")) + 
-            ggtheme_matrix() + 
+        p <- ggmatrix(mat) + 
+            plotFun + 
             ggplot2::labs(
                 x = unique(mat$seqnames1),
                 y = unique(mat$seqnames1)
-            ) + ggplot2::scale_fill_gradientn(
-                colors = c('#FFFFF2', '#FEFBE0', '#FCF6BD', '#F9F198', '#FFF073', '#FECC50', '#F6A32C', '#F0801A', '#DD5D12', '#B83917', '#6C150E', '#430F11', '#1D0809', '#000000'), 
-                na.value = '#FFFFFF', 
-                limits = c(m, M)
             )
-
     }
 
     else {
@@ -66,20 +65,11 @@ plotMatrix <- function(gis, limits = NULL, dpi = 500) {
         mat <- rbind(mat, mat %>% dplyr::mutate(x2 = y, y = x, x = x2) %>% dplyr::select(-x2))
 
         ## -- Plot matrix
-        p <- ggplot2::ggplot(mat, ggplot2::aes(x, y, fill = score)) + 
-            ggrastr::geom_tile_rast(raster.dpi = dpi) + 
-            # geom_tile() + 
-            ggplot2::scale_x_continuous(expand = c(0, 0), labels = scales::unit_format(unit = "M", scale = 1e-6)) + 
-            ggplot2::scale_y_reverse(expand = c(0, 0), labels = scales::unit_format(unit = "M", scale = 1e-6)) + 
-            ggplot2::guides(fill = ggplot2::guide_colorbar(barheight = ggplot2::unit(5, 'cm'), barwidth = 0.5, frame.colour = "black")) + 
-            ggtheme_matrix() + 
+        p <- ggmatrix(mat) + 
+            plotFun + 
             ggplot2::labs(
                 x = 'Genome coordinates',
                 y = 'Genome coordinates'
-            ) + ggplot2::scale_fill_gradientn(
-                colors = c('#FFFFF2', '#FEFBE0', '#FCF6BD', '#F9F198', '#FFF073', '#FECC50', '#F6A32C', '#F0801A', '#DD5D12', '#B83917', '#6C150E', '#430F11', '#1D0809', '#000000'), 
-                na.value = '#FFFFFF', 
-                limits = c(m, M)
             ) + 
             ggplot2::geom_hline(yintercept = chroms$cumlength[-1], colour = 'black', alpha = 0.75, size = 0.15) + 
             ggplot2::geom_vline(xintercept = chroms$cumlength[-1], colour = 'black', alpha = 0.75, size = 0.15) 
@@ -88,15 +78,29 @@ plotMatrix <- function(gis, limits = NULL, dpi = 500) {
 
 }
 
-ggtheme_matrix <- function() {
-    ggplot2::theme_bw() + 
-    ggplot2::theme(
-        text = ggplot2::element_text(size=8), 
-        panel.grid.minor = ggplot2::element_line(size = 0.025, colour = '#00000042'), 
-        aspect.ratio = 1, 
-        panel.grid.major = ggplot2::element_line(size = 0.05, colour = '#00000042'), 
-        axis.ticks = ggplot2::element_line(colour = "black", size = 0.25), 
-        panel.background = ggplot2::element_rect(fill = NA),
-        panel.ontop = TRUE
-    )
+ggmatrix <- function(mat, ticks = TRUE) {
+    p <- ggplot2::ggplot(mat, ggplot2::aes(x, y, fill = score))
+    p <- p + ggplot2::scale_fill_gradientn(
+        colors = c('#FCF6BD', '#F9F198', '#FFF073', '#FECC50', '#F6A32C', '#F0801A', '#DD5D12', '#B83917', '#6C150E', '#430F11', '#1D0809', '#000000'), 
+        na.value = '#FFFFFF'
+    ) + 
+        ggplot2::scale_x_continuous(expand = c(0, 0), labels = scales::unit_format(unit = "M", scale = 1e-6)) + 
+        ggplot2::scale_y_reverse(expand = c(0, 0), labels = scales::unit_format(unit = "M", scale = 1e-6)) + 
+        ggplot2::guides(fill = ggplot2::guide_colorbar(barheight = ggplot2::unit(5, 'cm'), barwidth = 0.5, frame.colour = "black")) + 
+        ggtheme_coolerr()
+    p
+}
+
+ggtheme_coolerr <- function(ticks = TRUE) {
+    t <- ggplot2::theme_bw() + 
+        ggplot2::theme(
+            text = ggplot2::element_text(size=8), 
+            panel.grid.minor = ggplot2::element_line(size = 0.025, colour = '#00000052'), 
+            aspect.ratio = 1, 
+            panel.grid.major = ggplot2::element_line(size = 0.05, colour = '#00000052'), 
+            panel.background = ggplot2::element_rect(fill = NA),
+            panel.ontop = FALSE
+        )
+    if (ticks) t <- t + ggplot2::theme(axis.ticks = ggplot2::element_line(colour = "black", size = 0.2))
+    t
 }
