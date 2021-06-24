@@ -27,3 +27,31 @@ iceGis <- function(gi) {
         dplyr::pull(bin2)
     return(new_gis)
 }
+
+
+normalizeOverExpected <- function(mat) {
+
+    # Get the binning resolution 
+    binsize <- sort(unique(mat$y - mat$x))[2]
+
+    # Get the number of bins in the matrix
+    nbins <- {range(mat$y - mat$x)/binsize}[2] + 1
+
+    expected <- mat %>% 
+        mutate(
+            diag = (mat$y - mat$x)/binsize, 
+            pixelsPerDiag = nbins - diag
+        ) %>%
+        group_by(diag) %>% 
+        summarize(
+            expected = sum(score, na.rm = TRUE) / pixelsPerDiag, 
+            .groups = "keep"
+        ) %>% 
+        distinct()
+
+    mat <- mat %>% 
+        mutate(diag = (mat$y - mat$x)/binsize) %>% 
+        left_join(expected, by = "diag") %>% 
+        mutate(scoreOverExpected = -log2(score / expected)) ## `-` because both `score` and `expected` have to be < 0
+
+}

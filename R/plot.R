@@ -2,11 +2,12 @@ plotMatrix <- function(gis, limits = NULL, dpi = 500, rasterize = TRUE) {
 
     `%>%` <- magrittr::`%>%`
 
-    ## -- Format matrix
+    ## -- Matrix limits
     if (!is.null(limits)) {
         m <- limits[1]
         M <- limits[2]
-    } else {
+    } 
+    else {
         M <- max(gis$score[abs(gis$bin1 - gis$bin2) >= 0], na.rm = TRUE)
         m <- min(gis$score[abs(gis$bin1 - gis$bin2) >= 0], na.rm = TRUE)
         limits <- c(m, M)
@@ -23,24 +24,30 @@ plotMatrix <- function(gis, limits = NULL, dpi = 500, rasterize = TRUE) {
     # -- Check number of chromosomes that were extracted
     nseqnames <- length(unique(as.vector(GenomicRanges::seqnames(InteractionSet::anchors(gis)[[1]]))))
     
-    if (nseqnames == 1) {
+    if (nseqnames == 1) { ## Single chromosome coordinates to plot (easy scenario)
 
+        ## -- Convert gis to table and extract x/y
         mat <- gis %>% 
             tibble::as_tibble() %>%
             dplyr::mutate(
                 x = floor(end1 - (end1 - start1)/2), 
                 y = floor(end2 - (end2 - start2)/2)
             ) 
+
+        ## -- Clamp scores to limits
         mat <- dplyr::mutate(mat, score = ifelse(score > M, M, ifelse(score < m, m, score)))
+
+        ## -- add lower triangular matrix scores
         mat <- rbind(mat, mat %>% dplyr::mutate(x2 = y, y = x, x = x2) %>% dplyr::select(-x2))
 
         ## -- Plot matrix
-        p <- ggmatrix(mat) + 
+        p <- ggmatrix(mat, cols = afmhotr_colors) + 
             plotFun + 
             ggplot2::labs(
                 x = unique(mat$seqnames1),
                 y = unique(mat$seqnames1)
             )
+
     }
 
     else {
@@ -65,7 +72,7 @@ plotMatrix <- function(gis, limits = NULL, dpi = 500, rasterize = TRUE) {
         mat <- rbind(mat, mat %>% dplyr::mutate(x2 = y, y = x, x = x2) %>% dplyr::select(-x2))
 
         ## -- Plot matrix
-        p <- ggmatrix(mat) + 
+        p <- ggmatrix(mat, cols = afmhotr_colors) + 
             plotFun + 
             ggplot2::labs(
                 x = 'Genome coordinates',
@@ -76,12 +83,80 @@ plotMatrix <- function(gis, limits = NULL, dpi = 500, rasterize = TRUE) {
 
     }
 
+    p
+
 }
 
-ggmatrix <- function(mat, ticks = TRUE) {
+plotOverExpected <- function(
+    gis, 
+    limits = c(-1, 1), 
+    dpi = 500, rasterize = TRUE
+) {
+
+    `%>%` <- magrittr::`%>%`
+
+    # -- Define plotting approach
+    if (rasterize) {
+        plotFun <- ggrastr::geom_tile_rast(raster.dpi = dpi)
+    }
+    else {
+        plotFun <- ggplot2::geom_tile()
+    }
+
+    ## -- Convert gis to table and extract x/y
+    mat <- gis %>% 
+        tibble::as_tibble() %>%
+        dplyr::mutate(
+            x = floor(end1 - (end1 - start1)/2), 
+            y = floor(end2 - (end2 - start2)/2)
+        ) 
+    
+    ## -- Compute expected and overExpected score
+    mat <- normalizeOverExpected(mat)
+    mat$score <- mat$expected
+    mat$score <- mat$scoreOverExpected
+
+    ## -- Matrix limits
+    if (!is.null(limits)) {
+        m <- limits[1]
+        M <- limits[2]
+        limits <- c(m, M)
+    } else {
+        M <- max(mat$score, na.rm = TRUE, is.finite = TRUE)
+        m <- min(mat$score, na.rm = TRUE, is.finite = TRUE)
+        mm <- max(abs(c(m, M)))
+        limits <- c(-abs(mm), abs(mm))
+    }
+
+    ## -- Clamp scores to limits
+    mat <- dplyr::mutate(mat, overExpected = ifelse(score > M, M, ifelse(score < m, m, score)))
+
+    ## -- Add lower triangular matrix scores
+    mat <- rbind(mat, mat %>% dplyr::mutate(x2 = y, y = x, x = x2) %>% dplyr::select(-x2))
+
+    ## -- Plot matrix
+    p <- ggmatrix(mat) + 
+        plotFun + 
+        ggplot2::labs(
+            x = unique(mat$seqnames1),
+            y = unique(mat$seqnames1)
+        ) + ggplot2::scale_fill_gradientn(
+            colors = bwr_colors, 
+            na.value = '#FFFFFF', 
+            limits = limits
+        )
+
+    ## -- Add bluring to avoid speckles 
+    # p <- ggfx::with_blur(p, sigma = 10)
+    
+    p
+
+}
+
+ggmatrix <- function(mat, ticks = TRUE, cols = afmhotr_colors) {
     p <- ggplot2::ggplot(mat, ggplot2::aes(x, y, fill = score))
     p <- p + ggplot2::scale_fill_gradientn(
-        colors = c('#FCF6BD', '#F9F198', '#FFF073', '#FECC50', '#F6A32C', '#F0801A', '#DD5D12', '#B83917', '#6C150E', '#430F11', '#1D0809', '#000000'), 
+        colors = cols, 
         na.value = '#FFFFFF'
     ) + 
         ggplot2::scale_x_continuous(expand = c(0, 0), labels = scales::unit_format(unit = "M", scale = 1e-6)) + 
