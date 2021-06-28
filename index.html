@@ -96,6 +96,47 @@
 <span class="fu">listCoolResolutions</span><span class="op">(</span><span class="va">file</span><span class="op">)</span>
 <span class="fu">cool2gi</span><span class="op">(</span><span class="va">file</span>, coords <span class="op">=</span> <span class="va">range</span>, res <span class="op">=</span> <span class="fl">1000</span><span class="op">)</span></code></pre></div>
 </div>
+<div id="plot-gis-heatmap" class="section level2">
+<h2 class="hasAnchor">
+<a href="#plot-gis-heatmap" class="anchor"></a>Plot <code>gis</code> heatmap</h2>
+<blockquote>
+<p>Diagonal style</p>
+</blockquote>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">file</span> <span class="op">&lt;-</span> <span class="st">'path/to/file.mcool'</span>
+<span class="va">range</span> <span class="op">&lt;-</span> <span class="st">'chr13:100000000-120000000'</span>
+<span class="va">res</span> <span class="op">&lt;-</span> <span class="fl">40000</span>
+<span class="va">gis</span> <span class="op">&lt;-</span> <span class="fu">cool2gi</span><span class="op">(</span><span class="va">file</span>, coords <span class="op">=</span> <span class="va">range</span>, res <span class="op">=</span> <span class="va">res</span><span class="op">)</span>
+<span class="va">p</span> <span class="op">&lt;-</span> <span class="fu">plotMatrix</span><span class="op">(</span><span class="va">gis</span>, limits <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">3</span>, <span class="op">-</span><span class="fl">1</span><span class="op">)</span>, dpi <span class="op">=</span> <span class="fl">1000</span><span class="op">)</span>
+<span class="fu">ggplot2</span><span class="fu">::</span><span class="fu">ggsave</span><span class="op">(</span><span class="st">'plot.png'</span>, width <span class="op">=</span> <span class="fl">10</span>, height <span class="op">=</span> <span class="fl">10</span>, dpi <span class="op">=</span> <span class="fl">1000</span><span class="op">)</span></code></pre></div>
+<blockquote>
+<p>Plot signal over expected</p>
+</blockquote>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">file</span> <span class="op">&lt;-</span> <span class="st">'path/to/file.mcool'</span>
+<span class="va">range</span> <span class="op">&lt;-</span> <span class="st">'chr13:50000000-120000000'</span>
+<span class="va">res</span> <span class="op">&lt;-</span> <span class="fl">40000</span>
+<span class="va">gis</span> <span class="op">&lt;-</span> <span class="fu">cool2gi</span><span class="op">(</span><span class="va">file</span>, coords <span class="op">=</span> <span class="va">range</span>, res <span class="op">=</span> <span class="va">res</span><span class="op">)</span>
+<span class="va">p</span> <span class="op">&lt;-</span> <span class="fu">plotOverExpected</span><span class="op">(</span><span class="va">gis</span>, dpi <span class="op">=</span> <span class="fl">1000</span><span class="op">)</span>
+<span class="fu">ggplot2</span><span class="fu">::</span><span class="fu">ggsave</span><span class="op">(</span><span class="st">'plot2.png'</span>, width <span class="op">=</span> <span class="fl">10</span>, height <span class="op">=</span> <span class="fl">10</span>, dpi <span class="op">=</span> <span class="fl">1000</span><span class="op">)</span></code></pre></div>
+<blockquote>
+<p>Horizontal style</p>
+</blockquote>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">p</span> <span class="op">&lt;-</span> <span class="fu">plotTriangularMatrix</span><span class="op">(</span><span class="va">gis</span>, limits <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">3</span>, <span class="op">-</span><span class="fl">1</span><span class="op">)</span>, truncate_tip <span class="op">=</span> <span class="fl">0.2</span><span class="op">)</span>
+<span class="fu">ggplot2</span><span class="fu">::</span><span class="fu">ggsave</span><span class="op">(</span><span class="st">'plot3.png'</span>, width <span class="op">=</span> <span class="fl">10</span>, height <span class="op">=</span> <span class="fl">10</span>, dpi <span class="op">=</span> <span class="fl">1000</span><span class="op">)</span></code></pre></div>
+<blockquote>
+<p>Horizontal style with a list of multiple <code>GenomicInterations</code></p>
+</blockquote>
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">gis1</span> <span class="op">&lt;-</span> <span class="fu">cool2gi</span><span class="op">(</span><span class="va">file</span>, coords <span class="op">=</span> <span class="va">range</span>, res <span class="op">=</span> <span class="fl">40000</span><span class="op">)</span>
+<span class="va">gis2</span> <span class="op">&lt;-</span> <span class="fu">cool2gi</span><span class="op">(</span><span class="va">file</span>, coords <span class="op">=</span> <span class="va">range</span>, res <span class="op">=</span> <span class="fl">80000</span><span class="op">)</span>
+<span class="va">gis3</span> <span class="op">&lt;-</span> <span class="fu">cool2gi</span><span class="op">(</span><span class="va">file</span>, coords <span class="op">=</span> <span class="va">range</span>, res <span class="op">=</span> <span class="fl">160000</span><span class="op">)</span>
+<span class="va">p</span> <span class="op">&lt;-</span> <span class="fu">plotMatrixList</span><span class="op">(</span>
+    ls <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span><span class="st">'res40kb'</span> <span class="op">=</span> <span class="va">gis1</span>, <span class="st">'res80kb'</span> <span class="op">=</span> <span class="va">gis2</span>, <span class="st">'res160kb'</span> <span class="op">=</span> <span class="va">gis3</span><span class="op">)</span>
+<span class="op">)</span>
+<span class="fu">ggplot2</span><span class="fu">::</span><span class="fu">ggsave</span><span class="op">(</span><span class="st">'plot4.png'</span>, width <span class="op">=</span> <span class="fl">10</span>, height <span class="op">=</span> <span class="fl">10</span>, dpi <span class="op">=</span> <span class="fl">300</span><span class="op">)</span></code></pre></div>
+</div>
 </div>
   </div>
 
