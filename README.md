@@ -23,7 +23,8 @@ remotes::install_github('js2264/coolerr')
 file <- 'path/to/file.cool'
 range <- 'chrI:2000-8000'
 cool2seqinfo(file)
-cool2gi(file, coords = range)
+gis <- cool2gi(file, coords = range)
+gis
 ```
 
 `cool2gi` works with `.mcool` files as well: in this case, the user needs to specify the resolution at which count values are recovered. 
@@ -32,10 +33,11 @@ cool2gi(file, coords = range)
 file <- 'path/to/file.mcool'
 range <- 'chrI:2000-8000'
 listCoolResolutions(file)
-cool2gi(file, coords = range, res = 1000)
+gis <- cool2gi(file, coords = range, res = 1000)
+gis
 ```
 
-## Plot `gis` heatmap
+## Plot matrix heatmaps
 
 > Diagonal style
 
@@ -48,22 +50,11 @@ p <- plotMatrix(gis, limits = c(-3, -1), dpi = 1000)
 ggplot2::ggsave('plot.png', width = 10, height = 10, dpi = 1000)
 ```
 
-> Plot signal over expected 
-
-```r
-file <- 'path/to/file.mcool'
-range <- 'chr13:50000000-120000000'
-res <- 40000
-gis <- cool2gi(file, coords = range, res = res)
-p <- plotOverExpected(gis, dpi = 1000)
-ggplot2::ggsave('plot2.png', width = 10, height = 10, dpi = 1000)
-```
-
 > Horizontal style
 
 ```r
-p <- plotTriangularMatrix(gis, limits = c(-3, -1), truncate_tip = 0.2)
-ggplot2::ggsave('plot3.png', width = 10, height = 10, dpi = 1000)
+p <- plotTriangularMatrix(gis, truncate_tip = 0.2)
+ggplot2::ggsave('plot.png', width = 10, height = 10, dpi = 1000)
 ```
 
 > Horizontal style with a list of multiple `GenomicInterations`
@@ -75,5 +66,61 @@ gis3 <- cool2gi(file, coords = range, res = 160000)
 p <- plotMatrixList(
     ls = list('res40kb' = gis1, 'res80kb' = gis2, 'res160kb' = gis3)
 )
-ggplot2::ggsave('plot4.png', width = 10, height = 10, dpi = 300)
+ggplot2::ggsave('plot.png', width = 10, height = 10, dpi = 300)
+```
+
+> Plot signal over expected 
+
+```r
+file <- 'path/to/file.mcool'
+range <- 'chr13:50000000-120000000'
+res <- 40000
+gis <- cool2gi(file, coords = range, res = res)
+p <- plotOverExpected(gis, dpi = 1000)
+ggplot2::ggsave('plot.png', width = 10, height = 10, dpi = 1000)
+```
+
+> Plot genebodies and specific coordinates underneath a matrix
+
+```r
+## -- Generate heatmap
+file <- 'path/to/file.mcool'
+range <- 'chr13:110000000-115000000'
+res <- 20000
+gis <- cool2gi(file, coords = range, res = res)
+p <- plotMatrix(gis, limits = c(-3, -1), dpi = 1000)
+
+## -- Import gene annotations
+library(plyranges)
+mm10_genes <- AnnotationHub::query(AnnotationHub::AnnotationHub(), c('Mus_musculus.GRCm39.104.gtf'))[[1]] %>% 
+    filter(gene_biotype == 'protein_coding', source == 'ensembl_havana', type == 'gene') %>% 
+    select(gene_id, gene_name) %>% 
+    mutate(ID = gene_name)
+seqlevelsStyle(mm10_genes) <- 'UCSC'
+
+## -- Import CTCF binding sites
+mm10_CTCF <- rtracklayer::import('http://hgdownload.soe.ucsc.edu/gbdb/mm10/encode3/ccre/encodeCcreCombined.bb') %>% 
+    filter(grepl('CTCF-bound', ccre), encodeLabel == 'CTCF-only') 
+
+## -- Import profiles
+comps <- rtracklayer::import('~/Documents/PostDoc_Koszul/__Bioinfo/Projects/20210602_MCCs_HiC-deuts/compartments/AT409.cis.bw', as = 'Rle')
+insul <- rtracklayer::import('~/Documents/PostDoc_Koszul/__Bioinfo/Projects/20210602_MCCs_HiC-deuts/tads/AT409_insulation-scores.bw', as = 'Rle')
+
+## -- Combine all
+p_withTracks <- addTracks(p, range, 
+    annotations = list(genes = mm10_genes, CTCF = mm10_CTCF), 
+    profiles = list(eigen = comps, insulation = insul)
+)
+ggplot2::ggsave('plot.png', plot = p_withTracks, width = 10, height = 10, dpi = 1000)
+```
+
+## Plot aggregated matrices
+
+```r
+file <- 'path/to/file.mcool'
+range <- 'chr13:100000000-120000000'
+res <- 40000
+gis <- cool2gi(file, coords = range, res = res)
+p <- plotMatrix(gis, limits = c(-3, -1), dpi = 1000)
+ggplot2::ggsave('plot.png', width = 10, height = 10, dpi = 1000)
 ```
