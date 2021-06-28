@@ -90,7 +90,9 @@ plotMatrix <- function(gis, limits = NULL, dpi = 500, rasterize = TRUE) {
 plotOverExpected <- function(
     gis, 
     limits = c(-1, 1), 
-    dpi = 500, rasterize = TRUE
+    dpi = 500, rasterize = TRUE, 
+    return_expected = FALSE, 
+    return_all = FALSE
 ) {
 
     `%>%` <- magrittr::`%>%`
@@ -113,8 +115,16 @@ plotOverExpected <- function(
     
     ## -- Compute expected and overExpected score
     mat <- normalizeOverExpected(mat)
-    mat$score <- mat$expected
-    mat$score <- mat$scoreOverExpected
+
+    if (return_expected) {
+        mat$score <- mat$expected
+    } 
+    # else if (return_all = TRUE) {
+    #     mat$score <- mat$scoreOverExpected
+    # }
+    else {
+        mat$score <- mat$scoreOverExpected
+    }
 
     ## -- Matrix limits
     if (!is.null(limits)) {
@@ -170,11 +180,11 @@ ggtheme_coolerr <- function(ticks = TRUE) {
     t <- ggplot2::theme_bw() + 
         ggplot2::theme(
             text = ggplot2::element_text(size=8), 
-            panel.grid.minor = ggplot2::element_line(size = 0.025, colour = '#00000052'), 
-            aspect.ratio = 1, 
-            panel.grid.major = ggplot2::element_line(size = 0.05, colour = '#00000052'), 
             panel.background = ggplot2::element_rect(fill = NA),
-            panel.ontop = FALSE
+            panel.ontop = FALSE,
+            panel.grid.minor = ggplot2::element_line(size = 0.025, colour = '#00000052'), 
+            panel.grid.major = ggplot2::element_line(size = 0.05, colour = '#00000052'), 
+            aspect.ratio = 1
         )
     if (ticks) t <- t + ggplot2::theme(axis.ticks = ggplot2::element_line(colour = "black", size = 0.2))
     t

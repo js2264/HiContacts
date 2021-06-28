@@ -38,20 +38,20 @@ normalizeOverExpected <- function(mat) {
     nbins <- {range(mat$y - mat$x)/binsize}[2] + 1
 
     expected <- mat %>% 
-        mutate(
+        dplyr::mutate(
             diag = (mat$y - mat$x)/binsize, 
             pixelsPerDiag = nbins - diag
         ) %>%
-        group_by(diag) %>% 
-        summarize(
+        dplyr::group_by(diag) %>% 
+        dplyr::summarize(
             expected = sum(score, na.rm = TRUE) / pixelsPerDiag, 
             .groups = "keep"
         ) %>% 
-        distinct()
+        dplyr::distinct()
 
     mat <- mat %>% 
-        mutate(diag = (mat$y - mat$x)/binsize) %>% 
-        left_join(expected, by = "diag") %>% 
-        mutate(scoreOverExpected = -log2(score / expected)) ## `-` because both `score` and `expected` have to be < 0
+        dplyr::mutate(diag = (mat$y - mat$x)/binsize) %>% 
+        dplyr::left_join(expected, by = "diag") %>% 
+        dplyr::mutate(scoreOverExpected = -log2(score / expected)) ## `-` because both `score` and `expected` have to be < 0
 
 }
