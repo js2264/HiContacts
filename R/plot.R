@@ -219,7 +219,7 @@ plotMatrixList <- function(ls, ...) {
     max_bin_dist <- (max(mat$bin2 - mat$bin1) + 1) * truncate_tip
     mat_ <- lapply(names(ls), function(n) {
         gis <- ls[[n]]
-        m <- gi2mat(gis) %>% dplyr::mutate(item = n)
+        m <- gi2mat(gis, ...) %>% dplyr::mutate(item = n)
     }) %>% dplyr::bind_rows() %>% 
         dplyr::mutate(item = factor(item, names(ls)))
 
@@ -234,45 +234,96 @@ plotMatrixList <- function(ls, ...) {
     
 }
 
-ggmatrix <- function(mat, ticks = TRUE, cols = afmhotr_colors) {
-    p <- ggplot2::ggplot(mat, ggplot2::aes(x, y, fill = score))
-    p <- p + ggplot2::scale_fill_gradientn(
-        colors = cols, 
-        na.value = '#FFFFFF'
-    ) + 
-        ggplot2::scale_x_continuous(expand = c(0, 0), labels = scales::unit_format(unit = "M", scale = 1e-6)) + 
-        ggplot2::scale_y_reverse(expand = c(0, 0), labels = scales::unit_format(unit = "M", scale = 1e-6)) + 
-        ggplot2::guides(fill = ggplot2::guide_colorbar(barheight = ggplot2::unit(5, 'cm'), barwidth = 0.5, frame.colour = "black")) + 
-        ggtheme_coolerr()
-    p
-}
+plotAggregatedMatrix <- function(file, res, coords, limits = NULL, dpi = 500, rasterize = TRUE, BPPARAM = BiocParallel::bpparam()) {
 
-ggtiltedmatrix <- function(mat_, ticks = TRUE, cols = afmhotr_colors, truncate_tip, nmatrices = 1) {
-   
-    p <- ggplot2::ggplot(mat_, ggplot2::aes(
-        x, y,
-        group = ID, 
-        fill = score
-    ))
+    `%>%` <- magrittr::`%>%`
 
-    p <- p + ggplot2::scale_fill_gradientn(
-        colors = cols, 
-        na.value = '#FFFFFF'
-    ) + 
-        ggplot2::scale_x_continuous(expand = c(0, 0), labels = scales::unit_format(unit = "M", scale = 1e-6)) + 
-        ggplot2::scale_y_continuous(expand = c(0, 0)) + 
-        ggplot2::guides(fill = ggplot2::guide_colorbar(barheight = ggplot2::unit(5, 'cm'), barwidth = 0.5, frame.colour = "black")) + 
-        ggtheme_coolerr() + 
-        ggplot2::theme(
-            panel.background = ggplot2::element_blank(),
-            panel.border = ggplot2::element_blank(),
-            panel.grid.minor = ggplot2::element_blank(),
-            panel.grid.major = ggplot2::element_blank(),
-            axis.title.y = ggplot2::element_blank(),
-            axis.text.y = ggplot2::element_blank(),
-            axis.ticks.y = ggplot2::element_blank(), 
-            aspect.ratio = 1 / ( sqrt(2)*sqrt(2) / truncate_tip / {nmatrices/sqrt(2)})
+    ## -- Check that coords are all the same width
+    if (length(unique(GenomicRanges::width(coords))) != 1) {
+        stop("Please provide GRanges that are all the same width. Aborting now.")
+    }
+    else {
+        wi <- unique(GenomicRanges::width(coords))
+        breaks <- seq({-wi/2}-res, {wi/2}+res, length.out = wi/res + 3)
+    }
+
+    # -- Define plotting approach
+    if (rasterize) {
+        plotFun <- ggrastr::geom_tile_rast(raster.dpi = dpi)
+    }
+    else {
+        plotFun <- ggplot2::geom_tile()
+    }
+
+    mats <- BiocParallel::bplapply(BPPARAM = BPPARAM, seq_along(coords), function(K) {
+
+        range <- coords[K]
+        `%<-%` <- zeallot::`%<-%`
+        c(coords_chr, coords_start, coords_end) %<-% splitCoords(range)
+        midpoint <- coords_start + (coords_end - coords_start) / 2
+
+        ## -- Filter to interactions which are within the range
+        gis_sub <- cool2gi(file, res = res, coords = range)
+        
+        ## -- Convert gis_sub to table and extract x/y and adjust center to 0
+        mat <- gis_sub %>% 
+            tibble::as_tibble() %>%
+            dplyr::mutate(
+                x = center1, 
+                y = center2, 
+                ID = K
+            ) %>% 
+            dplyr::mutate(
+                x = breaks[as.numeric(cut(x - midpoint, breaks, include.lowest = TRUE)) + 1], 
+                y = breaks[as.numeric(cut(y - midpoint, breaks, include.lowest = TRUE)) + 1]
+            )
+        
+        # ggmatrix(mat, cols = afmhotr_colors) + 
+        #     plotFun + 
+        #     ggplot2::labs(
+        #         x = unique(mat$seqnames1),
+        #         y = unique(mat$seqnames1)
+        #     )
+
+        mat
+
+    }) %>% 
+        dplyr::bind_rows() %>% 
+        dplyr::group_by(x, y) %>% 
+        dplyr::filter(x >= min(breaks[2:{length(breaks)-1}]), x <= max(breaks[2:{length(breaks)-1}]), y >= min(breaks[2:{length(breaks)-1}]), y <= max(breaks[2:{length(breaks)-1}]))
+    
+    ## -- Average scores for each bin 
+    mats <- mats %>% 
+        dplyr::summarize(score = mean(score, na.rm = TRUE)) %>% 
+        dplyr::mutate(seqnames1 = 'Aggr. coordinates') 
+    
+    ## -- Matrix limits
+    if (!is.null(limits)) {
+        m <- limits[1]
+        M <- limits[2]
+    } 
+    else {
+        M <- max(mats$score, na.rm = TRUE)
+        m <- min(mats$score, na.rm = TRUE)
+        limits <- c(m, M)
+    }
+
+    ## -- Clamp scores to limits
+    mats <- mats %>% 
+        dplyr::mutate(score = ifelse(score > M, M, ifelse(score < m, m, score)))
+
+    ## -- Add lower triangular matrix scores 
+    mats <- rbind(mats, mats %>% dplyr::mutate(x2 = y, y = x, x = x2) %>% 
+        dplyr::select(-x2))
+    
+    ## -- Plot matrix
+    p <- ggmatrix(mats, cols = afmhotr_colors) + 
+        plotFun + 
+        ggplot2::labs(
+            x = unique(mats$seqnames1),
+            y = unique(mats$seqnames1)
         )
 
-    p
+    p 
+
 }

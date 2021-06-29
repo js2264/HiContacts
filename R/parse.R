@@ -41,7 +41,7 @@ getCounts <- function(
         stop(glue::glue("{coords_chr} not in file. Available seqnames: {sn}"))
     }
     
-    ## Get chunks to parse --------------------------This was adapted from `dovetail-genomics/coolR`
+    ## Get chunks to parse ------------------------- This was adapted from `dovetail-genomics/coolR`
     if (is.na(coords_chr)){
         chunks <- NULL
     } else {

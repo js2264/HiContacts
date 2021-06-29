@@ -114,13 +114,14 @@ p_withTracks <- addTracks(p, range,
 ggplot2::ggsave('plot.png', plot = p_withTracks, width = 10, height = 10, dpi = 1000)
 ```
 
-## Plot aggregated matrices
+## Plot aggregated matrices on diagonal
 
 ```r
 file <- 'path/to/file.mcool'
-range <- 'chr13:100000000-120000000'
-res <- 40000
-gis <- cool2gi(file, coords = range, res = res)
-p <- plotMatrix(gis, limits = c(-3, -1), dpi = 1000)
-ggplot2::ggsave('plot.png', width = 10, height = 10, dpi = 1000)
+res <- 20000
+coords <- rtracklayer::import('path/to/insulation-score.mcool') %>% 
+    resize(fix = 'start', width = 1) %>% 
+    resize(fix = 'center', width = 1000000)
+p <- plotAggregatedMatrix(file, res, coords[1:1000], BPPARAM = BiocParallel::MulticoreParam(workers = 7, tasks = 20, progressbar = TRUE))
+ggplot2::ggsave('plot.png', width = 10, height = 10, dpi = 300)
 ```
