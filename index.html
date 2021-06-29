@@ -172,16 +172,17 @@
 <span class="op">)</span>
 <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu">ggsave</span><span class="op">(</span><span class="st">'plot.png'</span>, plot <span class="op">=</span> <span class="va">p_withTracks</span>, width <span class="op">=</span> <span class="fl">10</span>, height <span class="op">=</span> <span class="fl">10</span>, dpi <span class="op">=</span> <span class="fl">1000</span><span class="op">)</span></code></pre></div>
 </div>
-<div id="plot-aggregated-matrices" class="section level2">
+<div id="plot-aggregated-matrices-on-diagonal" class="section level2">
 <h2 class="hasAnchor">
-<a href="#plot-aggregated-matrices" class="anchor"></a>Plot aggregated matrices</h2>
+<a href="#plot-aggregated-matrices-on-diagonal" class="anchor"></a>Plot aggregated matrices on diagonal</h2>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">file</span> <span class="op">&lt;-</span> <span class="st">'path/to/file.mcool'</span>
-<span class="va">range</span> <span class="op">&lt;-</span> <span class="st">'chr13:100000000-120000000'</span>
-<span class="va">res</span> <span class="op">&lt;-</span> <span class="fl">40000</span>
-<span class="va">gis</span> <span class="op">&lt;-</span> <span class="fu">cool2gi</span><span class="op">(</span><span class="va">file</span>, coords <span class="op">=</span> <span class="va">range</span>, res <span class="op">=</span> <span class="va">res</span><span class="op">)</span>
-<span class="va">p</span> <span class="op">&lt;-</span> <span class="fu">plotMatrix</span><span class="op">(</span><span class="va">gis</span>, limits <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">3</span>, <span class="op">-</span><span class="fl">1</span><span class="op">)</span>, dpi <span class="op">=</span> <span class="fl">1000</span><span class="op">)</span>
-<span class="fu">ggplot2</span><span class="fu">::</span><span class="fu">ggsave</span><span class="op">(</span><span class="st">'plot.png'</span>, width <span class="op">=</span> <span class="fl">10</span>, height <span class="op">=</span> <span class="fl">10</span>, dpi <span class="op">=</span> <span class="fl">1000</span><span class="op">)</span></code></pre></div>
+<span class="va">res</span> <span class="op">&lt;-</span> <span class="fl">20000</span>
+<span class="va">coords</span> <span class="op">&lt;-</span> <span class="fu">rtracklayer</span><span class="fu">::</span><span class="fu">import</span><span class="op">(</span><span class="st">'path/to/insulation-score.mcool'</span><span class="op">)</span> <span class="op">%&gt;%</span> 
+    <span class="fu">resize</span><span class="op">(</span>fix <span class="op">=</span> <span class="st">'start'</span>, width <span class="op">=</span> <span class="fl">1</span><span class="op">)</span> <span class="op">%&gt;%</span> 
+    <span class="fu">resize</span><span class="op">(</span>fix <span class="op">=</span> <span class="st">'center'</span>, width <span class="op">=</span> <span class="fl">1000000</span><span class="op">)</span>
+<span class="va">p</span> <span class="op">&lt;-</span> <span class="fu">plotAggregatedMatrix</span><span class="op">(</span><span class="va">file</span>, <span class="va">res</span>, <span class="va">coords</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">1000</span><span class="op">]</span>, BPPARAM <span class="op">=</span> <span class="fu">BiocParallel</span><span class="fu">::</span><span class="fu">MulticoreParam</span><span class="op">(</span>workers <span class="op">=</span> <span class="fl">7</span>, tasks <span class="op">=</span> <span class="fl">20</span>, progressbar <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span>
+<span class="fu">ggplot2</span><span class="fu">::</span><span class="fu">ggsave</span><span class="op">(</span><span class="st">'plot.png'</span>, width <span class="op">=</span> <span class="fl">10</span>, height <span class="op">=</span> <span class="fl">10</span>, dpi <span class="op">=</span> <span class="fl">300</span><span class="op">)</span></code></pre></div>
 </div>
 </div>
   </div>
