@@ -32,7 +32,7 @@ gis
 ```r
 file <- 'path/to/file.mcool'
 range <- 'chrI:2000-8000'
-listCoolResolutions(file)
+lsCoolResolutions(file)
 gis <- cool2gi(file, coords = range, res = 1000)
 gis
 ```
@@ -46,20 +46,20 @@ file <- 'path/to/file.mcool'
 range <- 'chr13:100000000-120000000'
 res <- 40000
 gis <- cool2gi(file, coords = range, res = res)
-p <- plotMatrix(gis, limits = c(-3, -1), dpi = 1000)
-ggplot2::ggsave('plot.png', width = 10, height = 10, dpi = 1000)
+p <- plotMatrix(gis, limits = c(-3, -1), dpi = 400)
+ggplot2::ggsave('plot.png', width = 10, height = 10, dpi = 400)
 ```
 
 > Two-entry diagonal style
 
 ```r
 file <- 'path/to/file.mcool'
-range1 <- 'chr13:101000000-107000000'
-range2 <- 'chr13:104000000-110000000'
+range1 <- 'chr13:1-75000000'
+range2 <- 'chr13:25000000-100000000'
 res <- 40000
 gis <- cool2gi(file, coords = range1, coords2 = range2, res = res)
-p <- plotMatrix(gis, limits = c(-3, -1), dpi = 1000)
-ggplot2::ggsave('plot.png', width = 10, height = 10, dpi = 1000)
+p <- plotMatrix(gis, dpi = 400, symmetrical = FALSE)
+ggplot2::ggsave('plot.png', width = 10, height = 10, dpi = 400)
 ```
 
 > Horizontal style
@@ -115,12 +115,13 @@ mm10_genes <- AnnotationHub::query(AnnotationHub::AnnotationHub(), c('Mus_muscul
 seqlevelsStyle(mm10_genes) <- 'UCSC'
 
 ## -- Import CTCF binding sites
-mm10_CTCF <- rtracklayer::import('http://hgdownload.soe.ucsc.edu/gbdb/mm10/encode3/ccre/encodeCcreCombined.bb') %>% 
+# mm10_CTCF <- rtracklayer::import('http://hgdownload.soe.ucsc.edu/gbdb/mm10/encode3/ccre/encodeCcreCombined.bb') %>% 
+mm10_CTCF <- rtracklayer::import('~/encodeCcreCombined.bb') %>% 
     filter(grepl('CTCF-bound', ccre), encodeLabel == 'CTCF-only') 
 
 ## -- Import profiles
-comps <- rtracklayer::import('~/Documents/PostDoc_Koszul/__Bioinfo/Projects/20210602_MCCs_HiC-deuts/compartments/AT409.cis.bw', as = 'Rle')
-insul <- rtracklayer::import('~/Documents/PostDoc_Koszul/__Bioinfo/Projects/20210602_MCCs_HiC-deuts/tads/AT409_insulation-scores.bw', as = 'Rle')
+comps <- rtracklayer::import('~/Projects/20210602_MCCs_HiC-deuts/compartments/AT409_100kb.cis.bw', as = 'Rle')
+insul <- rtracklayer::import('~/Projects/20210602_MCCs_HiC-deuts/tads/AT409_25kb_insulation-scores.bw', as = 'Rle')
 
 ## -- Combine all
 p_withTracks <- addTracks(p, range, 
@@ -132,29 +133,40 @@ ggplot2::ggsave('plot.png', plot = p_withTracks, width = 10, height = 10, dpi = 
 
 ## Plot aggregated matrices
 
-> On diagonal
+> At borders (e.g. TAD boundaries)
 
 ```r
 file <- 'path/to/file.mcool'
-res <- 20000
-coords <- rtracklayer::import('path/to/insulation-score.mcool') %>% 
+# - Get TAD borders
+coords <- rtracklayer::import('path/to/tads.bed') %>% 
     GenomicRanges::resize(fix = 'start', width = 1) %>% 
     GenomicRanges::resize(fix = 'center', width = 2000000)
-p <- plotAggregatedMatrix(file, res, coords, BPPARAM = BiocParallel::MulticoreParam(workers = 16, tasks = 200, progressbar = TRUE))
+# - Trim extended borders to only keep full-size GRanges
+res <- 20000
+seqlevels(coords) <- seqlevels(cool2seqinfo(file, res = res))
+seqinfo(coords) <- cool2seqinfo(file, res = res)
+coords <- trim(coords)
+coords <- coords[width(coords) == 2000000]
+# - Plot aggregated signal over borders
+p <- plotAggregatedMatrix(
+    file, 
+    coords, 
+    res = res, 
+    BPPARAM = BiocParallel::MulticoreParam(workers = 16, tasks = 200, progressbar = TRUE)
+)
 ggplot2::ggsave('plot.png', width = 10, height = 10, dpi = 300)
 ```
 
-> On pairs of coordinates
+> On pairs of coordinates (e.g. structural loops)
 
 ```r
 file <- 'path/to/file.mcool'
-res <- 1000
+# - Get loop coordinates from `bedpe` file as an `InteractionSet` object
 loops <- rtracklayer::import('path/to/loops.bedpe') %>% ## interactions as `Pairs` object
-loops <- rtracklayer::import('~/Downloads/pairs.bedpe') %>% ## interactions as `Pairs` object
-    InteractionSet::makeGInteractionsFromGRangesPairs() %>% ## interactions as `InteractionSet` object
     GenomicRanges::resize(width = 30000, fix = 'center')
-seqlevelsStyle(loops) <- 'NCBI'
-loops <- loops[InteractionSet::anchors(loops)[[1]] %within% GRanges(cool2seqinfo(file, res = 1000)) & InteractionSet::anchors(loops)[[2]] %within% GRanges(cool2seqinfo(file, res = 1000))]
-p <- plotAggregatedMatrix(file, res, loops, BPPARAM = BiocParallel::MulticoreParam(workers = 16, tasks = 200, progressbar = TRUE))
+# - Only retain loops for which extendedanchors are both within the genome
+loops <- loops[InteractionSet::anchors(loops)[[1]] %within% GRanges(cool2seqinfo(file)) & InteractionSet::anchors(loops)[[2]] %within% GRanges(cool2seqinfo(file))]
+# - Plot aggregated signal over sets of loop coordinates
+p <- plotAggregatedMatrix(file, coords = loops, symmetrical = FALSE, BPPARAM = BiocParallel::MulticoreParam(workers = 16, tasks = 200, progressbar = TRUE))
 ggplot2::ggsave('plot.png', width = 10, height = 10, dpi = 300)
 ```

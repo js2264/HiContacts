@@ -24,7 +24,6 @@ getCounts <- function(
     coords, 
     anchors,
     coords2 = NULL,
-    self = TRUE,
     res = NULL
 )
 {
@@ -66,15 +65,17 @@ getCounts <- function(
     )
 
     ## Filter ranges if there is a coords or coords2
-    if (self & is.null(coords2)) {
+    if (is.null(coords2)) {
         coords2 <- coords
     }
-    if (!is.null(coords2)) {
-        c(coords_chr2, coords_start2, coords_end2) %<-% splitCoords(coords2)
-        if (is.na(coords_start2) & !is.na(coords_chr2)) {
-            coords_start2 <- 1
-            coords_end2 <- GenomeInfoDb::seqlengths(anchors)[coords_chr2]
-        }
+    c(coords_chr2, coords_start2, coords_end2) %<-% splitCoords(coords2)
+    if (is.na(coords_start2) & !is.na(coords_chr2)) {
+        coords_start2 <- 1
+        coords_end2 <- GenomeInfoDb::seqlengths(anchors)[coords_chr2]
+    }
+    if (is.na(coords_chr2)){
+        chunks <- NULL
+    } else {
         start <- GenomicRanges::GRanges(coords_chr2, IRanges::IRanges(coords_start2 + 1, width = 1))
         end <- GenomicRanges::GRanges(coords_chr2, IRanges::IRanges(coords_end2, width = 1))
         start_idx <- S4Vectors::subjectHits(GenomicRanges::findOverlaps(start, anchors))
@@ -92,7 +93,7 @@ getCounts <- function(
         )
         df <- df[df$bin2_id %in% df2$bin1_id,]
     }
-
+    
     ## Return df
     return(df)
 }

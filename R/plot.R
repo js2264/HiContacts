@@ -1,4 +1,4 @@
-plotMatrix <- function(gis, limits = NULL, dpi = 500, rasterize = TRUE) {
+plotMatrix <- function(gis, limits = NULL, dpi = 500, rasterize = TRUE, symmetrical = TRUE) {
 
     `%>%` <- magrittr::`%>%`
 
@@ -37,8 +37,8 @@ plotMatrix <- function(gis, limits = NULL, dpi = 500, rasterize = TRUE) {
         ## -- Clamp scores to limits
         mat <- dplyr::mutate(mat, score = ifelse(score > M, M, ifelse(score < m, m, score)))
 
-        ## -- Add lower triangular matrix scores
-        if (all(range(GenomicRanges::start(InteractionSet::anchors(gis)[[1]])) == range(GenomicRanges::start(InteractionSet::anchors(gis)[[2]])))) {
+        ## -- Add lower triangular matrix scores (if symetrical)
+        if (symmetrical) {
             mat <- rbind(mat, mat %>% dplyr::mutate(x2 = y, y = x, x = x2) %>% dplyr::select(-x2))   
         }
 
@@ -47,7 +47,7 @@ plotMatrix <- function(gis, limits = NULL, dpi = 500, rasterize = TRUE) {
             plotFun + 
             ggplot2::labs(
                 x = unique(mat$seqnames1),
-                y = unique(mat$seqnames1)
+                y = unique(mat$seqnames2)
             )
 
     }
@@ -238,7 +238,7 @@ plotMatrixList <- function(ls, truncate_tip = 0.2, ...) {
     
 }
 
-plotAggregatedMatrix <- function(file, res, coords, limits = NULL, dpi = 500, rasterize = TRUE, BPPARAM = BiocParallel::bpparam()) {
+plotAggregatedMatrix <- function(file, coords, res = NULL, limits = NULL, dpi = 500, rasterize = TRUE, symmetrical = TRUE, BPPARAM = BiocParallel::bpparam()) {
 
     `%>%` <- magrittr::`%>%`
 
@@ -260,7 +260,13 @@ plotAggregatedMatrix <- function(file, res, coords, limits = NULL, dpi = 500, ra
     }
     else {
         wi <- unique(GenomicRanges::width(coords))
-        breaks <- seq({-wi/2}-res, {wi/2}+res, length.out = wi/res + 3)
+        if (is.null(res)) {
+            res0 <- unique(GenomicRanges::width(cool2gi(file, res = res, coords = coords[1], coords2 = coords[1]))[[1]])
+        }
+        else {
+            res0 <- res
+        }
+        breaks <- seq({-wi/2}-res0, {wi/2}+res0, length.out = wi/res0 + 3)
     }
 
     ## -- Define plotting approach
@@ -303,7 +309,8 @@ plotAggregatedMatrix <- function(file, res, coords, limits = NULL, dpi = 500, ra
             ) %>% 
             dplyr::mutate(
                 x = breaks[as.numeric(cut(x - midpoint, breaks, include.lowest = TRUE)) + 1], 
-                y = breaks[as.numeric(cut(y - midpoint2, breaks, include.lowest = TRUE)) + 1]
+                y = breaks[as.numeric(cut(y - midpoint2, breaks, include.lowest = TRUE)) + 1], 
+                score = scale(score)
             )
         
         # ggmatrix(mat, cols = afmhotr_colors) + 
@@ -341,8 +348,10 @@ plotAggregatedMatrix <- function(file, res, coords, limits = NULL, dpi = 500, ra
         dplyr::mutate(score = ifelse(score > M, M, ifelse(score < m, m, score)))
 
     ## -- Add lower triangular matrix scores 
-    mats <- rbind(mats, mats %>% dplyr::mutate(x2 = y, y = x, x = x2) %>% 
-        dplyr::select(-x2))
+    if (symmetrical) {
+        mats <- rbind(mats, mats %>% dplyr::mutate(x2 = y, y = x, x = x2) %>% 
+            dplyr::select(-x2))
+    }
     
     ## -- Plot matrix
     p <- ggmatrix(mats, cols = afmhotr_colors) + 
