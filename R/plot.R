@@ -32,13 +32,15 @@ plotMatrix <- function(gis, limits = NULL, dpi = 500, rasterize = TRUE) {
             dplyr::mutate(
                 x = floor(end1 - (end1 - start1)/2), 
                 y = floor(end2 - (end2 - start2)/2)
-            ) 
+            )
 
         ## -- Clamp scores to limits
         mat <- dplyr::mutate(mat, score = ifelse(score > M, M, ifelse(score < m, m, score)))
 
-        ## -- add lower triangular matrix scores
-        mat <- rbind(mat, mat %>% dplyr::mutate(x2 = y, y = x, x = x2) %>% dplyr::select(-x2))
+        ## -- Add lower triangular matrix scores
+        if (all(range(GenomicRanges::start(InteractionSet::anchors(gis)[[1]])) == range(GenomicRanges::start(InteractionSet::anchors(gis)[[2]])))) {
+            mat <- rbind(mat, mat %>% dplyr::mutate(x2 = y, y = x, x = x2) %>% dplyr::select(-x2))   
+        }
 
         ## -- Plot matrix
         p <- ggmatrix(mat, cols = afmhotr_colors) + 
@@ -205,17 +207,19 @@ plotTriangularMatrix <- function(gis, limits = NULL, truncate_tip = 0.2) {
 
 }
 
-plotMatrixList <- function(ls, ...) {
+plotMatrixList <- function(ls, truncate_tip = 0.2, ...) {
 
     `%>%` <- magrittr::`%>%`
 
     ## -- Convert gis to table and extract x/y, for each element in `ls`
-    mat <- ls[[2]] %>% 
+    mat <- lapply(ls, function(df) {
+        df %>% 
         tibble::as_tibble() %>%
         dplyr::mutate(
             x = floor(end1 - (end1 - start1)/2), 
             y = floor(end2 - (end2 - start2)/2)
-        ) 
+        )
+    }) %>% dplyr::bind_rows(.id = 'class')
     max_bin_dist <- (max(mat$bin2 - mat$bin1) + 1) * truncate_tip
     mat_ <- lapply(names(ls), function(n) {
         gis <- ls[[n]]
@@ -238,6 +242,18 @@ plotAggregatedMatrix <- function(file, res, coords, limits = NULL, dpi = 500, ra
 
     `%>%` <- magrittr::`%>%`
 
+    ## -- Coerce loops into coords and coords2 
+    if (class(coords) == 'GInteractions') {
+        isLoops <- TRUE
+        loops <- coords
+        coords <- InteractionSet::anchors(loops)[[1]]
+        coords2 <- InteractionSet::anchors(loops)[[2]]
+    }
+    else {
+        isLoops <- FALSE
+        coords2 <- NULL
+    }
+
     ## -- Check that coords are all the same width
     if (length(unique(GenomicRanges::width(coords))) != 1) {
         stop("Please provide GRanges that are all the same width. Aborting now.")
@@ -247,7 +263,7 @@ plotAggregatedMatrix <- function(file, res, coords, limits = NULL, dpi = 500, ra
         breaks <- seq({-wi/2}-res, {wi/2}+res, length.out = wi/res + 3)
     }
 
-    # -- Define plotting approach
+    ## -- Define plotting approach
     if (rasterize) {
         plotFun <- ggrastr::geom_tile_rast(raster.dpi = dpi)
     }
@@ -255,15 +271,27 @@ plotAggregatedMatrix <- function(file, res, coords, limits = NULL, dpi = 500, ra
         plotFun <- ggplot2::geom_tile()
     }
 
+    ## -- Calculate scores over each coords (+coords2)
     mats <- BiocParallel::bplapply(BPPARAM = BPPARAM, seq_along(coords), function(K) {
-
+    # mats <- lapply(seq_along(coords), function(K) {
         range <- coords[K]
+        # print(range)
         `%<-%` <- zeallot::`%<-%`
         c(coords_chr, coords_start, coords_end) %<-% splitCoords(range)
         midpoint <- coords_start + (coords_end - coords_start) / 2
+        if (isLoops) {
+            range2 <- coords2[K]
+            `%<-%` <- zeallot::`%<-%`
+            c(coords_chr2, coords_start2, coords_end2) %<-% splitCoords(range2)
+            midpoint2 <- coords_start2 + (coords_end2 - coords_start2) / 2
+        }
+        else {
+            range2 <- range
+            midpoint2 <- midpoint
+        }
 
         ## -- Filter to interactions which are within the range
-        gis_sub <- cool2gi(file, res = res, coords = range)
+        gis_sub <- cool2gi(file, res = res, coords = range, coords2 = range2)
         
         ## -- Convert gis_sub to table and extract x/y and adjust center to 0
         mat <- gis_sub %>% 
@@ -275,7 +303,7 @@ plotAggregatedMatrix <- function(file, res, coords, limits = NULL, dpi = 500, ra
             ) %>% 
             dplyr::mutate(
                 x = breaks[as.numeric(cut(x - midpoint, breaks, include.lowest = TRUE)) + 1], 
-                y = breaks[as.numeric(cut(y - midpoint, breaks, include.lowest = TRUE)) + 1]
+                y = breaks[as.numeric(cut(y - midpoint2, breaks, include.lowest = TRUE)) + 1]
             )
         
         # ggmatrix(mat, cols = afmhotr_colors) + 
@@ -292,7 +320,7 @@ plotAggregatedMatrix <- function(file, res, coords, limits = NULL, dpi = 500, ra
         dplyr::group_by(x, y) %>% 
         dplyr::filter(x >= min(breaks[2:{length(breaks)-1}]), x <= max(breaks[2:{length(breaks)-1}]), y >= min(breaks[2:{length(breaks)-1}]), y <= max(breaks[2:{length(breaks)-1}]))
     
-    ## -- Average scores for each bin 
+    ## -- Average scores for each bin
     mats <- mats %>% 
         dplyr::summarize(score = mean(score, na.rm = TRUE)) %>% 
         dplyr::mutate(seqnames1 = 'Aggr. coordinates') 

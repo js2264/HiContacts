@@ -50,9 +50,25 @@ p <- plotMatrix(gis, limits = c(-3, -1), dpi = 1000)
 ggplot2::ggsave('plot.png', width = 10, height = 10, dpi = 1000)
 ```
 
+> Two-entry diagonal style
+
+```r
+file <- 'path/to/file.mcool'
+range1 <- 'chr13:101000000-107000000'
+range2 <- 'chr13:104000000-110000000'
+res <- 40000
+gis <- cool2gi(file, coords = range1, coords2 = range2, res = res)
+p <- plotMatrix(gis, limits = c(-3, -1), dpi = 1000)
+ggplot2::ggsave('plot.png', width = 10, height = 10, dpi = 1000)
+```
+
 > Horizontal style
 
 ```r
+file <- 'path/to/file.mcool'
+range <- 'chr13:100000000-120000000'
+res <- 40000
+gis <- cool2gi(file, coords = range, res = res)
 p <- plotTriangularMatrix(gis, truncate_tip = 0.2)
 ggplot2::ggsave('plot.png', width = 10, height = 10, dpi = 1000)
 ```
@@ -114,14 +130,31 @@ p_withTracks <- addTracks(p, range,
 ggplot2::ggsave('plot.png', plot = p_withTracks, width = 10, height = 10, dpi = 1000)
 ```
 
-## Plot aggregated matrices on diagonal
+## Plot aggregated matrices
+
+> On diagonal
 
 ```r
 file <- 'path/to/file.mcool'
 res <- 20000
 coords <- rtracklayer::import('path/to/insulation-score.mcool') %>% 
-    resize(fix = 'start', width = 1) %>% 
-    resize(fix = 'center', width = 1000000)
-p <- plotAggregatedMatrix(file, res, coords[1:1000], BPPARAM = BiocParallel::MulticoreParam(workers = 7, tasks = 20, progressbar = TRUE))
+    GenomicRanges::resize(fix = 'start', width = 1) %>% 
+    GenomicRanges::resize(fix = 'center', width = 2000000)
+p <- plotAggregatedMatrix(file, res, coords, BPPARAM = BiocParallel::MulticoreParam(workers = 16, tasks = 200, progressbar = TRUE))
+ggplot2::ggsave('plot.png', width = 10, height = 10, dpi = 300)
+```
+
+> On pairs of coordinates
+
+```r
+file <- 'path/to/file.mcool'
+res <- 1000
+loops <- rtracklayer::import('path/to/loops.bedpe') %>% ## interactions as `Pairs` object
+loops <- rtracklayer::import('~/Downloads/pairs.bedpe') %>% ## interactions as `Pairs` object
+    InteractionSet::makeGInteractionsFromGRangesPairs() %>% ## interactions as `InteractionSet` object
+    GenomicRanges::resize(width = 30000, fix = 'center')
+seqlevelsStyle(loops) <- 'NCBI'
+loops <- loops[InteractionSet::anchors(loops)[[1]] %within% GRanges(cool2seqinfo(file, res = 1000)) & InteractionSet::anchors(loops)[[2]] %within% GRanges(cool2seqinfo(file, res = 1000))]
+p <- plotAggregatedMatrix(file, res, loops, BPPARAM = BiocParallel::MulticoreParam(workers = 16, tasks = 200, progressbar = TRUE))
 ggplot2::ggsave('plot.png', width = 10, height = 10, dpi = 300)
 ```
