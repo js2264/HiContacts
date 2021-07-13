@@ -2,9 +2,16 @@
 % Please edit documentation in R/parse.R
 \name{getAnchors}
 \alias{getAnchors}
-\title{This was adapted from \code{dovetail-genomics/coolR}}
+\title{getAnchors}
 \usage{
 getAnchors(file, res = NULL, balanced = "cooler")
+}
+\arguments{
+\item{file}{file}
+
+\item{res}{res}
+
+\item{balanced}{balanced}
 }
 \description{
 This was adapted from \code{dovetail-genomics/coolR}

@@ -1,8 +1,12 @@
+#' iceGis
+#'
+#' @param gi gi
+#'
 #' @import reticulate
 #' @import InteractionSet
-#' @import SummarizedExperiment
 #' @import dplyr
 #' @import tidyr
+#' @importFrom SummarizedExperiment assay
 #' @export
 
 iceGis <- function(gi) {
@@ -45,6 +49,10 @@ iceGis <- function(gi) {
     return(new_gis)
 }
 
+#' normalizeOverExpected
+#'
+#' @param mat mat
+#'
 #' @import dplyr
 #' @export
 

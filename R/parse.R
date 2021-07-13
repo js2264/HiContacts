@@ -1,8 +1,16 @@
+#' getAnchors
 #'
 #' This was adapted from `dovetail-genomics/coolR`
 #'
-#' @import GenomicRanges
-#' @import IRanges
+#' @param file file
+#' @param res res
+#' @param balanced balanced
+#'
+#' @importFrom GenomicRanges GRanges
+#' @importFrom GenomicRanges seqnames
+#' @importFrom GenomicRanges start
+#' @importFrom GenomicRanges end
+#' @importFrom IRanges IRanges
 #' @export
 
 getAnchors <- function(file, res = NULL, balanced = "cooler") {
@@ -22,13 +30,23 @@ getAnchors <- function(file, res = NULL, balanced = "cooler") {
     return(anchors)
 }
 
+#' getCounts
+#'
+#' @param file file
+#' @param coords coords
+#' @param anchors anchors
+#' @param coords2 coords2
+#' @param res res
+#'
 #' @import zeallot
-#' @import GenomeInfoDb
-#' @import GenomicRanges
-#' @import glue
-#' @import IRanges
-#' @import S4Vectors
 #' @import tidyr
+#' @importFrom GenomeInfoDb seqlengths
+#' @importFrom GenomicRanges seqnames
+#' @importFrom GenomicRanges GRanges
+#' @importFrom GenomicRanges findOverlaps
+#' @importFrom IRanges IRanges
+#' @importFrom glue glue
+#' @importFrom S4Vectors subjectHits
 #' @export
 
 getCounts <- function(file,

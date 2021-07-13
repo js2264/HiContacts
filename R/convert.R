@@ -1,4 +1,9 @@
-#' @import GenomeInfoDb
+#' cool2seqinfo
+#'
+#' @param file file
+#' @param res res
+#'
+#' @importFrom GenomeInfoDb Seqinfo
 #' @export
 
 cool2seqinfo <- function(file, res = NULL) {
@@ -10,8 +15,18 @@ cool2seqinfo <- function(file, res = NULL) {
     return(seqinfo)
 }
 
+#' cool2gi
+#'
+#' @param file file
+#' @param balanced balanced
+#' @param coords coords
+#' @param coords2 coords2
+#' @param res res
+#'
 #' @import InteractionSet
-#' @import GenomicRanges
+#' @importFrom GenomicRanges seqnames
+#' @importFrom GenomicRanges start
+#' @importFrom GenomicRanges resize
 #' @export
 
 cool2gi <- function(file, balanced = "cooler", coords = NULL, coords2 = NULL, res = NULL) {
@@ -42,6 +57,10 @@ cool2gi <- function(file, balanced = "cooler", coords = NULL, coords2 = NULL, re
     return(gi)
 }
 
+#' gi2cm
+#'
+#' @param gi gi
+#'
 #' @import InteractionSet
 #' @export
 
@@ -54,15 +73,21 @@ gi2cm <- function(gi) {
     )
 }
 
+#' gi2mat
+#'
+#' @param gis gis
+#' @param limits limits
+#' @param truncate_tip truncate_tip
+#'
 #' @import tibble
 #' @import dplyr
-#' @import GenomicRanges
 #' @import InteractionSet
 #' @import tidyr
+#' @importFrom GenomicRanges width
 #' @export
 
 gi2mat <- function(gis, limits = NULL, truncate_tip = 0.5) {
-    `%>%` <- magrittr::`%>%`
+    `%>%` <- tidyr::`%>%`
 
     ## -- Convert gis to table and extract x/y
     mat <- gis %>%

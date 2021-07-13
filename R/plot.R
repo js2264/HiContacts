@@ -1,14 +1,21 @@
-#' @import magrittr
+#' plotMatrix
+#'
+#' @param gis gis
+#' @param limits limits
+#' @param dpi dpi
+#' @param rasterize rasterize
+#' @param symmetrical symmetrical
+#'
 #' @import ggrastr
 #' @import ggplot2
-#' @import GenomicRanges
 #' @import InteractionSet
 #' @import tibble
 #' @import dplyr
+#' @importFrom GenomicRanges seqnames
 #' @export
 
 plotMatrix <- function(gis, limits = NULL, dpi = 500, rasterize = TRUE, symmetrical = TRUE) {
-    `%>%` <- magrittr::`%>%`
+    `%>%` <- tidyr::`%>%`
 
     ## -- Matrix limits
     if (!is.null(limits)) {
@@ -95,7 +102,15 @@ plotMatrix <- function(gis, limits = NULL, dpi = 500, rasterize = TRUE, symmetri
     p
 }
 
-#' @import magrittr
+#' plotOverExpected
+#'
+#' @param gis gis
+#' @param limits limits
+#' @param dpi dpi
+#' @param rasterize rasterize
+#' @param return_expected return_expected
+#' @param return_all return_all
+#'
 #' @import ggrastr
 #' @import ggplot2
 #' @import tibble
@@ -104,10 +119,11 @@ plotMatrix <- function(gis, limits = NULL, dpi = 500, rasterize = TRUE, symmetri
 
 plotOverExpected <- function(gis,
                              limits = c(-1, 1),
-                             dpi = 500, rasterize = TRUE,
+                             dpi = 500,
+                             rasterize = TRUE,
                              return_expected = FALSE,
                              return_all = FALSE) {
-    `%>%` <- magrittr::`%>%`
+    `%>%` <- tidyr::`%>%`
 
     # -- Define plotting approach
     if (rasterize) {
@@ -174,16 +190,21 @@ plotOverExpected <- function(gis,
     p
 }
 
-#' @import magrittr
+#' plotTriangularMatrix
+#'
+#' @param gis gis
+#' @param limits limits
+#' @param truncate_tip truncate_tip
+#'
 #' @import ggplot2
-#' @import GenomicRanges
 #' @import InteractionSet
 #' @import tibble
 #' @import dplyr
+#' @importFrom GenomicRanges width
 #' @export
 
 plotTriangularMatrix <- function(gis, limits = NULL, truncate_tip = 0.2) {
-    `%>%` <- magrittr::`%>%`
+    `%>%` <- tidyr::`%>%`
 
     ## -- Convert gis to table and extract x/y
     mat <- gis %>%
@@ -222,14 +243,19 @@ plotTriangularMatrix <- function(gis, limits = NULL, truncate_tip = 0.2) {
     p
 }
 
-#' @import magrittr
+#' plotMatrixList
+#'
+#' @param ls ls
+#' @param truncate_tip truncate_tip
+#' @param ... ...
+#'
 #' @import tibble
 #' @import dplyr
 #' @import ggplot2
 #' @export
 
 plotMatrixList <- function(ls, truncate_tip = 0.2, ...) {
-    `%>%` <- magrittr::`%>%`
+    `%>%` <- tidyr::`%>%`
 
     ## -- Convert gis to table and extract x/y, for each element in `ls`
     mat <- lapply(ls, function(df) {
@@ -258,19 +284,29 @@ plotMatrixList <- function(ls, truncate_tip = 0.2, ...) {
         ggplot2::facet_grid(item ~ .)
 }
 
-#' @import magrittr
+#' plotAggregatedMatrix
+#'
+#' @param file file
+#' @param coords coords
+#' @param res res
+#' @param limits limits
+#' @param dpi dpi
+#' @param rasterize rasterize
+#' @param symmetrical symmetrical
+#' @param BPPARAM BPPARAM
+#'
 #' @import InteractionSet
-#' @import GenomicRanges
 #' @import ggrastr
 #' @import ggplot2
 #' @import BiocParallel
 #' @import zeallot
 #' @import tibble
 #' @import dplyr
+#' @importFrom GenomicRanges width
 #' @export
 
 plotAggregatedMatrix <- function(file, coords, res = NULL, limits = NULL, dpi = 500, rasterize = TRUE, symmetrical = TRUE, BPPARAM = BiocParallel::bpparam()) {
-    `%>%` <- magrittr::`%>%`
+    `%>%` <- tidyr::`%>%`
 
     ## -- Coerce loops into coords and coords2
     if (class(coords) == "GInteractions") {

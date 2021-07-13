@@ -1,30 +1,44 @@
-#' @import magrittr
+#' lsCoolFiles
+#'
+#' @param file file
+#' @param full.list full.list
+#'
 #' @import rhdf5
 #' @import stringr
 #' @export
 
 lsCoolFiles <- function(file, full.list = FALSE) {
-    `%>%` <- magrittr::`%>%`
+    `%>%` <- tidyr::`%>%`
     x <- rhdf5::h5ls(file)
     message("\nPossible paths:\n", paste0("\t", x$group, "/", x$name, "\n") %>% unique() %>% stringr::str_replace("//", ""))
     if (full.list) x
 }
 
+#' lsCoolResolutions
+#'
+#' @param file file
+#' @param full.list full.list
+#'
 #' @import tools
-#' @import magrittr
 #' @import rhdf5
 #' @export
 
 lsCoolResolutions <- function(file, full.list = FALSE) {
     if (tools::file_ext(file) != "mcool") stop("Provided file is not .mcool multi-resolution map. Aborting now.")
-    `%>%` <- magrittr::`%>%`
+    `%>%` <- tidyr::`%>%`
     x <- rhdf5::h5ls(file)
     rez <- unique(grep(gsub("/resolutions/", "", x$group), pattern = "/", invert = TRUE, value = TRUE))
     message("\nAvailable resolutions:\n", paste0(rez, collapse = ", "))
     if (full.list) x
 }
 
-#' @import glue
+#' peekCool
+#'
+#' @param file file
+#' @param path path
+#' @param res res
+#'
+#' @importFrom glue glue
 #' @import rhdf5
 #' @export
 
@@ -42,7 +56,15 @@ peekCool <- function(file, path, res = NULL) {
     }
 }
 
-#' @import glue
+#' fetchCool
+#'
+#' @param file file
+#' @param path path
+#' @param res res
+#' @param idx idx
+#' @param ... ...
+#'
+#' @importFrom glue glue
 #' @import rhdf5
 #' @export
 
@@ -51,8 +73,14 @@ fetchCool <- function(file, path, res = NULL, idx = NULL, ...) {
     as.vector(rhdf5::h5read(file, name = path, index = list(idx), ...))
 }
 
-#' @import GenomicRanges
+#' splitCoords
+#'
+#' @param coords coords
+#'
 #' @import stringr
+#' @importFrom GenomicRanges seqnames
+#' @importFrom GenomicRanges start
+#' @importFrom GenomicRanges end
 #' @export
 
 splitCoords <- function(coords) {

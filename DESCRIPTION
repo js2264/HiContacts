@@ -11,12 +11,13 @@ License: MIT + file LICENSE
 URL: https://github.com/js2264/coolerr
 BugReports: https://github.com/js2264/coolerr/issues
 Depends:
+    R (>= 4.0)
+Imports:
     BiocParallel,
     GenomeInfoDb,
     GenomicRanges,
     IRanges,
     InteractionSet,
-    R (>= 4.0),
     S4Vectors,
     SummarizedExperiment,
     dplyr,
@@ -24,7 +25,6 @@ Depends:
     ggplot2,
     ggrastr,
     glue,
-    magrittr,
     reticulate,
     rhdf5,
     scales,

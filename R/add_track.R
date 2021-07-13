@@ -1,8 +1,15 @@
-#' @import IRanges
+#' addTracks
+#'
+#' @param p p
+#' @param range range
+#' @param annotations annotations
+#' @param profiles profiles
+#'
+#' @importFrom IRanges `%over%`
 #' @import zeallot
 #' @import tibble
 #' @import dplyr
-#' @import GenomicRanges
+#' @importFrom GenomicRanges GRanges
 #' @import ggplot2
 #' @import scales
 #' @import egg

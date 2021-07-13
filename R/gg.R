@@ -1,3 +1,9 @@
+#' ggmatrix
+#'
+#' @param mat mat
+#' @param ticks ticks
+#' @param cols cols
+#'
 #' @import ggplot2
 #' @import scales
 #' @export
@@ -15,6 +21,14 @@ ggmatrix <- function(mat, ticks = TRUE, cols = afmhotr_colors) {
     p
 }
 
+#' ggtiltedmatrix
+#'
+#' @param mat_ mat_
+#' @param ticks ticks
+#' @param cols cols
+#' @param truncate_tip truncate_tip
+#' @param nmatrices nmatrices
+#'
 #' @import ggplot2
 #' @import scales
 #' @export
@@ -50,6 +64,10 @@ ggtiltedmatrix <- function(mat_, ticks = TRUE, cols = afmhotr_colors, truncate_t
     p
 }
 
+#' ggtheme_coolerr
+#'
+#' @param ticks ticks
+#'
 #' @import ggplot2
 #' @export
 
@@ -67,6 +85,8 @@ ggtheme_coolerr <- function(ticks = TRUE) {
     t
 }
 
+#' ggtheme_coolerr_tracks
+#'
 #' @import ggplot2
 #' @export
 
