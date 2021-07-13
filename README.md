@@ -15,7 +15,7 @@ Rather than creating redundant classes, it relies on pre-existing Bioconductor o
 remotes::install_github('js2264/coolerr')
 ```
 
-## Import `cool` file as `GenomicInterations`
+## Import a .cool file as GenomicInterations
 
 `cool2gi` can be used to import contact counts as `GenomicInterations`. 
 
@@ -73,7 +73,7 @@ p <- plotTriangularMatrix(gis, truncate_tip = 0.2)
 ggplot2::ggsave('plot.png', width = 10, height = 10, dpi = 1000)
 ```
 
-> Horizontal style with a list of multiple `GenomicInterations`
+> Horizontal style with a list of multiple GenomicInterations
 
 ```r
 gis1 <- cool2gi(file, coords = range, res = 40000)

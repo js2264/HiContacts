@@ -1,5 +1,8 @@
+#' @import GenomeInfoDb
+#' @export
+
 cool2seqinfo <- function(file, res = NULL) {
-    chroms <- fetchCool(file, 'chroms', res)
+    chroms <- fetchCool(file, "chroms", res)
     seqinfo <- GenomeInfoDb::Seqinfo(
         seqnames = as.vector(chroms$name),
         seqlengths = as.vector(chroms$length)
@@ -7,7 +10,11 @@ cool2seqinfo <- function(file, res = NULL) {
     return(seqinfo)
 }
 
-cool2gi <- function(file, balanced = 'cooler', coords = NULL, coords2 = NULL, res = NULL) {
+#' @import InteractionSet
+#' @import GenomicRanges
+#' @export
+
+cool2gi <- function(file, balanced = "cooler", coords = NULL, coords2 = NULL, res = NULL) {
     anchors <- getAnchors(file, res, balanced = balanced)
     cnts <- getCounts(file, coords = coords, anchors = anchors, coords2 = coords2, res = res)
     gi <- InteractionSet::GInteractions(
@@ -18,41 +25,52 @@ cool2gi <- function(file, balanced = 'cooler', coords = NULL, coords2 = NULL, re
     gi$bin1 <- cnts$bin1_id
     gi$bin2 <- cnts$bin2_id
 
-    if ({!is.null(gi$anchor1.weight) & !is.null(gi$anchor2.weight)} & balanced == 'cooler') {
+    if ({
+        !is.null(gi$anchor1.weight) & !is.null(gi$anchor2.weight)
+    } & balanced == "cooler") {
         gi$score <- log10(gi$count * gi$anchor1.weight * gi$anchor2.weight)
-    } 
-    else if (balanced == 'ICE') {
+    }
+    else if (balanced == "ICE") {
         gi <- iceGis(gi)
         gi$score <- log10(gi$score + 1)
-    } 
+    }
     else {
         gi$score <- log10(gi$count + 1)
     }
     InteractionSet::regions(gi)$chr <- GenomicRanges::seqnames(InteractionSet::regions(gi))
-    InteractionSet::regions(gi)$center <- GenomicRanges::start(GenomicRanges::resize(InteractionSet::regions(gi), fix = 'center', width = 1))
+    InteractionSet::regions(gi)$center <- GenomicRanges::start(GenomicRanges::resize(InteractionSet::regions(gi), fix = "center", width = 1))
     return(gi)
 }
 
+#' @import InteractionSet
+#' @export
+
 gi2cm <- function(gi) {
     InteractionSet::inflate(
-        gi, 
-        rows = 1:length(InteractionSet::regions(gi)), 
-        columns = 1:length(InteractionSet::regions(gi)), 
+        gi,
+        rows = 1:length(InteractionSet::regions(gi)),
+        columns = 1:length(InteractionSet::regions(gi)),
         fill = gi$count
     )
 }
 
-gi2mat <- function(gis, limits = NULL, truncate_tip = 0.5) {
+#' @import tibble
+#' @import dplyr
+#' @import GenomicRanges
+#' @import InteractionSet
+#' @import tidyr
+#' @export
 
+gi2mat <- function(gis, limits = NULL, truncate_tip = 0.5) {
     `%>%` <- magrittr::`%>%`
 
     ## -- Convert gis to table and extract x/y
-    mat <- gis %>% 
+    mat <- gis %>%
         tibble::as_tibble() %>%
         dplyr::mutate(
-            x = floor(end1 - (end1 - start1)/2), 
-            y = floor(end2 - (end2 - start2)/2)
-        ) 
+            x = floor(end1 - (end1 - start1) / 2),
+            y = floor(end2 - (end2 - start2) / 2)
+        )
 
     # -- Define plotting approach
     binsize <- GenomicRanges::width(InteractionSet::regions(gis)[1])
@@ -76,34 +94,39 @@ gi2mat <- function(gis, limits = NULL, truncate_tip = 0.5) {
 
     ## -- Filter matrix to cut out the tip of the triangle
     mat <- mat[abs(mat$bin2 - mat$bin1) <= max_bin_dist, ]
-    
-    mat_ <- mat %>% 
+
+    mat_ <- mat %>%
         ## -- Filter upper diagonal
-        dplyr::filter(y >= x) %>% 
+        dplyr::filter(y >= x) %>%
         ## -- Recompute center of each bin and distance to the diagonal
         dplyr::mutate(
-            x_ = x + (y - x)/2, 
-            dist = (y - x) / {sqrt(2)*sqrt(2)}, 
+            x_ = x + (y - x) / 2,
+            dist = (y - x) / {
+                sqrt(2) * sqrt(2)
+            },
             ID = 1:dplyr::n()
-        ) %>% 
+        ) %>%
         ## -- Group by bins
-        dplyr::group_by(ID) %>% 
+        dplyr::group_by(ID) %>%
         ## -- Compute each corner of each of the 45deg-tilted bins
         dplyr::mutate(
-            A_x = x_ - binsize/2,
-            A_y = dist, 
+            A_x = x_ - binsize / 2,
+            A_y = dist,
             B_x = x_,
-            B_y = dist + binsize/2, 
-            C_x = x_ + binsize/2,
-            C_y = dist, 
+            B_y = dist + binsize / 2,
+            C_x = x_ + binsize / 2,
+            C_y = dist,
             D_x = x_,
-            D_y = dist - binsize/2
-        ) %>% 
-        tidyr::pivot_longer(cols = dplyr::starts_with(c('A_', 'B_', 'C_', 'D_')), names_to = 'pt', values_to = 'value_coord') %>%
+            D_y = dist - binsize / 2
+        ) %>%
+        tidyr::pivot_longer(cols = dplyr::starts_with(c("A_", "B_", "C_", "D_")), names_to = "pt", values_to = "value_coord") %>%
         tidyr::extract(pt, c("pt", "coord_x"), "(.)_(.)") %>%
-        tidyr::spread(coord_x, value_coord) %>% 
-        dplyr::mutate(y = ifelse(y < 0, 0, y)) %>% 
+        tidyr::spread(coord_x, value_coord) %>%
+        dplyr::mutate(y = ifelse(y < 0, 0, y)) %>%
         ## -- Rescale y for proper scaling when plotting
-        dplyr::mutate(y = y * { truncate_tip / { sqrt(2) * sqrt(2) } })
-
+        dplyr::mutate(y = y * {
+            truncate_tip / {
+                sqrt(2) * sqrt(2)
+            }
+        })
 }

@@ -5,3 +5,5 @@
 .DS_Store
 docs
 *png
+.pre-commit-config.yaml
+inst/WORDLIST
