@@ -12,7 +12,8 @@ plotAggregatedMatrix(
   dpi = 500,
   rasterize = TRUE,
   symmetrical = TRUE,
-  BPPARAM = BiocParallel::bpparam()
+  BPPARAM = BiocParallel::bpparam(),
+  scale = FALSE
 )
 }
 \arguments{
@@ -31,6 +32,8 @@ plotAggregatedMatrix(
 \item{symmetrical}{symmetrical}
 
 \item{BPPARAM}{BPPARAM}
+
+\item{scale}{scale}
 }
 \description{
 plotAggregatedMatrix

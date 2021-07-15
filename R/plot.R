@@ -102,6 +102,74 @@ plotMatrix <- function(gis, limits = NULL, dpi = 500, rasterize = TRUE, symmetri
     p
 }
 
+#' plotCorrelatedMatrix
+#'
+#' @param gis gis
+#' @param limits limits
+#' @param dpi dpi
+#' @param rasterize rasterize
+#'
+#' @import ggrastr
+#' @import ggplot2
+#' @import tibble
+#' @import dplyr
+#' @export
+
+plotCorrelatedMatrix <- function(gis,
+                                 limits = c(-1, 1),
+                                 dpi = 500,
+                                 rasterize = TRUE) {
+    `%>%` <- tidyr::`%>%`
+
+    # -- Define plotting approach
+    if (rasterize) {
+        plotFun <- ggrastr::geom_tile_rast(raster.dpi = dpi)
+    }
+    else {
+        plotFun <- ggplot2::geom_tile()
+    }
+
+    ## -- Convert gis to table and extract x/y
+    mat <- gis %>%
+        tibble::as_tibble() %>%
+        dplyr::mutate(
+            x = floor(end1 - (end1 - start1) / 2),
+            y = floor(end2 - (end2 - start2) / 2)
+        )
+
+    ## -- Add lower triangular matrix scores
+    mat <- rbind(mat, mat %>% dplyr::mutate(x2 = y, y = x, x = x2) %>% dplyr::select(-x2))
+
+    ## -- Compute auto-correlation matrix
+    mat <- correlateMatrix(mat)
+
+    ## -- Matrix limits
+    if (!is.null(limits)) {
+        m <- limits[1]
+        M <- limits[2]
+        limits <- c(m, M)
+    } else {
+        M <- max(mat$score, na.rm = TRUE, is.finite = TRUE)
+        m <- min(mat$score, na.rm = TRUE, is.finite = TRUE)
+        mm <- max(abs(c(m, M)))
+        limits <- c(-abs(mm), abs(mm))
+    }
+
+    ## -- Clamp scores to limits
+    mat <- dplyr::mutate(mat, score = ifelse(score > M, M, ifelse(score < m, m, score)))
+
+
+    ## -- Plot matrix
+    p <- ggcorrmatrix(mat, cols = bbr_colors, limits = limits) +
+        plotFun +
+        ggplot2::labs(
+            x = unique(mat$seqnames1),
+            y = unique(mat$seqnames1)
+        )
+
+    p
+}
+
 #' plotOverExpected
 #'
 #' @param gis gis
@@ -294,6 +362,7 @@ plotMatrixList <- function(ls, truncate_tip = 0.2, ...) {
 #' @param rasterize rasterize
 #' @param symmetrical symmetrical
 #' @param BPPARAM BPPARAM
+#' @param scale scale
 #'
 #' @import InteractionSet
 #' @import ggrastr
@@ -305,7 +374,7 @@ plotMatrixList <- function(ls, truncate_tip = 0.2, ...) {
 #' @importFrom GenomicRanges width
 #' @export
 
-plotAggregatedMatrix <- function(file, coords, res = NULL, limits = NULL, dpi = 500, rasterize = TRUE, symmetrical = TRUE, BPPARAM = BiocParallel::bpparam()) {
+plotAggregatedMatrix <- function(file, coords, res = NULL, limits = NULL, dpi = 500, rasterize = TRUE, symmetrical = TRUE, BPPARAM = BiocParallel::bpparam(), scale = FALSE) {
     `%>%` <- tidyr::`%>%`
 
     ## -- Coerce loops into coords and coords2
@@ -383,9 +452,9 @@ plotAggregatedMatrix <- function(file, coords, res = NULL, limits = NULL, dpi = 
             ) %>%
             dplyr::mutate(
                 x = breaks[as.numeric(cut(x - midpoint, breaks, include.lowest = TRUE)) + 1],
-                y = breaks[as.numeric(cut(y - midpoint2, breaks, include.lowest = TRUE)) + 1],
-                score = scale(score)
+                y = breaks[as.numeric(cut(y - midpoint2, breaks, include.lowest = TRUE)) + 1]
             )
+        if (scale) mat$score <- scale(mat$score)
 
         # ggmatrix(mat, cols = afmhotr_colors) +
         #     plotFun +

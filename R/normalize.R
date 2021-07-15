@@ -84,3 +84,36 @@ normalizeOverExpected <- function(mat) {
         dplyr::left_join(expected, by = "diag") %>%
         dplyr::mutate(scoreOverExpected = -log2(score / expected)) ## `-` because both `score` and `expected` have to be < 0
 }
+
+#' correlateMatrix
+#'
+#' @param mat mat
+#'
+#' @import dplyr
+#' @import tidyr
+#' @import tibble
+#' @import corrr
+#' @export
+
+correlateMatrix <- function(mat) {
+    x <- mat %>%
+        dplyr::select(x, y, score) %>%
+        distinct() %>%
+        tidyr::pivot_wider(names_from = y, values_from = score) %>%
+        tibble::column_to_rownames("x")
+    x <- x[rownames(x), rownames(x)]
+    # x <- x[colSums(!is.na(x)) > 0, colSums(!is.na(x)) > 0]
+    # x[lower.tri(x)] <- t(x)[lower.tri(x)]
+
+    co <- corrr::correlate(x, diagonal = 0, method = "pearson", quiet = TRUE)
+    mat2 <- co %>%
+        tidyr::pivot_longer(-term, names_to = "y", values_to = "corr") %>%
+        dplyr::rename("x" = "term") %>%
+        mutate(
+            x = as.numeric(x),
+            y = as.numeric(y)
+        )
+    mat %>%
+        left_join(mat2) %>%
+        mutate(score = corr)
+}
