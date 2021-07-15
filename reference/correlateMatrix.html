@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>plotAggregatedMatrix — plotAggregatedMatrix • coolerr</title>
+<title>correlateMatrix — correlateMatrix • coolerr</title>
 
 
 <!-- jquery -->
@@ -39,8 +39,8 @@
 
 
 
-<meta property="og:title" content="plotAggregatedMatrix — plotAggregatedMatrix" />
-<meta property="og:description" content="plotAggregatedMatrix" />
+<meta property="og:title" content="correlateMatrix — correlateMatrix" />
+<meta property="og:description" content="correlateMatrix" />
 
 
 
@@ -108,65 +108,23 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>plotAggregatedMatrix</h1>
-    <small class="dont-index">Source: <a href='https://github.com/js2264/coolerr/blob/master/R/plot.R'><code>R/plot.R</code></a></small>
-    <div class="hidden name"><code>plotAggregatedMatrix.Rd</code></div>
+    <h1>correlateMatrix</h1>
+    <small class="dont-index">Source: <a href='https://github.com/js2264/coolerr/blob/master/R/normalize.R'><code>R/normalize.R</code></a></small>
+    <div class="hidden name"><code>correlateMatrix.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>plotAggregatedMatrix</p>
+    <p>correlateMatrix</p>
     </div>
 
-    <pre class="usage"><span class='fu'>plotAggregatedMatrix</span><span class='op'>(</span>
-  <span class='va'>file</span>,
-  <span class='va'>coords</span>,
-  res <span class='op'>=</span> <span class='cn'>NULL</span>,
-  limits <span class='op'>=</span> <span class='cn'>NULL</span>,
-  dpi <span class='op'>=</span> <span class='fl'>500</span>,
-  rasterize <span class='op'>=</span> <span class='cn'>TRUE</span>,
-  symmetrical <span class='op'>=</span> <span class='cn'>TRUE</span>,
-  BPPARAM <span class='op'>=</span> <span class='fu'>BiocParallel</span><span class='fu'>::</span><span class='fu'><a href='https://rdrr.io/pkg/BiocParallel/man/register.html'>bpparam</a></span><span class='op'>(</span><span class='op'>)</span>,
-  scale <span class='op'>=</span> <span class='cn'>FALSE</span>
-<span class='op'>)</span></pre>
+    <pre class="usage"><span class='fu'>correlateMatrix</span><span class='op'>(</span><span class='va'>mat</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>file</th>
-      <td><p>file</p></td>
-    </tr>
-    <tr>
-      <th>coords</th>
-      <td><p>coords</p></td>
-    </tr>
-    <tr>
-      <th>res</th>
-      <td><p>res</p></td>
-    </tr>
-    <tr>
-      <th>limits</th>
-      <td><p>limits</p></td>
-    </tr>
-    <tr>
-      <th>dpi</th>
-      <td><p>dpi</p></td>
-    </tr>
-    <tr>
-      <th>rasterize</th>
-      <td><p>rasterize</p></td>
-    </tr>
-    <tr>
-      <th>symmetrical</th>
-      <td><p>symmetrical</p></td>
-    </tr>
-    <tr>
-      <th>BPPARAM</th>
-      <td><p>BPPARAM</p></td>
-    </tr>
-    <tr>
-      <th>scale</th>
-      <td><p>scale</p></td>
+      <th>mat</th>
+      <td><p>mat</p></td>
     </tr>
     </table>
 
