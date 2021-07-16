@@ -2,6 +2,7 @@
 
 <!-- badges: start -->
 [![Lifecycle: experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
+[![R-CMD-check-bioc](https://github.com/js2264/coolerr/actions/workflows/check-bioc.yml/badge.svg)](https://github.com/js2264/coolerr/actions/workflows/check-bioc.yml)
 [![pkgdown](https://github.com/js2264/coolerr/workflows/pkgdown/badge.svg)](https://github.com/js2264/coolerr/actions)
 <!-- badges: end -->
 
