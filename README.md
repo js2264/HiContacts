@@ -21,8 +21,7 @@ remotes::install_github('js2264/coolerr')
 
 ```r
 file <- 'path/to/file.cool'
-range <- 'chrI:2000-8000'
-cool2seqinfo(file)
+range <- 'ranges_of_interest' # e.g. range <- 'chrI:2000-8000'
 gis <- cool2gi(file, coords = range)
 gis
 ```
@@ -31,7 +30,7 @@ gis
 
 ```r
 file <- 'path/to/file.mcool'
-range <- 'chrI:2000-8000'
+range <- 'ranges_of_interest' # e.g. range <- 'chrI:2000-8000'
 lsCoolResolutions(file)
 gis <- cool2gi(file, coords = range, res = 1000)
 gis
@@ -42,35 +41,22 @@ gis
 > Diagonal style
 
 ```r
-file <- 'path/to/file.mcool'
-range <- 'chr13:100000000-120000000'
-res <- 40000
 gis <- cool2gi(file, coords = range, res = res)
 p <- plotMatrix(gis, limits = c(-3, -1), dpi = 400)
-ggplot2::ggsave('plot.png', width = 10, height = 10, dpi = 400)
 ```
 
 > Two-entry diagonal style
 
 ```r
-file <- 'path/to/file.mcool'
-range1 <- 'chr13:1-75000000'
-range2 <- 'chr13:25000000-100000000'
-res <- 40000
 gis <- cool2gi(file, coords = range1, coords2 = range2, res = res)
 p <- plotMatrix(gis, dpi = 400, symmetrical = FALSE)
-ggplot2::ggsave('plot.png', width = 10, height = 10, dpi = 400)
 ```
 
 > Horizontal style
 
 ```r
-file <- 'path/to/file.mcool'
-range <- 'chr13:100000000-120000000'
-res <- 40000
 gis <- cool2gi(file, coords = range, res = res)
 p <- plotTriangularMatrix(gis, truncate_tip = 0.2)
-ggplot2::ggsave('plot.png', width = 10, height = 10, dpi = 1000)
 ```
 
 > Horizontal style with a list of multiple GenomicInterations
@@ -82,18 +68,22 @@ gis3 <- cool2gi(file, coords = range, res = 160000)
 p <- plotMatrixList(
     ls = list('res40kb' = gis1, 'res80kb' = gis2, 'res160kb' = gis3)
 )
-ggplot2::ggsave('plot.png', width = 10, height = 10, dpi = 300)
+```
+
+## Special matrices
+
+> Plot matrix of correlation 
+
+```r
+gis <- cool2gi(file, coords = range, res = res)
+p <- plotCorrelatedMatrix(gis, dpi = 1000)
 ```
 
 > Plot signal over expected 
 
 ```r
-file <- 'path/to/file.mcool'
-range <- 'chr13:50000000-120000000'
-res <- 40000
 gis <- cool2gi(file, coords = range, res = res)
 p <- plotOverExpected(gis, dpi = 1000)
-ggplot2::ggsave('plot.png', width = 10, height = 10, dpi = 1000)
 ```
 
 > Plot genebodies and specific coordinates underneath a matrix
@@ -164,7 +154,7 @@ file <- 'path/to/file.mcool'
 # - Get loop coordinates from `bedpe` file as an `InteractionSet` object
 loops <- rtracklayer::import('path/to/loops.bedpe') %>% ## interactions as `Pairs` object
     GenomicRanges::resize(width = 30000, fix = 'center')
-# - Only retain loops for which extendedanchors are both within the genome
+# - Only retain loops for which extended anchors are both within the genome
 loops <- loops[InteractionSet::anchors(loops)[[1]] %within% GRanges(cool2seqinfo(file)) & InteractionSet::anchors(loops)[[2]] %within% GRanges(cool2seqinfo(file))]
 # - Plot aggregated signal over sets of loop coordinates
 p <- plotAggregatedMatrix(file, coords = loops, symmetrical = FALSE, BPPARAM = BiocParallel::MulticoreParam(workers = 16, tasks = 200, progressbar = TRUE))
