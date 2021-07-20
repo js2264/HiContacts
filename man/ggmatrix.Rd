@@ -4,7 +4,7 @@
 \alias{ggmatrix}
 \title{ggmatrix}
 \usage{
-ggmatrix(mat, ticks = TRUE, cols = afmhotr_colors)
+ggmatrix(mat, ticks = TRUE, cols = afmhotr_colors, limits)
 }
 \arguments{
 \item{mat}{mat}
@@ -12,6 +12,8 @@ ggmatrix(mat, ticks = TRUE, cols = afmhotr_colors)
 \item{ticks}{ticks}
 
 \item{cols}{cols}
+
+\item{limits}{limits}
 }
 \description{
 ggmatrix

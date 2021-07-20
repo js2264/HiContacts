@@ -58,7 +58,7 @@ plotMatrix <- function(gis, limits = NULL, dpi = 500, rasterize = TRUE, symmetri
         }
 
         ## -- Plot matrix
-        p <- ggmatrix(mat, cols = afmhotr_colors) +
+        p <- ggmatrix(mat, cols = afmhotr_colors, limits = limits) +
             plotFun +
             ggplot2::labs(
                 x = unique(mat$seqnames1),
@@ -89,7 +89,7 @@ plotMatrix <- function(gis, limits = NULL, dpi = 500, rasterize = TRUE, symmetri
         mat <- rbind(mat, mat %>% dplyr::mutate(x2 = y, y = x, x = x2) %>% dplyr::select(-x2))
 
         ## -- Plot matrix
-        p <- ggmatrix(mat, cols = afmhotr_colors) +
+        p <- ggmatrix(mat, cols = afmhotr_colors, limits = limits) +
             plotFun +
             ggplot2::labs(
                 x = "Genome coordinates",
@@ -241,15 +241,11 @@ plotOverExpected <- function(gis,
     mat <- rbind(mat, mat %>% dplyr::mutate(x2 = y, y = x, x = x2) %>% dplyr::select(-x2))
 
     ## -- Plot matrix
-    p <- ggmatrix(mat) +
+    p <- ggmatrix(mat, cols = bwr_colors, limits = limits) +
         plotFun +
         ggplot2::labs(
             x = unique(mat$seqnames1),
             y = unique(mat$seqnames1)
-        ) + ggplot2::scale_fill_gradientn(
-            colors = bwr_colors,
-            na.value = "#FFFFFF",
-            limits = limits
         )
 
     ## -- Add bluring to avoid speckles
@@ -456,13 +452,6 @@ plotAggregatedMatrix <- function(file, coords, res = NULL, limits = NULL, dpi = 
             )
         if (scale) mat$score <- scale(mat$score)
 
-        # ggmatrix(mat, cols = afmhotr_colors) +
-        #     plotFun +
-        #     ggplot2::labs(
-        #         x = unique(mat$seqnames1),
-        #         y = unique(mat$seqnames1)
-        #     )
-
         mat
     }) %>%
         dplyr::bind_rows() %>%
@@ -504,7 +493,7 @@ plotAggregatedMatrix <- function(file, coords, res = NULL, limits = NULL, dpi = 
     }
 
     ## -- Plot matrix
-    p <- ggmatrix(mats, cols = afmhotr_colors) +
+    p <- ggmatrix(mats, cols = afmhotr_colors, limits = limits) +
         plotFun +
         ggplot2::labs(
             x = unique(mats$seqnames1),

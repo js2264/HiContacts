@@ -5,6 +5,7 @@
 #'
 #' @import rhdf5
 #' @import stringr
+#' @import tidyr
 #' @export
 
 lsCoolFiles <- function(file, full.list = FALSE) {
@@ -21,13 +22,19 @@ lsCoolFiles <- function(file, full.list = FALSE) {
 #'
 #' @import tools
 #' @import rhdf5
+#' @import tidyr
 #' @export
 
 lsCoolResolutions <- function(file, full.list = FALSE) {
     if (tools::file_ext(file) != "mcool") stop("Provided file is not .mcool multi-resolution map. Aborting now.")
     `%>%` <- tidyr::`%>%`
     x <- rhdf5::h5ls(file)
-    rez <- unique(grep(gsub("/resolutions/", "", x$group), pattern = "/", invert = TRUE, value = TRUE))
+    rez <- gsub("/resolutions/", "", x$group) %>%
+        grep(., , pattern = "/", invert = TRUE, value = TRUE) %>%
+        unique() %>%
+        as.numeric() %>%
+        sort() %>%
+        as.character()
     message("\nAvailable resolutions:\n", paste0(rez, collapse = ", "))
     if (full.list) x
 }

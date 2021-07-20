@@ -3,12 +3,13 @@
 #' @param mat mat
 #' @param ticks ticks
 #' @param cols cols
+#' @param limits limits
 #'
 #' @import ggplot2
 #' @import scales
 #' @export
 
-ggmatrix <- function(mat, ticks = TRUE, cols = afmhotr_colors) {
+ggmatrix <- function(mat, ticks = TRUE, cols = afmhotr_colors, limits) {
     p <- ggplot2::ggplot(mat, ggplot2::aes(x, y, fill = score))
     p <- p + ggplot2::scale_fill_gradientn(
         colors = cols,
@@ -36,14 +37,14 @@ ggcorrmatrix <- function(mat, ticks = TRUE, cols, limits) {
     p <- ggplot2::ggplot(mat, ggplot2::aes(x, y, fill = score))
     p <- p + ggplot2::scale_fill_gradientn(
         colors = cols,
-        na.value = "#000000",
+        na.value = "#ffffff",
         limits = limits
     ) +
         ggplot2::scale_x_continuous(expand = c(0, 0), labels = scales::unit_format(unit = "M", scale = 1e-6)) +
         ggplot2::scale_y_reverse(expand = c(0, 0), labels = scales::unit_format(unit = "M", scale = 1e-6)) +
         ggplot2::guides(fill = ggplot2::guide_colorbar(barheight = ggplot2::unit(5, "cm"), barwidth = 0.5, frame.colour = "black")) +
         ggtheme_coolerr() +
-        theme(panel.background = ggplot2::element_rect(fill = "#000000"))
+        theme(panel.background = ggplot2::element_rect(fill = "#ffffff"))
     p
 }
 
