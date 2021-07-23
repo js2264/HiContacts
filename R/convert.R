@@ -155,3 +155,31 @@ gi2mat <- function(gis, limits = NULL, truncate_tip = 0.5) {
             }
         })
 }
+
+
+#' pairs2gi
+#'
+#' @param pairs_file pairs_file
+#' @param columns columns
+#' @param threads threads
+#'
+#' @import GenomicRanges
+#' @import InteractionSet
+#' @importFrom vroom vroom
+#' @importFrom purrr set_names
+#' @importFrom dplyr mutate
+#' @export
+
+pairs2gi <- function(pairs_file, columns = seq(2, 7), threads = 16) {
+    pairs <- vroom::vroom(pairs_file, col_names = FALSE, num_threads = threads, comment = "#", col_select = columns) %>%
+        purrr::set_names(c("chr1", "start1", "chr2", "start2", "strand1", "strand2"))
+    anchors1 <- GenomicRanges::GRanges(
+        seqnames = pairs$chr1,
+        ranges = IRanges::IRanges(start = pairs$start1, width = 1)
+    )
+    anchors2 <- GenomicRanges::GRanges(
+        seqnames = pairs$chr2,
+        ranges = IRanges::IRanges(start = pairs$start2, width = 1)
+    )
+    gis <- InteractionSet::GInteractions(anchors1, anchors2)
+}

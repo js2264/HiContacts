@@ -24,6 +24,7 @@ Imports:
     glue,
     InteractionSet,
     IRanges,
+    purrr,
     reticulate,
     rhdf5,
     S4Vectors,
@@ -32,6 +33,7 @@ Imports:
     SummarizedExperiment,
     tibble,
     tidyr,
+    vroom,
     zeallot
 Encoding: UTF-8
 LazyData: true
