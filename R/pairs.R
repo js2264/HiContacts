@@ -2,6 +2,8 @@
 #'
 #' @param pairs pairs
 #'
+#' @import tibble
+#' @import dplyr
 #' @export
 
 getPs <- function(pairs) {

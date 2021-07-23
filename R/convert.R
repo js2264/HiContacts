@@ -163,8 +163,9 @@ gi2mat <- function(gis, limits = NULL, truncate_tip = 0.5) {
 #' @param columns columns
 #' @param threads threads
 #'
-#' @import GenomicRanges
 #' @import InteractionSet
+#' @importFrom GenomicRanges GRanges
+#' @importFrom IRanges IRanges
 #' @importFrom vroom vroom
 #' @importFrom purrr set_names
 #' @importFrom dplyr mutate
@@ -182,4 +183,5 @@ pairs2gi <- function(pairs_file, columns = seq(2, 7), threads = 16) {
         ranges = IRanges::IRanges(start = pairs$start2, width = 1)
     )
     gis <- InteractionSet::GInteractions(anchors1, anchors2)
+    return(gis)
 }
