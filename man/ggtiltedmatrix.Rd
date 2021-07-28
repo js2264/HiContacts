@@ -4,13 +4,7 @@
 \alias{ggtiltedmatrix}
 \title{ggtiltedmatrix}
 \usage{
-ggtiltedmatrix(
-  mat_,
-  ticks = TRUE,
-  cols = afmhotr_colors,
-  truncate_tip,
-  nmatrices = 1
-)
+ggtiltedmatrix(mat_, ticks = TRUE, cols = afmhotr_colors, limits)
 }
 \arguments{
 \item{mat_}{mat_}
@@ -18,10 +12,6 @@ ggtiltedmatrix(
 \item{ticks}{ticks}
 
 \item{cols}{cols}
-
-\item{truncate_tip}{truncate_tip}
-
-\item{nmatrices}{nmatrices}
 }
 \description{
 ggtiltedmatrix

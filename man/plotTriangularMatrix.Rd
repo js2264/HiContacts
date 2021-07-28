@@ -4,14 +4,14 @@
 \alias{plotTriangularMatrix}
 \title{plotTriangularMatrix}
 \usage{
-plotTriangularMatrix(gis, limits = NULL, truncate_tip = 0.2)
+plotTriangularMatrix(gis, limits = NULL, dist_max = NULL)
 }
 \arguments{
 \item{gis}{gis}
 
 \item{limits}{limits}
 
-\item{truncate_tip}{truncate_tip}
+\item{dist_max}{dist_max}
 }
 \description{
 plotTriangularMatrix

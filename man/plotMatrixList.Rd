@@ -4,14 +4,14 @@
 \alias{plotMatrixList}
 \title{plotMatrixList}
 \usage{
-plotMatrixList(ls, truncate_tip = 0.2, ...)
+plotMatrixList(ls, limits = NULL, dist_max = 0.2)
 }
 \arguments{
 \item{ls}{ls}
 
-\item{truncate_tip}{truncate_tip}
+\item{limits}{limits}
 
-\item{...}{...}
+\item{dist_max}{dist_max}
 }
 \description{
 plotMatrixList

@@ -6,7 +6,7 @@
 [![pkgdown](https://github.com/js2264/coolerr/workflows/pkgdown/badge.svg)](https://github.com/js2264/coolerr/actions)
 <!-- badges: end -->
 
-coolerr provides tools to import `cool` matrices in R and work with them there. 
+coolerr provides tools to import `(m)cool` matrices in R and work with them there. 
 
 Rather than creating redundant classes, it relies on pre-existing Bioconductor objects, namely `InteractionSet`, `GenomicInterations` and `ContactMatrix` (`Lun, Perry & Ing-Simmons, F1000Research 2016`).
 
@@ -57,7 +57,7 @@ p <- plotMatrix(gis, dpi = 400, symmetrical = FALSE)
 
 ```r
 gis <- cool2gi(file, coords = range, res = res)
-p <- plotTriangularMatrix(gis, truncate_tip = 0.2)
+p <- plotTriangularMatrix(gis, dist_max = 0.4)
 ```
 
 > Horizontal style with a list of multiple GenomicInterations
