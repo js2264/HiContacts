@@ -71,7 +71,7 @@
 <a href="#coolerr" class="anchor"></a>coolerr</h1></div>
 <!-- badges: start -->
 
-<p>coolerr provides tools to import <code>cool</code> matrices in R and work with them there.</p>
+<p>coolerr provides tools to import <code>(m)cool</code> matrices in R and work with them there.</p>
 <p>Rather than creating redundant classes, it relies on pre-existing Bioconductor objects, namely <code>InteractionSet</code>, <code>GenomicInterations</code> and <code>ContactMatrix</code> (<code>Lun, Perry &amp; Ing-Simmons, F1000Research 2016</code>).</p>
 <div id="installation" class="section level2">
 <h2 class="hasAnchor">
@@ -116,7 +116,7 @@
 </blockquote>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">gis</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/cool2gi.html">cool2gi</a></span><span class="op">(</span><span class="va">file</span>, coords <span class="op">=</span> <span class="va">range</span>, res <span class="op">=</span> <span class="va">res</span><span class="op">)</span>
-<span class="va">p</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/plotTriangularMatrix.html">plotTriangularMatrix</a></span><span class="op">(</span><span class="va">gis</span>, truncate_tip <span class="op">=</span> <span class="fl">0.2</span><span class="op">)</span></code></pre></div>
+<span class="va">p</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/plotTriangularMatrix.html">plotTriangularMatrix</a></span><span class="op">(</span><span class="va">gis</span>, dist_max <span class="op">=</span> <span class="fl">0.4</span><span class="op">)</span></code></pre></div>
 <blockquote>
 <p>Horizontal style with a list of multiple GenomicInterations</p>
 </blockquote>
