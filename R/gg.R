@@ -44,8 +44,7 @@ ggcorrmatrix <- function(mat, ticks = TRUE, cols, limits) {
         ggplot2::scale_x_continuous(expand = c(0, 0), labels = scales::unit_format(unit = "M", scale = 1e-6)) +
         ggplot2::scale_y_reverse(expand = c(0, 0), labels = scales::unit_format(unit = "M", scale = 1e-6)) +
         ggplot2::guides(fill = ggplot2::guide_colorbar(barheight = ggplot2::unit(5, "cm"), barwidth = 0.5, frame.colour = "black")) +
-        ggtheme_coolerr() +
-        theme(panel.background = ggplot2::element_rect(fill = "#ffffff"))
+        ggtheme_coolerr()
     p
 }
 
@@ -83,7 +82,6 @@ ggtiltedmatrix <- function(mat_, ticks = TRUE, cols = afmhotr_colors, limits) {
         )) +
         ggtheme_coolerr() +
         ggplot2::theme(
-            panel.background = ggplot2::element_blank(),
             panel.border = ggplot2::element_blank(),
             panel.grid.minor = ggplot2::element_blank(),
             panel.grid.major = ggplot2::element_blank(),
@@ -109,8 +107,6 @@ ggtheme_coolerr <- function(ticks = TRUE) {
     t <- ggplot2::theme_bw() +
         ggplot2::theme(
             text = ggplot2::element_text(size = 8),
-            panel.background = ggplot2::element_rect(fill = NA),
-            panel.ontop = FALSE,
             panel.grid.minor = ggplot2::element_line(size = 0.025, colour = "#00000052"),
             panel.grid.major = ggplot2::element_line(size = 0.05, colour = "#00000052"),
             aspect.ratio = 1
@@ -127,8 +123,6 @@ ggtheme_coolerr <- function(ticks = TRUE) {
 ggtheme_coolerr_tracks <- function() {
     ggplot2::theme(
         text = ggplot2::element_text(size = 8),
-        panel.background = ggplot2::element_rect(fill = NA),
-        panel.ontop = FALSE,
         panel.grid.minor = ggplot2::element_blank(),
         panel.grid.major = ggplot2::element_blank(),
         axis.title = ggplot2::element_blank(),

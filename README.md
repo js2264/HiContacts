@@ -83,7 +83,7 @@ p <- plotCorrelatedMatrix(gis, dpi = 1000)
 > Plot signal over expected 
 
 ```r
-gis <- cool2gi(file, coords = range, res = res)
+gis <- cool2gi(file, coords = 'chr13:110000000-115000000', res = 40000)
 p <- plotOverExpected(gis, dpi = 1000)
 ```
 
@@ -160,4 +160,24 @@ loops <- loops[InteractionSet::anchors(loops)[[1]] %within% GRanges(cool2seqinfo
 # - Plot aggregated signal over sets of loop coordinates
 p <- plotAggregatedMatrix(file, coords = loops, symmetrical = FALSE, BPPARAM = BiocParallel::MulticoreParam(workers = 16, tasks = 200, progressbar = TRUE))
 ggplot2::ggsave('plot.png', width = 10, height = 10, dpi = 300)
+```
+
+## Complex examples 
+
+```r
+p <- cowplot::plot_grid(
+    plotMatrix(cool2gi(file, coords = 'chr13', res = 160000), dpi = 500, limits = c(-3, 0)), 
+    plotCorrelatedMatrix(cool2gi(file, coords = 'chr13', res = 160000), dpi = 500), 
+    plotMatrixList(
+        ls = list(
+            'chr13' = cool2gi(file, coords = 'chr13', res = 40000), 
+            '50-115Mb' = cool2gi(file, coords = 'chr13:50000000-115000000', res = 40000), 
+            '100-115Mb' = cool2gi(file, coords = 'chr13:100000000-115000000', res = 40000),
+            '111-115Mb' = cool2gi(file, coords = 'chr13:110000000-115000000', res = 40000)
+        ), 
+        limits = c(-3, 0)
+    ), 
+    plotOverExpected(cool2gi(file, coords = 'chr13:110000000-115000000', res = 10000), limits = c(-1, 1))
+)
+ggsave('HiC.png', width = 12, height = 12, dpi = 500)
 ```

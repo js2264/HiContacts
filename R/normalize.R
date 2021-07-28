@@ -53,6 +53,8 @@ iceGis <- function(gi) {
 #'
 #' @param mat mat
 #'
+#' @importFrom scales rescale
+#' @importFrom tibble tibble
 #' @import dplyr
 #' @export
 
@@ -62,27 +64,54 @@ normalizeOverExpected <- function(mat) {
     binsize <- sort(unique(mat$y - mat$x))[2]
 
     # Get the number of bins in the matrix
-    nbins <-
-        {
-            range(mat$y - mat$x) / binsize
-        }[2] + 1
+    mBin <- min(c(mat$bin2, mat$bin1))
+    MBin <- max(c(mat$bin2, mat$bin1))
+    bins <- seq(mBin, MBin)
+    nbins <- length(unique(abs(bins)))
+    bins_df <- tibble::tibble(
+        bin1 = rep(bins, each = length(bins)),
+        bin2 = rep(bins, length(bins))
+    ) %>% dplyr::filter(bin2 >= bin1)
 
-    expected <- mat %>%
+    df <- left_join(bins_df, mat) %>%
         dplyr::mutate(
-            diag = (mat$y - mat$x) / binsize,
+            seqnames1 = unique(mat$seqnames1),
+            start1 = bin1 * binsize - (mat$bin1[1] * binsize - mat$start1[1]),
+            end1 = bin1 * binsize - (mat$bin1[1] * binsize - mat$end1[1]),
+            width1 = binsize,
+            strand1 = "*",
+            chr1 = unique(mat$chr1),
+            center1 = end1 - (end1 - start1) / 2,
+            seqnames2 = unique(mat$seqnames2),
+            start2 = bin2 * binsize - (mat$bin2[1] * binsize - mat$start2[1]),
+            end2 = bin2 * binsize - (mat$bin2[1] * binsize - mat$end2[1]),
+            width2 = binsize,
+            strand2 = "*",
+            chr2 = unique(mat$chr2),
+            center2 = end2 - (end2 - start2) / 2,
+            count = 0,
+            anchor1.weight = 0,
+            anchor2.weight = 0,
+            x = center1,
+            y = center2,
+            diag = (y - x) / binsize,
             pixelsPerDiag = nbins - diag
-        ) %>%
+        )
+
+    expected <- df %>%
         dplyr::group_by(diag) %>%
         dplyr::summarize(
             expected = sum(score, na.rm = TRUE) / pixelsPerDiag,
             .groups = "keep"
         ) %>%
         dplyr::distinct()
+    # expected$expected <- scales::rescale(expected$expected, to = range(mat$score, na.rm = TRUE))
 
-    mat <- mat %>%
-        dplyr::mutate(diag = (mat$y - mat$x) / binsize) %>%
+    res <- df %>%
         dplyr::left_join(expected, by = "diag") %>%
-        dplyr::mutate(scoreOverExpected = -log2(score / expected)) ## `-` because both `score` and `expected` have to be < 0
+        dplyr::mutate(scoreOverExpected = score - expected) ## `-` because both `score` and `expected` have to be < 0
+
+    return(res)
 }
 
 #' correlateMatrix

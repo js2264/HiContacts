@@ -234,7 +234,7 @@ plotOverExpected <- function(gis,
     }
 
     ## -- Clamp scores to limits
-    mat <- dplyr::mutate(mat, overExpected = ifelse(score > M, M, ifelse(score < m, m, score)))
+    mat <- dplyr::mutate(mat, score = ifelse(score > M, M, ifelse(score < m, m, score)))
 
     ## -- Add lower triangular matrix scores
     mat <- rbind(mat, mat %>% dplyr::mutate(x2 = y, y = x, x = x2) %>% dplyr::select(-x2))
@@ -419,10 +419,10 @@ plotMatrixList <- function(ls, limits = NULL, dist_max = 0.2) {
         plot_list_no_legend,
         legend,
         rel_heights = c(length(plot_list), .1),
-        ncol = 1
-    ) + ggplot2::theme(
-        panel.background = ggplot2::element_rect(fill = "white")
-    )
+        ncol = 1,
+        axis = "tblr",
+        align = "vh"
+    ) + theme(plot.background = element_rect(fill = "white", colour = NA))
     return(plots)
 }
 
