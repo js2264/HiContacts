@@ -77,14 +77,74 @@ p <- plotMatrixList(
 
 ```r
 gis <- cool2gi(file, coords = range, res = res)
-p <- plotCorrelatedMatrix(gis, dpi = 1000)
+p <- plotCorrelatedMatrix(gis, dpi = 500)
 ```
 
 > Plot signal over expected 
 
 ```r
-gis <- cool2gi(file, coords = 'chr13:110000000-115000000', res = 40000)
-p <- plotOverExpected(gis, dpi = 1000)
+gis <- cool2gi(file, coords = range, res = res)
+p <- plotOverExpected(gis, dpi = 500)
+```
+
+## Plot aggregated matrices
+
+> At borders (e.g. TAD boundaries)
+
+```r
+file <- 'path/to/file.mcool'
+# - Get TAD borders
+coords <- rtracklayer::import('path/to/tads.bed') %>% 
+    GenomicRanges::resize(fix = 'start', width = 1) %>% 
+    GenomicRanges::resize(fix = 'center', width = 2000000)
+# - Trim extended borders to only keep full-size GRanges
+seqlevels(coords) <- seqlevels(cool2seqinfo(file, res = res))
+seqinfo(coords) <- cool2seqinfo(file, res = res)
+coords <- trim(coords)
+coords <- coords[width(coords) == 2000000]
+# - Plot aggregated signal over borders
+p <- plotAggregatedMatrix(
+    file, 
+    coords[1:10], 
+    res = res, 
+    BPPARAM = BiocParallel::MulticoreParam(workers = 2, tasks = 200, progressbar = TRUE)
+)
+ggplot2::ggsave('plot.png', width = 10, height = 10, dpi = 300)
+```
+
+> On pairs of coordinates (e.g. structural loops)
+
+```r
+file <- 'path/to/file.mcool'
+# - Get loop coordinates from `bedpe` file as an `InteractionSet` object
+loops <- rtracklayer::import('path/to/loops.bedpe') %>% ## interactions as `Pairs` object
+    GenomicRanges::resize(width = 30000, fix = 'center')
+# - Only retain loops for which extended anchors are both within the genome
+loops <- loops[InteractionSet::anchors(loops)[[1]] %within% GRanges(cool2seqinfo(file)) & InteractionSet::anchors(loops)[[2]] %within% GRanges(cool2seqinfo(file))]
+# - Plot aggregated signal over sets of loop coordinates
+p <- plotAggregatedMatrix(file, coords = loops, symmetrical = FALSE, BPPARAM = BiocParallel::MulticoreParam(workers = 16, tasks = 200, progressbar = TRUE))
+ggplot2::ggsave('plot.png', width = 10, height = 10, dpi = 300)
+```
+
+## Display features on matrices
+
+> Plot TADs on the matrix
+
+```r
+gis <- cool2gi(file, coords = range, res = res)
+tads <- rtracklayer::import('path/to/tads.bed')
+p <- plotMatrix(gis, dpi = 500) %>% 
+    addTads(tads, coords = range)
+```
+
+> Plot loops on the matrix
+
+```r
+gis <- cool2gi(file, coords = range, res = res)
+loops <- rtracklayer::import('path/to/loops.bedpe')
+p <- plotMatrix(gis, dpi = 500) %>% 
+    addTads(tads, coords = range) %>% 
+    addLoops(loops, coords = range)
 ```
 
 > Plot genebodies and specific coordinates underneath a matrix
@@ -95,7 +155,7 @@ file <- 'path/to/file.mcool'
 range <- 'chr13:110000000-115000000'
 res <- 20000
 gis <- cool2gi(file, coords = range, res = res)
-p <- plotMatrix(gis, limits = c(-3, -1), dpi = 1000)
+p <- plotMatrix(gis, limits = c(-3, -1), dpi = 500)
 
 ## -- Import gene annotations
 library(plyranges)
@@ -119,52 +179,14 @@ p_withTracks <- addTracks(p, range,
     annotations = list(genes = mm10_genes, CTCF = mm10_CTCF), 
     profiles = list(eigen = comps, insulation = insul)
 )
-ggplot2::ggsave('plot.png', plot = p_withTracks, width = 10, height = 10, dpi = 1000)
-```
-
-## Plot aggregated matrices
-
-> At borders (e.g. TAD boundaries)
-
-```r
-file <- 'path/to/file.mcool'
-# - Get TAD borders
-coords <- rtracklayer::import('path/to/tads.bed') %>% 
-    GenomicRanges::resize(fix = 'start', width = 1) %>% 
-    GenomicRanges::resize(fix = 'center', width = 2000000)
-# - Trim extended borders to only keep full-size GRanges
-res <- 20000
-seqlevels(coords) <- seqlevels(cool2seqinfo(file, res = res))
-seqinfo(coords) <- cool2seqinfo(file, res = res)
-coords <- trim(coords)
-coords <- coords[width(coords) == 2000000]
-# - Plot aggregated signal over borders
-p <- plotAggregatedMatrix(
-    file, 
-    coords, 
-    res = res, 
-    BPPARAM = BiocParallel::MulticoreParam(workers = 16, tasks = 200, progressbar = TRUE)
-)
-ggplot2::ggsave('plot.png', width = 10, height = 10, dpi = 300)
-```
-
-> On pairs of coordinates (e.g. structural loops)
-
-```r
-file <- 'path/to/file.mcool'
-# - Get loop coordinates from `bedpe` file as an `InteractionSet` object
-loops <- rtracklayer::import('path/to/loops.bedpe') %>% ## interactions as `Pairs` object
-    GenomicRanges::resize(width = 30000, fix = 'center')
-# - Only retain loops for which extended anchors are both within the genome
-loops <- loops[InteractionSet::anchors(loops)[[1]] %within% GRanges(cool2seqinfo(file)) & InteractionSet::anchors(loops)[[2]] %within% GRanges(cool2seqinfo(file))]
-# - Plot aggregated signal over sets of loop coordinates
-p <- plotAggregatedMatrix(file, coords = loops, symmetrical = FALSE, BPPARAM = BiocParallel::MulticoreParam(workers = 16, tasks = 200, progressbar = TRUE))
-ggplot2::ggsave('plot.png', width = 10, height = 10, dpi = 300)
+ggplot2::ggsave('plot.png', plot = p_withTracks, width = 10, height = 10, dpi = 500)
 ```
 
 ## Complex examples 
 
 ```r
+tads <- rtracklayer::import('path/to/tads.bed')
+loops <- rtracklayer::import('path/to/loops.bedpe')
 p <- cowplot::plot_grid(
     plotMatrix(cool2gi(file, coords = 'chr13', res = 160000), dpi = 500, limits = c(-3, 0)), 
     plotCorrelatedMatrix(cool2gi(file, coords = 'chr13', res = 160000), dpi = 500), 
@@ -176,7 +198,9 @@ p <- cowplot::plot_grid(
             '111-115Mb' = cool2gi(file, coords = 'chr13:110000000-115000000', res = 40000)
         ), 
         limits = c(-3, 0)
-    ), 
+    ) %>% 
+        addTads(tads, coords = 'chr13:110000000-115000000') %>% 
+        addLoops(loops, coords = 'chr13:110000000-115000000'), 
     plotOverExpected(cool2gi(file, coords = 'chr13:110000000-115000000', res = 10000), limits = c(-1, 1))
 )
 ggsave('HiC.png', width = 12, height = 12, dpi = 500)
