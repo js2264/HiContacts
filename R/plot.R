@@ -494,89 +494,94 @@ plotAggregatedMatrix <- function(file, coords, res = NULL, limits = NULL, dpi = 
         plotFun <- ggplot2::geom_tile()
     }
 
-    ## -- Calculate scores over each coords (+coords2)
-    mats <- BiocParallel::bplapply(BPPARAM = BPPARAM, seq_along(coords), function(K) {
-        # mats <- lapply(seq_along(coords), function(K) {
-        range <- coords[K]
-        # print(range)
-        `%<-%` <- zeallot::`%<-%`
-        c(coords_chr, coords_start, coords_end) %<-% splitCoords(range)
-        midpoint <- coords_start + (coords_end - coords_start) / 2
-        if (isLoops) {
-            range2 <- coords2[K]
-            `%<-%` <- zeallot::`%<-%`
-            c(coords_chr2, coords_start2, coords_end2) %<-% splitCoords(range2)
-            midpoint2 <- coords_start2 + (coords_end2 - coords_start2) / 2
-        }
-        else {
-            range2 <- range
-            midpoint2 <- midpoint
-        }
-
-        ## -- Filter to interactions which are within the range
-        gis_sub <- cool2gi(file, res = res, coords = range, coords2 = range2)
-
-        ## -- Convert gis_sub to table and extract x/y and adjust center to 0
-        mat <- gis_sub %>%
-            tibble::as_tibble() %>%
-            dplyr::mutate(
-                x = center1,
-                y = center2,
-                ID = K
-            ) %>%
-            dplyr::mutate(
-                x = breaks[as.numeric(cut(x - midpoint, breaks, include.lowest = TRUE)) + 1],
-                y = breaks[as.numeric(cut(y - midpoint2, breaks, include.lowest = TRUE)) + 1]
-            )
-        if (scale) mat$score <- scale(mat$score)
-
-        mat
-    }) %>%
-        dplyr::bind_rows() %>%
-        dplyr::group_by(x, y) %>%
-        dplyr::filter(x >= min(breaks[2:{
-            length(breaks) - 1
-        }]), x <= max(breaks[2:{
-            length(breaks) - 1
-        }]), y >= min(breaks[2:{
-            length(breaks) - 1
-        }]), y <= max(breaks[2:{
-            length(breaks) - 1
-        }]))
-
-    ## -- Average scores for each bin
-    mats <- mats %>%
-        dplyr::summarize(score = mean(score, na.rm = TRUE)) %>%
-        dplyr::mutate(seqnames1 = "Aggr. coordinates")
-
-    ## -- Matrix limits
-    if (!is.null(limits)) {
-        m <- limits[1]
-        M <- limits[2]
+    if (!isLoops) {
+        
+        stop("Loop APA plots are not supported yet.")
+    
     }
     else {
-        M <- max(mats$score, na.rm = TRUE)
-        m <- min(mats$score, na.rm = TRUE)
-        limits <- c(m, M)
+        ## -- Load entire matrix in memory
+        gis <- cool2gi(file, res = res, coords = NULL)
+
+        ## -- Calculate scores over each coords
+        nc <- length(coords)
+        br <- seq(1, nc+100, by = 100)
+        coords_split <- coords %>%
+            plyranges::mutate(
+                chunk = as.numeric(cut(seq(1, nc), breaks = br, include.lowest = TRUE))
+            )
+        mats <- BiocParallel::bplapply(BPPARAM = BPPARAM, unique(coords_split$chunk), function(K) {
+            coords_sub <- coords_split[coords_split$chunk == K]
+            coords_sub %>% 
+                plyranges::mutate(ID = seq(1, length(.))) %>% 
+                plyranges::select(-score) %>%
+                plyranges::join_overlap_left(gis) %>% 
+                plyranges::group_by(ID) %>% 
+                tibble::as_tibble() %>% 
+                dplyr::left_join(
+                    tibble::as_tibble(anchors) %>% 
+                        dplyr::mutate(bin1 = seq(1, length(anchors)), center1 = end - (end-start)/2) %>% 
+                        dplyr::select(bin1, center1),
+                    by = 'bin1'
+                ) %>% 
+                dplyr::left_join(
+                    tibble::as_tibble(anchors) %>% 
+                        dplyr::mutate(bin2 = seq(1, length(anchors)), center2 = end - (end-start)/2) %>% 
+                        dplyr::select(bin2, center2),
+                    by = 'bin2'
+                ) %>% 
+                dplyr::mutate(
+                    x = center1,
+                    y = center2,
+                    x = breaks[as.numeric(cut(x - midpoint, breaks, include.lowest = TRUE)) + 1],
+                    y = breaks[as.numeric(cut(y - midpoint2, breaks, include.lowest = TRUE)) + 1]
+                ) %>% 
+                dplyr::group_by(x, y) %>%
+                dplyr::filter(
+                    x >= min(breaks[2:(length(breaks) - 1)]), 
+                    x <= max(breaks[2:(length(breaks) - 1)]), 
+                    y >= min(breaks[2:(length(breaks) - 1)]), 
+                    y <= max(breaks[2:(length(breaks) - 1)])
+                ) %>%
+                dplyr::summarize(score = mean(score, na.rm = TRUE), n = n()) %>%
+                dplyr::mutate(seqnames1 = "Aggr. coordinates")
+        }) %>%
+            dplyr::bind_rows()
+        
+        ## -- Calculate scores over each coords
+        mats <- mats %>% 
+            dplyr::group_by(x, y) %>%
+            dplyr::summarize(score = mean(score, na.rm = TRUE)) %>%
+            dplyr::mutate(seqnames1 = "Aggr. coordinates")
+
+        ## -- Matrix limits
+        if (!is.null(limits)) {
+            m <- limits[1]
+            M <- limits[2]
+        }
+        else {
+            M <- max(mats$score, na.rm = TRUE)
+            m <- min(mats$score, na.rm = TRUE)
+            limits <- c(m, M)
+        }
+
+        ## -- Clamp scores to limits
+        mats <- dplyr::mutate(mats, score = ifelse(score > M, M, ifelse(score < m, m, score)))
+
+        ## -- Add lower triangular matrix scores
+        if (symmetrical) {
+            mats <- rbind(mats, mats %>% dplyr::mutate(x2 = y, y = x, x = x2) %>%
+                dplyr::select(-x2))
+        }
+
+        ## -- Plot matrix
+        p <- ggmatrix(mats, cols = afmhotr_colors, limits = limits) +
+            plotFun +
+            ggplot2::labs(
+                x = unique(mats$seqnames1),
+                y = unique(mats$seqnames1)
+            )
+
+        p
     }
-
-    ## -- Clamp scores to limits
-    mats <- mats %>%
-        dplyr::mutate(score = ifelse(score > M, M, ifelse(score < m, m, score)))
-
-    ## -- Add lower triangular matrix scores
-    if (symmetrical) {
-        mats <- rbind(mats, mats %>% dplyr::mutate(x2 = y, y = x, x = x2) %>%
-            dplyr::select(-x2))
-    }
-
-    ## -- Plot matrix
-    p <- ggmatrix(mats, cols = afmhotr_colors, limits = limits) +
-        plotFun +
-        ggplot2::labs(
-            x = unique(mats$seqnames1),
-            y = unique(mats$seqnames1)
-        )
-
-    p
 }

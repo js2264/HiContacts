@@ -4,6 +4,6 @@
 .httr-oauth
 .DS_Store
 docs
+*bedpe
 *png
 .pre-commit-config.yaml
-inst/WORDLIST

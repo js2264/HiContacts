@@ -53,6 +53,7 @@ ggcorrmatrix <- function(mat, ticks = TRUE, cols, limits) {
 #' @param mat_ mat_
 #' @param ticks ticks
 #' @param cols cols
+#' @param limits limits
 #'
 #' @import ggplot2
 #' @import scales

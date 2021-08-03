@@ -57,13 +57,13 @@ getCounts <- function(file,
     ## Process coordinates
     `%<-%` <- zeallot::`%<-%`
     c(coords_chr, coords_start, coords_end) %<-% splitCoords(coords)
-    if (is.na(coords_start) & !is.na(coords_chr)) {
-        coords_start <- 1
+    if (any(is.na(coords_start) & !is.na(coords_chr))) {
+        coords_start <- rep(1, length(coords_start))
         coords_end <- GenomeInfoDb::seqlengths(anchors)[coords_chr]
     }
 
     ## Check that queried chr. exists
-    if (!coords_chr %in% as.vector(GenomicRanges::seqnames(anchors)) & !is.na(coords_chr)) {
+    if (any(!coords_chr %in% as.vector(GenomicRanges::seqnames(anchors)) & !is.na(coords_chr))) {
         sn <- paste0(unique(as.vector(GenomicRanges::seqnames(anchors))), collapse = ", ")
         stop(glue::glue("{coords_chr} not in file. Available seqnames: {sn}"))
     }
