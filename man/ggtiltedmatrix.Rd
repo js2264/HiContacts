@@ -12,6 +12,8 @@ ggtiltedmatrix(mat_, ticks = TRUE, cols = afmhotr_colors, limits)
 \item{ticks}{ticks}
 
 \item{cols}{cols}
+
+\item{limits}{limits}
 }
 \description{
 ggtiltedmatrix

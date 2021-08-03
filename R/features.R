@@ -6,9 +6,9 @@
 #'
 #' @importFrom IRanges subsetByOverlaps
 #' @importFrom GenomicRanges GRanges
+#' @importFrom purrr map_dfr
 #' @import tibble
 #' @import dplyr
-#' @import purrr
 #' @import ggplot2
 #' @export
 
