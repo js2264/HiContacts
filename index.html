@@ -136,23 +136,83 @@
 </blockquote>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">gis</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/cool2gi.html">cool2gi</a></span><span class="op">(</span><span class="va">file</span>, coords <span class="op">=</span> <span class="va">range</span>, res <span class="op">=</span> <span class="va">res</span><span class="op">)</span>
-<span class="va">p</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/plotCorrelatedMatrix.html">plotCorrelatedMatrix</a></span><span class="op">(</span><span class="va">gis</span>, dpi <span class="op">=</span> <span class="fl">1000</span><span class="op">)</span></code></pre></div>
+<span class="va">p</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/plotCorrelatedMatrix.html">plotCorrelatedMatrix</a></span><span class="op">(</span><span class="va">gis</span>, dpi <span class="op">=</span> <span class="fl">500</span><span class="op">)</span></code></pre></div>
 <blockquote>
 <p>Plot signal over expected</p>
 </blockquote>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">gis</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/cool2gi.html">cool2gi</a></span><span class="op">(</span><span class="va">file</span>, coords <span class="op">=</span> <span class="st">'chr13:110000000-115000000'</span>, res <span class="op">=</span> <span class="fl">40000</span><span class="op">)</span>
-<span class="va">p</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/plotOverExpected.html">plotOverExpected</a></span><span class="op">(</span><span class="va">gis</span>, dpi <span class="op">=</span> <span class="fl">1000</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span class="va">gis</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/cool2gi.html">cool2gi</a></span><span class="op">(</span><span class="va">file</span>, coords <span class="op">=</span> <span class="va">range</span>, res <span class="op">=</span> <span class="va">res</span><span class="op">)</span>
+<span class="va">p</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/plotOverExpected.html">plotOverExpected</a></span><span class="op">(</span><span class="va">gis</span>, dpi <span class="op">=</span> <span class="fl">500</span><span class="op">)</span></code></pre></div>
+</div>
+<div id="plot-aggregated-matrices" class="section level2">
+<h2 class="hasAnchor">
+<a href="#plot-aggregated-matrices" class="anchor"></a>Plot aggregated matrices</h2>
+<blockquote>
+<p>At borders (e.g. TAD boundaries)</p>
+</blockquote>
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">file</span> <span class="op">&lt;-</span> <span class="st">'path/to/file.mcool'</span>
+<span class="co"># - Get TAD borders</span>
+<span class="va">coords</span> <span class="op">&lt;-</span> <span class="fu">rtracklayer</span><span class="fu">::</span><span class="fu">import</span><span class="op">(</span><span class="st">'path/to/tads.bed'</span><span class="op">)</span> <span class="op">%&gt;%</span> 
+    <span class="fu">GenomicRanges</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/GenomicRanges/man/intra-range-methods.html">resize</a></span><span class="op">(</span>fix <span class="op">=</span> <span class="st">'start'</span>, width <span class="op">=</span> <span class="fl">1</span><span class="op">)</span> <span class="op">%&gt;%</span> 
+    <span class="fu">GenomicRanges</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/GenomicRanges/man/intra-range-methods.html">resize</a></span><span class="op">(</span>fix <span class="op">=</span> <span class="st">'center'</span>, width <span class="op">=</span> <span class="fl">2000000</span><span class="op">)</span>
+<span class="co"># - Trim extended borders to only keep full-size GRanges</span>
+<span class="fu">seqlevels</span><span class="op">(</span><span class="va">coords</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu">seqlevels</span><span class="op">(</span><span class="fu"><a href="reference/cool2seqinfo.html">cool2seqinfo</a></span><span class="op">(</span><span class="va">file</span>, res <span class="op">=</span> <span class="va">res</span><span class="op">)</span><span class="op">)</span>
+<span class="fu">seqinfo</span><span class="op">(</span><span class="va">coords</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/cool2seqinfo.html">cool2seqinfo</a></span><span class="op">(</span><span class="va">file</span>, res <span class="op">=</span> <span class="va">res</span><span class="op">)</span>
+<span class="va">coords</span> <span class="op">&lt;-</span> <span class="fu">trim</span><span class="op">(</span><span class="va">coords</span><span class="op">)</span>
+<span class="va">coords</span> <span class="op">&lt;-</span> <span class="va">coords</span><span class="op">[</span><span class="fu">width</span><span class="op">(</span><span class="va">coords</span><span class="op">)</span> <span class="op">==</span> <span class="fl">2000000</span><span class="op">]</span>
+<span class="co"># - Plot aggregated signal over borders</span>
+<span class="va">p</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/plotAggregatedMatrix.html">plotAggregatedMatrix</a></span><span class="op">(</span>
+    <span class="va">file</span>, 
+    <span class="va">coords</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">10</span><span class="op">]</span>, 
+    res <span class="op">=</span> <span class="va">res</span>, 
+    BPPARAM <span class="op">=</span> <span class="fu">BiocParallel</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/BiocParallel/man/MulticoreParam-class.html">MulticoreParam</a></span><span class="op">(</span>workers <span class="op">=</span> <span class="fl">2</span>, tasks <span class="op">=</span> <span class="fl">200</span>, progressbar <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>
+<span class="op">)</span>
+<span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggsave.html">ggsave</a></span><span class="op">(</span><span class="st">'plot.png'</span>, width <span class="op">=</span> <span class="fl">10</span>, height <span class="op">=</span> <span class="fl">10</span>, dpi <span class="op">=</span> <span class="fl">300</span><span class="op">)</span></code></pre></div>
+<blockquote>
+<p>On pairs of coordinates (e.g. structural loops)</p>
+</blockquote>
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">file</span> <span class="op">&lt;-</span> <span class="st">'path/to/file.mcool'</span>
+<span class="co"># - Get loop coordinates from `bedpe` file as an `InteractionSet` object</span>
+<span class="va">loops</span> <span class="op">&lt;-</span> <span class="fu">rtracklayer</span><span class="fu">::</span><span class="fu">import</span><span class="op">(</span><span class="st">'path/to/loops.bedpe'</span><span class="op">)</span> <span class="op">%&gt;%</span> <span class="co">## interactions as `Pairs` object</span>
+    <span class="fu">GenomicRanges</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/GenomicRanges/man/intra-range-methods.html">resize</a></span><span class="op">(</span>width <span class="op">=</span> <span class="fl">30000</span>, fix <span class="op">=</span> <span class="st">'center'</span><span class="op">)</span>
+<span class="co"># - Only retain loops for which extended anchors are both within the genome</span>
+<span class="va">loops</span> <span class="op">&lt;-</span> <span class="va">loops</span><span class="op">[</span><span class="fu">InteractionSet</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/InteractionSet/man/interaction-accessors.html">anchors</a></span><span class="op">(</span><span class="va">loops</span><span class="op">)</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span> <span class="op">%within%</span> <span class="fu">GRanges</span><span class="op">(</span><span class="fu"><a href="reference/cool2seqinfo.html">cool2seqinfo</a></span><span class="op">(</span><span class="va">file</span><span class="op">)</span><span class="op">)</span> <span class="op">&amp;</span> <span class="fu">InteractionSet</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/InteractionSet/man/interaction-accessors.html">anchors</a></span><span class="op">(</span><span class="va">loops</span><span class="op">)</span><span class="op">[[</span><span class="fl">2</span><span class="op">]</span><span class="op">]</span> <span class="op">%within%</span> <span class="fu">GRanges</span><span class="op">(</span><span class="fu"><a href="reference/cool2seqinfo.html">cool2seqinfo</a></span><span class="op">(</span><span class="va">file</span><span class="op">)</span><span class="op">)</span><span class="op">]</span>
+<span class="co"># - Plot aggregated signal over sets of loop coordinates</span>
+<span class="va">p</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/plotAggregatedMatrix.html">plotAggregatedMatrix</a></span><span class="op">(</span><span class="va">file</span>, coords <span class="op">=</span> <span class="va">loops</span>, symmetrical <span class="op">=</span> <span class="cn">FALSE</span>, BPPARAM <span class="op">=</span> <span class="fu">BiocParallel</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/BiocParallel/man/MulticoreParam-class.html">MulticoreParam</a></span><span class="op">(</span>workers <span class="op">=</span> <span class="fl">16</span>, tasks <span class="op">=</span> <span class="fl">200</span>, progressbar <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span>
+<span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggsave.html">ggsave</a></span><span class="op">(</span><span class="st">'plot.png'</span>, width <span class="op">=</span> <span class="fl">10</span>, height <span class="op">=</span> <span class="fl">10</span>, dpi <span class="op">=</span> <span class="fl">300</span><span class="op">)</span></code></pre></div>
+</div>
+<div id="display-features-on-matrices" class="section level2">
+<h2 class="hasAnchor">
+<a href="#display-features-on-matrices" class="anchor"></a>Display features on matrices</h2>
+<blockquote>
+<p>Plot TADs on the matrix</p>
+</blockquote>
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">gis</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/cool2gi.html">cool2gi</a></span><span class="op">(</span><span class="va">file</span>, coords <span class="op">=</span> <span class="va">range</span>, res <span class="op">=</span> <span class="va">res</span><span class="op">)</span>
+<span class="va">tads</span> <span class="op">&lt;-</span> <span class="fu">rtracklayer</span><span class="fu">::</span><span class="fu">import</span><span class="op">(</span><span class="st">'path/to/tads.bed'</span><span class="op">)</span>
+<span class="va">p</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/plotMatrix.html">plotMatrix</a></span><span class="op">(</span><span class="va">gis</span>, dpi <span class="op">=</span> <span class="fl">500</span><span class="op">)</span> <span class="op">%&gt;%</span> 
+    <span class="fu"><a href="reference/addTads.html">addTads</a></span><span class="op">(</span><span class="va">tads</span>, coords <span class="op">=</span> <span class="va">range</span><span class="op">)</span></code></pre></div>
+<blockquote>
+<p>Plot loops on the matrix</p>
+</blockquote>
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">gis</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/cool2gi.html">cool2gi</a></span><span class="op">(</span><span class="va">file</span>, coords <span class="op">=</span> <span class="va">range</span>, res <span class="op">=</span> <span class="va">res</span><span class="op">)</span>
+<span class="va">loops</span> <span class="op">&lt;-</span> <span class="fu">rtracklayer</span><span class="fu">::</span><span class="fu">import</span><span class="op">(</span><span class="st">'path/to/loops.bedpe'</span><span class="op">)</span>
+<span class="va">p</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/plotMatrix.html">plotMatrix</a></span><span class="op">(</span><span class="va">gis</span>, dpi <span class="op">=</span> <span class="fl">500</span><span class="op">)</span> <span class="op">%&gt;%</span> 
+    <span class="fu"><a href="reference/addTads.html">addTads</a></span><span class="op">(</span><span class="va">tads</span>, coords <span class="op">=</span> <span class="va">range</span><span class="op">)</span> <span class="op">%&gt;%</span> 
+    <span class="fu"><a href="reference/addLoops.html">addLoops</a></span><span class="op">(</span><span class="va">loops</span>, coords <span class="op">=</span> <span class="va">range</span><span class="op">)</span></code></pre></div>
 <blockquote>
 <p>Plot genebodies and specific coordinates underneath a matrix</p>
 </blockquote>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co">## -- Generate heatmap</span>
 <span class="va">file</span> <span class="op">&lt;-</span> <span class="st">'path/to/file.mcool'</span>
 <span class="va">range</span> <span class="op">&lt;-</span> <span class="st">'chr13:110000000-115000000'</span>
 <span class="va">res</span> <span class="op">&lt;-</span> <span class="fl">20000</span>
 <span class="va">gis</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/cool2gi.html">cool2gi</a></span><span class="op">(</span><span class="va">file</span>, coords <span class="op">=</span> <span class="va">range</span>, res <span class="op">=</span> <span class="va">res</span><span class="op">)</span>
-<span class="va">p</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/plotMatrix.html">plotMatrix</a></span><span class="op">(</span><span class="va">gis</span>, limits <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">3</span>, <span class="op">-</span><span class="fl">1</span><span class="op">)</span>, dpi <span class="op">=</span> <span class="fl">1000</span><span class="op">)</span>
+<span class="va">p</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/plotMatrix.html">plotMatrix</a></span><span class="op">(</span><span class="va">gis</span>, limits <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">3</span>, <span class="op">-</span><span class="fl">1</span><span class="op">)</span>, dpi <span class="op">=</span> <span class="fl">500</span><span class="op">)</span>
 
 <span class="co">## -- Import gene annotations</span>
 <span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va">plyranges</span><span class="op">)</span>
@@ -176,53 +236,15 @@
     annotations <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>genes <span class="op">=</span> <span class="va">mm10_genes</span>, CTCF <span class="op">=</span> <span class="va">mm10_CTCF</span><span class="op">)</span>, 
     profiles <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>eigen <span class="op">=</span> <span class="va">comps</span>, insulation <span class="op">=</span> <span class="va">insul</span><span class="op">)</span>
 <span class="op">)</span>
-<span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggsave.html">ggsave</a></span><span class="op">(</span><span class="st">'plot.png'</span>, plot <span class="op">=</span> <span class="va">p_withTracks</span>, width <span class="op">=</span> <span class="fl">10</span>, height <span class="op">=</span> <span class="fl">10</span>, dpi <span class="op">=</span> <span class="fl">1000</span><span class="op">)</span></code></pre></div>
-</div>
-<div id="plot-aggregated-matrices" class="section level2">
-<h2 class="hasAnchor">
-<a href="#plot-aggregated-matrices" class="anchor"></a>Plot aggregated matrices</h2>
-<blockquote>
-<p>At borders (e.g. TAD boundaries)</p>
-</blockquote>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">file</span> <span class="op">&lt;-</span> <span class="st">'path/to/file.mcool'</span>
-<span class="co"># - Get TAD borders</span>
-<span class="va">coords</span> <span class="op">&lt;-</span> <span class="fu">rtracklayer</span><span class="fu">::</span><span class="fu">import</span><span class="op">(</span><span class="st">'path/to/tads.bed'</span><span class="op">)</span> <span class="op">%&gt;%</span> 
-    <span class="fu">GenomicRanges</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/GenomicRanges/man/intra-range-methods.html">resize</a></span><span class="op">(</span>fix <span class="op">=</span> <span class="st">'start'</span>, width <span class="op">=</span> <span class="fl">1</span><span class="op">)</span> <span class="op">%&gt;%</span> 
-    <span class="fu">GenomicRanges</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/GenomicRanges/man/intra-range-methods.html">resize</a></span><span class="op">(</span>fix <span class="op">=</span> <span class="st">'center'</span>, width <span class="op">=</span> <span class="fl">2000000</span><span class="op">)</span>
-<span class="co"># - Trim extended borders to only keep full-size GRanges</span>
-<span class="va">res</span> <span class="op">&lt;-</span> <span class="fl">20000</span>
-<span class="fu">seqlevels</span><span class="op">(</span><span class="va">coords</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu">seqlevels</span><span class="op">(</span><span class="fu"><a href="reference/cool2seqinfo.html">cool2seqinfo</a></span><span class="op">(</span><span class="va">file</span>, res <span class="op">=</span> <span class="va">res</span><span class="op">)</span><span class="op">)</span>
-<span class="fu">seqinfo</span><span class="op">(</span><span class="va">coords</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/cool2seqinfo.html">cool2seqinfo</a></span><span class="op">(</span><span class="va">file</span>, res <span class="op">=</span> <span class="va">res</span><span class="op">)</span>
-<span class="va">coords</span> <span class="op">&lt;-</span> <span class="fu">trim</span><span class="op">(</span><span class="va">coords</span><span class="op">)</span>
-<span class="va">coords</span> <span class="op">&lt;-</span> <span class="va">coords</span><span class="op">[</span><span class="fu">width</span><span class="op">(</span><span class="va">coords</span><span class="op">)</span> <span class="op">==</span> <span class="fl">2000000</span><span class="op">]</span>
-<span class="co"># - Plot aggregated signal over borders</span>
-<span class="va">p</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/plotAggregatedMatrix.html">plotAggregatedMatrix</a></span><span class="op">(</span>
-    <span class="va">file</span>, 
-    <span class="va">coords</span>, 
-    res <span class="op">=</span> <span class="va">res</span>, 
-    BPPARAM <span class="op">=</span> <span class="fu">BiocParallel</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/BiocParallel/man/MulticoreParam-class.html">MulticoreParam</a></span><span class="op">(</span>workers <span class="op">=</span> <span class="fl">16</span>, tasks <span class="op">=</span> <span class="fl">200</span>, progressbar <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>
-<span class="op">)</span>
-<span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggsave.html">ggsave</a></span><span class="op">(</span><span class="st">'plot.png'</span>, width <span class="op">=</span> <span class="fl">10</span>, height <span class="op">=</span> <span class="fl">10</span>, dpi <span class="op">=</span> <span class="fl">300</span><span class="op">)</span></code></pre></div>
-<blockquote>
-<p>On pairs of coordinates (e.g. structural loops)</p>
-</blockquote>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">file</span> <span class="op">&lt;-</span> <span class="st">'path/to/file.mcool'</span>
-<span class="co"># - Get loop coordinates from `bedpe` file as an `InteractionSet` object</span>
-<span class="va">loops</span> <span class="op">&lt;-</span> <span class="fu">rtracklayer</span><span class="fu">::</span><span class="fu">import</span><span class="op">(</span><span class="st">'path/to/loops.bedpe'</span><span class="op">)</span> <span class="op">%&gt;%</span> <span class="co">## interactions as `Pairs` object</span>
-    <span class="fu">GenomicRanges</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/GenomicRanges/man/intra-range-methods.html">resize</a></span><span class="op">(</span>width <span class="op">=</span> <span class="fl">30000</span>, fix <span class="op">=</span> <span class="st">'center'</span><span class="op">)</span>
-<span class="co"># - Only retain loops for which extended anchors are both within the genome</span>
-<span class="va">loops</span> <span class="op">&lt;-</span> <span class="va">loops</span><span class="op">[</span><span class="fu">InteractionSet</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/InteractionSet/man/interaction-accessors.html">anchors</a></span><span class="op">(</span><span class="va">loops</span><span class="op">)</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span> <span class="op">%within%</span> <span class="fu">GRanges</span><span class="op">(</span><span class="fu"><a href="reference/cool2seqinfo.html">cool2seqinfo</a></span><span class="op">(</span><span class="va">file</span><span class="op">)</span><span class="op">)</span> <span class="op">&amp;</span> <span class="fu">InteractionSet</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/InteractionSet/man/interaction-accessors.html">anchors</a></span><span class="op">(</span><span class="va">loops</span><span class="op">)</span><span class="op">[[</span><span class="fl">2</span><span class="op">]</span><span class="op">]</span> <span class="op">%within%</span> <span class="fu">GRanges</span><span class="op">(</span><span class="fu"><a href="reference/cool2seqinfo.html">cool2seqinfo</a></span><span class="op">(</span><span class="va">file</span><span class="op">)</span><span class="op">)</span><span class="op">]</span>
-<span class="co"># - Plot aggregated signal over sets of loop coordinates</span>
-<span class="va">p</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/plotAggregatedMatrix.html">plotAggregatedMatrix</a></span><span class="op">(</span><span class="va">file</span>, coords <span class="op">=</span> <span class="va">loops</span>, symmetrical <span class="op">=</span> <span class="cn">FALSE</span>, BPPARAM <span class="op">=</span> <span class="fu">BiocParallel</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/BiocParallel/man/MulticoreParam-class.html">MulticoreParam</a></span><span class="op">(</span>workers <span class="op">=</span> <span class="fl">16</span>, tasks <span class="op">=</span> <span class="fl">200</span>, progressbar <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span>
-<span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggsave.html">ggsave</a></span><span class="op">(</span><span class="st">'plot.png'</span>, width <span class="op">=</span> <span class="fl">10</span>, height <span class="op">=</span> <span class="fl">10</span>, dpi <span class="op">=</span> <span class="fl">300</span><span class="op">)</span></code></pre></div>
+<span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggsave.html">ggsave</a></span><span class="op">(</span><span class="st">'plot.png'</span>, plot <span class="op">=</span> <span class="va">p_withTracks</span>, width <span class="op">=</span> <span class="fl">10</span>, height <span class="op">=</span> <span class="fl">10</span>, dpi <span class="op">=</span> <span class="fl">500</span><span class="op">)</span></code></pre></div>
 </div>
 <div id="complex-examples" class="section level2">
 <h2 class="hasAnchor">
 <a href="#complex-examples" class="anchor"></a>Complex examples</h2>
-<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">p</span> <span class="op">&lt;-</span> <span class="fu">cowplot</span><span class="fu">::</span><span class="fu"><a href="https://wilkelab.org/cowplot/reference/plot_grid.html">plot_grid</a></span><span class="op">(</span>
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">tads</span> <span class="op">&lt;-</span> <span class="fu">rtracklayer</span><span class="fu">::</span><span class="fu">import</span><span class="op">(</span><span class="st">'path/to/tads.bed'</span><span class="op">)</span>
+<span class="va">loops</span> <span class="op">&lt;-</span> <span class="fu">rtracklayer</span><span class="fu">::</span><span class="fu">import</span><span class="op">(</span><span class="st">'path/to/loops.bedpe'</span><span class="op">)</span>
+<span class="va">p</span> <span class="op">&lt;-</span> <span class="fu">cowplot</span><span class="fu">::</span><span class="fu"><a href="https://wilkelab.org/cowplot/reference/plot_grid.html">plot_grid</a></span><span class="op">(</span>
     <span class="fu"><a href="reference/plotMatrix.html">plotMatrix</a></span><span class="op">(</span><span class="fu"><a href="reference/cool2gi.html">cool2gi</a></span><span class="op">(</span><span class="va">file</span>, coords <span class="op">=</span> <span class="st">'chr13'</span>, res <span class="op">=</span> <span class="fl">160000</span><span class="op">)</span>, dpi <span class="op">=</span> <span class="fl">500</span>, limits <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">3</span>, <span class="fl">0</span><span class="op">)</span><span class="op">)</span>, 
     <span class="fu"><a href="reference/plotCorrelatedMatrix.html">plotCorrelatedMatrix</a></span><span class="op">(</span><span class="fu"><a href="reference/cool2gi.html">cool2gi</a></span><span class="op">(</span><span class="va">file</span>, coords <span class="op">=</span> <span class="st">'chr13'</span>, res <span class="op">=</span> <span class="fl">160000</span><span class="op">)</span>, dpi <span class="op">=</span> <span class="fl">500</span><span class="op">)</span>, 
     <span class="fu"><a href="reference/plotMatrixList.html">plotMatrixList</a></span><span class="op">(</span>
@@ -233,7 +255,9 @@
             <span class="st">'111-115Mb'</span> <span class="op">=</span> <span class="fu"><a href="reference/cool2gi.html">cool2gi</a></span><span class="op">(</span><span class="va">file</span>, coords <span class="op">=</span> <span class="st">'chr13:110000000-115000000'</span>, res <span class="op">=</span> <span class="fl">40000</span><span class="op">)</span>
         <span class="op">)</span>, 
         limits <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">3</span>, <span class="fl">0</span><span class="op">)</span>
-    <span class="op">)</span>, 
+    <span class="op">)</span> <span class="op">%&gt;%</span> 
+        <span class="fu"><a href="reference/addTads.html">addTads</a></span><span class="op">(</span><span class="va">tads</span>, coords <span class="op">=</span> <span class="st">'chr13:110000000-115000000'</span><span class="op">)</span> <span class="op">%&gt;%</span> 
+        <span class="fu"><a href="reference/addLoops.html">addLoops</a></span><span class="op">(</span><span class="va">loops</span>, coords <span class="op">=</span> <span class="st">'chr13:110000000-115000000'</span><span class="op">)</span>, 
     <span class="fu"><a href="reference/plotOverExpected.html">plotOverExpected</a></span><span class="op">(</span><span class="fu"><a href="reference/cool2gi.html">cool2gi</a></span><span class="op">(</span><span class="va">file</span>, coords <span class="op">=</span> <span class="st">'chr13:110000000-115000000'</span>, res <span class="op">=</span> <span class="fl">10000</span><span class="op">)</span>, limits <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">1</span>, <span class="fl">1</span><span class="op">)</span><span class="op">)</span>
 <span class="op">)</span>
 <span class="fu">ggsave</span><span class="op">(</span><span class="st">'HiC.png'</span>, width <span class="op">=</span> <span class="fl">12</span>, height <span class="op">=</span> <span class="fl">12</span>, dpi <span class="op">=</span> <span class="fl">500</span><span class="op">)</span></code></pre></div>
