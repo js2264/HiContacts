@@ -21,7 +21,7 @@ getAnchors <- function(file, res = NULL, balanced = "cooler") {
         seqinfo = cool2seqinfo(file, res)
     )
     names(anchors) <- paste(GenomicRanges::seqnames(anchors), GenomicRanges::start(anchors), GenomicRanges::end(anchors), sep = "_")
-    if ("weight" %in% names(bins) & balanced == "cooler") {
+    if ("weight" %in% names(bins) & {balanced == "cooler" | balanced == TRUE}) {
         anchors$weight <- bins$weight
     }
     else {

@@ -18,7 +18,6 @@ cool2seqinfo <- function(file, res = NULL) {
 #' cool2gi
 #'
 #' @param file file
-#' @param balanced balanced
 #' @param coords coords
 #' @param coords2 coords2
 #' @param res res
@@ -29,8 +28,8 @@ cool2seqinfo <- function(file, res = NULL) {
 #' @importFrom GenomicRanges resize
 #' @export
 
-cool2gi <- function(file, balanced = "cooler", coords = NULL, coords2 = NULL, res = NULL) {
-    anchors <- getAnchors(file, res, balanced = balanced)
+cool2gi <- function(file, coords = NULL, coords2 = NULL, res = NULL) {
+    anchors <- getAnchors(file, res)
     cnts <- getCounts(file, coords = coords, anchors = anchors, coords2 = coords2, res = res)
     gi <- InteractionSet::GInteractions(
         anchors[cnts$bin1_id],
@@ -40,17 +39,10 @@ cool2gi <- function(file, balanced = "cooler", coords = NULL, coords2 = NULL, re
     gi$bin1 <- cnts$bin1_id
     gi$bin2 <- cnts$bin2_id
 
-    if ({
-        !is.null(gi$anchor1.weight) & !is.null(gi$anchor2.weight)
-    } & balanced == "cooler") {
-        gi$score <- log10(gi$count * gi$anchor1.weight * gi$anchor2.weight)
-    }
-    else if (balanced == "ICE") {
-        gi <- iceGis(gi)
-        gi$score <- log10(gi$score + 1)
-    }
-    else {
-        gi$score <- log10(gi$count + 1)
+    if (!is.null(gi$anchor1.weight) & !is.null(gi$anchor2.weight)) {
+        gi$score <- gi$count * gi$anchor1.weight * gi$anchor2.weight
+    } else {
+        gi$score <- gi$count
     }
     InteractionSet::regions(gi)$chr <- GenomicRanges::seqnames(InteractionSet::regions(gi))
     InteractionSet::regions(gi)$center <- GenomicRanges::start(GenomicRanges::resize(InteractionSet::regions(gi), fix = "center", width = 1))
@@ -62,13 +54,20 @@ cool2gi <- function(file, balanced = "cooler", coords = NULL, coords2 = NULL, re
 #' @param gi gi
 #'
 #' @import InteractionSet
+#' @importFrom GenomicRanges mcols
 #' @export
 
-gi2cm <- function(gi) {
+gi2cm <- function(gi, fill = "count") {
     InteractionSet::inflate(
         gi,
         rows = 1:length(InteractionSet::regions(gi)),
         columns = 1:length(InteractionSet::regions(gi)),
-        fill = gi$count
+        fill = GenomicRanges::mcols(gi)[[fill]]
     )
+}
+
+cm2matrix <- function(cm, replace_NA = NA) {
+    m <- Matrix::as.matrix(cm)
+    m[is.na(m)] <- replace_NA
+    m
 }
