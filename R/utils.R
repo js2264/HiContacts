@@ -36,7 +36,11 @@ lsCoolResolutions <- function(file, full.list = FALSE) {
         sort() %>%
         as.character()
     message("\nAvailable resolutions:\n", paste0(rez, collapse = ", "))
-    if (full.list) x
+    if (full.list) {
+        x
+    } else {
+        invisible(rez)
+    }
 }
 
 #' peekCool
@@ -91,7 +95,7 @@ fetchCool <- function(file, path, res = NULL, idx = NULL, ...) {
 #' @export
 
 splitCoords <- function(coords) {
-    if (class(coords) == "GRanges") {
+    if (class(coords)[1] == "GRanges") {
         chr <- as.vector(GenomicRanges::seqnames(coords))
         start <- GenomicRanges::start(coords)
         end <- GenomicRanges::end(coords)

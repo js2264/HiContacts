@@ -1,6 +1,9 @@
-afmhotr_colors <- c("#FCF6BD", "#F9F198", "#FFF073", "#FECC50", "#F6A32C", "#F0801A", "#DD5D12", "#B83917", "#6C150E", "#430F11", "#1D0809", "#000000")
+# afmhotr_colors <- c("#FCF6BD", "#F9F198", "#FFF073", "#FECC50", "#F6A32C", "#F0801A", "#DD5D12", "#B83917", "#6C150E", "#430F11", "#1D0809", "#000000")
+# afmhotr_colors <- c("#FCF6BD", "#f3cc4c", "#ebb734", "#e6911a", "#F0801A", "#DD5D12", "#B83917", "#6C150E", "#430F11", "#1D0809")
+# afmhotr_colors <- c("#fefaf5", "#f2efa3", "#f9e162", "#f29c28", "#d45c1a", "#8a1e16", "#401414", "#030404")
+afmhotr_colors <- c("#ffffff", "#f8f5c3", "#f4ee8d", "#f6be35", "#ee7d32", "#c44228", "#821d19", "#381211", "#050606")
 bwr_colors <- c("#1659b1", "#4778c2", "#ffffff", "#b13636", "#6C150E")
-bbr_colors <- c("#1659b1", "#4778c2", "#ffffff", "#b13636", "#6C150E")
+bbr_colors <- c("#1659b1", "#4778c2", "#a9c3e7", "#ffffff", "#e2adad", "#b13636", "#6C150E")
 breaks <- structure(list(break_pos = c(
     1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11,
     12, 13, 14, 16, 17, 19, 21, 23, 26, 28, 31, 34, 37, 41, 45, 50,
