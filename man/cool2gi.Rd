@@ -4,12 +4,10 @@
 \alias{cool2gi}
 \title{cool2gi}
 \usage{
-cool2gi(file, balanced = "cooler", coords = NULL, coords2 = NULL, res = NULL)
+cool2gi(file, coords = NULL, coords2 = NULL, res = NULL)
 }
 \arguments{
 \item{file}{file}
-
-\item{balanced}{balanced}
 
 \item{coords}{coords}
 

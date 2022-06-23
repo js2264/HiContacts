@@ -1,10 +1,13 @@
 #' plotMatrix
 #'
 #' @param gis gis
+#' @param scale scale
 #' @param limits limits
 #' @param dpi dpi
 #' @param rasterize rasterize
 #' @param symmetrical symmetrical
+#' @param chrom_lines chrom_lines
+#' @param cmap color map
 #'
 #' @import ggrastr
 #' @import ggplot2
@@ -14,8 +17,21 @@
 #' @importFrom GenomicRanges seqnames
 #' @export
 
-plotMatrix <- function(gis, limits = NULL, dpi = 500, rasterize = TRUE, symmetrical = TRUE) {
+plotMatrix <- function(gis, balanced = TRUE, scale = 'log10', limits = NULL, dpi = 500, rasterize = TRUE, symmetrical = TRUE, chrom_lines = TRUE, cmap = afmhotr_colors) {
     `%>%` <- tidyr::`%>%`
+
+    ## -- Use unbalanced counts if asked
+    if (!balanced) {
+        gis$score <- gis$count
+    }
+
+    ## -- Scale score
+    if (scale == 'log10') {
+        gis$score <- log10(gis$score)
+    } 
+    else if (scale == 'exp0.2') {
+        gis$score <- gis$score^0.2
+    }
 
     ## -- Matrix limits
     if (!is.null(limits)) {
@@ -58,7 +74,7 @@ plotMatrix <- function(gis, limits = NULL, dpi = 500, rasterize = TRUE, symmetri
         }
 
         ## -- Plot matrix
-        p <- ggmatrix(mat, cols = afmhotr_colors, limits = limits) +
+        p <- ggmatrix(mat, cols = cmap, limits = limits) +
             plotFun +
             ggplot2::labs(
                 x = unique(mat$seqnames1),
@@ -89,16 +105,112 @@ plotMatrix <- function(gis, limits = NULL, dpi = 500, rasterize = TRUE, symmetri
         mat <- rbind(mat, mat %>% dplyr::mutate(x2 = y, y = x, x = x2) %>% dplyr::select(-x2))
 
         ## -- Plot matrix
-        p <- ggmatrix(mat, cols = afmhotr_colors, limits = limits) +
+        p <- ggmatrix(mat, cols = cmap, limits = limits) +
             plotFun +
             ggplot2::labs(
                 x = "Genome coordinates",
                 y = "Genome coordinates"
-            ) +
-            ggplot2::geom_hline(yintercept = chroms$cumlength[-1], colour = "black", alpha = 0.75, size = 0.15) +
-            ggplot2::geom_vline(xintercept = chroms$cumlength[-1], colour = "black", alpha = 0.75, size = 0.15)
+            )
+        if (chrom_lines) {
+            p <- p +
+                ggplot2::geom_hline(yintercept = chroms$cumlength[-1], colour = "black", alpha = 0.75, size = 0.15) +
+                ggplot2::geom_vline(xintercept = chroms$cumlength[-1], colour = "black", alpha = 0.75, size = 0.15)
+        }
     }
 
+    p
+}
+
+#' plotRatio
+#'
+#' @param gis_1 gis (gis_1 divided by gis_2)
+#' @param gis_2 gis
+#' @param limits limits
+#' @param dpi dpi
+#' @param rasterize rasterize
+#' @param symmetrical symmetrical
+#' @param chrom_lines chrom_lines
+#' @param cmap color map
+#'
+#' @import ggrastr
+#' @import ggplot2
+#' @import InteractionSet
+#' @import tibble
+#' @import dplyr
+#' @importFrom GenomicRanges seqnames
+#' @importFrom reticulate use_condaenv
+#' @importFrom reticulate import
+#' @export
+
+plotRatio <- function(gis_2, gis_1, limits = c(-3, 3), serpentine_niter = 100L, serpentine_ncores = 10L, dpi = 500, rasterize = TRUE, symmetrical = TRUE, chrom_lines = TRUE, cmap = bbr_colors) {
+    `%>%` <- tidyr::`%>%`
+    `%<-%` <- zeallot::`%<-%`
+
+    ## -- If regions are different, manually merge them 
+    gis_2b <- GInteractions(anchor1 = anchors(gis_2)[[1]], anchor2 = anchors(gis_2)[[2]], regions = unique(c(regions(gis_1), regions(gis_2)))) 
+    mcols(gis_2b) <- GenomicRanges::mcols(gis_2)
+    gis_2 <- gis_2b
+    gis_1b <- GInteractions(anchor1 = anchors(gis_1)[[1]], anchor2 = anchors(gis_1)[[2]], regions = unique(c(regions(gis_1), regions(gis_1)))) 
+    mcols(gis_1b) <- GenomicRanges::mcols(gis_1)
+    gis_1 <- gis_1b
+
+    ## -- Run serpentine
+    options(reticulate.repl.quiet = TRUE)
+    reticulate::use_condaenv('tm')
+    sp <- reticulate::import('serpentine')
+    m1 <- cm2matrix(gi2cm(gis_1, fill = 'count'), replace_NA = 0)
+    m2 <- cm2matrix(gi2cm(gis_2, fill = 'count'), replace_NA = 0)
+    binsize <- width(regions(gis_1)[1])[1]
+    c(trend, threshold) %<-% sp$MDbefore(m1, m2, show = FALSE)
+    c(sm1, sm2, sK) %<-% sp$serpentin_binning(m1, m2, threshold = threshold, minthreshold = threshold/5, verbose = FALSE, iterations = serpentine_niter, parallel = serpentine_ncores)
+    sK <- sK - trend
+    mat <- sK %>%
+        as_tibble() %>% 
+        setNames(start(anchors(gi2cm(gis_1, fill = 'score'))$row)) %>%
+        mutate(start1 = start(anchors(gi2cm(gis_2, fill = 'score'))$row)) %>% 
+        pivot_longer(-start1, names_to = 'start2', values_to = 'score') %>% 
+        mutate(start2 = as.numeric(start2)) %>%
+        dplyr::mutate(
+            end1 = start1 + binsize/2, 
+            end2 = start2 + binsize/2, 
+            x = floor(end1 - (end1 - start1) / 2),
+            y = floor(end2 - (end2 - start2) / 2)
+        )
+
+    ## -- Matrix limits
+    if (!is.null(limits)) {
+        m <- limits[1]
+        M <- limits[2]
+    }
+    else {
+        M <- max(mat$score[mat$start1 != mat$start2], na.rm = TRUE)
+        m <- min(mat$score[mat$start1 != mat$start2], na.rm = TRUE)
+        limits <- c(m, M)
+    }
+
+    # -- Define plotting approach
+    if (rasterize) {
+        plotFun <- ggrastr::geom_tile_rast(raster.dpi = dpi)
+    }
+    else {
+        plotFun <- ggplot2::geom_tile()
+    }
+
+    ## -- Clamp scores to limits
+    mat <- dplyr::mutate(mat, score = ifelse(score > M, M, ifelse(score < m, m, score)))
+
+    ## -- Add lower triangular matrix scores (if symetrical)
+    if (symmetrical) {
+        mat <- rbind(mat, mat %>% dplyr::mutate(x2 = y, y = x, x = x2) %>% dplyr::select(-x2))
+    }
+
+    ## -- Plot matrix
+    p <- ggmatrix(mat, cols = cmap, limits = limits) +
+        plotFun +
+        ggplot2::labs(
+            x = unique(mat$seqnames1),
+            y = unique(mat$seqnames2)
+        )
     p
 }
 
@@ -258,13 +370,14 @@ plotOverExpected <- function(gis,
 #' @param gis gis
 #' @param limits limits
 #' @param dist_max dist_max
+#' @param cmap cmap
 #'
 #' @import ggplot2
 #' @import tibble
 #' @import dplyr
 #' @export
 
-plotTriangularMatrix <- function(gis, limits = NULL, dist_max = NULL) {
+plotTriangularMatrix <- function(gis, limits = NULL, dist_max = NULL, cmap = afmhotr_colors) {
     `%>%` <- tidyr::`%>%`
 
     ## -- Convert gis to table and extract x/y
@@ -348,7 +461,7 @@ plotTriangularMatrix <- function(gis, limits = NULL, dist_max = NULL) {
     )
 
     ## -- Plot matrix
-    p <- ggtiltedmatrix(mat_, cols = afmhotr_colors, limits = limits) +
+    p <- ggtiltedmatrix(mat_, cols = cmap, limits = limits) +
         ggplot2::geom_polygon() +
         ggplot2::labs(
             x = unique(mat$seqnames1),
@@ -437,6 +550,7 @@ plotMatrixList <- function(ls, limits = NULL, dist_max = 0.2) {
 #' @param symmetrical symmetrical
 #' @param BPPARAM BPPARAM
 #' @param scale scale
+#' @param cmap cmap
 #'
 #' @import InteractionSet
 #' @import ggrastr
@@ -448,7 +562,7 @@ plotMatrixList <- function(ls, limits = NULL, dist_max = 0.2) {
 #' @importFrom GenomicRanges width
 #' @export
 
-plotAggregatedMatrix <- function(file, coords, res = NULL, limits = NULL, dpi = 500, rasterize = TRUE, symmetrical = TRUE, BPPARAM = BiocParallel::bpparam(), scale = FALSE) {
+plotAggregatedMatrix <- function(file, coords, res = NULL, limits = NULL, dpi = 500, rasterize = TRUE, symmetrical = TRUE, BPPARAM = BiocParallel::bpparam(), scale = FALSE, cmap = afmhotr_colors) {
     `%>%` <- tidyr::`%>%`
 
     ## -- Coerce loops into coords and coords2
@@ -575,7 +689,7 @@ plotAggregatedMatrix <- function(file, coords, res = NULL, limits = NULL, dpi = 
         }
 
         ## -- Plot matrix
-        p <- ggmatrix(mats, cols = afmhotr_colors, limits = limits) +
+        p <- ggmatrix(mats, cols = cmap, limits = limits) +
             plotFun +
             ggplot2::labs(
                 x = unique(mats$seqnames1),
@@ -584,4 +698,28 @@ plotAggregatedMatrix <- function(file, coords, res = NULL, limits = NULL, dpi = 
 
         p
     }
+}
+
+
+ggPs <- function(p, xlim = c(5000, 4.99e5), ylim = c(1e-8, 1e-4)) {
+    p <- p + 
+        geom_line() + 
+        theme_minimal() + 
+        theme(panel.border = element_rect(fill = NA)) + 
+        theme(panel.grid.minor = element_blank()) +
+        scale_y_log10(
+            limits = ylim, 
+            expand = c(0, 0), 
+            breaks = scales::trans_breaks("log10", function(x) 10^x),
+            labels = scales::trans_format("log10", scales::math_format(10^.x))
+        ) + 
+        scale_x_log10(
+            limits = xlim, 
+            expand = c(0, 0), 
+            breaks = c(1, 10, 100, 1000, 10000, 50000, 1e+05, 500000, 1e+06, 500000, 1e+07, 5e+07, 1e+08, 5e+08, 1e+09, 1e+10),
+            labels = c('1', '10', '100', '1kb', '10kb', '50kb', '100kb', '500kb', '1Mb', '5Mb', '10Mb', '50Mb', '100Mb', '500Mb', '1Gb', '10Gb')
+        ) + 
+        annotation_logticks(outside = TRUE) + 
+        labs(x = "Genomic distance", y = "Contact frequency")
+    return(p)
 }
