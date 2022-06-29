@@ -4,7 +4,12 @@
 \alias{plotTriangularMatrix}
 \title{plotTriangularMatrix}
 \usage{
-plotTriangularMatrix(gis, limits = NULL, dist_max = NULL)
+plotTriangularMatrix(
+  gis,
+  limits = NULL,
+  dist_max = NULL,
+  cmap = afmhotr_colors
+)
 }
 \arguments{
 \item{gis}{gis}
@@ -12,6 +17,8 @@ plotTriangularMatrix(gis, limits = NULL, dist_max = NULL)
 \item{limits}{limits}
 
 \item{dist_max}{dist_max}
+
+\item{cmap}{cmap}
 }
 \description{
 plotTriangularMatrix

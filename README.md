@@ -1,19 +1,19 @@
-# coolerr
+# HiContacts
 
 <!-- badges: start -->
 [![Lifecycle: experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
-[![R-CMD-check-bioc](https://github.com/js2264/coolerr/actions/workflows/check-bioc.yml/badge.svg)](https://github.com/js2264/coolerr/actions/workflows/check-bioc.yml)
-[![pkgdown](https://github.com/js2264/coolerr/workflows/pkgdown/badge.svg)](https://github.com/js2264/coolerr/actions)
+[![R-CMD-check-bioc](https://github.com/js2264/HiContacts/actions/workflows/check-bioc.yml/badge.svg)](https://github.com/js2264/HiContacts/actions/workflows/check-bioc.yml)
+[![pkgdown](https://github.com/js2264/HiContacts/workflows/pkgdown/badge.svg)](https://github.com/js2264/HiContacts/actions)
 <!-- badges: end -->
 
-coolerr provides tools to import `(m)cool` matrices in R and work with them there. 
+HiContacts provides tools to import `(m)cool` matrices in R and work with them there. 
 
 Rather than creating redundant classes, it relies on pre-existing Bioconductor objects, namely `InteractionSet`, `GenomicInterations` and `ContactMatrix` (`Lun, Perry & Ing-Simmons, F1000Research 2016`).
 
 ## Installation
 
 ```r
-remotes::install_github('js2264/coolerr')
+remotes::install_github('js2264/HiContacts')
 ```
 
 ## Import a .cool file as GenomicInterations
@@ -31,7 +31,7 @@ gis
 
 ```r
 file <- 'path/to/file.mcool'
-range <- 'ranges_of_interest' # e.g. range <- 'chrI:2000-8000'
+range <- 'ranges_of_interest' # e.g. range <- 'chrI:2000-8000' or range <- 'chrI'
 lsCoolResolutions(file)
 gis <- cool2gi(file, coords = range, res = 1000)
 gis
@@ -46,45 +46,20 @@ gis <- cool2gi(file, coords = range, res = res)
 p <- plotMatrix(gis, limits = c(-3, -1), dpi = 400)
 ```
 
-> Two-entry diagonal style
-
-```r
-gis <- cool2gi(file, coords = range1, coords2 = range2, res = res)
-p <- plotMatrix(gis, dpi = 400, symmetrical = FALSE)
-```
-
-> Horizontal style
-
-```r
-gis <- cool2gi(file, coords = range, res = res)
-p <- plotTriangularMatrix(gis, dist_max = 0.4)
-```
-
-> Horizontal style with a list of multiple GenomicInterations
-
-```r
-gis1 <- cool2gi(file, coords = range, res = 40000)
-gis2 <- cool2gi(file, coords = range, res = 80000)
-gis3 <- cool2gi(file, coords = range, res = 160000)
-p <- plotMatrixList(
-    ls = list('res40kb' = gis1, 'res80kb' = gis2, 'res160kb' = gis3)
-)
-```
-
-## Special matrices
-
 > Plot matrix of correlation 
 
 ```r
-gis <- cool2gi(file, coords = range, res = res)
-p <- plotCorrelatedMatrix(gis, dpi = 500)
+p <- cool2gi(file, coords = range, res = res) %>% 
+    autocorrelate() %>% 
+    plotMatrix(scale = 'linear', limits = c(-1, 1))
 ```
 
 > Plot signal over expected 
 
 ```r
-gis <- cool2gi(file, coords = range, res = res)
-p <- plotOverExpected(gis, dpi = 500)
+p <- cool2gi(file, coords = range, res = res) %>% 
+    detrend(update_scores = TRUE) %>% 
+    plotMatrix(scale = 'linear', cmap = bwr_colors)
 ```
 
 ## Plot aggregated matrices
@@ -92,11 +67,7 @@ p <- plotOverExpected(gis, dpi = 500)
 > At borders (e.g. TAD boundaries)
 
 ```r
-file <- 'path/to/file.mcool'
-# - Get TAD borders
-coords <- rtracklayer::import('path/to/tads.bed') %>% 
-    GenomicRanges::resize(fix = 'start', width = 1) %>% 
-    GenomicRanges::resize(fix = 'center', width = 2000000)
+loops <- rtracklayer::import('CH195-loops.bedpe') %>% makeGInteractionsFromGRangesPairs()
 # - Trim extended borders to only keep full-size GRanges
 seqlevels(coords) <- seqlevels(cool2seqinfo(file, res = res))
 seqinfo(coords) <- cool2seqinfo(file, res = res)

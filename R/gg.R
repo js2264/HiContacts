@@ -1,110 +1,11 @@
-#' ggmatrix
-#'
-#' @param mat mat
-#' @param ticks ticks
-#' @param cols cols
-#' @param limits limits
-#'
-#' @import ggplot2
-#' @import scales
-#' @export
-
-ggmatrix <- function(mat, ticks = TRUE, cols = afmhotr_colors, limits) {
-    p <- ggplot2::ggplot(mat, ggplot2::aes(x, y, fill = score))
-    p <- p + ggplot2::scale_fill_gradientn(
-        colors = cols,
-        na.value = "#FFFFFF",
-        limits = limits
-    ) +
-        ggplot2::scale_x_continuous(expand = c(0, 0), labels = scales::unit_format(unit = "M", scale = 1e-6)) +
-        ggplot2::scale_y_reverse(expand = c(0, 0), labels = scales::unit_format(unit = "M", scale = 1e-6)) +
-        ggplot2::guides(fill = ggplot2::guide_colorbar(barheight = ggplot2::unit(5, "cm"), barwidth = 0.5, frame.colour = "black")) +
-        ggtheme_coolerr()
-    p
-}
-
-#' ggcorrmatrix
-#'
-#' @param mat mat
-#' @param ticks ticks
-#' @param cols cols
-#' @param limits limits
-#'
-#' @import ggplot2
-#' @import scales
-#' @export
-
-ggcorrmatrix <- function(mat, ticks = TRUE, cols, limits) {
-    p <- ggplot2::ggplot(mat, ggplot2::aes(x, y, fill = score))
-    p <- p + ggplot2::scale_fill_gradientn(
-        colors = cols,
-        na.value = "#ffffff",
-        limits = limits
-    ) +
-        ggplot2::scale_x_continuous(expand = c(0, 0), labels = scales::unit_format(unit = "M", scale = 1e-6)) +
-        ggplot2::scale_y_reverse(expand = c(0, 0), labels = scales::unit_format(unit = "M", scale = 1e-6)) +
-        ggplot2::guides(fill = ggplot2::guide_colorbar(barheight = ggplot2::unit(5, "cm"), barwidth = 0.5, frame.colour = "black")) +
-        ggtheme_coolerr()
-    p
-}
-
-#' ggtiltedmatrix
-#'
-#' @param mat_ mat_
-#' @param ticks ticks
-#' @param cols cols
-#' @param limits limits
-#'
-#' @import ggplot2
-#' @import scales
-#' @export
-
-ggtiltedmatrix <- function(mat_, ticks = TRUE, cols = afmhotr_colors, limits) {
-    r <- diff(range(mat_$y)) / diff(range(mat_$x_))
-
-    p <- ggplot2::ggplot(mat_, ggplot2::aes(
-        x, y,
-        group = ID,
-        fill = score
-    ))
-
-    p <- p + ggplot2::scale_fill_gradientn(
-        colors = cols,
-        na.value = "#FFFFFF",
-        limits = limits
-    ) +
-        ggplot2::scale_x_continuous(expand = c(0, 0), labels = scales::unit_format(unit = "M", scale = 1e-6)) +
-        ggplot2::scale_y_continuous(expand = c(0, 0)) +
-        ggplot2::guides(fill = ggplot2::guide_colorbar(
-            barheight = ggplot2::unit(0.02, "npc"),
-            barwidth = ggplot2::unit(0.7, "npc"),
-            frame.colour = "black",
-            direction = "horizontal"
-        )) +
-        ggtheme_coolerr() +
-        ggplot2::theme(
-            panel.border = ggplot2::element_blank(),
-            panel.grid.minor = ggplot2::element_blank(),
-            panel.grid.major = ggplot2::element_blank(),
-            plot.margin = margin(20, 20, 20, 20, "pt"),
-            axis.title.y = ggplot2::element_blank(),
-            axis.text.y = ggplot2::element_blank(),
-            axis.ticks.y = ggplot2::element_blank(),
-            legend.position = "bottom",
-            aspect.ratio = r
-        )
-
-    p
-}
-
-#' ggtheme_coolerr
+#' ggtheme_HiContacts
 #'
 #' @param ticks ticks
 #'
 #' @import ggplot2
 #' @export
 
-ggtheme_coolerr <- function(ticks = TRUE) {
+ggtheme_HiContacts <- function(ticks = TRUE) {
     t <- ggplot2::theme_bw() +
         ggplot2::theme(
             text = ggplot2::element_text(size = 8),
@@ -116,12 +17,12 @@ ggtheme_coolerr <- function(ticks = TRUE) {
     t
 }
 
-#' ggtheme_coolerr_tracks
+#' ggtheme_HiContacts_tracks
 #'
 #' @import ggplot2
 #' @export
 
-ggtheme_coolerr_tracks <- function() {
+ggtheme_HiContacts_tracks <- function() {
     ggplot2::theme(
         text = ggplot2::element_text(size = 8),
         panel.grid.minor = ggplot2::element_blank(),

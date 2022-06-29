@@ -1,15 +1,15 @@
-Package: coolerr
-Title: coolerr: R interface to cool files
-Version: 0.0.0.9000
+Package: HiContacts
+Title: HiContacts: R interface to cool files
+Version: 0.0.0.9001
 Authors@R: 
     person(given = "Jacques",
            family = "Serizay",
            role = c("aut", "cre"),
            email = "jacquesserizay@gmail.com")
-Description: coolerr: R interface to cool files.
+Description: HiContacts: R interface to cool files.
 License: MIT + file LICENSE
-URL: https://github.com/js2264/coolerr
-BugReports: https://github.com/js2264/coolerr/issues
+URL: https://github.com/js2264/HiContacts
+BugReports: https://github.com/js2264/HiContacts/issues
 Depends:
     R (>= 4.0)
 Imports:

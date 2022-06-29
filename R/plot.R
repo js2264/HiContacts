@@ -17,13 +17,17 @@
 #' @importFrom GenomicRanges seqnames
 #' @export
 
-plotMatrix <- function(gis, balanced = TRUE, scale = 'log10', limits = NULL, dpi = 500, rasterize = TRUE, symmetrical = TRUE, chrom_lines = TRUE, cmap = afmhotr_colors) {
+plotMatrix <- function(gis, colour_by = 'score', scale = 'log10', loops = NULL, borders = NULL, limits = NULL, dpi = 500, rasterize = TRUE, symmetrical = TRUE, chrom_lines = TRUE, cmap = NULL) {
     `%>%` <- tidyr::`%>%`
 
-    ## -- Use unbalanced counts if asked
-    if (!balanced) {
-        gis$score <- gis$count
-    }
+    ## -- Check that `colour_by` metric is present 
+    if (!colour_by %in% colnames(GenomicRanges::mcols(gis))) {
+        stop(glue::glue("`{colour_by}` metric not present in the provided GInteractions object. Aborting now."))
+    } 
+
+    ## -- Put metric to plot in `score` column
+    gis$score <- mcols(gis)[, colour_by]
+    has_negative_scores <- any(mcols(gis)[, colour_by] < 0, na.rm = TRUE)
 
     ## -- Scale score
     if (scale == 'log10') {
@@ -33,23 +37,69 @@ plotMatrix <- function(gis, balanced = TRUE, scale = 'log10', limits = NULL, dpi
         gis$score <- gis$score^0.2
     }
 
-    ## -- Matrix limits
+    ## -- Set matrix limits
     if (!is.null(limits)) {
         m <- limits[1]
         M <- limits[2]
     }
     else {
-        M <- max(gis$score[abs(gis$bin1 - gis$bin2) >= 0], na.rm = TRUE)
-        m <- min(gis$score[abs(gis$bin1 - gis$bin2) >= 0], na.rm = TRUE)
+        an <- anchors(x)
+        diff_an <- an[[1]] != an[[2]]
+        M <- max(gis$score[[1]][diff_an], na.rm = TRUE, is.finite = TRUE)
+        m <- min(gis$score[[1]][diff_an], na.rm = TRUE, is.finite = TRUE)
         limits <- c(m, M)
     }
 
+    ## -- Choose color map 
+    if (is.null(cmap)) {
+        if (has_negative_scores) {
+            cmap <- bwr_colors
+        }
+        else {
+            cmap <- afmhotr_colors
+        }
+    }
+    
     # -- Define plotting approach
     if (rasterize) {
         plotFun <- ggrastr::geom_tile_rast(raster.dpi = dpi)
     }
     else {
         plotFun <- ggplot2::geom_tile()
+    }
+
+    ## -- If loops are provided, filter them and add
+    if (!is.null(loops)) {
+        filtered_loops <- as_tibble(loops[anchors(loops)[[1]] %over% regions(gis) & anchors(loops)[[2]] %over% regions(gis)])
+        p_loops <- geom_point(
+            data = filtered_loops, 
+            aes(x = start1+(end1-start1)/2, y = start2+(end2-start2)/2), 
+            inherit.aes = FALSE, 
+            shape = 21, 
+            fill = "#76eaff00", 
+            color = "#000000", 
+            size = 3
+        )
+    }
+    else {
+        p_loops <- NULL
+    }
+
+    ## -- If borders are provided, filter them and add
+    if (!is.null(borders)) {
+        filtered_borders <- as_tibble(borders[borders %over% regions(gis)])
+        p_borders <- geom_point(
+            data = filtered_borders, 
+            aes(x = start+(end-start)/2, y = start+(end-start)/2),
+            inherit.aes = FALSE, 
+            shape = 23, 
+            fill = "#76eaff", 
+            color = "#000000", 
+            size = 1
+        )
+    }
+    else {
+        p_borders <- NULL
     }
 
     # -- Check number of chromosomes that were extracted
@@ -66,7 +116,7 @@ plotMatrix <- function(gis, balanced = TRUE, scale = 'log10', limits = NULL, dpi
             )
 
         ## -- Clamp scores to limits
-        mat <- dplyr::mutate(mat, score = ifelse(score > M, M, ifelse(score < m, m, score)))
+        mat <- dplyr::mutate(mat, score = scales::oob_squish(score, c(m, M)))
 
         ## -- Add lower triangular matrix scores (if symetrical)
         if (symmetrical) {
@@ -74,8 +124,10 @@ plotMatrix <- function(gis, balanced = TRUE, scale = 'log10', limits = NULL, dpi
         }
 
         ## -- Plot matrix
-        p <- ggmatrix(mat, cols = cmap, limits = limits) +
+        p <- ggMatrix(mat, cols = cmap, limits = limits) +
             plotFun +
+            p_loops + 
+            p_borders + 
             ggplot2::labs(
                 x = unique(mat$seqnames1),
                 y = unique(mat$seqnames2)
@@ -105,7 +157,7 @@ plotMatrix <- function(gis, balanced = TRUE, scale = 'log10', limits = NULL, dpi
         mat <- rbind(mat, mat %>% dplyr::mutate(x2 = y, y = x, x = x2) %>% dplyr::select(-x2))
 
         ## -- Plot matrix
-        p <- ggmatrix(mat, cols = cmap, limits = limits) +
+        p <- ggMatrix(mat, cols = cmap, limits = limits) +
             plotFun +
             ggplot2::labs(
                 x = "Genome coordinates",
@@ -117,250 +169,6 @@ plotMatrix <- function(gis, balanced = TRUE, scale = 'log10', limits = NULL, dpi
                 ggplot2::geom_vline(xintercept = chroms$cumlength[-1], colour = "black", alpha = 0.75, size = 0.15)
         }
     }
-
-    p
-}
-
-#' plotRatio
-#'
-#' @param gis_1 gis (gis_1 divided by gis_2)
-#' @param gis_2 gis
-#' @param limits limits
-#' @param dpi dpi
-#' @param rasterize rasterize
-#' @param symmetrical symmetrical
-#' @param chrom_lines chrom_lines
-#' @param cmap color map
-#'
-#' @import ggrastr
-#' @import ggplot2
-#' @import InteractionSet
-#' @import tibble
-#' @import dplyr
-#' @importFrom GenomicRanges seqnames
-#' @importFrom reticulate use_condaenv
-#' @importFrom reticulate import
-#' @export
-
-plotRatio <- function(gis_2, gis_1, limits = c(-3, 3), serpentine_niter = 100L, serpentine_ncores = 10L, dpi = 500, rasterize = TRUE, symmetrical = TRUE, chrom_lines = TRUE, cmap = bbr_colors) {
-    `%>%` <- tidyr::`%>%`
-    `%<-%` <- zeallot::`%<-%`
-
-    ## -- If regions are different, manually merge them 
-    gis_2b <- GInteractions(anchor1 = anchors(gis_2)[[1]], anchor2 = anchors(gis_2)[[2]], regions = unique(c(regions(gis_1), regions(gis_2)))) 
-    mcols(gis_2b) <- GenomicRanges::mcols(gis_2)
-    gis_2 <- gis_2b
-    gis_1b <- GInteractions(anchor1 = anchors(gis_1)[[1]], anchor2 = anchors(gis_1)[[2]], regions = unique(c(regions(gis_1), regions(gis_1)))) 
-    mcols(gis_1b) <- GenomicRanges::mcols(gis_1)
-    gis_1 <- gis_1b
-
-    ## -- Run serpentine
-    options(reticulate.repl.quiet = TRUE)
-    reticulate::use_condaenv('tm')
-    sp <- reticulate::import('serpentine')
-    m1 <- cm2matrix(gi2cm(gis_1, fill = 'count'), replace_NA = 0)
-    m2 <- cm2matrix(gi2cm(gis_2, fill = 'count'), replace_NA = 0)
-    binsize <- width(regions(gis_1)[1])[1]
-    c(trend, threshold) %<-% sp$MDbefore(m1, m2, show = FALSE)
-    c(sm1, sm2, sK) %<-% sp$serpentin_binning(m1, m2, threshold = threshold, minthreshold = threshold/5, verbose = FALSE, iterations = serpentine_niter, parallel = serpentine_ncores)
-    sK <- sK - trend
-    mat <- sK %>%
-        as_tibble() %>% 
-        setNames(start(anchors(gi2cm(gis_1, fill = 'score'))$row)) %>%
-        mutate(start1 = start(anchors(gi2cm(gis_2, fill = 'score'))$row)) %>% 
-        pivot_longer(-start1, names_to = 'start2', values_to = 'score') %>% 
-        mutate(start2 = as.numeric(start2)) %>%
-        dplyr::mutate(
-            end1 = start1 + binsize/2, 
-            end2 = start2 + binsize/2, 
-            x = floor(end1 - (end1 - start1) / 2),
-            y = floor(end2 - (end2 - start2) / 2)
-        )
-
-    ## -- Matrix limits
-    if (!is.null(limits)) {
-        m <- limits[1]
-        M <- limits[2]
-    }
-    else {
-        M <- max(mat$score[mat$start1 != mat$start2], na.rm = TRUE)
-        m <- min(mat$score[mat$start1 != mat$start2], na.rm = TRUE)
-        limits <- c(m, M)
-    }
-
-    # -- Define plotting approach
-    if (rasterize) {
-        plotFun <- ggrastr::geom_tile_rast(raster.dpi = dpi)
-    }
-    else {
-        plotFun <- ggplot2::geom_tile()
-    }
-
-    ## -- Clamp scores to limits
-    mat <- dplyr::mutate(mat, score = ifelse(score > M, M, ifelse(score < m, m, score)))
-
-    ## -- Add lower triangular matrix scores (if symetrical)
-    if (symmetrical) {
-        mat <- rbind(mat, mat %>% dplyr::mutate(x2 = y, y = x, x = x2) %>% dplyr::select(-x2))
-    }
-
-    ## -- Plot matrix
-    p <- ggmatrix(mat, cols = cmap, limits = limits) +
-        plotFun +
-        ggplot2::labs(
-            x = unique(mat$seqnames1),
-            y = unique(mat$seqnames2)
-        )
-    p
-}
-
-#' plotCorrelatedMatrix
-#'
-#' @param gis gis
-#' @param limits limits
-#' @param dpi dpi
-#' @param rasterize rasterize
-#'
-#' @import ggrastr
-#' @import ggplot2
-#' @import tibble
-#' @import dplyr
-#' @export
-
-plotCorrelatedMatrix <- function(gis,
-                                 limits = c(-1, 1),
-                                 dpi = 500,
-                                 rasterize = TRUE) {
-    `%>%` <- tidyr::`%>%`
-
-    # -- Define plotting approach
-    if (rasterize) {
-        plotFun <- ggrastr::geom_tile_rast(raster.dpi = dpi)
-    }
-    else {
-        plotFun <- ggplot2::geom_tile()
-    }
-
-    ## -- Convert gis to table and extract x/y
-    mat <- gis %>%
-        tibble::as_tibble() %>%
-        dplyr::mutate(
-            x = floor(end1 - (end1 - start1) / 2),
-            y = floor(end2 - (end2 - start2) / 2)
-        )
-
-    ## -- Add lower triangular matrix scores
-    mat <- rbind(mat, mat %>% dplyr::mutate(x2 = y, y = x, x = x2) %>% dplyr::select(-x2))
-
-    ## -- Compute auto-correlation matrix
-    mat <- correlateMatrix(mat)
-
-    ## -- Matrix limits
-    if (!is.null(limits)) {
-        m <- limits[1]
-        M <- limits[2]
-        limits <- c(m, M)
-    } else {
-        M <- max(mat$score, na.rm = TRUE, is.finite = TRUE)
-        m <- min(mat$score, na.rm = TRUE, is.finite = TRUE)
-        mm <- max(abs(c(m, M)))
-        limits <- c(-abs(mm), abs(mm))
-    }
-
-    ## -- Clamp scores to limits
-    mat <- dplyr::mutate(mat, score = ifelse(score > M, M, ifelse(score < m, m, score)))
-
-    ## -- Plot matrix
-    p <- ggcorrmatrix(mat, cols = bbr_colors, limits = limits) +
-        plotFun +
-        ggplot2::labs(
-            x = unique(mat$seqnames1),
-            y = unique(mat$seqnames1)
-        )
-
-    p
-}
-
-#' plotOverExpected
-#'
-#' @param gis gis
-#' @param limits limits
-#' @param dpi dpi
-#' @param rasterize rasterize
-#' @param return_expected return_expected
-#' @param return_all return_all
-#'
-#' @import ggrastr
-#' @import ggplot2
-#' @import tibble
-#' @import dplyr
-#' @export
-
-plotOverExpected <- function(gis,
-                             limits = c(-1, 1),
-                             dpi = 500,
-                             rasterize = TRUE,
-                             return_expected = FALSE,
-                             return_all = FALSE) {
-    `%>%` <- tidyr::`%>%`
-
-    # -- Define plotting approach
-    if (rasterize) {
-        plotFun <- ggrastr::geom_tile_rast(raster.dpi = dpi)
-    }
-    else {
-        plotFun <- ggplot2::geom_tile()
-    }
-
-    ## -- Convert gis to table and extract x/y
-    mat <- gis %>%
-        tibble::as_tibble() %>%
-        dplyr::mutate(
-            x = floor(end1 - (end1 - start1) / 2),
-            y = floor(end2 - (end2 - start2) / 2)
-        )
-
-    ## -- Compute expected and overExpected score
-    mat <- normalizeOverExpected(mat)
-
-    if (return_expected) {
-        mat$score <- mat$expected
-    }
-    # else if (return_all = TRUE) {
-    #     mat$score <- mat$scoreOverExpected
-    # }
-    else {
-        mat$score <- mat$scoreOverExpected
-    }
-
-    ## -- Matrix limits
-    if (!is.null(limits)) {
-        m <- limits[1]
-        M <- limits[2]
-        limits <- c(m, M)
-    } else {
-        M <- max(mat$score, na.rm = TRUE, is.finite = TRUE)
-        m <- min(mat$score, na.rm = TRUE, is.finite = TRUE)
-        mm <- max(abs(c(m, M)))
-        limits <- c(-abs(mm), abs(mm))
-    }
-
-    ## -- Clamp scores to limits
-    mat <- dplyr::mutate(mat, score = ifelse(score > M, M, ifelse(score < m, m, score)))
-
-    ## -- Add lower triangular matrix scores
-    mat <- rbind(mat, mat %>% dplyr::mutate(x2 = y, y = x, x = x2) %>% dplyr::select(-x2))
-
-    ## -- Plot matrix
-    p <- ggmatrix(mat, cols = bwr_colors, limits = limits) +
-        plotFun +
-        ggplot2::labs(
-            x = unique(mat$seqnames1),
-            y = unique(mat$seqnames1)
-        )
-
-    ## -- Add bluring to avoid speckles
-    # p <- ggfx::with_blur(p, sigma = 10)
 
     p
 }
@@ -479,67 +287,32 @@ plotTriangularMatrix <- function(gis, limits = NULL, dist_max = NULL, cmap = afm
     p
 }
 
-#' plotMatrixList
+#' ggmatrix
 #'
-#' @param ls ls
+#' @param mat mat
+#' @param ticks ticks
+#' @param cols cols
 #' @param limits limits
-#' @param dist_max dist_max
 #'
-#' @import tibble
-#' @import dplyr
 #' @import ggplot2
-#' @importFrom cowplot plot_grid
-#' @importFrom cowplot get_legend
+#' @import scales
 #' @export
 
-plotMatrixList <- function(ls, limits = NULL, dist_max = 0.2) {
-    `%>%` <- tidyr::`%>%`
-
-    ## -- Matrix limits
-    if (is.null(limits)) {
-        ## -- Convert gis to table and extract x/y
-        ma <- lapply(ls, function(gis) {
-            mat <- gis %>%
-                tibble::as_tibble() %>%
-                dplyr::mutate(
-                    x = floor(end1 - (end1 - start1) / 2),
-                    y = floor(end2 - (end2 - start2) / 2)
-                )
-
-            ## -- Truncate to the max distance
-            binsize <- unique(mat$start2 - mat$start1)[2]
-            if (dist_max > diff(range(mat$x))) dist_max <- diff(range(mat$x))
-            if (dist_max < 1) {
-                dist_max <- diff(range(mat$start2 - mat$start1)) * dist_max
-            }
-            max_bin_dist <- floor(dist_max / binsize)
-            mat <- dplyr::filter(mat, abs(bin2 - bin1) <= max_bin_dist)
-            return(mat)
-        }) %>% dplyr::bind_rows()
-        M <- max(ma$score, na.rm = TRUE)
-        m <- min(ma$score, na.rm = TRUE)
-        limits <- c(m, M)
-    }
-    plot_list <- lapply(ls, plotTriangularMatrix, limits = limits, dist_max = dist_max)
-    plot_list_no_legend <- cowplot::plot_grid(
-        plotlist = lapply(plot_list, function(p) {
-            p + theme(legend.position = "none")
-        }),
-        ncol = 1
-    )
-    legend <- cowplot::get_legend(plot_list[[1]])
-    plots <- cowplot::plot_grid(
-        plot_list_no_legend,
-        legend,
-        rel_heights = c(length(plot_list), .1),
-        ncol = 1,
-        axis = "tblr",
-        align = "vh"
-    ) + theme(plot.background = element_rect(fill = "white", colour = NA))
-    return(plots)
+ggMatrix <- function(mat, ticks = TRUE, cols = afmhotr_colors, limits) {
+    p <- ggplot2::ggplot(mat, ggplot2::aes(x, y, fill = score))
+    p <- p + ggplot2::scale_fill_gradientn(
+        colors = cols,
+        na.value = "#FFFFFF",
+        limits = limits
+    ) +
+        ggplot2::scale_x_continuous(expand = c(0, 0), labels = scales::unit_format(unit = "M", scale = 1e-6)) +
+        ggplot2::scale_y_reverse(expand = c(0, 0), labels = scales::unit_format(unit = "M", scale = 1e-6)) +
+        ggplot2::guides(fill = ggplot2::guide_colorbar(barheight = ggplot2::unit(5, "cm"), barwidth = 0.5, frame.colour = "black")) +
+        ggtheme_HiContacts()
+    p
 }
 
-#' plotAggregatedMatrix
+#' APA
 #'
 #' @param file file
 #' @param coords coords
@@ -562,7 +335,7 @@ plotMatrixList <- function(ls, limits = NULL, dist_max = 0.2) {
 #' @importFrom GenomicRanges width
 #' @export
 
-plotAggregatedMatrix <- function(file, coords, res = NULL, limits = NULL, dpi = 500, rasterize = TRUE, symmetrical = TRUE, BPPARAM = BiocParallel::bpparam(), scale = FALSE, cmap = afmhotr_colors) {
+APA <- function(file, coords, res = NULL, limits = NULL, dpi = 500, rasterize = TRUE, symmetrical = TRUE, BPPARAM = BiocParallel::bpparam(), scale = FALSE, cmap = afmhotr_colors) {
     `%>%` <- tidyr::`%>%`
 
     ## -- Coerce loops into coords and coords2
@@ -689,7 +462,7 @@ plotAggregatedMatrix <- function(file, coords, res = NULL, limits = NULL, dpi = 
         }
 
         ## -- Plot matrix
-        p <- ggmatrix(mats, cols = cmap, limits = limits) +
+        p <- ggMatrix(mats, cols = cmap, limits = limits) +
             plotFun +
             ggplot2::labs(
                 x = unique(mats$seqnames1),
@@ -698,28 +471,4 @@ plotAggregatedMatrix <- function(file, coords, res = NULL, limits = NULL, dpi = 
 
         p
     }
-}
-
-
-ggPs <- function(p, xlim = c(5000, 4.99e5), ylim = c(1e-8, 1e-4)) {
-    p <- p + 
-        geom_line() + 
-        theme_minimal() + 
-        theme(panel.border = element_rect(fill = NA)) + 
-        theme(panel.grid.minor = element_blank()) +
-        scale_y_log10(
-            limits = ylim, 
-            expand = c(0, 0), 
-            breaks = scales::trans_breaks("log10", function(x) 10^x),
-            labels = scales::trans_format("log10", scales::math_format(10^.x))
-        ) + 
-        scale_x_log10(
-            limits = xlim, 
-            expand = c(0, 0), 
-            breaks = c(1, 10, 100, 1000, 10000, 50000, 1e+05, 500000, 1e+06, 500000, 1e+07, 5e+07, 1e+08, 5e+08, 1e+09, 1e+10),
-            labels = c('1', '10', '100', '1kb', '10kb', '50kb', '100kb', '500kb', '1Mb', '5Mb', '10Mb', '50Mb', '100Mb', '500Mb', '1Gb', '10Gb')
-        ) + 
-        annotation_logticks(outside = TRUE) + 
-        labs(x = "Genomic distance", y = "Contact frequency")
-    return(p)
 }

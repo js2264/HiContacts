@@ -1,89 +1,3 @@
-#' lsCoolFiles
-#'
-#' @param file file
-#' @param full.list full.list
-#'
-#' @import rhdf5
-#' @import stringr
-#' @import tidyr
-#' @export
-
-lsCoolFiles <- function(file, full.list = FALSE) {
-    `%>%` <- tidyr::`%>%`
-    x <- rhdf5::h5ls(file)
-    message("\nPossible paths:\n", paste0("\t", x$group, "/", x$name, "\n") %>% unique() %>% stringr::str_replace("//", ""))
-    if (full.list) x
-}
-
-#' lsCoolResolutions
-#'
-#' @param file file
-#' @param full.list full.list
-#'
-#' @import tools
-#' @import rhdf5
-#' @import tidyr
-#' @export
-
-lsCoolResolutions <- function(file, full.list = FALSE) {
-    if (tools::file_ext(file) != "mcool") stop("Provided file is not .mcool multi-resolution map. Aborting now.")
-    `%>%` <- tidyr::`%>%`
-    x <- rhdf5::h5ls(file)
-    rez <- gsub("/resolutions/", "", x$group) %>%
-        grep(., , pattern = "/", invert = TRUE, value = TRUE) %>%
-        unique() %>%
-        as.numeric() %>%
-        sort() %>%
-        as.character()
-    message("\nAvailable resolutions:\n", paste0(rez, collapse = ", "))
-    if (full.list) {
-        x
-    } else {
-        invisible(rez)
-    }
-}
-
-#' peekCool
-#'
-#' @param file file
-#' @param path path
-#' @param res res
-#'
-#' @importFrom glue glue
-#' @import rhdf5
-#' @export
-
-peekCool <- function(file, path, res = NULL) {
-    path <- ifelse(is.null(res), glue::glue("/{path}"), glue::glue("/resolutions/{res}/{path}"))
-    res <- as.vector(rhdf5::h5read(file, name = path))
-    if (is.list(res)) {
-        lapply(
-            res,
-            head
-        )
-    }
-    else {
-        head(res)
-    }
-}
-
-#' fetchCool
-#'
-#' @param file file
-#' @param path path
-#' @param res res
-#' @param idx idx
-#' @param ... ...
-#'
-#' @importFrom glue glue
-#' @import rhdf5
-#' @export
-
-fetchCool <- function(file, path, res = NULL, idx = NULL, ...) {
-    path <- ifelse(is.null(res), glue::glue("/{path}"), glue::glue("/resolutions/{res}/{path}"))
-    as.vector(rhdf5::h5read(file, name = path, index = list(idx), ...))
-}
-
 #' splitCoords
 #'
 #' @param coords coords
@@ -117,6 +31,24 @@ splitCoords <- function(coords) {
             "start" = start,
             "end" = end
         )
+    }
+}
+
+formatCoords <- function(coords) {
+    if (class(coords)[1] == "GRanges") {
+        chr <- as.vector(GenomicRanges::seqnames(coords))
+        start <- GenomicRanges::start(coords)
+        end <- GenomicRanges::end(coords)
+        paste0(chr, ':', format(start, big.mark=","), '-', format(end, big.mark=","))
+    }
+    else {
+        chr <- stringr::str_replace(coords, ":.*", "")
+        start <- suppressWarnings(as.numeric(stringr::str_replace_all(coords, ".*:|-.*", "")))
+        end <- suppressWarnings(as.numeric(stringr::str_replace(coords, ".*-", "")))
+        if (is.na(start)) {
+            return(chr)
+        }
+        paste0(chr, ':', format(start, big.mark=","), '-', format(end, big.mark=","))
     }
 }
 

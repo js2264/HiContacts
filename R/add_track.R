@@ -31,7 +31,7 @@ addTracks <- function(p, range, annotations = NULL, profiles = NULL) {
             ggplot2::geom_rect(ggplot2::aes(xmin = start, xmax = end, ymin = 0, ymax = 1), col = "#444444", size = 0.2) +
             ggplot2::scale_x_continuous(expand = c(0, 0), labels = scales::unit_format(unit = "M", scale = 1e-6)) +
             ggplot2::scale_y_continuous(expand = c(0, 0)) +
-            ggtheme_coolerr_tracks()
+            ggtheme_HiContacts_tracks()
     })
 
     ## -- Get annotations
@@ -44,7 +44,7 @@ addTracks <- function(p, range, annotations = NULL, profiles = NULL) {
             ggplot2::geom_path(ggplot2::aes(x, y)) +
             ggplot2::scale_x_continuous(expand = c(0, 0), labels = scales::unit_format(unit = "M", scale = 1e-6)) +
             ggplot2::scale_y_continuous(expand = c(0, 0)) +
-            ggtheme_coolerr_tracks()
+            ggtheme_HiContacts_tracks()
     })
 
     ## -- Combine tracks and heatmap

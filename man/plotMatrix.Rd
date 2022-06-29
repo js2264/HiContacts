@@ -4,10 +4,24 @@
 \alias{plotMatrix}
 \title{plotMatrix}
 \usage{
-plotMatrix(gis, limits = NULL, dpi = 500, rasterize = TRUE, symmetrical = TRUE)
+plotMatrix(
+  gis,
+  colour_by = "score",
+  scale = "log10",
+  loops = NULL,
+  borders = NULL,
+  limits = NULL,
+  dpi = 500,
+  rasterize = TRUE,
+  symmetrical = TRUE,
+  chrom_lines = TRUE,
+  cmap = NULL
+)
 }
 \arguments{
 \item{gis}{gis}
+
+\item{scale}{scale}
 
 \item{limits}{limits}
 
@@ -16,6 +30,10 @@ plotMatrix(gis, limits = NULL, dpi = 500, rasterize = TRUE, symmetrical = TRUE)
 \item{rasterize}{rasterize}
 
 \item{symmetrical}{symmetrical}
+
+\item{chrom_lines}{chrom_lines}
+
+\item{cmap}{color map}
 }
 \description{
 plotMatrix
