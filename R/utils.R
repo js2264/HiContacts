@@ -34,6 +34,16 @@ splitCoords <- function(coords) {
     }
 }
 
+#' formatCoords
+#'
+#' @param coords coords
+#'
+#' @import stringr
+#' @importFrom GenomicRanges seqnames
+#' @importFrom GenomicRanges start
+#' @importFrom GenomicRanges end
+#' @export
+
 formatCoords <- function(coords) {
     if (class(coords)[1] == "GRanges") {
         chr <- as.vector(GenomicRanges::seqnames(coords))
@@ -48,7 +58,7 @@ formatCoords <- function(coords) {
         if (is.na(start)) {
             return(chr)
         }
-        paste0(chr, ':', format(start, big.mark=","), '-', format(end, big.mark=","))
+        paste0(chr, ':', format(start, big.mark=",", scientific = FALSE), '-', format(end, big.mark=",", scientific = FALSE))
     }
 }
 

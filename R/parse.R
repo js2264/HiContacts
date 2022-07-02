@@ -271,12 +271,12 @@ cool2gi <- function(file, coords = NULL, coords2 = NULL, res = NULL) {
 #' @importFrom GenomicRanges mcols
 #' @export
 
-gi2cm <- function(gi, fill = "count") {
+gi2cm <- function(gi) {
     InteractionSet::inflate(
         gi,
         rows = 1:length(InteractionSet::regions(gi)),
         columns = 1:length(InteractionSet::regions(gi)),
-        fill = GenomicRanges::mcols(gi)[[fill]]
+        fill = GenomicRanges::mcols(gi)[['score']]
     )
 }
 
