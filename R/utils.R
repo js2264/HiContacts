@@ -138,3 +138,18 @@ getHicStats <- function(hicstuff_log) {
 
     return(stats)
 }
+
+fullContactInteractions <- function(chr, start, end, binning) {
+    full_anchors <- GRanges(
+        seqnames = chr, 
+        IRanges::IRanges(
+            start = seq(start, end-1, by = binning),
+            width = binning
+        )
+    )
+    GInteractions(
+        full_anchors[rep(seq_along(full_anchors), length(full_anchors))], 
+        full_anchors[rep(seq_along(full_anchors), each = length(full_anchors))], 
+        full_anchors
+    )
+}

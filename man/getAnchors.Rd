@@ -4,15 +4,15 @@
 \alias{getAnchors}
 \title{getAnchors}
 \usage{
-getAnchors(file, res = NULL, balanced = "cooler")
+getAnchors(file, resolution = NULL, balanced = "cooler")
 }
 \arguments{
 \item{file}{file}
 
-\item{res}{res}
+\item{resolution}{resolution}
 
 \item{balanced}{balanced}
 }
 \description{
-This was adapted from \code{dovetail-genomics/coolR}
+getAnchors
 }

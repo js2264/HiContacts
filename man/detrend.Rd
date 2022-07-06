@@ -4,7 +4,7 @@
 \alias{detrend}
 \title{detrend}
 \usage{
-detrend(gis, update_scores = FALSE)
+detrend(x, use.assay = "balanced")
 }
 \arguments{
 \item{gis}{gis}

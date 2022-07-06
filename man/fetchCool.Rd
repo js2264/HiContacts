@@ -4,14 +4,14 @@
 \alias{fetchCool}
 \title{fetchCool}
 \usage{
-fetchCool(file, path, res = NULL, idx = NULL, ...)
+fetchCool(file, path, resolution = NULL, idx = NULL, ...)
 }
 \arguments{
 \item{file}{file}
 
 \item{path}{path}
 
-\item{res}{res}
+\item{resolution}{resolution}
 
 \item{idx}{idx}
 

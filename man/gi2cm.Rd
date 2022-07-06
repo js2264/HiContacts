@@ -4,7 +4,7 @@
 \alias{gi2cm}
 \title{gi2cm}
 \usage{
-gi2cm(gi, fill = "count")
+gi2cm(gi)
 }
 \arguments{
 \item{gi}{gi}

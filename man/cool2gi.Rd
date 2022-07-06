@@ -4,7 +4,7 @@
 \alias{cool2gi}
 \title{cool2gi}
 \usage{
-cool2gi(file, coords = NULL, coords2 = NULL, res = NULL)
+cool2gi(file, coords = NULL, coords2 = NULL, resolution = NULL)
 }
 \arguments{
 \item{file}{file}
@@ -13,7 +13,7 @@ cool2gi(file, coords = NULL, coords2 = NULL, res = NULL)
 
 \item{coords2}{coords2}
 
-\item{res}{res}
+\item{resolution}{resolution}
 }
 \description{
 cool2gi

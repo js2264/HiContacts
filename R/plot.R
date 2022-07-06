@@ -1,6 +1,7 @@
 #' plotMatrix
 #'
-#' @param gis gis
+#' @param x x
+#' @param use.assay use.assay
 #' @param scale scale
 #' @param limits limits
 #' @param dpi dpi
@@ -17,7 +18,7 @@
 #' @importFrom GenomicRanges seqnames
 #' @export
 
-plotMatrix <- function(x, use.assay, scale = 'log10', loops = NULL, borders = NULL, limits = NULL, dpi = 500, rasterize = TRUE, symmetrical = TRUE, chrom_lines = TRUE, cmap = NULL) {
+plotMatrix <- function(x, use.assay = 'balanced', scale = 'log10', loops = NULL, borders = NULL, limits = NULL, dpi = 500, rasterize = TRUE, symmetrical = TRUE, chrom_lines = TRUE, cmap = NULL) {
     `%>%` <- tidyr::`%>%`
     
     if (!missing(use.assay))
@@ -176,120 +177,6 @@ plotMatrix <- function(x, use.assay, scale = 'log10', loops = NULL, borders = NU
     p
 }
 
-#' plotTriangularMatrix
-#'
-#' @param gis gis
-#' @param limits limits
-#' @param dist_max dist_max
-#' @param cmap cmap
-#'
-#' @import ggplot2
-#' @import tibble
-#' @import dplyr
-#' @export
-
-plotTriangularMatrix <- function(gis, limits = NULL, dist_max = NULL, cmap = afmhotr_colors) {
-    `%>%` <- tidyr::`%>%`
-
-    ## -- Convert gis to table and extract x/y
-    mat <- gis %>%
-        tibble::as_tibble() %>%
-        dplyr::mutate(
-            x = floor(end1 - (end1 - start1) / 2),
-            y = floor(end2 - (end2 - start2) / 2)
-        )
-
-    ## -- Truncate to the max distance
-    binsize <- unique(mat$start2 - mat$start1)[2]
-    if (is.null(dist_max)) {
-        dist_max <- diff(range(mat$start2 - mat$start1)) * 0.2
-    }
-    else {
-        if (dist_max > diff(range(mat$x))) dist_max <- diff(range(mat$x))
-        if (dist_max < 1) {
-            dist_max <- diff(range(mat$start2 - mat$start1)) * dist_max
-        }
-    }
-    max_bin_dist <- floor(dist_max / binsize)
-    mat <- dplyr::filter(mat, abs(bin2 - bin1) <= max_bin_dist)
-
-    ## -- Matrix limits
-    if (!is.null(limits)) {
-        m <- limits[1]
-        M <- limits[2]
-    } else {
-        M <- max(mat$score, na.rm = TRUE)
-        m <- min(mat$score, na.rm = TRUE)
-        limits <- c(m, M)
-    }
-
-    ## -- Clamp scores to limits
-    mat <- dplyr::mutate(mat, score = ifelse(score > M, M, ifelse(score < m, m, score)))
-
-    ## -- Add lower triangular matrix scores
-    mat <- rbind(mat, mat %>% dplyr::mutate(x2 = y, y = x, x = x2) %>% dplyr::select(-x2))
-
-    ## -- Get coordinates for rotated squares
-    mat_ <- mat %>%
-        ## -- Filter upper diagonal
-        dplyr::filter(y >= x) %>%
-        ## -- Recompute center of each bin and distance to the diagonal
-        dplyr::mutate(
-            x_ = x + (y - x) / 2,
-            dist = (y - x) / {
-                sqrt(2) * sqrt(2)
-            },
-            ID = 1:dplyr::n()
-        ) %>%
-        ## -- Group by bins
-        dplyr::group_by(ID) %>%
-        ## -- Compute each corner of each of the 45deg-tilted bins
-        dplyr::mutate(
-            A_x = x_ - binsize / 2,
-            A_y = dist,
-            B_x = x_,
-            B_y = dist + binsize / 2,
-            C_x = x_ + binsize / 2,
-            C_y = dist,
-            D_x = x_,
-            D_y = dist - binsize / 2
-        ) %>%
-        tidyr::pivot_longer(cols = dplyr::starts_with(c("A_", "B_", "C_", "D_")), names_to = "pt", values_to = "value_coord") %>%
-        tidyr::extract(pt, c("pt", "coord_x"), "(.)_(.)") %>%
-        tidyr::spread(coord_x, value_coord) %>%
-        dplyr::mutate(y = ifelse(y < 0, 0, ifelse(y > max_bin_dist * binsize / 2, max_bin_dist * binsize / 2, y)))
-
-    ## -- Compute triangular truncated border
-    M_y <- max(mat_$y)
-    uptri <- tibble::tibble(
-        x = c(
-            min(mat_$x),
-            min(mat_$x) + max_bin_dist * binsize / 2,
-            max(mat_$x) - max_bin_dist * binsize / 2,
-            max(mat_$x)
-        ),
-        y = c(0, M_y, M_y, 0)
-    )
-
-    ## -- Plot matrix
-    p <- ggtiltedmatrix(mat_, cols = cmap, limits = limits) +
-        ggplot2::geom_polygon() +
-        ggplot2::labs(
-            x = unique(mat$seqnames1),
-            y = ""
-        ) +
-        ggplot2::geom_polygon(
-            data = uptri,
-            ggplot2::aes(x, y),
-            col = "black",
-            fill = NA,
-            size = 0.2,
-            inherit.aes = FALSE
-        )
-
-    p
-}
-
 #' ggmatrix
 #'
 #' @param mat mat
@@ -308,7 +195,7 @@ ggMatrix <- function(mat, ticks = TRUE, cols = afmhotr_colors, limits) {
         na.value = "#FFFFFF",
         limits = limits
     ) +
-        ggplot2::scale_x_continuous(expand = c(0, 0), labels = scales::unit_format(unit = "M", scale = 1e-6)) +
+        ggplot2::scale_x_continuous(expand = c(0, 0), labels = scales::unit_format(unit = "M", scale = 1e-6), position = 'top') +
         ggplot2::scale_y_reverse(expand = c(0, 0), labels = scales::unit_format(unit = "M", scale = 1e-6)) +
         ggplot2::guides(fill = ggplot2::guide_colorbar(barheight = ggplot2::unit(5, "cm"), barwidth = 0.5, frame.colour = "black")) +
         ggtheme_HiContacts()

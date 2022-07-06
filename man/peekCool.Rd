@@ -4,14 +4,14 @@
 \alias{peekCool}
 \title{peekCool}
 \usage{
-peekCool(file, path, res = NULL)
+peekCool(file, path, resolution = NULL)
 }
 \arguments{
 \item{file}{file}
 
 \item{path}{path}
 
-\item{res}{res}
+\item{resolution}{resolution}
 }
 \description{
 peekCool

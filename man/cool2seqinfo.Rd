@@ -4,12 +4,12 @@
 \alias{cool2seqinfo}
 \title{cool2seqinfo}
 \usage{
-cool2seqinfo(file, res = NULL)
+cool2seqinfo(file, resolution = NULL)
 }
 \arguments{
 \item{file}{file}
 
-\item{res}{res}
+\item{resolution}{resolution}
 }
 \description{
 cool2seqinfo

@@ -4,7 +4,7 @@
 \alias{getCounts}
 \title{getCounts}
 \usage{
-getCounts(file, coords, anchors, coords2 = NULL, res = NULL)
+getCounts(file, coords, anchors, coords2 = NULL, resolution = NULL)
 }
 \arguments{
 \item{file}{file}
@@ -15,8 +15,8 @@ getCounts(file, coords, anchors, coords2 = NULL, res = NULL)
 
 \item{coords2}{coords2}
 
-\item{res}{res}
+\item{resolution}{resolution}
 }
 \description{
-getCounts
+This was adapted from \code{dovetail-genomics/coolR}
 }

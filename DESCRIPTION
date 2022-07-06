@@ -1,6 +1,6 @@
 Package: HiContacts
 Title: HiContacts: R interface to cool files
-Version: 0.0.0.9001
+Version: 0.9.0
 Authors@R: 
     person(given = "Jacques",
            family = "Serizay",

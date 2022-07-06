@@ -5,8 +5,8 @@
 \title{plotMatrix}
 \usage{
 plotMatrix(
-  gis,
-  colour_by = "score",
+  x,
+  use.assay = "balanced",
   scale = "log10",
   loops = NULL,
   borders = NULL,
@@ -19,7 +19,9 @@ plotMatrix(
 )
 }
 \arguments{
-\item{gis}{gis}
+\item{x}{x}
+
+\item{use.assay}{use.assay}
 
 \item{scale}{scale}
 

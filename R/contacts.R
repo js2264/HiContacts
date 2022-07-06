@@ -23,7 +23,7 @@ methods::setClass("contacts",
     )
 )
 
-contacts <- function(cool_path, resolution, focus = NULL, metadata = NULL) {
+contacts <- function(cool_path, resolution = NULL, focus = NULL, metadata = NULL, features = NULL) {
     
     ## -- Check that provided file is valid 
     check_cool_file(cool_path)
@@ -31,7 +31,7 @@ contacts <- function(cool_path, resolution, focus = NULL, metadata = NULL) {
     ## -- Read resolutions
     resolutions <- lsCoolResolutions(cool_path, full.list = FALSE, silent = TRUE)
     res <- resolutions[length(resolutions)]
-    if (!missing(resolution)) {
+    if (!is.null(resolution)) {
         current_res <- resolution
     }
     else {
@@ -43,6 +43,16 @@ contacts <- function(cool_path, resolution, focus = NULL, metadata = NULL) {
 
     ## -- Read seqinfo
     si <- cool2seqinfo(cool_path, res)
+
+    ## -- Import features
+    if (is.null(features)) {
+        features <- S4Vectors::SimpleList(
+            'loops' = GenomicRanges::GRanges(), 
+            'borders' = GenomicRanges::GRanges(), 
+            'compartments' = GenomicRanges::GRanges(), 
+            'viewpoints' = GenomicRanges::GRanges()
+        )
+    }
 
     ## -- Tile the genome
     bins <- GenomicRanges::tileGenome(
@@ -66,12 +76,7 @@ contacts <- function(cool_path, resolution, focus = NULL, metadata = NULL) {
             'raw' = mcols$count, 
             'balanced' = mcols$score
         ), 
-        features = S4Vectors::SimpleList(
-            'loops' = GenomicRanges::GRanges(), 
-            'borders' = GenomicRanges::GRanges(), 
-            'compartments' = GenomicRanges::GRanges(), 
-            'viewpoints' = GenomicRanges::GRanges()
-        )
+        features = features
     )
     validObject(x)
     return(x)
@@ -97,19 +102,23 @@ setValidity("contacts",
 #                                                                              #
 ################################################################################
 
-setGeneric("zoom", function(x, focus, resolution) {standardGeneric("zoom")})
-setMethod("zoom", 
-    signature("contacts", "GRangesOrcharacterOrNULL", "numeric"), 
-    function(x, focus, resolution) {
-        y <- contacts(
-            path(x), 
-            resolution = ifelse(!is.null(resolution), resolution, resolution(x)), 
-            focus = ifelse(!is.null(focus), focus, focus(x)), 
-            metadata = S4Vectors::metadata(x))
-        validObject(y)
-        y
-    }
-)
+zoom <- function(x, focus = NULL, resolution = NULL) {
+    res <- ifelse(!is.null(resolution), resolution, resolution(x))
+    foc <- case_when(
+        is.null(focus) & !is.null(focus(x)) ~ list(focus(x)), 
+        is.null(focus) & is.null(focus(x)) ~ list(NULL), 
+        !is.null(focus) ~ list(as.character(focus))
+    )[[1]]
+    y <- contacts(
+        path(x), 
+        resolution = res, 
+        focus = foc, 
+        metadata = S4Vectors::metadata(x)
+    )
+    y@features <- features(x)
+    validObject(y)
+    y
+}
 setGeneric("addFeature", function(x, feature, feature.name) {standardGeneric("addFeature")})
 setMethod("addFeature", 
     signature("contacts", "GRangesOrGInteractions", "character"), 
@@ -173,17 +182,6 @@ setMethod("focus", "contacts", function(x) x@focus)
 setMethod("interactions", "contacts", function(x) x@interactions)
 setGeneric("assays", function(x) {standardGeneric("assays")})
 setMethod("assays", "contacts", function(x) x@assays)
-setGeneric("features", function(x) {standardGeneric("features")})
-setMethod("features", "contacts", function(x) {
-    S4Vectors::SimpleList(as.list(x@features))
-})
-setGeneric("feature", function(x, name) {standardGeneric("feature")})
-setMethod("feature", signature(x = "contacts", name = "numericOrcharacter"), function(x, name) {
-    features(x)[[name]]
-})
-setMethod("feature", signature(x = "contacts", name = "missing"), function(x, name) {
-    features(x)[[1]]
-})
 setGeneric("assay", function(x, name) {standardGeneric("assay")})
 setMethod("assay", signature(x = "contacts", name = "numericOrcharacter"), function(x, name) {
     gis <- x@interactions
@@ -195,15 +193,39 @@ setMethod("assay", signature(x = "contacts", name = "missing"), function(x, name
     gis$score <- x@assays[[1]]
     return(gis)
 })
+setGeneric("features", function(x) {standardGeneric("features")})
+setMethod("features", "contacts", function(x) {
+    S4Vectors::SimpleList(as.list(x@features))
+})
+setGeneric("feature", function(x, name) {standardGeneric("feature")})
+setMethod("feature", signature(x = "contacts", name = "numericOrcharacter"), function(x, name) {
+    features(x)[[name]]
+})
+setMethod("feature", signature(x = "contacts", name = "missing"), function(x, name) {
+    features(x)[[1]]
+})
 
 setMethod("anchors", "contacts", function(x) anchors(assay(x, 1)))
 setMethod("regions", "contacts", function(x) regions(assay(x, 1)))
 
 setMethod("show", signature("contacts"), function(object) {
 
+    if (is.null(focus(object))) {
+        focus_str <- "whole genome"
+    } 
+    else if (is(focus(object), 'GRanges') & length(focus(object)) == 1) {
+        focus_str <- formatCoords(focus(object))
+    } 
+    else if (is(focus(object), 'GRanges') & length(focus(object)) > 1) {
+        focus_str <- glue::glue('multiple GRanges({length(focus(object))})')
+    }
+    else if (is(focus(object), 'character')) {
+        focus_str <- formatCoords(focus(object))
+    }
+
     cat(glue::glue('{type(object)} `contacts` object with {format(length(interactions(object)), big.mark = ",")} interactions over {format(length(object), big.mark = ",")} regions'), '\n')
     cat(glue::glue('file: {path(object)}'), '\n')
-    cat(glue::glue('focus: {ifelse(is.null(focus(object)), "whole genome", formatCoords(focus(object)))}'), '\n')
+    cat(glue::glue('focus: {focus_str}'), '\n')
     cat('------------\n')
 
     ## Metadata
