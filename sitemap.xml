@@ -16,13 +16,7 @@
     <loc>/index.html</loc>
   </url>
   <url>
-    <loc>/reference/addLoops.html</loc>
-  </url>
-  <url>
-    <loc>/reference/addTads.html</loc>
-  </url>
-  <url>
-    <loc>/reference/addTracks.html</loc>
+    <loc>/reference/APA.html</loc>
   </url>
   <url>
     <loc>/reference/cool2gi.html</loc>
@@ -31,10 +25,13 @@
     <loc>/reference/cool2seqinfo.html</loc>
   </url>
   <url>
-    <loc>/reference/correlateMatrix.html</loc>
+    <loc>/reference/detrend.html</loc>
   </url>
   <url>
     <loc>/reference/fetchCool.html</loc>
+  </url>
+  <url>
+    <loc>/reference/formatCoords.html</loc>
   </url>
   <url>
     <loc>/reference/getAnchors.html</loc>
@@ -49,25 +46,19 @@
     <loc>/reference/getPs.html</loc>
   </url>
   <url>
-    <loc>/reference/ggcorrmatrix.html</loc>
+    <loc>/reference/ggMatrix.html</loc>
   </url>
   <url>
-    <loc>/reference/ggmatrix.html</loc>
+    <loc>/reference/ggPs.html</loc>
   </url>
   <url>
-    <loc>/reference/ggtheme_coolerr.html</loc>
+    <loc>/reference/ggtheme_HiContacts.html</loc>
   </url>
   <url>
-    <loc>/reference/ggtheme_coolerr_tracks.html</loc>
-  </url>
-  <url>
-    <loc>/reference/ggtiltedmatrix.html</loc>
+    <loc>/reference/ggtheme_HiContacts_tracks.html</loc>
   </url>
   <url>
     <loc>/reference/gi2cm.html</loc>
-  </url>
-  <url>
-    <loc>/reference/iceGis.html</loc>
   </url>
   <url>
     <loc>/reference/index.html</loc>
@@ -79,28 +70,13 @@
     <loc>/reference/lsCoolResolutions.html</loc>
   </url>
   <url>
-    <loc>/reference/normalizeOverExpected.html</loc>
+    <loc>/reference/pairs2gi.html</loc>
   </url>
   <url>
     <loc>/reference/peekCool.html</loc>
   </url>
   <url>
-    <loc>/reference/plotAggregatedMatrix.html</loc>
-  </url>
-  <url>
-    <loc>/reference/plotCorrelatedMatrix.html</loc>
-  </url>
-  <url>
     <loc>/reference/plotMatrix.html</loc>
-  </url>
-  <url>
-    <loc>/reference/plotMatrixList.html</loc>
-  </url>
-  <url>
-    <loc>/reference/plotOverExpected.html</loc>
-  </url>
-  <url>
-    <loc>/reference/plotTriangularMatrix.html</loc>
   </url>
   <url>
     <loc>/reference/splitCoords.html</loc>
