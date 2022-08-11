@@ -19,6 +19,9 @@
     <loc>/reference/APA.html</loc>
   </url>
   <url>
+    <loc>/reference/contacts.html</loc>
+  </url>
+  <url>
     <loc>/reference/cool2gi.html</loc>
   </url>
   <url>
@@ -44,6 +47,9 @@
   </url>
   <url>
     <loc>/reference/getPs.html</loc>
+  </url>
+  <url>
+    <loc>/reference/gg4C.html</loc>
   </url>
   <url>
     <loc>/reference/ggMatrix.html</loc>
@@ -80,5 +86,8 @@
   </url>
   <url>
     <loc>/reference/splitCoords.html</loc>
+  </url>
+  <url>
+    <loc>/reference/zoom.html</loc>
   </url>
 </urlset>
