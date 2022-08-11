@@ -20,6 +20,7 @@
 
 plotMatrix <- function(x, use.assay = 'balanced', scale = 'log10', loops = NULL, borders = NULL, limits = NULL, dpi = 500, rasterize = TRUE, symmetrical = TRUE, chrom_lines = TRUE, cmap = NULL) {
     `%>%` <- tidyr::`%>%`
+    `%over%` <- IRanges::`%over%`
     
     if (!missing(use.assay))
         gis <- assay(x, use.assay)
@@ -66,7 +67,7 @@ plotMatrix <- function(x, use.assay = 'balanced', scale = 'log10', loops = NULL,
     
     # -- Define plotting approach
     if (rasterize) {
-        plotFun <- ggrastr::geom_tile_rast(raster.dpi = dpi)
+        plotFun <- ggrastr::geom_tile_rast(raster.dpi = dpi, width = resolution(x), height = resolution(x))
     }
     else {
         plotFun <- ggplot2::geom_tile()
