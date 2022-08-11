@@ -33,13 +33,17 @@ getPs <- function(pairs, by_chr = FALSE, filtered_chr = c('XII', 'chrXII', 'chr1
         d <- d
     }
     ps <- dplyr::group_split(d) %>% 
-        purrr::map(function(x) {dplyr::mutate(x, norm_p_unity = norm_p / {dplyr::slice(x, which.min(abs(x$binned_distance - 100000))) %>% dplyr::pull(norm_p)})}) %>% 
+        purrr::map(function(x) {
+            dplyr::mutate(x, norm_p_unity = norm_p / {dplyr::slice(x, which.min(abs(x$binned_distance - 100000))) %>% dplyr::pull(norm_p)}) %>% 
+            dplyr::mutate(slope = (log10(lead(norm_p)) - log10(norm_p)) / (log10(lead(binned_distance)) - log10(binned_distance))) %>% 
+            dplyr::mutate(slope = c(0, predict(loess(slope ~ binned_distance, span = 0.5, data = .))))
+        }) %>% 
         dplyr::bind_rows()
     if (by_chr) {
-        ps <- dplyr::select(ps, chr, binned_distance, p, norm_p, norm_p_unity)
+        ps <- dplyr::select(ps, chr, binned_distance, p, norm_p, norm_p_unity, slope)
     } 
     else {
-        ps <- dplyr::select(ps, binned_distance, p, norm_p, norm_p_unity)
+        ps <- dplyr::select(ps, binned_distance, p, norm_p, norm_p_unity, slope)
     }
     return(ps)
 }
