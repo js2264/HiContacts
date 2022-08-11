@@ -4,12 +4,12 @@
 \alias{lsCoolResolutions}
 \title{lsCoolResolutions}
 \usage{
-lsCoolResolutions(file, full.list = FALSE, silent = FALSE)
+lsCoolResolutions(file, silent = FALSE)
 }
 \arguments{
 \item{file}{file}
 
-\item{full.list}{full.list}
+\item{silent}{silent}
 }
 \description{
 lsCoolResolutions

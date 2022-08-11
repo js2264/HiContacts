@@ -4,12 +4,10 @@
 \alias{lsCoolFiles}
 \title{lsCoolFiles}
 \usage{
-lsCoolFiles(file, full.list = FALSE)
+lsCoolFiles(file)
 }
 \arguments{
 \item{file}{file}
-
-\item{full.list}{full.list}
 }
 \description{
 lsCoolFiles

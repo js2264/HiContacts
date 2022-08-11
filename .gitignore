@@ -7,3 +7,4 @@ docs
 *bedpe
 *png
 .pre-commit-config.yaml
+inst/extdata/*

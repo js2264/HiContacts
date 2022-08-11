@@ -4,7 +4,7 @@
 \alias{peekCool}
 \title{peekCool}
 \usage{
-peekCool(file, path, resolution = NULL)
+peekCool(file, path, resolution = NULL, n = 10)
 }
 \arguments{
 \item{file}{file}
@@ -12,6 +12,8 @@ peekCool(file, path, resolution = NULL)
 \item{path}{path}
 
 \item{resolution}{resolution}
+
+\item{n}{n}
 }
 \description{
 peekCool
