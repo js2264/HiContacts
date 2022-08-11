@@ -57,6 +57,7 @@ getCounts <- function(file,
                       resolution = NULL) {
     
     `%<-%` <- zeallot::`%<-%`
+    check_cool_format(file, resolution)
 
     ## Get chunks to parse
     if (length(coords) <= 1) { ## coords = NULL or 1 GRanges
@@ -175,6 +176,7 @@ getCounts <- function(file,
 #' @export
 
 fetchCool <- function(file, path, resolution = NULL, idx = NULL, ...) {
+    check_cool_format(file, resolution)
     path <- ifelse(is.null(resolution), glue::glue("/{path}"), glue::glue("/resolutions/{resolution}/{path}"))
     as.vector(rhdf5::h5read(file, name = path, index = list(idx), ...))
 }
@@ -182,46 +184,61 @@ fetchCool <- function(file, path, resolution = NULL, idx = NULL, ...) {
 #' lsCoolFiles
 #'
 #' @param file file
-#' @param full.list full.list
 #'
 #' @import rhdf5
 #' @import stringr
 #' @import tidyr
 #' @export
 
-lsCoolFiles <- function(file, full.list = FALSE) {
+lsCoolFiles <- function(file) {
     `%>%` <- tidyr::`%>%`
-    x <- rhdf5::h5ls(file)
-    message("\nPossible paths:\n", paste0("\t", x$group, "/", x$name, "\n") %>% unique() %>% stringr::str_replace("//", ""))
-    if (full.list) x
+    x <- rhdf5::h5ls(file) %>% 
+        mutate(path = paste0(group, "/", name)) %>% 
+        pull(path) %>% 
+        unique() %>% 
+        stringr::str_replace("//", "/")
+    len <- length(x)
+    if (len > 10) {
+        message(c(
+            paste0(x[1:5], "\n"), 
+            paste0("... (", len-10, " more paths)\n"), 
+            paste0(x[(len-5+1):len], "\n")
+        ))
+    }
+    else {
+        message(paste0(x, "\n"))
+    }
+    invisible(x)
 }
 
 #' lsCoolResolutions
 #'
 #' @param file file
-#' @param full.list full.list
+#' @param silent silent
 #'
 #' @import tools
 #' @import rhdf5
 #' @import tidyr
 #' @export
 
-lsCoolResolutions <- function(file, full.list = FALSE, silent = FALSE) {
-    if (tools::file_ext(file) != "mcool") stop("Provided file is not .mcool multi-resolution map. Aborting now.")
+lsCoolResolutions <- function(file, silent = FALSE) {
     `%>%` <- tidyr::`%>%`
-    x <- rhdf5::h5ls(file)
-    rez <- gsub("/resolutions/", "", x$group) %>%
-        grep(., , pattern = "/", invert = TRUE, value = TRUE) %>%
-        unique() %>%
-        as.numeric() %>%
-        sort() %>%
-        as.character()
-    if (!silent) message("\nAvailable resolutions:\n", paste0(rez, collapse = ", "))
-    if (full.list) {
-        x
-    } else {
-        invisible(as.integer(rez))
+    if (is_cool(file)) {
+        x <- rhdf5::h5ls(file)
+        bin_ends <- peekCool(file, '/bins/end', n = 2)
+        rez <- bin_ends[2] - bin_ends[1]
     }
+    if (is_mcool(file)) {
+        x <- rhdf5::h5ls(file)
+        rez <- gsub("/resolutions/", "", x$group) %>%
+            grep(., , pattern = "/", invert = TRUE, value = TRUE) %>%
+            unique() %>%
+            as.numeric() %>%
+            sort() %>%
+            as.character()
+    }
+    if (!silent) message(S4Vectors::coolcat("resolutions(%d): %s", rez))
+    invisible(as.integer(rez))
 }
 
 #' peekCool
@@ -229,22 +246,21 @@ lsCoolResolutions <- function(file, full.list = FALSE, silent = FALSE) {
 #' @param file file
 #' @param path path
 #' @param resolution resolution
+#' @param n n
 #'
 #' @importFrom glue glue
 #' @import rhdf5
 #' @export
 
-peekCool <- function(file, path, resolution = NULL) {
+peekCool <- function(file, path, resolution = NULL, n = 10) {
+    check_cool_format(file, resolution)
     path <- ifelse(is.null(resolution), glue::glue("/{path}"), glue::glue("/resolutions/{resolution}/{path}"))
     resolution <- as.vector(rhdf5::h5read(file, name = path))
     if (is.list(resolution)) {
-        lapply(
-            resolution,
-            head
-        )
+        lapply(resolution, head, n = n)
     }
     else {
-        head(resolution)
+        head(resolution, n = n)
     }
 }
 
@@ -257,6 +273,7 @@ peekCool <- function(file, path, resolution = NULL) {
 #' @export
 
 cool2seqinfo <- function(file, resolution = NULL) {
+    check_cool_format(file, resolution)
     chroms <- fetchCool(file, "chroms", resolution)
     seqinfo <- GenomeInfoDb::Seqinfo(
         seqnames = as.vector(chroms$name),
@@ -279,6 +296,9 @@ cool2seqinfo <- function(file, resolution = NULL) {
 #' @export
 
 cool2gi <- function(file, coords = NULL, coords2 = NULL, resolution = NULL) {
+    `%<-%` <- zeallot::`%<-%`
+    check_cool_format(file, resolution)
+    c(coords_chr, coords_start, coords_end) %<-% splitCoords(coords)
     anchors <- getAnchors(file, resolution)
     cnts <- getCounts(file, coords = coords, anchors = anchors, coords2 = coords2, resolution = resolution)
     gi <- InteractionSet::GInteractions(
@@ -288,6 +308,12 @@ cool2gi <- function(file, coords = NULL, coords2 = NULL, resolution = NULL) {
     )
     gi$bin1 <- cnts$bin1_id
     gi$bin2 <- cnts$bin2_id
+    if (!is.null(coords_chr) & !is.na(coords_chr) & is.null(coords2)) {
+        gi <- gi[seqnames(InteractionSet::anchors(gi)[[1]]) == coords_chr & seqnames(InteractionSet::anchors(gi)[[2]]) == coords_chr]
+        regs <- unique(c(InteractionSet::anchors(gi)[[1]], InteractionSet::anchors(gi)[[2]]))
+        names(regs) <- paste(GenomicRanges::seqnames(regs), GenomicRanges::start(regs), GenomicRanges::end(regs), sep = "_")
+        InteractionSet::replaceRegions(gi) <- regs
+    }
     if (!is.null(gi$anchor1.weight) & !is.null(gi$anchor2.weight)) {
         gi$score <- gi$count * gi$anchor1.weight * gi$anchor2.weight
     } else {

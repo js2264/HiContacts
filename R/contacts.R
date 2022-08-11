@@ -23,26 +23,60 @@ methods::setClass("contacts",
     )
 )
 
+#' contacts
+#' 
+#' @export
+
 contacts <- function(cool_path, resolution = NULL, focus = NULL, metadata = NULL, features = NULL) {
     
     ## -- Check that provided file is valid 
     check_cool_file(cool_path)
+    check_cool_format(cool_path, resolution)
 
     ## -- Read resolutions
-    resolutions <- lsCoolResolutions(cool_path, full.list = FALSE, silent = TRUE)
-    res <- resolutions[length(resolutions)]
-    if (!is.null(resolution)) {
-        current_res <- resolution
+    resolutions <- lsCoolResolutions(cool_path, silent = TRUE)
+    if (is_mcool(cool_path)) {
+        res <- resolutions[length(resolutions)]
+        if (!is.null(resolution)) {
+            current_res <- resolution
+        }
+        else {
+            current_res <- res
+        }
+    } 
+    else {
+        res <- resolutions[length(resolutions)]
+        current_res <- NULL
+    }
+
+    ## -- Read seqinfo
+    if (is_mcool(cool_path)) {
+        si <- cool2seqinfo(cool_path, res)
     }
     else {
-        current_res <- res
+        si <- cool2seqinfo(cool_path)
+    }
+    
+    ## -- Tile the genome
+    if (is_mcool(cool_path)) {
+        bins <- GenomicRanges::tileGenome(
+            seqlengths = GenomeInfoDb::seqlengths(si), 
+            tilewidth = current_res, 
+            cut.last.tile.in.chrom = TRUE
+        )    
+    }
+    else {
+        bins <- GenomicRanges::tileGenome(
+            seqlengths = GenomeInfoDb::seqlengths(si), 
+            tilewidth = res, 
+            cut.last.tile.in.chrom = TRUE
+        )
     }
 
     ## -- Read interactions
     gis <- cool2gi(cool_path, res = current_res, coords = focus)
-
-    ## -- Read seqinfo
-    si <- cool2seqinfo(cool_path, res)
+    mcols <- GenomicRanges::mcols(gis)
+    GenomicRanges::mcols(gis) <- NULL
 
     ## -- Import features
     if (is.null(features)) {
@@ -54,22 +88,13 @@ contacts <- function(cool_path, resolution = NULL, focus = NULL, metadata = NULL
         )
     }
 
-    ## -- Tile the genome
-    bins <- GenomicRanges::tileGenome(
-        seqlengths = GenomeInfoDb::seqlengths(si), 
-        tilewidth = current_res, 
-        cut.last.tile.in.chrom = TRUE
-    )
-    mcols <- GenomicRanges::mcols(gis)
-    GenomicRanges::mcols(gis) <- NULL
-
     ## -- Create contact object
     x <- methods::new("contacts", 
         focus = focus, 
         metadata = purrr::flatten(c(list(path = cool_path), metadata[names(metadata)!='path'])), 
         seqinfo = si, 
         resolutions = resolutions, 
-        current_resolution = current_res, 
+        current_resolution = ifelse(is_mcool(cool_path), current_res, res), 
         bins = bins, 
         interactions = gis, 
         assays = S4Vectors::SimpleList(
@@ -101,6 +126,10 @@ setValidity("contacts",
 #                                 FUNCTIONS                                    #
 #                                                                              #
 ################################################################################
+
+#' zoom
+#' 
+#' @export
 
 zoom <- function(x, focus = NULL, resolution = NULL) {
     res <- ifelse(!is.null(resolution), resolution, resolution(x))
