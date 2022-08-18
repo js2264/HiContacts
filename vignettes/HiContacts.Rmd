@@ -1,0 +1,237 @@
+---
+title: "HiContacts"
+author: "Jacques Serizay"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+    %\VignetteIndexEntry{Introduction to HiContacts}
+    %\VignetteEngine{knitr::rmarkdown}
+    %\VignetteEncoding{UTF-8}
+---
+
+```{r, eval = TRUE, echo=FALSE, results="hide", warning=FALSE}
+knitr::opts_chunk$set(
+    collapse = TRUE,
+    comment = "#>"
+)
+suppressPackageStartupMessages({
+    library(HiContacts)
+})
+```
+
+HiContacts provides tools to import `(m)cool` matrices in R and work with 
+them there. 
+
+It creates a new `contacts` class of objects, built on pre-existing 
+Bioconductor objects, namely `InteractionSet`, `GenomicInterations` 
+and `ContactMatrix` (`Lun, Perry & Ing-Simmons, F1000Research 2016`), 
+and provides **analytical** and **visualization** tools to investigate 
+contact maps. 
+
+## Import a .(m)cool file as `contacts`
+
+`contacts()` can be used to import a Hi-C matrix. 
+
+```{r}
+cool_file <- HiContactsData::HiContactsData('yeast_wt', format = 'cool')
+range <- 'I:20000-80000' # range of interest
+contacts <- contacts(cool_file, focus = range)
+contacts
+```
+
+`cool2gi` works with `.mcool` files as well: in this case, the user needs to 
+specify the resolution at which count values are recovered. 
+
+```{r}
+mcool_file <- HiContactsData::HiContactsData('yeast_wt', format = 'mcool')
+range <- 'I:1000-80000' # range of interest
+lsCoolResolutions(mcool_file)
+contacts <- contacts(mcool_file, focus = range) # This throws an error!
+contacts <- contacts(mcool_file, focus = range, res = 1000)
+contacts
+```
+
+## Plotting matrices 
+
+### Plot matrix heatmaps
+
+```{r}
+plotMatrix(contacts, use.assay = 'raw')
+plotMatrix(contacts, use.assay = 'balanced', limits = c(-4, -1))
+```
+
+### Plot loops
+
+```{r}
+mcool_file <- HiContactsData::HiContactsData('yeast_wt', format = 'mcool')
+loops <- system.file("extdata", 'S288C-loops.bedpe', package = 'HiContacts') %>% 
+    rtracklayer::import() %>% 
+    InteractionSet::makeGInteractionsFromGRangesPairs()
+contacts(mcool_file, focus = 'IV', res = 1000) %>% 
+    detrend() %>% 
+    plotMatrix(use.assay = 'detrended', loops = loops, scale = 'linear', limits = c(-2, 2))
+```
+
+### Plot borders
+
+```{r}
+borders <- system.file("extdata", 'S288C-borders.bed', package = 'HiContacts') %>% 
+    rtracklayer::import()
+contacts(mcool_file, focus = 'IV', res = 1000) %>% 
+    detrend() %>% 
+    plotMatrix(use.assay = 'detrended', loops = loops, borders = borders, scale = 'linear', limits = c(-2, 2))
+```
+
+## Digging into contact matrices: transformation, comparison and arithmetics
+
+### Subsetting a contact map 
+
+```{r}
+mcool_file <- HiContactsData::HiContactsData('yeast_wt', format = 'mcool')
+contacts <- contacts(mcool_file, focus = 'II', res = 2000)
+contacts2 <- contacts[
+    start(anchors(contacts)[[1]]) < 300000 & end(anchors(contacts)[[1]]) < 300000 & 
+    start(anchors(contacts)[[2]]) < 300000 & end(anchors(contacts)[[2]]) < 300000
+]
+cowplot::plot_grid(
+    plotMatrix(contacts, use.assay = 'balanced', scale = 'log10', limits = c(-4, -1)),
+    plotMatrix(contacts_2, use.assay = 'balanced', scale = 'log10', limits = c(-4, -1))
+)
+```
+
+### Computing autocorrelated contact map 
+
+```{r}
+mcool_file <- HiContactsData::HiContactsData('mESCs', format = 'mcool')
+contacts <- contacts(mcool_file, focus = 'chr13', res = 320000)
+contacts %>% 
+    autocorrelate(ignore_ndiags = 10) %>% 
+    plotMatrix(scale = 'linear', limits = c(-1, 1))
+```
+
+### Detrending contact map (map over expected)
+
+```{r}
+mcool_file <- HiContactsData::HiContactsData('mESCs', format = 'mcool')
+contacts <- contacts(mcool_file, focus = 'chr18:20000000-35000000', res = 40000)
+detrended_contacts <- detrend(contacts)
+cowplot::plot_grid(
+    plotMatrix(contacts, use.assay = 'balanced', limits = c(-4, -1)),
+    plotMatrix(detrended_contacts, use.assay = 'expected'),
+    plotMatrix(detrended_contacts, use.assay = 'detrended', scale = 'linear', limits = c(-3, 3))
+)
+```
+
+### Summing maps
+
+```{r}
+mcool_file_1 <- HiContactsData::HiContactsData('yeast_eco1', format = 'mcool')
+mcool_file_2 <- HiContactsData::HiContactsData('yeast_wt', format = 'mcool')
+contacts_1 <- contacts(mcool_file_1, focus = 'II', res = 2000)
+contacts_1 <- contacts_1[
+    start(anchors(contacts_1)[[1]]) < 300000 & end(anchors(contacts_1)[[1]]) < 300000 & 
+    start(anchors(contacts_1)[[2]]) < 300000 & end(anchors(contacts_1)[[2]]) < 300000
+]
+contacts_2 <- contacts(mcool_file_2, focus = 'II', res = 2000)
+contacts_2 <- contacts_2[
+    start(anchors(contacts_2)[[1]]) > 500000 & end(anchors(contacts_2)[[1]]) > 500000 & 
+    start(anchors(contacts_2)[[2]]) > 500000 & end(anchors(contacts_2)[[2]]) > 500000
+]
+merged_contacts <- merge(contacts_1, contacts_2) 
+merged_contacts
+cowplot::plot_grid(
+    plotMatrix(contacts_1, use.assay = 'balanced', scale = 'log10', limits = c(-4, -1)),
+    plotMatrix(contacts_2, use.assay = 'balanced', scale = 'log10', limits = c(-4, -1)),
+    plotMatrix(merged_contacts, use.assay = 'balanced', scale = 'log10', limits = c(-4, -1))
+)
+```
+
+### Computing ratio between two maps
+
+```{r}
+mcool_file_1 <- HiContactsData::HiContactsData('yeast_eco1', format = 'mcool')
+mcool_file_2 <- HiContactsData::HiContactsData('yeast_wt', format = 'mcool')
+contacts_1 <- contacts(mcool_file_1, focus = 'II', res = 2000)
+contacts_2 <- contacts(mcool_file_2, focus = 'II', res = 2000)
+div_contacts <- divide(contacts_1, by = contacts_2) 
+div_contacts
+cowplot::plot_grid(
+    plotMatrix(contacts_1, use.assay = 'balanced', scale = 'log10', limits = c(-4, -1)),
+    plotMatrix(contacts_2, use.assay = 'balanced', scale = 'log10', limits = c(-4, -1)),
+    plotMatrix(div_contacts, use.assay = 'ratio', scale = 'log2', limits = c(-2, 2), cmap = bwr_colors)
+)
+```
+
+### Virtual 4C
+
+```{r}
+mcool_file <- HiContactsData::HiContactsData('mESCs', format = 'mcool')
+contacts <- contacts(mcool_file, focus = 'chr18:20000000-35000000', res = 40000)
+v4C <- virtual4C(contacts, viewpoint = GRanges('chr18:31000000-31050000'))
+cowplot::plot_grid(
+    gg4C(v4C, aes(x = center, y = score)), 
+    plotMatrix(contacts, use.assay = 'balanced', limits = c(-4, -1)), 
+    ncol = 1, align = 'hv', axis = 'tblr', rel_heights = c(0.2, 1)
+)
+```
+
+### Cis-trans ratios
+
+```{r}
+mcool_file <- HiContactsData::HiContactsData('yeast_wt', format = 'mcool')
+contacts <- contacts(mcool_file, res = 1000)
+cis_trans(contacts)
+```
+
+### P(s)
+
+```{r}
+# Without a pairs file
+mcool_file <- HiContactsData::HiContactsData('yeast_wt', format = 'mcool')
+contacts <- contacts(mcool_file, res = 1000)
+ps <- getPs(contacts)
+ggPs(ps, aes(x = binned_distance, y = norm_p))
+
+# With a pairs file
+pairsFile(contacts) <- HiContactsData::HiContactsData('yeast_wt', format = 'pairs.gz')
+ps <- getPs(contacts)
+ggPs(ps, aes(x = binned_distance, y = norm_p))
+ggPsSlope(ps, aes(x = binned_distance, y = slope))
+
+# Comparing P(s) curves
+c1 <- contacts(
+    HiContactsData::HiContactsData('yeast_wt', format = 'mcool'), 
+    res = 1000, 
+    pairs = HiContactsData::HiContactsData('yeast_wt', format = 'pairs.gz')
+)
+c2 <- contacts(
+    HiContactsData::HiContactsData('yeast_eco1', format = 'mcool'), 
+    res = 1000, 
+    pairs = HiContactsData::HiContactsData('yeast_eco1', format = 'pairs.gz')
+)
+ps_1 <- getPs(c1) %>% mutate(sample = 'WT')
+ps_2 <- getPs(c2) %>% mutate(sample = 'Eco1-AID')
+ps <- bind_rows(ps_1, ps_2)
+ggPs(ps, aes(x = binned_distance, y = norm_p, group = sample, color = sample))
+ggPsSlope(ps, aes(x = binned_distance, y = slope, group = sample, color = sample))
+```
+
+### Aggregated Plot Analysis (APA)
+
+```{r}
+mcool_file <- HiContactsData::HiContactsData('yeast_eco1', format = 'mcool')
+mcool_file <- '~/Projects/20220816_HiContacts_datasets/S288C_WT.mcool'
+contacts <- contacts(mcool_file, res = 1000)
+borders <- system.file("extdata", 'S288C-borders.bed', package = 'HiContacts') %>% 
+    rtracklayer::import()
+features(contacts)
+feature(contacts, 'borders') <- borders
+apa_contacts <- APA(contacts, feature(contacts, 'borders'))
+p <- plotMatrix(apa_contacts, cmap = bwr_colors)
+```
+
+### Scalograms
+
+```{r}
+## TBD
+```
