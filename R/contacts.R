@@ -7,6 +7,28 @@
 setClassUnion("GRangesOrGInteractions", members = c("GRanges", "GInteractions"))
 setClassUnion("GRangesOrcharacterOrNULL", members = c("GRanges", "character", "NULL"))
 setClassUnion("numericOrcharacter", members = c("numeric", "character"))
+setClassUnion("characterOrNULL", members = c("character", "NULL"))
+
+#' contacts S4 class 
+#' 
+#' An S4 class to represent a file-stored (as .(m)cool) contact matrix 
+#' imported in R.
+#'
+#' @slot focus Chr. coordinates for which interaction counts are extracted 
+#'   from the .(m)cool file.
+#' @slot metadata <etadata associated with the .(m)cool file.
+#' @slot seqinfo Seqinfo, deduced from the largest resolution available 
+#'   in the .(m)cool file.
+#' @slot resolutions Resolutions available in the .(m)cool file.
+#' @slot current_resolution Current resolution
+#' @slot bins Genomic bins (computed on-the-fly) of seqinfo at the current 
+#'   resolution
+#' @slot interactions Genomic Interactions extracted from the .(m)cool object
+#' @slot assays Available interaction scores. 
+#' @slot features Genomic features associated with the dataset (e.g. 
+#'   loops, borders, etc...)
+#' @slot pairsFile path for the .pairs file associated with the .(m)cool file
+#' @slot type Optional. Type of contacts matrix (sparse, full, aggr, ratio, ...)
 
 methods::setClass("contacts", 
     contains = c("Annotated"), 
@@ -19,15 +41,18 @@ methods::setClass("contacts",
         bins = "GRanges",
         interactions = "GInteractions",
         assays = "SimpleList", 
-        features = "SimpleList"
+        features = "SimpleList",
+        pairsFile = "characterOrNULL", 
+        type = "characterOrNULL"
     )
 )
 
 #' contacts
 #' 
+#' @import methods
 #' @export
 
-contacts <- function(cool_path, resolution = NULL, focus = NULL, metadata = NULL, features = NULL) {
+contacts <- function(cool_path, resolution = NULL, focus = NULL, metadata = NULL, features = NULL, pairs = NULL) {
     
     ## -- Check that provided file is valid 
     check_cool_file(cool_path)
@@ -88,6 +113,17 @@ contacts <- function(cool_path, resolution = NULL, focus = NULL, metadata = NULL
         )
     }
 
+    ## -- Check pairs file
+    if (!is.null(pairs)) {
+        if (!file.exists(pairs)) {
+            stop("Provided pairs file does not exist. Aborting now.")
+        }
+        pairsFile <- pairs
+    }
+    else {
+        pairsFile <- NULL
+    }
+
     ## -- Create contact object
     x <- methods::new("contacts", 
         focus = focus, 
@@ -101,9 +137,11 @@ contacts <- function(cool_path, resolution = NULL, focus = NULL, metadata = NULL
             'raw' = mcols$count, 
             'balanced' = mcols$score
         ), 
-        features = features
+        features = features, 
+        pairsFile = pairsFile, 
+        type = "sparse"
     )
-    validObject(x)
+    methods::validObject(x)
     return(x)
 } 
 
@@ -129,11 +167,14 @@ setValidity("contacts",
 
 #' zoom
 #' 
+#' @import methods
+#' @importFrom dplyr case_when
+#' @importFrom S4Vectors metadata
 #' @export
 
 zoom <- function(x, focus = NULL, resolution = NULL) {
     res <- ifelse(!is.null(resolution), resolution, resolution(x))
-    foc <- case_when(
+    foc <- dplyr::case_when(
         is.null(focus) & !is.null(focus(x)) ~ list(focus(x)), 
         is.null(focus) & is.null(focus(x)) ~ list(NULL), 
         !is.null(focus) ~ list(as.character(focus))
@@ -148,7 +189,24 @@ zoom <- function(x, focus = NULL, resolution = NULL) {
     validObject(y)
     y
 }
-setGeneric("addFeature", function(x, feature, feature.name) {standardGeneric("addFeature")})
+
+#' addFeature
+#'
+#' @param x a contacts object
+#' @param feature a GRanges or GInteractions object
+#' @param feature.name a name to give to the new features
+#' @return The input contacts object, with a newly added feature
+#' @export
+#' @docType methods
+#' @rdname addFeature-methods
+
+setGeneric("addFeature", function(x, feature, feature.name) {
+    standardGeneric("addFeature")
+})
+
+#' @rdname addFeature-methods
+#' @aliases addFeature,contacts,GRangesOrGInteractions-method
+
 setMethod("addFeature", 
     signature("contacts", "GRangesOrGInteractions", "character"), 
     function(x, feature, feature.name) {
@@ -156,27 +214,6 @@ setMethod("addFeature",
         x
     }
 )
-
-################################################################################
-#                                                                              #
-#                                 METHODS                                      #
-#                                                                              #
-################################################################################
-
-# setGeneric("filter", function(x, locus) {standardGeneric("filter")})
-# setMethod("filter", signature("contacts", locus = "GRanges"), function(x, locus) {
-#     anchors <- InteractionSet::anchors(x@interactions)
-#     left_anchor_in_locus <- seq_along(anchors[[1]]) %in% S4Vectors::queryHits(findOverlaps(anchors[[1]], locus))
-#     right_anchor_in_locus <- seq_along(anchors[[2]]) %in% S4Vectors::queryHits(findOverlaps(anchors[[2]], locus))
-#     subset_interactions <- x@interactions[left_anchor_in_locus & right_anchor_in_locus]
-#     subset_interactions <- reduceRegions(subset_interactions)
-#     subset_assays <- lapply(x@assays, function(assay) {
-#         subset_assay <- assay[left_anchor_in_locus & right_anchor_in_locus,]
-#     }) %>% S4Vectors::SimpleList()
-#     x@interactions <- subset_interactions
-#     x@assays <- subset_assays
-#     return(x)
-# })
 
 ################################################################################
 #                                                                              #
@@ -190,25 +227,54 @@ setMethod("addFeature",
 #                                                                              #
 ################################################################################
 
-# setMethod("length", signature(x = "contacts"), definition = function(x) length(x@regions))
-setMethod("length", "contacts", function(x) length(regions(x)))
-setMethod("dim", "contacts", function(x) dim(gi2cm(assay(x, 1))))
-setGeneric("type", function(x) {standardGeneric("type")})
-setMethod("type", "contacts", function(x) ifelse(length(x)^2 != length(interactions(x)), 'sparse', 'full'))
+#' length method for objects of class \code{contacts}.
+#'
+#' @docType methods
+#' @name length-contacts
+#' @rdname length-contacts
+#' @aliases length-contacts length,contacts-method
+#'
+#' @param x A \code{contacts} object.
+#'
+#' @export
 
+setMethod("length", "contacts", function(x) length(regions(x)))
+
+#' dim method for objects of class \code{contacts}.
+#'
+#' @docType methods
+#' @name dim-contacts
+#' @rdname dim-contacts
+#' @aliases dim-contacts dim,contacts-method
+#'
+#' @param x A \code{contacts} object.
+#'
+#' @export
+
+setMethod("dim", "contacts", function(x) dim(gi2cm(assay(x, 1))))
+
+setMethod('[', signature(x="contacts"), function(x, i) {
+    x@interactions <- interactions(x)[i]
+    for (K in seq_along(assays(x))) {
+        x@assays[[K]] <- x@assays[[K]][i]
+    }
+    return(x)
+})
+
+setGeneric("type", function(x) {standardGeneric("type")})
+setMethod("type", "contacts", function(x) x@type)
 setGeneric("path", function(x) {standardGeneric("path")})
 setMethod("path", "contacts", function(x) S4Vectors::metadata(x)$path)
-setGeneric("seqinfo", function(x) {standardGeneric("seqinfo")})
 setMethod("seqinfo", "contacts", function(x) x@seqinfo)
 setGeneric("resolutions", function(x) {standardGeneric("resolutions")})
 setMethod("resolutions", "contacts", function(x) x@resolutions)
-setGeneric("resolution", function(x) {standardGeneric("resolution")})
 setMethod("resolution", "contacts", function(x) x@current_resolution)
 setGeneric("bins", function(x) {standardGeneric("bins")})
 setMethod("bins", "contacts", function(x) x@bins)
 setGeneric("focus", function(x) {standardGeneric("focus")})
 setMethod("focus", "contacts", function(x) x@focus)
 setMethod("interactions", "contacts", function(x) x@interactions)
+
 setGeneric("assays", function(x) {standardGeneric("assays")})
 setMethod("assays", "contacts", function(x) x@assays)
 setGeneric("assay", function(x, name) {standardGeneric("assay")})
@@ -222,6 +288,14 @@ setMethod("assay", signature(x = "contacts", name = "missing"), function(x, name
     gis$score <- x@assays[[1]]
     return(gis)
 })
+
+setGeneric("assay<-", function(x, name, value) {standardGeneric("assay<-")})
+setMethod("assay<-", c(x = "contacts", name = "numericOrcharacter", value = "numeric"), function(x, name, value) {
+    x@assays[[name]] <- value
+    return(x)
+})
+
+
 setGeneric("features", function(x) {standardGeneric("features")})
 setMethod("features", "contacts", function(x) {
     S4Vectors::SimpleList(as.list(x@features))
@@ -233,9 +307,38 @@ setMethod("feature", signature(x = "contacts", name = "numericOrcharacter"), fun
 setMethod("feature", signature(x = "contacts", name = "missing"), function(x, name) {
     features(x)[[1]]
 })
+setGeneric("feature<-", function(x, name, value) {standardGeneric("feature<-")})
+setMethod("feature<-", signature(x = "contacts", name = "numericOrcharacter", value = "GRangesOrGInteractions"), function(x, name, value) {
+    x@features[[name]] <- value
+    return(x)
+})
+
+setGeneric("pairsFile", function(x, name) {standardGeneric("pairsFile")})
+setMethod("pairsFile", "contacts", function(x) {
+    x@pairsFile
+})
+setGeneric("pairsFile<-", function(x, value) {standardGeneric("pairsFile<-")})
+setMethod("pairsFile<-", signature(x = "contacts", value = "character"), function(x, value) {
+    if (!file.exists(value)) {
+        stop("Provided pairs file does not exist. Aborting now.")
+    }
+    x@pairsFile <- value
+    x
+})
 
 setMethod("anchors", "contacts", function(x) anchors(assay(x, 1)))
 setMethod("regions", "contacts", function(x) regions(assay(x, 1)))
+
+#' Show method for objects of class \code{contacts}.
+#'
+#' @docType methods
+#' @name show-contacts
+#' @rdname show-contacts
+#' @aliases show-contacts show,contacts-method
+#'
+#' @param x A \code{contacts} object.
+#'
+#' @export
 
 setMethod("show", signature("contacts"), function(object) {
 
@@ -275,6 +378,9 @@ setMethod("show", signature("contacts"), function(object) {
 
     ## Features
     cat(glue::glue('features: {paste(paste0(names(features(object)), "(", lengths(features(object)), ")"), collapse = " ")}'), '\n')
+
+    ## Pairs
+    cat(glue::glue('pairs: {ifelse(is.null(object@pairsFile), "N/A", object@pairsFile)}'), '\n')
 
 })
 

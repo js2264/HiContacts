@@ -3,28 +3,47 @@
 #' @param gis gis
 #'
 #' @importFrom scales rescale
+#' @importFrom tibble as_tibble
 #' @importFrom tibble tibble
-#' @import dplyr
+#' @importFrom InteractionSet pairdist
+#' @importFrom dplyr group_by
+#' @importFrom dplyr summarize
+#' @importFrom dplyr pull
+#' @importFrom dplyr mutate
+#' @importFrom dplyr left_join
+#' @import GenomicRanges
 #' @export
 
 detrend <- function(x, use.assay = 'balanced') {
     gis <- assay(x, use.assay)
-    gis$diag <- pairdist(gis) / resolution(x)
-    expected <- as_tibble(gis) %>% 
-        group_by(diag) %>% 
-        summarize(average_interaction_per_diag = mean(score, na.rm = TRUE)) %>% 
-        mutate(average_interaction_per_diag = average_interaction_per_diag / 2)
-    gis$expected <- as_tibble(gis) %>% left_join(expected, by = 'diag') %>% pull(average_interaction_per_diag)
+    gis$diag <- InteractionSet::pairdist(gis) / resolution(x)
+    expected <- tibble::as_tibble(gis) %>% 
+        dplyr::group_by(diag) %>% 
+        dplyr::summarize(average_interaction_per_diag = mean(score, na.rm = TRUE)) %>% 
+        dplyr::mutate(average_interaction_per_diag = average_interaction_per_diag / 2)
+    gis$expected <- tibble::as_tibble(gis) %>% 
+        dplyr::left_join(expected, by = 'diag') %>% 
+        dplyr::pull(average_interaction_per_diag)
     gis$score_over_expected <- log2(gis$score / gis$expected)
     x@assays[['expected']] <- gis$expected
     x@assays[['detrended']] <- gis$score_over_expected
     return(x)
 }
 
+#' smoothen
+#'
+#' @import reticulate
+#' @import GenomicRanges
+#' @importFrom dplyr mutate
+#' @importFrom tidyr pivot_longer
+#' @importFrom tibble as_tibble
+#' @importFrom InteractionSet anchors
+#' @importFrom InteractionSet GInteractions
+#' @importFrom S4Vectors SimpleList
+#' @export
+
 smoothen <- function(x, use.assay = 'balanced', use_serpentine_trend = TRUE, serpentine_niter = 10L, serpentine_ncores = 16L) {
- 
-    # options(reticulate.repl.quiet = TRUE)
-    # reticulate::use_condaenv('tm')
+
     sp <- reticulate::import('serpentine')
     gis <- assay(x, use.assay)
 
@@ -52,11 +71,11 @@ smoothen <- function(x, use.assay = 'balanced', use_serpentine_trend = TRUE, ser
 
     ## Make a full-featured interactions (storing smoothed scores in `score`)
     gis_smoothened <- sK %>%
-        as_tibble() %>% 
-        setNames(start(anchors(gi2cm(gis))$row)) %>%
-        mutate(start1 = start(anchors(gi2cm(gis))$row)) %>% 
-        pivot_longer(-start1, names_to = 'start2', values_to = 'score') %>% 
-        mutate(start2 = as.numeric(start2))
+        tibble::as_tibble() %>% 
+        stats::setNames(GenomicRanges::start(anchors(gi2cm(gis))$row)) %>%
+        dplyr::mutate(start1 = GenomicRanges::start(anchors(gi2cm(gis))$row)) %>% 
+        tidyr::pivot_longer(-start1, names_to = 'start2', values_to = 'score') %>% 
+        dplyr::mutate(start2 = as.numeric(start2))
     an1 <- GenomicRanges::GRanges(
         seqnames = seqnames, 
         IRanges::IRanges(gis_smoothened$start1, width = binsize)
@@ -73,13 +92,28 @@ smoothen <- function(x, use.assay = 'balanced', use_serpentine_trend = TRUE, ser
     )
     x@interactions <- gi
     x@assays <- S4Vectors::SimpleList(smoothen = gis_smoothened$score)
+    x@type <- 'smoothed'
     return(x)
 }
 
-autocorrelate <- function(x, use.assay = 'balanced') {
+#' autocorrelate
+#'
+#' @import InteractionSet
+#' @import stringr
+#' @importFrom tidyr pivot_longer
+#' @importFrom corrr correlate
+#' @importFrom dplyr rename
+#' @importFrom S4Vectors SimpleList
+#' @export
+
+autocorrelate <- function(x, use.assay = 'balanced', ignore_ndiags = 3) {
     gis <- assay(x, use.assay)
     reg <- regions(gis)
     mat <- cm2matrix(gi2cm(gis))
+    sdiag(mat, 0) <- NA
+    for (K in seq(-ignore_ndiags, ignore_ndiags, by = 1)) {
+        sdiag(mat, K) <- NA
+    }
     co <- corrr::correlate(log10(mat), diagonal = 0, method = "pearson", quiet = TRUE)
     colnames(co) <- c('term', names(reg))
     co$term <- names(reg)
@@ -93,22 +127,50 @@ autocorrelate <- function(x, use.assay = 'balanced') {
     )
     x@interactions <- gis2
     x@assays <- S4Vectors::SimpleList(autocorrelation = gis2$score)
+    x@type <- 'autocorr.'
     return(x)
 }
 
-divide <- function(x, by) {
+#' divide
+#'
+#' @import tidyr
+#' @import zeallot
+#' @import reticulate
+#' @import plyranges
+#' @importFrom tibble as_tibble
+#' @importFrom dplyr mutate
+#' @importFrom tidyr pivot_longer
+#' @importFrom GenomicRanges seqnames
+#' @importFrom InteractionSet regions
+#' @importFrom InteractionSet GInteractions
+#' @importFrom S4Vectors metadata
+#' @importFrom S4Vectors SimpleList
+#' @export
+
+divide <- function(x, by, use.assay = 'balanced') {
     `%>%` <- tidyr::`%>%`
     `%<-%` <- zeallot::`%<-%`
     
+    ## -- Check that all objects are comparable (bins, regions, resolution, seqinfo)
+    is_comparable(x, by)
+
+    x_gis <- assay(x, use.assay)
+    by_gis <- assay(by, use.assay)
+
     ## -- If regions are different, manually merge them 
-    InteractionSet::replaceRegions(x) <- unique(c(InteractionSet::regions(x), InteractionSet::regions(by)))
-    InteractionSet::replaceRegions(by) <- unique(c(InteractionSet::regions(x), InteractionSet::regions(by)))
+    InteractionSet::replaceRegions(x_gis) <- unique(
+        c(InteractionSet::regions(x_gis), InteractionSet::regions(by_gis))
+    )
+    InteractionSet::replaceRegions(by_gis) <- unique(
+        c(InteractionSet::regions(x_gis), InteractionSet::regions(by_gis))
+    )
 
     ## -- Convert to matrices 
-    m1 <- cm2matrix(gi2cm(x, fill = 'count'), replace_NA = 0)
-    m2 <- cm2matrix(gi2cm(by, fill = 'count'), replace_NA = 0)
-    binsize <- width(regions(x)[1])[1]
+    m1 <- cm2matrix(gi2cm(x_gis), replace_NA = 0)
+    m2 <- cm2matrix(gi2cm(by_gis), replace_NA = 0)
+    binsize <- resolution(x)
 
+    serpentine <- FALSE
     ## Compute ratio
     if (serpentine) {
         ## -- Run serpentine
@@ -120,17 +182,21 @@ divide <- function(x, by) {
         sK <- sK - trend
     }
     else {
-        sK <- m2/m1
+        sK <- m1/m2
     }
 
     ## Make a full-featured interactions (storing divided scores in `score`)
-    seqnames <- unique(seqnames(regions(x)))
+    seqnames <- unique(GenomicRanges::seqnames(regions(x)))
     mat <- sK %>%
-        as_tibble() %>% 
-        setNames(start(anchors(gi2cm(x, fill = 'score'))$row)) %>%
-        mutate(start2 = start(anchors(gi2cm(by, fill = 'score'))$row)) %>% 
-        pivot_longer(-start2, names_to = 'start1', values_to = 'score') %>% 
-        mutate(start1 = as.numeric(start1))
+        tibble::as_tibble() %>% 
+        setNames(GenomicRanges::start(anchors(gi2cm(x_gis))$row)) %>%
+        dplyr::mutate(start2 = GenomicRanges::start(anchors(gi2cm(by_gis))$row)) %>% 
+        tidyr::pivot_longer(-start2, names_to = 'start1', values_to = 'score') %>% 
+        dplyr::mutate(start1 = as.numeric(start1)) %>%
+        dplyr::mutate(
+            end1 = start1 + binsize, 
+            end2 = start2 + binsize
+        )
     an1 <- GenomicRanges::GRanges(
         seqnames = seqnames, 
         IRanges::IRanges(mat$start1, width = binsize)
@@ -140,20 +206,8 @@ divide <- function(x, by) {
         IRanges::IRanges(mat$start2, width = binsize)
     )
     reg <- unique(c(an1, an2))
-    bins <- as_tibble(c(x, by)) %>% 
-        select(seqnames1, start1, end1, bin1) %>% 
-        distinct() %>% 
-        GenomicRanges::makeGRangesFromDataFrame(seqnames.field = 'seqnames1', start.field = 'start1', end.field = 'end1', keep.extra.columns = TRUE)
-    mat <- sK %>%
-        as_tibble() %>% 
-        setNames(start(anchors(gi2cm(x, fill = 'score'))$row)) %>%
-        mutate(start1 = start(anchors(gi2cm(by, fill = 'score'))$row)) %>% 
-        pivot_longer(-start1, names_to = 'start2', values_to = 'score') %>% 
-        mutate(start2 = as.numeric(start2)) %>%
-        dplyr::mutate(
-            end1 = start1 + binsize, 
-            end2 = start2 + binsize
-        )
+    bins <- c(bins(x), bins(by)) %>% 
+        unique() 
     gi <- InteractionSet::GInteractions(
         anchor1 = an1, 
         anchor2 = an2, 
@@ -162,12 +216,113 @@ divide <- function(x, by) {
         anchor1.weight = NA, 
         anchor2.weight = NA
     )
-    gi$bin1 <- plyranges::join_overlap_left(anchors(gi)[[1]], bins)$bin1
-    gi$bin2 <- plyranges::join_overlap_left(anchors(gi)[[2]], bins)$bin1
     gi$gis1_v_gis2 <- mat$score
 
     ## -- Filter ratio
-    gi <- gi[!is.na(gi$gis1_v_gis2) & is.finite(gi$gis1_v_gis2)]
-    return(gi)
+    gi <- gi[!is.na(mat$score) & is.finite(mat$score)]
+
+    ## -- Create 'in silico' contacts
+    path <- paste0(
+        basename(metadata(x)$path), ' / ', basename(metadata(by)$path)
+    )
+    res <- methods::new("contacts", 
+        focus = focus(x), 
+        metadata = list(
+            path = path, x_path = metadata(x)$path, by_path = metadata(by)$path
+        ), 
+        seqinfo = seqinfo(x), 
+        resolutions = binsize, 
+        current_resolution = binsize, 
+        bins = bins, 
+        interactions = gi, 
+        assays = S4Vectors::SimpleList(
+            'ratio' = mat$score[!is.na(mat$score) & is.finite(mat$score)]
+        ), 
+        features = S4Vectors::SimpleList(), 
+        pairsFile = NULL, 
+        type = 'ratio'
+    )
+    return(res)
+
+}
+
+#' merge
+#'
+#' @import tidyr
+#' @import zeallot
+#' @import reticulate
+#' @import plyranges
+#' @importFrom tibble as_tibble
+#' @importFrom dplyr mutate
+#' @importFrom tidyr pivot_longer
+#' @importFrom GenomicRanges seqnames
+#' @importFrom InteractionSet regions
+#' @importFrom InteractionSet GInteractions
+#' @importFrom S4Vectors metadata
+#' @importFrom S4Vectors SimpleList
+#' @export
+
+merge <- function(..., use.assay = 'balanced') {
+    `%>%` <- tidyr::`%>%`
+    `%<-%` <- zeallot::`%<-%`
+    contacts_list <- list(...)
+    
+    ## -- Check that all objects are comparable (bins, regions, resolution, seqinfo)
+    is_comparable(...)
+
+    # Unify all the interactions
+    ints <- do.call(
+        c, lapply(contacts_list, FUN = interactions) 
+    ) %>% 
+        unique() %>% 
+        sort()
+    
+    # Set all scores for each assay to 0
+    asss <- lapply(names(assays(contacts_list[[1]])), function(name) {
+        rep(0, length(ints))
+    })
+    names(asss) <- names(assays(contacts_list[[1]]))
+    asss <- S4Vectors::SimpleList(asss)
+
+    ## -- Iterate over each contacts in `contacts_list`
+    for (idx in seq_along(contacts_list)) {
+        sub <- S4Vectors::subjectHits(
+            GenomicRanges::findOverlaps(
+                interactions(contacts_list[[idx]]),
+                ints
+            )
+        )
+        sub <- seq_along(ints) %in% sub
+        for (K in seq_along(asss)) {
+            vals <- contacts_list[[idx]]@assays[[K]]
+            vals[is.na(vals)] <- 0
+            asss[[K]][sub] <- asss[[K]][sub] + 
+                vals
+        }
+    }
+
+    ## -- Create 'in silico' contacts
+    files <- paste0(
+        basename(unlist(lapply(contacts_list, path))), 
+        collapse = ' + '
+    )
+    res <- methods::new("contacts", 
+        focus = focus(x), 
+        metadata = list(
+            path = '',
+            merging = files, 
+            operation = 'sum'
+        ), 
+        seqinfo = seqinfo(contacts_list[[1]]), 
+        resolutions = resolutions(contacts_list[[1]]), 
+        current_resolution = resolution(contacts_list[[1]]), 
+        bins = bins(contacts_list[[1]]), 
+        interactions = ints, 
+        assays = asss, 
+        features = S4Vectors::SimpleList(), 
+        pairsFile = NULL, 
+        type = 'merged'
+    )
+    return(res)
 
 }

@@ -153,3 +153,21 @@ fullContactInteractions <- function(chr, start, end, binning) {
         full_anchors
     )
 }
+
+`sdiag<-` <- function(A, k = 0, value) {
+    p <- ncol(A)
+    n <- nrow(A)
+    if (k>p-1||-k > n-1) return()
+    if (k >= 0) {
+        i <- 1:n
+        j <- (k+1):p
+    } 
+    else {
+        i <- (-k+1):n
+        j <- 1:p
+    }
+    if (length(i)>length(j)) i <- i[1:length(j)] else j <- j[1:length(i)]
+    ii <- i + (j-1) * n 
+    A[ii] <- value
+    A
+} 

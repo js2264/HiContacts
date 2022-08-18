@@ -10,12 +10,22 @@
 #' @param chrom_lines chrom_lines
 #' @param cmap color map
 #'
-#' @import ggrastr
+#' @importFrom ggrastr geom_tile_rast
 #' @import ggplot2
-#' @import InteractionSet
-#' @import tibble
-#' @import dplyr
+#' @importFrom tibble as_tibble
+#' @importFrom dplyr mutate
+#' @importFrom dplyr select
+#' @importFrom dplyr group_by
+#' @importFrom dplyr summarize
+#' @importFrom dplyr slice_max
+#' @importFrom dplyr distinct
+#' @importFrom dplyr left_join
+#' @importFrom dplyr rename
+#' @importFrom dplyr left_join
+#' @importFrom dplyr rename
 #' @importFrom GenomicRanges seqnames
+#' @importFrom InteractionSet anchors
+#' @importFrom scales oob_squish
 #' @export
 
 plotMatrix <- function(x, use.assay = 'balanced', scale = 'log10', loops = NULL, borders = NULL, limits = NULL, dpi = 500, rasterize = TRUE, symmetrical = TRUE, chrom_lines = TRUE, cmap = NULL) {
@@ -35,6 +45,9 @@ plotMatrix <- function(x, use.assay = 'balanced', scale = 'log10', loops = NULL,
     if (scale == 'log10') {
         gis$score <- log10(gis$score)
     } 
+    else if (scale == 'log2') {
+        gis$score <- log2(gis$score)
+    }
     else if (scale == 'exp0.2') {
         gis$score <- gis$score^0.2
     }
@@ -67,7 +80,9 @@ plotMatrix <- function(x, use.assay = 'balanced', scale = 'log10', loops = NULL,
     
     # -- Define plotting approach
     if (rasterize) {
-        plotFun <- ggrastr::geom_tile_rast(raster.dpi = dpi, width = resolution(x), height = resolution(x))
+        plotFun <- ggrastr::geom_tile_rast(
+            raster.dpi = dpi, width = resolution(x), height = resolution(x)
+        )
     }
     else {
         plotFun <- ggplot2::geom_tile()
@@ -75,10 +90,14 @@ plotMatrix <- function(x, use.assay = 'balanced', scale = 'log10', loops = NULL,
 
     ## -- If loops are provided, filter them and add
     if (!is.null(loops)) {
-        filtered_loops <- as_tibble(loops[anchors(loops)[[1]] %over% regions(gis) & anchors(loops)[[2]] %over% regions(gis)])
-        p_loops <- geom_point(
+        filtered_loops <- tibble::as_tibble(
+            loops[anchors(loops)[[1]] %over% regions(gis) & anchors(loops)[[2]] %over% regions(gis)]
+        )
+        p_loops <- ggplot2::geom_point(
             data = filtered_loops, 
-            aes(x = start1+(end1-start1)/2, y = start2+(end2-start2)/2), 
+            mapping = ggplot2::aes(
+                x = start1+(end1-start1)/2, y = start2+(end2-start2)/2
+            ), 
             inherit.aes = FALSE, 
             shape = 21, 
             fill = "#76eaff00", 
@@ -92,10 +111,12 @@ plotMatrix <- function(x, use.assay = 'balanced', scale = 'log10', loops = NULL,
 
     ## -- If borders are provided, filter them and add
     if (!is.null(borders)) {
-        filtered_borders <- as_tibble(borders[borders %over% regions(gis)])
-        p_borders <- geom_point(
+        filtered_borders <- tibble::as_tibble(
+            borders[borders %over% regions(gis)]
+        )
+        p_borders <- ggplot2::geom_point(
             data = filtered_borders, 
-            aes(x = start+(end-start)/2, y = start+(end-start)/2),
+            mapping = ggplot2::aes(x = start+(end-start)/2, y = start+(end-start)/2),
             inherit.aes = FALSE, 
             shape = 23, 
             fill = "#76eaff", 
@@ -108,9 +129,11 @@ plotMatrix <- function(x, use.assay = 'balanced', scale = 'log10', loops = NULL,
     }
 
     # -- Check number of chromosomes that were extracted
-    nseqnames <- length(unique(as.vector(GenomicRanges::seqnames(InteractionSet::anchors(gis)[[1]]))))
+    nseqnames <- length(unique(as.vector(
+        GenomicRanges::seqnames(InteractionSet::anchors(gis)[[1]])
+    )))
 
-    if (nseqnames == 1) { ## Single chromosome coordinates to plot (easy scenario)
+    if (nseqnames == 1) { ## Single chromosome coordinates to plot
 
         ## -- Convert gis to table and extract x/y
         mat <- gis %>%
@@ -118,15 +141,20 @@ plotMatrix <- function(x, use.assay = 'balanced', scale = 'log10', loops = NULL,
             dplyr::mutate(
                 x = floor(end1 - (end1 - start1) / 2),
                 y = floor(end2 - (end2 - start2) / 2)
-            )
+            ) %>% 
+            drop_na(score)
 
         ## -- Clamp scores to limits
         mat <- dplyr::mutate(mat, score = scales::oob_squish(score, c(m, M)))
 
         ## -- Add lower triangular matrix scores (if symetrical)
         if (symmetrical) {
-            mat <- rbind(mat, mat %>% dplyr::mutate(x2 = y, y = x, x = x2) %>% dplyr::select(-x2))
-        }
+            mat <- rbind(mat, mat %>% 
+                dplyr::mutate(x2 = y, y = x, x = x2) %>% 
+                dplyr::select(-x2)) %>% 
+                dplyr::group_by(seqnames1, seqnames2, x, y) %>% 
+                dplyr::summarize(score = sum(score), .groups = 'drop')
+        } 
 
         ## -- Plot matrix
         p <- ggMatrix(mat, cols = cmap, limits = limits) +
@@ -146,7 +174,7 @@ plotMatrix <- function(x, use.assay = 'balanced', scale = 'log10', loops = NULL,
             dplyr::slice_max(order_by = end2, n = 1) %>%
             dplyr::select(seqnames2, end2) %>%
             dplyr::distinct()
-        chroms$cumlength <- cumsum(c(0, chroms$end2)[1:nrow(chroms)])
+        chroms$cumlength <- cumsum(c(0, chroms$end2)[seq_len(nrow(chroms))])
         chroms$end2 <- NULL
         mat <- gis %>%
             tibble::as_tibble() %>%
@@ -158,8 +186,16 @@ plotMatrix <- function(x, use.assay = 'balanced', scale = 'log10', loops = NULL,
                 x = floor(end1 - (end1 - start1) / 2) + cumlength_x,
                 y = floor(end2 - (end2 - start2) / 2) + cumlength_y
             )
-        mat <- dplyr::mutate(mat, score = ifelse(score > M, M, ifelse(score < m, m, score)))
-        mat <- rbind(mat, mat %>% dplyr::mutate(x2 = y, y = x, x = x2) %>% dplyr::select(-x2))
+        mat <- dplyr::mutate(
+            mat, 
+            score = ifelse(score > M, M, ifelse(score < m, m, score))
+        )
+        mat <- rbind(
+            mat, 
+            mat %>% 
+                dplyr::mutate(x2 = y, y = x, x = x2) %>% 
+                dplyr::select(-x2)
+        )
 
         ## -- Plot matrix
         p <- ggMatrix(mat, cols = cmap, limits = limits) +
@@ -170,8 +206,14 @@ plotMatrix <- function(x, use.assay = 'balanced', scale = 'log10', loops = NULL,
             )
         if (chrom_lines) {
             p <- p +
-                ggplot2::geom_hline(yintercept = chroms$cumlength[-1], colour = "black", alpha = 0.75, size = 0.15) +
-                ggplot2::geom_vline(xintercept = chroms$cumlength[-1], colour = "black", alpha = 0.75, size = 0.15)
+                ggplot2::geom_hline(
+                    yintercept = chroms$cumlength[-1], 
+                    colour = "black", alpha = 0.75, size = 0.15
+                ) +
+                ggplot2::geom_vline(
+                    xintercept = chroms$cumlength[-1], 
+                    colour = "black", alpha = 0.75, size = 0.15
+                )
         }
     }
 
@@ -186,7 +228,7 @@ plotMatrix <- function(x, use.assay = 'balanced', scale = 'log10', loops = NULL,
 #' @param limits limits
 #'
 #' @import ggplot2
-#' @import scales
+#' @importFrom scales unit_format
 #' @export
 
 ggMatrix <- function(mat, ticks = TRUE, cols = afmhotr_colors, limits) {

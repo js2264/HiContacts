@@ -1,3 +1,18 @@
+#' virtual4C
+#'
+#' @param x x
+#' @param viewpoint viewpoint
+#' @param use.assay use.assay
+#'
+#' @import ggplot2
+#' @import tibble
+#' @importFrom scales unit_format
+#' @importFrom S4Vectors queryHits
+#' @importFrom GenomicRanges start
+#' @importFrom GenomicRanges end
+#' @importFrom GenomicRanges findOverlaps
+#' @export
+
 virtual4C <- function(x, viewpoint, use.assay = 'balanced') {
     gis <- assay(x, use.assay)
     cm <- cm2matrix(gi2cm(gis))
@@ -7,7 +22,8 @@ virtual4C <- function(x, viewpoint, use.assay = 'balanced') {
     tibble::tibble(
         viewpoint = as.character(viewpoint), 
         chr = as.vector(seqnames(regions)), 
-        center = start(regions) + (end(regions) - start(regions))/2, 
+        center = GenomicRanges::start(regions) + 
+            (GenomicRanges::end(regions) - GenomicRanges::start(regions))/2, 
         score = score
     )
 }
@@ -18,15 +34,19 @@ virtual4C <- function(x, viewpoint, use.assay = 'balanced') {
 #'
 #' @import ggplot2
 #' @import tibble
-#' @import dplyr
+#' @importFrom scales unit_format
 #' @export
 
-gg4C <- function(x, aes) {
-    p <- ggplot(x, aes) + 
-        geom_line() + 
-        theme_minimal() + 
-        theme(panel.border = element_rect(fill = NA)) + 
-        theme(panel.grid.minor = element_blank()) +
-        labs(x = "Position", y = "Contacts with viewpoint")
+gg4C <- function(x, mapping) {
+    p <- ggplot2::ggplot(x, mapping) + 
+        ggplot2::geom_line() + 
+        ggplot2::theme_minimal() + 
+        ggplot2::theme(panel.border = ggplot2::element_rect(fill = NA)) + 
+        ggplot2::theme(panel.grid.minor = ggplot2::element_blank()) +
+        ggplot2::labs(x = "Position", y = "Contacts with viewpoint") + 
+        ggplot2::scale_x_continuous(
+            expand = c(0, 0), 
+            labels = scales::unit_format(unit = "M", scale = 1e-6)
+        )
     p
 }

@@ -39,6 +39,7 @@ getAnchors <- function(file, resolution = NULL, balanced = "cooler") {
 #' @param coords2 coords2
 #' @param resolution resolution
 #'
+#' @import methods
 #' @import zeallot
 #' @import tidyr
 #' @importFrom GenomeInfoDb seqlengths
@@ -46,6 +47,7 @@ getAnchors <- function(file, resolution = NULL, balanced = "cooler") {
 #' @importFrom GenomicRanges GRanges
 #' @importFrom GenomicRanges findOverlaps
 #' @importFrom IRanges IRanges
+#' @importFrom IRanges subsetByOverlaps
 #' @importFrom glue glue
 #' @importFrom S4Vectors subjectHits
 #' @export
@@ -94,7 +96,7 @@ getCounts <- function(file,
 
     else { ## If there are several GRanges provided (for APA)
         
-        coords <- subsetByOverlaps(coords, as(cool2seqinfo(file, resolution), 'GRanges'), type = 'within') ## Filter coords to exclude those out of mcool 
+        coords <- IRanges::subsetByOverlaps(coords, as(cool2seqinfo(file, resolution), 'GRanges'), type = 'within') ## Filter coords to exclude those out of mcool 
         coords <- GenomicRanges::reduce(coords)
         c(coords_chr, coords_start, coords_end) %<-% splitCoords(coords)
 
@@ -188,6 +190,7 @@ fetchCool <- function(file, path, resolution = NULL, idx = NULL, ...) {
 #' @import rhdf5
 #' @import stringr
 #' @import tidyr
+#' @import GenomicInteractions
 #' @export
 
 lsCoolFiles <- function(file) {
@@ -199,14 +202,15 @@ lsCoolFiles <- function(file) {
         stringr::str_replace("//", "/")
     len <- length(x)
     if (len > 10) {
-        message(c(
-            paste0(x[1:5], "\n"), 
+        mess <- c(
+            paste0(x[seq_len(5)], "\n"), 
             paste0("... (", len-10, " more paths)\n"), 
             paste0(x[(len-5+1):len], "\n")
-        ))
+        )
+        message(mess)
     }
     else {
-        message(paste0(x, "\n"))
+        message(x)
     }
     invisible(x)
 }
@@ -248,6 +252,7 @@ lsCoolResolutions <- function(file, silent = FALSE) {
 #' @param resolution resolution
 #' @param n n
 #'
+#' @importFrom Matrix head
 #' @importFrom glue glue
 #' @import rhdf5
 #' @export
@@ -257,10 +262,10 @@ peekCool <- function(file, path, resolution = NULL, n = 10) {
     path <- ifelse(is.null(resolution), glue::glue("/{path}"), glue::glue("/resolutions/{resolution}/{path}"))
     resolution <- as.vector(rhdf5::h5read(file, name = path))
     if (is.list(resolution)) {
-        lapply(resolution, head, n = n)
+        lapply(resolution, Matrix::head, n = n)
     }
     else {
-        head(resolution, n = n)
+        Matrix::head(resolution, n = n)
     }
 }
 
@@ -308,7 +313,7 @@ cool2gi <- function(file, coords = NULL, coords2 = NULL, resolution = NULL) {
     )
     gi$bin1 <- cnts$bin1_id
     gi$bin2 <- cnts$bin2_id
-    if (!is.null(coords_chr) & !is.na(coords_chr) & is.null(coords2)) {
+    if (!is.null(coords_chr) & all(!is.na(coords_chr)) & is.null(coords2)) {
         gi <- gi[seqnames(InteractionSet::anchors(gi)[[1]]) == coords_chr & seqnames(InteractionSet::anchors(gi)[[2]]) == coords_chr]
         regs <- unique(c(InteractionSet::anchors(gi)[[1]], InteractionSet::anchors(gi)[[2]]))
         names(regs) <- paste(GenomicRanges::seqnames(regs), GenomicRanges::start(regs), GenomicRanges::end(regs), sep = "_")
@@ -335,8 +340,8 @@ cool2gi <- function(file, coords = NULL, coords2 = NULL, resolution = NULL) {
 gi2cm <- function(gi) {
     InteractionSet::inflate(
         gi,
-        rows = 1:length(InteractionSet::regions(gi)),
-        columns = 1:length(InteractionSet::regions(gi)),
+        rows = seq_along(InteractionSet::regions(gi)),
+        columns = seq_along(InteractionSet::regions(gi)),
         fill = GenomicRanges::mcols(gi)[['score']]
     )
 }
@@ -351,8 +356,13 @@ cm2matrix <- function(cm, replace_NA = NA) {
 #'
 #' @param file pairs file: `<readname>\t<chr1>\t<start1>\t<chr2>\t<start2>`
 #'
+#' @importFrom data.table fread
+#' @importFrom glue glue
+#' @importFrom GenomicRanges GRanges
+#' @importFrom GenomicInteractions GenomicInteractions
+#' @importFrom GenomicInteractions calculateDistances
+#' @importFrom IRanges IRanges
 #' @import tibble
-#' @import dplyr
 #' @export
 
 pairs2gi <- function(
@@ -364,7 +374,6 @@ pairs2gi <- function(
     nThread = 16, 
     nrows = Inf
 ) {
-
     ## Use zgrep if pairs file is zipped (.gz)
     if (grepl('.gz$', file)) {
         grep_cmd <- "zgrep"
@@ -372,13 +381,11 @@ pairs2gi <- function(
     else {
         grep_cmd <- "grep"
     }
-
     headers <- data.table::fread(glue::glue("{grep_cmd} -v '^#' {file}"), nrows = 1)
-    
     anchors1 <- data.table::fread(
         glue::glue("{grep_cmd} -v '^#' {file}"), 
         header = FALSE, 
-        drop = {1:ncol(headers)}[!{1:ncol(headers) %in% c(chr1.field, start1.field)}], 
+        drop = {seq_len(ncol(headers))}[!{seq_len(ncol(headers)) %in% c(chr1.field, start1.field)}], 
         nThread = nThread, 
         col.names = c('chr', 'start'), 
         nrows = nrows
@@ -386,23 +393,20 @@ pairs2gi <- function(
     anchors2 <- data.table::fread(
         glue::glue("{grep_cmd} -v '^#' {file}"), 
         header = FALSE, 
-        drop = {1:ncol(headers)}[!{1:ncol(headers) %in% c(chr2.field, start2.field)}], 
+        drop = {seq_len(ncol(headers))}[!{seq_len(ncol(headers)) %in% c(chr2.field, start2.field)}], 
         nThread = nThread, 
         col.names = c('chr', 'start'), 
         nrows = nrows
     ) 
-    anchor_one <- GRanges(
+    anchor_one <- GenomicRanges::GRanges(
         anchors1[['chr']],
-        IRanges(anchors1[['start']], width = 1)
+        IRanges::IRanges(anchors1[['start']], width = 1)
     )
-    anchor_two <- GRanges(
+    anchor_two <- GenomicRanges::GRanges(
         anchors2[['chr']],
-        IRanges(anchors2[['start']], width = 1)
+        IRanges::IRanges(anchors2[['start']], width = 1)
     )
-
     gi <- GenomicInteractions::GenomicInteractions(anchor_one, anchor_two)
     gi$distance <- GenomicInteractions::calculateDistances(gi) 
-
     return(gi)
-
 }
