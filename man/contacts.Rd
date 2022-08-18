@@ -9,7 +9,8 @@ contacts(
   resolution = NULL,
   focus = NULL,
   metadata = NULL,
-  features = NULL
+  features = NULL,
+  pairs = NULL
 )
 }
 \description{

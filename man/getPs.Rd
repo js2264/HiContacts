@@ -5,13 +5,13 @@
 \title{getPs}
 \usage{
 getPs(
-  pairs,
+  x,
   by_chr = FALSE,
   filtered_chr = c("XII", "chrXII", "chr12", "12", "Mito", "MT", "chrM")
 )
 }
 \arguments{
-\item{pairs}{pairs in GenomicInteractions format, e.g. imported from a \code{.pairs} file with \code{pair2gi()}}
+\item{x}{x}
 
 \item{by_chr}{by_chr}
 

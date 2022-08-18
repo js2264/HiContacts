@@ -4,7 +4,7 @@
 \alias{gg4C}
 \title{gg4C}
 \usage{
-gg4C(x, aes)
+gg4C(x, mapping)
 }
 \arguments{
 \item{...}{...}

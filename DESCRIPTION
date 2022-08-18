@@ -1,42 +1,57 @@
 Package: HiContacts
 Title: HiContacts: R interface to cool files
 Version: 0.9.0
+Date: 2022-08-16
 Authors@R: 
     person(given = "Jacques",
            family = "Serizay",
            role = c("aut", "cre"),
            email = "jacquesserizay@gmail.com")
-Description: HiContacts: R interface to cool files.
+Description: HiContacts: R interface to (m)cool files and other Hi-C 
+    processed file formats.  HiContacts provides a collection of tools to 
+    analyse and visualize Hi-C datasets. It can import data from pairs 
+    or (m)cool files.
 License: MIT + file LICENSE
 URL: https://github.com/js2264/HiContacts
 BugReports: https://github.com/js2264/HiContacts/issues
 Depends:
-    R (>= 4.0)
+    R (>= 4.1)
 Imports:
-    BiocParallel,
-    corrr,
-    cowplot,
-    dplyr,
-    egg,
-    GenomeInfoDb,
-    GenomicRanges,
-    ggplot2,
-    ggrastr,
-    glue,
+    HiContactsData, 
     InteractionSet,
+    GenomicRanges,
     IRanges,
-    purrr,
-    reticulate,
+    GenomicInteractions,
+    GenomeInfoDb,
+    plyranges,
     rhdf5,
     S4Vectors,
-    scales,
-    stringr,
-    SummarizedExperiment,
+    corrr,
+    methods,
+    Matrix,
+    data.table,
+    ggplot2,
+    ggrastr,
     tibble,
     tidyr,
-    vroom,
-    zeallot
+    dplyr,
+    glue,
+    purrr,
+    scales,
+    stringr,
+    zeallot, 
+    BiocParallel,
+    reticulate,
+    tools
+Suggests:
+    cowplot,
+    knitr
+biocViews: 
+    HiC, 
+    DNA3DStructure, 
+    DataImport
 Encoding: UTF-8
-LazyData: true
+VignetteBuilder: knitr
+LazyData: false
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.1.2
