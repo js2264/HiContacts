@@ -149,9 +149,12 @@ plotMatrix <- function(x, use.assay = 'balanced', scale = 'log10', loops = NULL,
 
         ## -- Add lower triangular matrix scores (if symetrical)
         if (symmetrical) {
-            mat <- rbind(mat, mat %>% 
-                dplyr::mutate(x2 = y, y = x, x = x2) %>% 
-                dplyr::select(-x2)) %>% 
+            mat <- rbind(
+                mat, 
+                mat %>% 
+                    dplyr::mutate(x2 = y, y = x, x = x2) %>% 
+                    dplyr::select(-x2)
+            ) %>% 
                 dplyr::group_by(seqnames1, seqnames2, x, y) %>% 
                 dplyr::summarize(score = sum(score), .groups = 'drop')
         } 
@@ -240,7 +243,8 @@ ggMatrix <- function(mat, ticks = TRUE, cols = afmhotr_colors, limits) {
     ) +
         ggplot2::scale_x_continuous(expand = c(0, 0), labels = scales::unit_format(unit = "M", scale = 1e-6), position = 'top') +
         ggplot2::scale_y_reverse(expand = c(0, 0), labels = scales::unit_format(unit = "M", scale = 1e-6)) +
-        ggplot2::guides(fill = ggplot2::guide_colorbar(barheight = ggplot2::unit(5, "cm"), barwidth = 0.5, frame.colour = "black")) +
+        ggplot2::guides(fill = ggplot2::guide_colorbar(barheight = ggplot2::unit(5, "cm"), barwidth = 0.5, frame.colour = "black")) + 
+        coord_fixed() +
         ggtheme_HiContacts()
     p
 }

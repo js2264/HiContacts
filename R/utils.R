@@ -171,3 +171,24 @@ fullContactInteractions <- function(chr, start, end, binning) {
     A[ii] <- value
     A
 } 
+
+sort_pairs <- function(pairs) {
+    p <- S4Vectors::zipup(pairs)
+    p_sorted <- GRangesList(lapply(p, function(gr) {
+        sort(gr)
+    }))
+    S4Vectors::zipdown(p_sorted)
+}
+
+as_GInteractions <- function(df) {
+    gi <- GInteractions(
+        anchor1 = GRanges(
+            df$seqnames1, IRanges::IRanges(df$start1, df$end1)
+        ),
+        anchor2 = GRanges(
+            df$seqnames2, IRanges::IRanges(df$start2, df$end2)
+        )
+    )
+    if ('score' %in% colnames(df)) gi$score <- df$score
+    gi
+}
