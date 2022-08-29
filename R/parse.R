@@ -16,6 +16,7 @@ getAnchors <- function(file, resolution = NULL, balanced = "cooler") {
     anchors <- GenomicRanges::GRanges(
         bins$chr,
         IRanges::IRanges(bins$start + 1, bins$end),
+        bin_id = seq_along(bins$chr), 
         seqinfo = cool2seqinfo(file, resolution)
     )
     names(anchors) <- paste(GenomicRanges::seqnames(anchors), GenomicRanges::start(anchors), GenomicRanges::end(anchors), sep = "_")
@@ -34,10 +35,10 @@ getAnchors <- function(file, resolution = NULL, balanced = "cooler") {
 #' This was adapted from `dovetail-genomics/coolR`
 #'
 #' @param file file
-#' @param coords coords
+#' @param pair pair (e.g. S4Vectors::Pairs(GRanges("II:200000-300000"), GRanges("II:70000-100000")))
 #' @param anchors anchors
-#' @param coords2 coords2
 #' @param resolution resolution
+#' @param BPPARAM BPPARAM
 #'
 #' @import methods
 #' @import zeallot
@@ -290,8 +291,7 @@ cool2seqinfo <- function(file, resolution = NULL) {
 #' cool2gi
 #'
 #' @param file file
-#' @param coords coords
-#' @param coords2 coords2
+#' @param coords NULL, character, or GRanges. Can also be a Pairs object of paired GRanges.
 #' @param resolution resolution
 #'
 #' @import InteractionSet
@@ -300,12 +300,31 @@ cool2seqinfo <- function(file, resolution = NULL) {
 #' @importFrom GenomicRanges resize
 #' @export
 
-cool2gi <- function(file, coords = NULL, coords2 = NULL, resolution = NULL) {
+cool2gi <- function(file, coords = NULL, resolution = NULL) {
     `%<-%` <- zeallot::`%<-%`
     check_cool_format(file, resolution)
-    c(coords_chr, coords_start, coords_end) %<-% splitCoords(coords)
+    
+    # Check if the provided coords are GRanges or Pairs
+    is_pair <- is(coords, 'Pairs')
+
+    # Get anchors from mcool
     anchors <- getAnchors(file, resolution)
-    cnts <- getCounts(file, coords = coords, anchors = anchors, coords2 = coords2, resolution = resolution)
+
+    # Get raw counts for bins from mcool
+    if (!is_pair) {
+        c(coords_chr, coords_start, coords_end) %<-% splitCoords(coords)
+        cnts <- getCounts(file, coords = coords, anchors = anchors, resolution = resolution)
+    }
+    else if (is_pair) {
+        coords_list <- lapply(pair, function(x) {
+            coords <- unlist(S4Vectors::zipup(x))
+            splitCoords(coords)
+        })
+        coords_chr <- unlist(lapply(coords_list, '[[', 'chr'))
+        cnts <- getCounts2(file, pair = coords, anchors = anchors, resolution = resolution)
+    }
+
+    # Associate raw counts for bins to corresponding anchors
     gi <- InteractionSet::GInteractions(
         anchors[cnts$bin1_id],
         anchors[cnts$bin2_id],
@@ -313,19 +332,38 @@ cool2gi <- function(file, coords = NULL, coords2 = NULL, resolution = NULL) {
     )
     gi$bin1 <- cnts$bin1_id
     gi$bin2 <- cnts$bin2_id
-    if (!is.null(coords_chr) & all(!is.na(coords_chr)) & is.null(coords2)) {
-        gi <- gi[seqnames(InteractionSet::anchors(gi)[[1]]) == coords_chr & seqnames(InteractionSet::anchors(gi)[[2]]) == coords_chr]
-        regs <- unique(c(InteractionSet::anchors(gi)[[1]], InteractionSet::anchors(gi)[[2]]))
-        names(regs) <- paste(GenomicRanges::seqnames(regs), GenomicRanges::start(regs), GenomicRanges::end(regs), sep = "_")
+    
+    if (!is.null(coords_chr) & all(!is.na(coords_chr)) & !is_pair) {
+        # Make sure no extra GInteractions is pulled from cool (happends e.g. when fetching whole chrs.)
+        # DEFINITELY HACKY HERE
+        sub <- seqnames(InteractionSet::anchors(gi)[[1]]) == coords_chr & 
+            seqnames(InteractionSet::anchors(gi)[[2]]) == coords_chr
+        gi <- gi[sub]
+        regs <- unique(c(
+            InteractionSet::anchors(gi)[[1]], 
+            InteractionSet::anchors(gi)[[2]]
+        ))
+        names(regs) <- paste(
+            GenomicRanges::seqnames(regs), 
+            GenomicRanges::start(regs), 
+            GenomicRanges::end(regs), 
+            sep = "_"
+        )
         InteractionSet::replaceRegions(gi) <- regs
     }
+
+    # Get balanced counts if they exist
     if (!is.null(gi$anchor1.weight) & !is.null(gi$anchor2.weight)) {
         gi$score <- gi$count * gi$anchor1.weight * gi$anchor2.weight
-    } else {
+    } 
+    else {
         gi$score <- gi$count
     }
+
+    # Add extra info
     InteractionSet::regions(gi)$chr <- GenomicRanges::seqnames(InteractionSet::regions(gi))
     InteractionSet::regions(gi)$center <- GenomicRanges::start(GenomicRanges::resize(InteractionSet::regions(gi), fix = "center", width = 1))
+
     return(gi)
 }
 

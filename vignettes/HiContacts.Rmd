@@ -44,7 +44,7 @@ specify the resolution at which count values are recovered.
 
 ```{r}
 mcool_file <- HiContactsData::HiContactsData('yeast_wt', format = 'mcool')
-range <- 'I:1000-80000' # range of interest
+range <- 'II:1-800000' # range of interest
 lsCoolResolutions(mcool_file)
 contacts <- contacts(mcool_file, focus = range) # This throws an error!
 contacts <- contacts(mcool_file, focus = range, res = 1000)
