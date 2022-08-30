@@ -44,7 +44,7 @@ specify the resolution at which count values are recovered.
 
 ```{r}
 mcool_file <- HiContactsData::HiContactsData('yeast_wt', format = 'mcool')
-range <- 'II:1-800000' # range of interest
+range <- 'II:0-800000' # range of interest
 lsCoolResolutions(mcool_file)
 contacts <- contacts(mcool_file, focus = range) # This throws an error!
 contacts <- contacts(mcool_file, focus = range, res = 1000)
@@ -56,7 +56,13 @@ contacts
 ### Plot matrix heatmaps
 
 ```{r}
+## Matrix centered over diagonal 
+contacts <- contacts(mcool_file, focus = 'II:0-800000', res = 1000)
 plotMatrix(contacts, use.assay = 'raw')
+plotMatrix(contacts, use.assay = 'balanced', limits = c(-4, -1))
+
+## Uncentered matrix
+contacts <- contacts(mcool_file, focus = 'II:0-500000 x II:100000-600000', res = 1000)
 plotMatrix(contacts, use.assay = 'balanced', limits = c(-4, -1))
 ```
 
@@ -89,13 +95,13 @@ contacts(mcool_file, focus = 'IV', res = 1000) %>%
 ```{r}
 mcool_file <- HiContactsData::HiContactsData('yeast_wt', format = 'mcool')
 contacts <- contacts(mcool_file, focus = 'II', res = 2000)
-contacts2 <- contacts[
+contacts_subset <- contacts[
     start(anchors(contacts)[[1]]) < 300000 & end(anchors(contacts)[[1]]) < 300000 & 
     start(anchors(contacts)[[2]]) < 300000 & end(anchors(contacts)[[2]]) < 300000
 ]
 cowplot::plot_grid(
     plotMatrix(contacts, use.assay = 'balanced', scale = 'log10', limits = c(-4, -1)),
-    plotMatrix(contacts_2, use.assay = 'balanced', scale = 'log10', limits = c(-4, -1))
+    plotMatrix(contacts_subset, use.assay = 'balanced', scale = 'log10', limits = c(-4, -1))
 )
 ```
 
@@ -103,9 +109,9 @@ cowplot::plot_grid(
 
 ```{r}
 mcool_file <- HiContactsData::HiContactsData('mESCs', format = 'mcool')
-contacts <- contacts(mcool_file, focus = 'chr13', res = 320000)
+contacts <- contacts(mcool_file, focus = 'chr2', res = 160000)
 contacts %>% 
-    autocorrelate(ignore_ndiags = 10) %>% 
+    autocorrelate(ignore_ndiags = 20) %>% 
     plotMatrix(scale = 'linear', limits = c(-1, 1))
 ```
 

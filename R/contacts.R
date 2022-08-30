@@ -125,18 +125,8 @@ contacts <- function(cool_path, resolution = NULL, focus = NULL, metadata = NULL
     }
 
     ## -- Create contact object
-    if (methods::is(focus, 'Pairs')) {
-        foc <- paste0(
-            as.character(S4Vectors::first(focus)), 
-            ' x ', 
-            as.character(S4Vectors::second(focus))
-        )
-    }
-    else {
-        foc <- focus
-    }
     x <- methods::new("contacts", 
-        focus = foc, 
+        focus = focus, 
         metadata = purrr::flatten(c(
             list(path = cool_path), 
             metadata[names(metadata)!='path'])
@@ -363,6 +353,13 @@ setMethod("show", signature("contacts"), function(object) {
     } 
     else if (is(focus(object), 'GRanges') & length(focus(object)) > 1) {
         focus_str <- glue::glue('multiple GRanges({length(focus(object))})')
+    }
+    else if (is(focus(object), 'Pairs')) {
+        focus_str <- paste0(
+            as.character(S4Vectors::first(focus(object))), 
+            ' x ', 
+            as.character(S4Vectors::second(focus(object)))
+        )
     }
     else if (is(focus(object), 'character')) {
         focus_str <- formatCoords(focus(object))

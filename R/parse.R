@@ -40,7 +40,6 @@ getAnchors <- function(file, resolution = NULL, balanced = "cooler") {
 #' @param pair pair (e.g. S4Vectors::Pairs(GRanges("II:200000-300000"), GRanges("II:70000-100000")))
 #' @param anchors anchors
 #' @param resolution resolution
-#' @param BPPARAM BPPARAM
 #'
 #' @import methods
 #' @import zeallot
@@ -58,63 +57,55 @@ getAnchors <- function(file, resolution = NULL, balanced = "cooler") {
 getCounts2 <- function(file,
                       pair,
                       anchors,
-                      resolution = NULL, 
-                      BPPARAM = BiocParallel::bpparam()) {
+                      resolution = NULL) {
     
     `%<-%` <- zeallot::`%<-%`
+    `%within%` <- IRanges::`%within%`
 
     # Make sure pair is sorted (first is first, second is after)
     pair <- sort_pairs(pair)
 
+    # Make sure pair is squared (each GRanges has same width)
+    is_square(pair)
+
     # For each pair, get the coords for first and second.
-    if (length(pair) > 1) {
-        coords_list <- lapply(pair, function(x) {
-            coords <- unlist(S4Vectors::zipup(x))
-            splitCoords(coords)
-        })
-    }
-    else {
-        coords <- unlist(S4Vectors::zipup(pair))
-        coords_list <- list(splitCoords(coords))
-    }
+    coords <- unlist(S4Vectors::zipup(pair))
+    coords_list <- splitCoords(coords)
 
     ## Check that queried chr. exists
-    chrs <- unlist(lapply(coords_list, '[[', 'chr'))
-    if (any(!chrs %in% as.vector(GenomicRanges::seqnames(anchors)) & !is.na(chrs))) {
+    if (any(!coords_list$chr %in% as.vector(GenomicRanges::seqnames(anchors)) & !is.na(coords_list$chr))) {
         sn <- paste0(unique(as.vector(GenomicRanges::seqnames(anchors))), collapse = ", ")
         stop(glue::glue("Some chr. are not available. Available seqnames: {sn}"))
     }
 
-    df <- BiocParallel::bplapply(seq_along(coords_list), function(i) {
-        # For a single pair of GRanges: Create start and end GRanges...
-        .x <- coords_list[[i]]
-        start <- GenomicRanges::GRanges(.x$chr, IRanges::IRanges(.x$start + 1, width = 1))
-        end <- GenomicRanges::GRanges(.x$chr, IRanges::IRanges(.x$end, width = 1))
-        start_idx <- S4Vectors::subjectHits(GenomicRanges::findOverlaps(start, anchors))
-        end_idx <- S4Vectors::subjectHits(GenomicRanges::findOverlaps(end, anchors))
-        bin1_idx_1 <- fetchCool(file, path = "indexes/bin1_offset", resolution, idx = seq(start_idx[1], end_idx[1]))
-        bin1_idx_2 <- fetchCool(file, path = "indexes/bin1_offset", resolution, idx = seq(start_idx[2], end_idx[2]))
-        chunks_1 <- seq(
-            bin1_idx_1[1] + 1,
-            bin1_idx_1[1] + 1 + {sum(bin1_idx_1[-1] - bin1_idx_1[-length(bin1_idx_1)])}
-        )
-        chunks_2 <- seq(
-            bin1_idx_2[1] + 1,
-            bin1_idx_2[1] + 1 + {sum(bin1_idx_2[-1] - bin1_idx_2[-length(bin1_idx_2)])}
-        )
-        valid_bin2 <- unique(fetchCool(file, path = "pixels/bin1_id", resolution, idx = chunks_2))
-        tidyr::tibble(
-            bin1_id = fetchCool(file, path = "pixels/bin1_id", resolution, idx = chunks_1),
-            bin2_id = fetchCool(file, path = "pixels/bin2_id", resolution, idx = chunks_1),
-            count = fetchCool(file, path = "pixels/count", resolution, idx = chunks_1)
-        ) %>% 
-            dplyr::filter(bin2_id %in% valid_bin2) %>% 
-            dplyr::mutate(pair = paste0(
-                as.character(S4Vectors::first(pair[i])), 
-                '_', 
-                as.character(S4Vectors::second(pair[i]))
-            ))
-    }, BPPARAM = BPPARAM) %>% dplyr::bind_rows()
+    ## Find out which chunks of the mcool to recover
+    gr_1 <- coords[1]
+    sub_1 <- which(anchors %within% gr_1)
+    bin_idx_1 <- fetchCool(file, path = "indexes/bin1_offset", resolution, idx = sub_1)
+    chunks_1 <- seq(min(bin_idx_1)+1, max(bin_idx_1)+1, by = 1)
+    
+    gr_2 <- coords[2]
+    sub_2 <- which(anchors %within% gr_2)
+    bin_idx_2 <- fetchCool(file, path = "indexes/bin1_offset", resolution, idx = sub_2)
+    chunks_2 <- seq(min(bin_idx_2), max(bin_idx_2), by = 1)
+    valid_bin2 <- unique(fetchCool(file, path = "pixels/bin1_id", resolution, idx = chunks_2))
+    
+    ## Reading the chunks from the cool file
+    df <- tidyr::tibble(
+        bin1_id = fetchCool(file, path = "pixels/bin1_id", resolution, idx = chunks_1) + 1,
+        bin2_id = fetchCool(file, path = "pixels/bin2_id", resolution, idx = chunks_1) + 1,
+        count = fetchCool(file, path = "pixels/count", resolution, idx = chunks_1)
+    )
+    
+    ## Filter to only get interesting bins
+    df <- df[df$bin2_id %in% valid_bin2, ]
+
+    # z <- InteractionSet::GInteractions(
+    #     anchors[df$bin1_id],
+    #     anchors[df$bin2_id],
+    #     count = df$count
+    # )
+    # z[start(anchors(z)[[1]]) >= 4520000 & end(anchors(z)[[1]]) <= 4550000 & start(anchors(z)[[2]]) >= 4520000 & end(anchors(z)[[2]]) <= 4550000]
 
     return(df)
 }
@@ -151,9 +142,8 @@ getCounts <- function(file,
     } 
     else {
         gr <- GRanges(coords_chr, IRanges::IRanges(coords_start, coords_end))
-        sub <- anchors %within% gr
-        s <- anchors$bin_id[sub]
-        bin_idx <- fetchCool(file, path = "indexes/bin1_offset", resolution, idx = s)
+        sub <- which(anchors %within% gr)
+        bin_idx <- fetchCool(file, path = "indexes/bin1_offset", resolution, idx = sub)
         chunks <- seq(min(bin_idx)+1, max(bin_idx)+1, by = 1)
     }
 
@@ -309,6 +299,11 @@ cool2gi <- function(file, coords = NULL, resolution = NULL) {
     `%<-%` <- zeallot::`%<-%`
     check_cool_format(file, resolution)
     
+    # Mutate Pairs provided as characters to real Pairs
+    if (grepl(' x ', coords)) {
+        coords <- char2pair(coords)
+    }
+
     # Check if the provided coords are GRanges or Pairs
     is_pair <- is(coords, 'Pairs')
 
@@ -321,11 +316,7 @@ cool2gi <- function(file, coords = NULL, resolution = NULL) {
         cnts <- getCounts(file, coords = coords, anchors = anchors, resolution = resolution)
     }
     else if (is_pair) {
-        coords_list <- lapply(coords, function(x) {
-            coords <- unlist(S4Vectors::zipup(x))
-            splitCoords(coords)
-        })
-        coords_chr <- unlist(lapply(coords_list, '[[', 'chr'))
+        c(coords_chr, coords_start, coords_end) %<-% splitCoords(unlist(S4Vectors::zipup(coords)))
         cnts <- getCounts2(file, pair = coords, anchors = anchors, resolution = resolution)
     }
 

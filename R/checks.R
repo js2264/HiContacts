@@ -84,3 +84,24 @@ is_comparable <- function(...) {
     }
     TRUE
 }
+is_square <- function(pair) {
+    w1 <- GenomicRanges::width(S4Vectors::first(pair))
+    w2 <- GenomicRanges::width(S4Vectors::second(pair))
+    if (w1 != w2) {
+        stop("Provided pair is not square.")
+    }
+    TRUE
+}
+is_centered <- function(x) {
+    if (is.character(focus(x))) {
+        if (grepl(' x ', focus(x))) {
+            return(TRUE)
+        }
+        else {
+            return(FALSE)
+        }
+    }
+    else if (methods::is(focus(x), 'Pairs')) {
+        return(TRUE)
+    }
+}

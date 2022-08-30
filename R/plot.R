@@ -157,7 +157,16 @@ plotMatrix <- function(x, use.assay = 'balanced', scale = 'log10', loops = NULL,
                 mat %>% 
                     dplyr::mutate(x2 = y, y = x, x = x2) %>% 
                     dplyr::select(-x2)
-            ) 
+            )
+            if (is_centered(x)) {
+                message("HELO")
+                coords <- unlist(S4Vectors::zipup(char2pair(focus(x))))
+                mat <- mat %>% 
+                    filter(x >= GenomicRanges::start(coords[1]) & 
+                        x <= GenomicRanges::end(coords[1])) %>% 
+                    filter(y >= GenomicRanges::start(coords[2]) & 
+                        y <= GenomicRanges::end(coords[2]))
+            }
         } 
 
         ## -- Plot matrix

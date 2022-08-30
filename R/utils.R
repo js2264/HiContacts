@@ -52,14 +52,30 @@ formatCoords <- function(coords) {
         paste0(chr, ':', format(start, big.mark=","), '-', format(end, big.mark=","))
     }
     else {
-        chr <- stringr::str_replace(coords, ":.*", "")
-        start <- suppressWarnings(as.numeric(stringr::str_replace_all(coords, ".*:|-.*", "")))
-        end <- suppressWarnings(as.numeric(stringr::str_replace(coords, ".*-", "")))
-        if (is.na(start)) {
-            return(chr)
+        if (grepl('x', coords)) {
+            coords
         }
-        paste0(chr, ':', format(start, big.mark=",", scientific = FALSE), '-', format(end, big.mark=",", scientific = FALSE))
+        else {
+            chr <- stringr::str_replace(coords, ":.*", "")
+            start <- suppressWarnings(as.numeric(stringr::str_replace_all(coords, ".*:|-.*", "")))
+            end <- suppressWarnings(as.numeric(stringr::str_replace(coords, ".*-", "")))
+            if (is.na(start)) {
+                return(chr)
+            }
+            paste0(chr, ':', format(start, big.mark=",", scientific = FALSE), '-', format(end, big.mark=",", scientific = FALSE))
+        }
     }
+}
+
+char2pair <- function(char) {
+    if (methods::is(char, 'Pairs')) {
+        return(char)
+    }
+    splitst <- stringr::str_split(char, ' x ')[[1]]
+    S4Vectors::Pairs(
+        GenomicRanges::GRanges(splitst[[1]]), 
+        GenomicRanges::GRanges(splitst[[2]])
+    )
 }
 
 #' getHicStats
