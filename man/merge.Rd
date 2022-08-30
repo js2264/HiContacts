@@ -6,6 +6,11 @@
 \usage{
 merge(..., use.assay = "balanced")
 }
+\arguments{
+\item{...}{\code{contacts} objects}
+
+\item{use.assay}{use.assay}
+}
 \description{
 merge
 }

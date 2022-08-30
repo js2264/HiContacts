@@ -2,14 +2,14 @@
 #'
 #' @param file file
 #' @param resolution resolution
-#' @param balanced balanced
+#' @param balanced import balancing scores
 #'
 #' @importFrom GenomicRanges GRanges
 #' @importFrom GenomicRanges seqnames
 #' @importFrom GenomicRanges start
 #' @importFrom GenomicRanges end
 #' @importFrom IRanges IRanges
-#' @export
+#' @rdname parse
 
 getAnchors <- function(file, resolution = NULL, balanced = "cooler") {
     bins <- fetchCool(file, "bins", resolution)
@@ -32,12 +32,13 @@ getAnchors <- function(file, resolution = NULL, balanced = "cooler") {
 
 #' getCounts2
 #'
-#' Function to extract counts for a non-square matrix (@ a pair of coordinates).
+#' Function to extract counts for a uncentered matrix (@ a pair of coordinates).
 #' 
 #' This was adapted from `dovetail-genomics/coolR`
 #'
 #' @param file file
-#' @param pair pair (e.g. S4Vectors::Pairs(GRanges("II:200000-300000"), GRanges("II:70000-100000")))
+#' @param pair pair 
+#'   (e.g. S4Vectors::Pairs(GRanges("II:200000-300000"), GRanges("II:70000-100000"))). 
 #' @param anchors anchors
 #' @param resolution resolution
 #'
@@ -52,7 +53,7 @@ getAnchors <- function(file, resolution = NULL, balanced = "cooler") {
 #' @importFrom IRanges subsetByOverlaps
 #' @importFrom glue glue
 #' @importFrom S4Vectors subjectHits
-#' @export
+#' @rdname parse
 
 getCounts2 <- function(file,
                       pair,
@@ -110,7 +111,27 @@ getCounts2 <- function(file,
     return(df)
 }
 
-#' Function to extract counts for a square matrix from an mcool file
+#' Function to extract counts for a centered matrix from an mcool file
+#' 
+#' This was adapted from `dovetail-genomics/coolR`
+#' 
+#' @param file file
+#' @param coords coordinates 
+#' @param anchors anchors
+#' @param resolution resolution
+#'
+#' @import methods
+#' @import zeallot
+#' @import tidyr
+#' @importFrom GenomeInfoDb seqlengths
+#' @importFrom GenomicRanges seqnames
+#' @importFrom GenomicRanges GRanges
+#' @importFrom GenomicRanges findOverlaps
+#' @importFrom IRanges IRanges
+#' @importFrom IRanges subsetByOverlaps
+#' @importFrom glue glue
+#' @importFrom S4Vectors subjectHits
+#' @rdname parse
 
 getCounts <- function(file,
                       coords,
@@ -166,16 +187,20 @@ getCounts <- function(file,
 #' @param file file
 #' @param path path
 #' @param resolution resolution
-#' @param idx idx
+#' @param idx idx to extract in cool file
 #' @param ... ...
 #'
 #' @importFrom glue glue
 #' @import rhdf5
-#' @export
+#' @rdname parse
 
 fetchCool <- function(file, path, resolution = NULL, idx = NULL, ...) {
     check_cool_format(file, resolution)
-    path <- ifelse(is.null(resolution), glue::glue("/{path}"), glue::glue("/resolutions/{resolution}/{path}"))
+    path <- ifelse(
+        is.null(resolution), 
+        glue::glue("/{path}"), 
+        glue::glue("/resolutions/{resolution}/{path}")
+    )
     as.vector(rhdf5::h5read(file, name = path, index = list(idx), ...))
 }
 
@@ -187,7 +212,7 @@ fetchCool <- function(file, path, resolution = NULL, idx = NULL, ...) {
 #' @import stringr
 #' @import tidyr
 #' @import GenomicInteractions
-#' @export
+#' @rdname parse
 
 lsCoolFiles <- function(file) {
     `%>%` <- tidyr::`%>%`
@@ -214,31 +239,31 @@ lsCoolFiles <- function(file) {
 #' lsCoolResolutions
 #'
 #' @param file file
-#' @param silent silent
+#' @param verbose Print resolutions in the console
 #'
 #' @import tools
 #' @import rhdf5
 #' @import tidyr
-#' @export
+#' @rdname parse
 
-lsCoolResolutions <- function(file, silent = FALSE) {
+lsCoolResolutions <- function(file, verbose = TRUE) {
     `%>%` <- tidyr::`%>%`
     if (is_cool(file)) {
         x <- rhdf5::h5ls(file)
         bin_ends <- peekCool(file, '/bins/end', n = 2)
-        rez <- bin_ends[2] - bin_ends[1]
+        res <- bin_ends[2] - bin_ends[1]
     }
     if (is_mcool(file)) {
         x <- rhdf5::h5ls(file)
-        rez <- gsub("/resolutions/", "", x$group) %>%
+        res <- gsub("/resolutions/", "", x$group) %>%
             grep(., , pattern = "/", invert = TRUE, value = TRUE) %>%
             unique() %>%
             as.numeric() %>%
             sort() %>%
             as.character()
     }
-    if (!silent) message(S4Vectors::coolcat("resolutions(%d): %s", rez))
-    invisible(as.integer(rez))
+    if (verbose) message(S4Vectors::coolcat("resolutions(%d): %s", res))
+    invisible(as.integer(res))
 }
 
 #' peekCool
@@ -251,7 +276,7 @@ lsCoolResolutions <- function(file, silent = FALSE) {
 #' @importFrom Matrix head
 #' @importFrom glue glue
 #' @import rhdf5
-#' @export
+#' @rdname parse
 
 peekCool <- function(file, path, resolution = NULL, n = 10) {
     check_cool_format(file, resolution)
@@ -271,7 +296,7 @@ peekCool <- function(file, path, resolution = NULL, n = 10) {
 #' @param resolution resolution
 #'
 #' @importFrom GenomeInfoDb Seqinfo
-#' @export
+#' @rdname parse
 
 cool2seqinfo <- function(file, resolution = NULL) {
     check_cool_format(file, resolution)
@@ -286,14 +311,15 @@ cool2seqinfo <- function(file, resolution = NULL) {
 #' cool2gi
 #'
 #' @param file file
-#' @param coords NULL, character, or GRanges. Can also be a Pairs object of paired GRanges.
+#' @param coords NULL, character, or GRanges. 
+#'   Can also be a Pairs object of paired GRanges (length of 1).
 #' @param resolution resolution
 #'
 #' @import InteractionSet
 #' @importFrom GenomicRanges seqnames
 #' @importFrom GenomicRanges start
 #' @importFrom GenomicRanges resize
-#' @export
+#' @rdname parse
 
 cool2gi <- function(file, coords = NULL, resolution = NULL) {
     `%<-%` <- zeallot::`%<-%`
@@ -365,11 +391,11 @@ cool2gi <- function(file, coords = NULL, resolution = NULL) {
 
 #' gi2cm
 #'
-#' @param gi gi
+#' @param gi A `GenomicInteractions` object
 #'
 #' @import InteractionSet
 #' @importFrom GenomicRanges mcols
-#' @export
+#' @rdname parse
 
 gi2cm <- function(gi) {
     InteractionSet::inflate(
@@ -380,6 +406,14 @@ gi2cm <- function(gi) {
     )
 }
 
+#' cm2matrix
+#'
+#' @param cm A `ContactMatrix` object
+#' @param replace_NA Replace NA values
+#'
+#' @importFrom Matrix as.matrix
+#' @rdname parse
+
 cm2matrix <- function(cm, replace_NA = NA) {
     m <- Matrix::as.matrix(cm)
     m[is.na(m)] <- replace_NA
@@ -389,6 +423,12 @@ cm2matrix <- function(cm, replace_NA = NA) {
 #' readPairs
 #'
 #' @param file pairs file: `<readname>\t<chr1>\t<start1>\t<chr2>\t<start2>`
+#' @param chr1.field chr1.field
+#' @param start1.field start1.field
+#' @param chr2.field chr2.field
+#' @param start2.field start2.field
+#' @param nThread Number of CPUs to use to import the `pairs` file in R
+#' @param nrows Number of pairs to import
 #'
 #' @importFrom data.table fread
 #' @importFrom glue glue
@@ -397,6 +437,7 @@ cm2matrix <- function(cm, replace_NA = NA) {
 #' @importFrom GenomicInteractions calculateDistances
 #' @importFrom IRanges IRanges
 #' @import tibble
+#' @rdname parse
 #' @export
 
 pairs2gi <- function(

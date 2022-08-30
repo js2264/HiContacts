@@ -7,9 +7,9 @@
 virtual4C(x, viewpoint, use.assay = "balanced")
 }
 \arguments{
-\item{x}{x}
+\item{x}{a \code{contacts} object}
 
-\item{viewpoint}{viewpoint}
+\item{viewpoint}{viewpoint defined as a GRanges}
 
 \item{use.assay}{use.assay}
 }

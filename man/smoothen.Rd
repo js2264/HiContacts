@@ -12,6 +12,18 @@ smoothen(
   serpentine_ncores = 16L
 )
 }
+\arguments{
+\item{x}{a \code{contacts} object}
+
+\item{use.assay}{use.assay}
+
+\item{use_serpentine_trend}{whether to use the trend estimated with
+serpentine (this requires \code{reticulate} and the python package \code{serpentine})}
+
+\item{serpentine_niter}{number of iterations to use for serpentine}
+
+\item{serpentine_ncores}{number of CPUs to use for serpentine}
+}
 \description{
 smoothen
 }

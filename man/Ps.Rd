@@ -2,6 +2,8 @@
 % Please edit documentation in R/Ps.R
 \name{getPs}
 \alias{getPs}
+\alias{ggPs}
+\alias{ggPsSlope}
 \title{getPs}
 \usage{
 getPs(
@@ -9,14 +11,28 @@ getPs(
   by_chr = FALSE,
   filtered_chr = c("XII", "chrXII", "chr12", "12", "Mito", "MT", "chrM")
 )
+
+ggPs(..., xlim = c(5000, 499000), ylim = c(1e-08, 1e-04))
+
+ggPsSlope(..., xlim = c(5000, 499000), ylim = c(-3, 0))
 }
 \arguments{
-\item{x}{x}
+\item{x}{A \code{contacts} object}
 
 \item{by_chr}{by_chr}
 
 \item{filtered_chr}{filtered_chr}
+
+\item{...}{...}
+
+\item{xlim}{xlim}
+
+\item{ylim}{ylim}
 }
 \description{
 getPs
+
+ggPs
+
+ggPsSlope
 }

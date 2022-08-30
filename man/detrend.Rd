@@ -7,7 +7,9 @@
 detrend(x, use.assay = "balanced")
 }
 \arguments{
-\item{gis}{gis}
+\item{x}{a \code{contacts} object}
+
+\item{use.assay}{use.assay}
 }
 \description{
 detrend

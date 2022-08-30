@@ -1,7 +1,7 @@
 #' virtual4C
 #'
-#' @param x x
-#' @param viewpoint viewpoint
+#' @param x a `contacts` object
+#' @param viewpoint viewpoint defined as a GRanges
 #' @param use.assay use.assay
 #'
 #' @import ggplot2
@@ -30,7 +30,8 @@ virtual4C <- function(x, viewpoint, use.assay = 'balanced') {
 
 #' gg4C
 #'
-#' @param ... ...
+#' @param x Output of virtual4C
+#' @param mapping aes to pass on to ggplot2
 #'
 #' @import ggplot2
 #' @import tibble

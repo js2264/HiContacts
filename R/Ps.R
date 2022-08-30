@@ -1,6 +1,6 @@
 #' getPs
 #'
-#' @param x x 
+#' @param x A `contacts` object
 #' @param by_chr by_chr
 #' @param filtered_chr filtered_chr
 #'
@@ -18,9 +18,14 @@
 #' @importFrom dplyr tally
 #' @importFrom dplyr arrange
 #' @importFrom dplyr lead
+#' @rdname Ps
 #' @export
 
-getPs <- function(x, by_chr = FALSE, filtered_chr = c('XII', 'chrXII', 'chr12', '12', 'Mito', 'MT', 'chrM')) {
+getPs <- function(
+    x, 
+    by_chr = FALSE, 
+    filtered_chr = c('XII', 'chrXII', 'chr12', '12', 'Mito', 'MT', 'chrM')
+) {
     pairsFile <- pairsFile(x)
     if (is.null(pairsFile)) {
         # stop("Please provide a pairsFile for `x`. Aborting now.")
@@ -132,6 +137,7 @@ getPs <- function(x, by_chr = FALSE, filtered_chr = c('XII', 'chrXII', 'chr12', 
 #' @import ggplot2
 #' @importFrom scales trans_breaks
 #' @importFrom scales trans_format
+#' @rdname Ps
 #' @export
 
 ggPs <- function(..., xlim = c(5000, 4.99e5), ylim = c(1e-8, 1e-4)) {
@@ -159,11 +165,8 @@ ggPs <- function(..., xlim = c(5000, 4.99e5), ylim = c(1e-8, 1e-4)) {
 
 #' ggPsSlope
 #'
-#' @param ... ...
-#' @param xlim xlim
-#' @param ylim ylim
-#'
 #' @import ggplot2
+#' @rdname Ps
 #' @export
 
 ggPsSlope <- function(..., xlim = c(5000, 4.99e5), ylim = c(-3, 0)) {

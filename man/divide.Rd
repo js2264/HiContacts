@@ -6,6 +6,11 @@
 \usage{
 divide(x, by, use.assay = "balanced")
 }
+\arguments{
+\item{x}{a \code{contacts} object}
+
+\item{use.assay}{use.assay}
+}
 \description{
 divide
 }

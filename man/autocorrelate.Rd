@@ -6,6 +6,13 @@
 \usage{
 autocorrelate(x, use.assay = "balanced", ignore_ndiags = 3)
 }
+\arguments{
+\item{x}{a \code{contacts} object}
+
+\item{use.assay}{use.assay}
+
+\item{ignore_ndiags}{ignore N diagonals when calculating correlations}
+}
 \description{
 autocorrelate
 }

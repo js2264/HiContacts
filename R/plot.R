@@ -4,6 +4,8 @@
 #' @param use.assay use.assay
 #' @param scale scale
 #' @param limits limits
+#' @param loops loops
+#' @param borders borders
 #' @param dpi dpi
 #' @param rasterize rasterize
 #' @param symmetrical symmetrical
@@ -28,7 +30,19 @@
 #' @importFrom scales oob_squish
 #' @export
 
-plotMatrix <- function(x, use.assay = 'balanced', scale = 'log10', loops = NULL, borders = NULL, limits = NULL, dpi = 500, rasterize = TRUE, symmetrical = TRUE, chrom_lines = TRUE, cmap = NULL) {
+plotMatrix <- function(
+    x, 
+    use.assay = 'balanced', 
+    scale = 'log10', 
+    loops = NULL, 
+    borders = NULL, 
+    limits = NULL, 
+    dpi = 500, 
+    rasterize = TRUE, 
+    symmetrical = TRUE, 
+    chrom_lines = TRUE, 
+    cmap = NULL
+) {
     `%>%` <- tidyr::`%>%`
     `%over%` <- IRanges::`%over%`
     

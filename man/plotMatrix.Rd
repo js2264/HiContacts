@@ -25,6 +25,10 @@ plotMatrix(
 
 \item{scale}{scale}
 
+\item{loops}{loops}
+
+\item{borders}{borders}
+
 \item{limits}{limits}
 
 \item{dpi}{dpi}

@@ -4,6 +4,9 @@
 #                                                                              #
 ################################################################################
 
+#' @importClassesFrom S4Vectors Pairs
+#' @rdname contacts
+
 setClassUnion("GRangesOrGInteractions", members = c("GRanges", "GInteractions"))
 setClassUnion("GRangesOrPairsOrcharacterOrNULL", members = c("GRanges", "Pairs", "character", "NULL"))
 setClassUnion("numericOrcharacter", members = c("numeric", "character"))
@@ -29,6 +32,7 @@ setClassUnion("characterOrNULL", members = c("character", "NULL"))
 #'   loops, borders, etc...)
 #' @slot pairsFile path for the .pairs file associated with the .(m)cool file
 #' @slot type Optional. Type of contacts matrix (sparse, full, aggr, ratio, ...)
+#' @rdname contacts
 
 methods::setClass("contacts", 
     contains = c("Annotated"), 
@@ -50,16 +54,24 @@ methods::setClass("contacts",
 #' contacts
 #' 
 #' @import methods
+#' @rdname contacts
 #' @export
 
-contacts <- function(cool_path, resolution = NULL, focus = NULL, metadata = NULL, features = NULL, pairs = NULL) {
+contacts <- function(
+    cool_path, 
+    resolution = NULL, 
+    focus = NULL, 
+    metadata = NULL, 
+    features = NULL, 
+    pairs = NULL
+) {
     
     ## -- Check that provided file is valid 
     check_cool_file(cool_path)
     check_cool_format(cool_path, resolution)
 
     ## -- Read resolutions
-    resolutions <- lsCoolResolutions(cool_path, silent = TRUE)
+    resolutions <- lsCoolResolutions(cool_path, verbose = FALSE)
     if (is_mcool(cool_path)) {
         res <- resolutions[length(resolutions)]
         if (!is.null(resolution)) {
@@ -164,62 +176,6 @@ setValidity("contacts",
 
 ################################################################################
 #                                                                              #
-#                                 FUNCTIONS                                    #
-#                                                                              #
-################################################################################
-
-#' zoom
-#' 
-#' @import methods
-#' @importFrom dplyr case_when
-#' @importFrom S4Vectors metadata
-#' @export
-
-zoom <- function(x, focus = NULL, resolution = NULL) {
-    res <- ifelse(!is.null(resolution), resolution, resolution(x))
-    foc <- dplyr::case_when(
-        is.null(focus) & !is.null(focus(x)) ~ list(focus(x)), 
-        is.null(focus) & is.null(focus(x)) ~ list(NULL), 
-        !is.null(focus) ~ list(as.character(focus))
-    )[[1]]
-    y <- contacts(
-        path(x), 
-        resolution = res, 
-        focus = foc, 
-        metadata = S4Vectors::metadata(x)
-    )
-    y@features <- features(x)
-    validObject(y)
-    y
-}
-
-#' addFeature
-#'
-#' @param x a contacts object
-#' @param feature a GRanges or GInteractions object
-#' @param feature.name a name to give to the new features
-#' @return The input contacts object, with a newly added feature
-#' @export
-#' @docType methods
-#' @rdname addFeature-methods
-
-setGeneric("addFeature", function(x, feature, feature.name) {
-    standardGeneric("addFeature")
-})
-
-#' @rdname addFeature-methods
-#' @aliases addFeature,contacts,GRangesOrGInteractions-method
-
-setMethod("addFeature", 
-    signature("contacts", "GRangesOrGInteractions", "character"), 
-    function(x, feature, feature.name) {
-        x@features[[feature.name]] <- feature
-        x
-    }
-)
-
-################################################################################
-#                                                                              #
 #                                 SETTERS                                      #
 #                                                                              #
 ################################################################################
@@ -232,10 +188,10 @@ setMethod("addFeature",
 
 #' length method for objects of class \code{contacts}.
 #'
+#' @name length
 #' @docType methods
-#' @name length-contacts
-#' @rdname length-contacts
-#' @aliases length-contacts length,contacts-method
+#' @rdname contacts
+#' @aliases length,contacts-method
 #'
 #' @param x A \code{contacts} object.
 #'
@@ -245,10 +201,10 @@ setMethod("length", "contacts", function(x) length(regions(x)))
 
 #' dim method for objects of class \code{contacts}.
 #'
+#' @name dim
 #' @docType methods
-#' @name dim-contacts
-#' @rdname dim-contacts
-#' @aliases dim-contacts dim,contacts-method
+#' @rdname contacts
+#' @aliases dim,contacts-method
 #'
 #' @param x A \code{contacts} object.
 #'
@@ -256,7 +212,18 @@ setMethod("length", "contacts", function(x) length(regions(x)))
 
 setMethod("dim", "contacts", function(x) dim(gi2cm(assay(x, 1))))
 
-setMethod('[', signature(x="contacts"), function(x, i) {
+#' [ method for objects of class \code{contacts}.
+#'
+#' @name [
+#' @docType methods
+#' @rdname contacts
+#' @aliases [,contacts-method
+#'
+#' @param x A \code{contacts} object.
+#'
+#' @export
+
+setMethod("[", signature("contacts"), function(x, i) {
     x@interactions <- interactions(x)[i]
     for (K in seq_along(assays(x))) {
         x@assays[[K]] <- x@assays[[K]][i]
@@ -293,7 +260,7 @@ setMethod("assay", signature(x = "contacts", name = "missing"), function(x, name
 })
 
 setGeneric("assay<-", function(x, name, value) {standardGeneric("assay<-")})
-setMethod("assay<-", c(x = "contacts", name = "numericOrcharacter", value = "numeric"), function(x, name, value) {
+setMethod("assay<-", c(x = "contacts", name = "character", value = "numeric"), function(x, name, value) {
     x@assays[[name]] <- value
     return(x)
 })
@@ -311,7 +278,7 @@ setMethod("feature", signature(x = "contacts", name = "missing"), function(x, na
     features(x)[[1]]
 })
 setGeneric("feature<-", function(x, name, value) {standardGeneric("feature<-")})
-setMethod("feature<-", signature(x = "contacts", name = "numericOrcharacter", value = "GRangesOrGInteractions"), function(x, name, value) {
+setMethod("feature<-", signature(x = "contacts", name = "character", value = "GRangesOrGInteractions"), function(x, name, value) {
     x@features[[name]] <- value
     return(x)
 })
@@ -334,10 +301,10 @@ setMethod("regions", "contacts", function(x) regions(assay(x, 1)))
 
 #' Show method for objects of class \code{contacts}.
 #'
+#' @name show
 #' @docType methods
-#' @name show-contacts
-#' @rdname show-contacts
-#' @aliases show-contacts show,contacts-method
+#' @rdname contacts
+#' @aliases show,contacts-method
 #'
 #' @param x A \code{contacts} object.
 #'

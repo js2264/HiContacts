@@ -7,7 +7,7 @@
 cis_trans(x)
 }
 \arguments{
-\item{x}{x}
+\item{x}{A \code{contacts} object over the full genome}
 }
 \description{
 cis_trans

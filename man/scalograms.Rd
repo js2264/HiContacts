@@ -2,6 +2,7 @@
 % Please edit documentation in R/scalogram.R
 \name{getScalogram}
 \alias{getScalogram}
+\alias{ggScalogram}
 \title{getScalogram}
 \usage{
 getScalogram(
@@ -10,7 +11,11 @@ getScalogram(
   ylim = c(1e+05, 1e+08),
   probs = c(0, 0.15, 0.3, 0.45, 0.6, 0.75, 1)
 )
+
+ggScalogram(x, aes, ylim = c(10000, 1e+07))
 }
 \description{
-getScalogram
+In development.
+
+In development.
 }

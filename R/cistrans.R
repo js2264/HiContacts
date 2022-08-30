@@ -1,6 +1,6 @@
 #' cis_trans
 #'
-#' @param x x
+#' @param x A `contacts` object over the full genome
 #'
 #' @importFrom tibble as_tibble
 #' @importFrom tidyr pivot_wider

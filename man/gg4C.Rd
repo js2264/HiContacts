@@ -7,7 +7,9 @@
 gg4C(x, mapping)
 }
 \arguments{
-\item{...}{...}
+\item{x}{Output of virtual4C}
+
+\item{mapping}{aes to pass on to ggplot2}
 }
 \description{
 gg4C

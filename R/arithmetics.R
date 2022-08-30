@@ -1,6 +1,7 @@
 #' detrend
 #'
-#' @param gis gis
+#' @param x a `contacts` object
+#' @param use.assay use.assay
 #'
 #' @importFrom scales rescale
 #' @importFrom tibble as_tibble
@@ -32,6 +33,13 @@ detrend <- function(x, use.assay = 'balanced') {
 
 #' smoothen
 #'
+#' @param x a `contacts` object
+#' @param use.assay use.assay
+#' @param use_serpentine_trend whether to use the trend estimated with 
+#'   serpentine (this requires `reticulate` and the python package `serpentine`)
+#' @param serpentine_niter number of iterations to use for serpentine
+#' @param serpentine_ncores number of CPUs to use for serpentine
+#' 
 #' @import reticulate
 #' @import GenomicRanges
 #' @importFrom dplyr mutate
@@ -42,7 +50,9 @@ detrend <- function(x, use.assay = 'balanced') {
 #' @importFrom S4Vectors SimpleList
 #' @export
 
-smoothen <- function(x, use.assay = 'balanced', use_serpentine_trend = TRUE, serpentine_niter = 10L, serpentine_ncores = 16L) {
+smoothen <- function(x, use.assay = 'balanced', 
+    use_serpentine_trend = TRUE, serpentine_niter = 10L, serpentine_ncores = 16L
+) {
 
     sp <- reticulate::import('serpentine')
     gis <- assay(x, use.assay)
@@ -98,6 +108,10 @@ smoothen <- function(x, use.assay = 'balanced', use_serpentine_trend = TRUE, ser
 
 #' autocorrelate
 #'
+#' @param x a `contacts` object
+#' @param use.assay use.assay
+#' @param ignore_ndiags ignore N diagonals when calculating correlations
+#' 
 #' @import InteractionSet
 #' @import stringr
 #' @importFrom tidyr pivot_longer
@@ -132,6 +146,9 @@ autocorrelate <- function(x, use.assay = 'balanced', ignore_ndiags = 3) {
 }
 
 #' divide
+#'
+#' @param x a `contacts` object
+#' @param use.assay use.assay
 #'
 #' @import tidyr
 #' @import zeallot
@@ -247,6 +264,9 @@ divide <- function(x, by, use.assay = 'balanced') {
 }
 
 #' merge
+#'
+#' @param ... `contacts` objects
+#' @param use.assay use.assay
 #'
 #' @import tidyr
 #' @import zeallot

@@ -1,3 +1,13 @@
+#' @name Checks functions
+#' @title Checks functions
+#' 
+#' @param cool_path Path of a (m)cool file
+#' @param contacts A `contacts` object
+#' @param resolution Resolution
+#' @param ... `contacts` object
+#' 
+#' @rdname checks
+
 check_cool_file <- function(cool_path) {
     if (!file.exists(cool_path) | !file.exists(Sys.readlink(cool_path))) {
         stop('File not found. Aborting now')
@@ -8,6 +18,8 @@ check_cool_file <- function(cool_path) {
     TRUE
 }
 
+#' @rdname checks
+
 check_resolution <- function(contacts, resolution) {
     available_res <- resolutions(contacts)
     if (!resolution %in% available_res) 
@@ -15,12 +27,14 @@ check_resolution <- function(contacts, resolution) {
     TRUE
 }
 
+#' @rdname checks
+
 check_cool_format <- function(cool_path, resolution) {
     if (is_mcool(cool_path)) {
         if (is.null(resolution)) {
             stop("File is in .mcool format, a resolution must be provided. Aborting now.")
         }
-        if (!resolution %in% lsCoolResolutions(cool_path, silent = TRUE)) {
+        if (!resolution %in% lsCoolResolutions(cool_path, verbose = FALSE)) {
             stop("Resolution not stored in cool file. Aborting now.")
         }
     }
@@ -32,13 +46,19 @@ check_cool_format <- function(cool_path, resolution) {
     TRUE
 }
 
+#' @rdname checks
+
 is_mcool <- function(cool_path) {
     tools::file_ext(cool_path) == 'mcool'
 }
 
+#' @rdname checks
+
 is_cool <- function(cool_path) {
     tools::file_ext(cool_path) == 'cool'
 }
+
+#' @rdname checks
 
 is_same_seqinfo <- function(...) {
     contacts_list <- list(...)
@@ -46,24 +66,36 @@ is_same_seqinfo <- function(...) {
         identical(seqinfo(contacts_list[[1]]), seqinfo(x))
     })))
 }
+
+#' @rdname checks
+
 is_same_resolution <- function(...) {
     contacts_list <- list(...)
     all(unlist(lapply(contacts_list, function(x) {
         identical(resolution(contacts_list[[1]]), resolution(x))
     })))
 }
+
+#' @rdname checks
+
 is_same_bins <- function(...) {
     contacts_list <- list(...)
     all(unlist(lapply(contacts_list, function(x) {
         identical(bins(contacts_list[[1]]), bins(x))
     })))
 }
+
+#' @rdname checks
+
 is_same_regions <- function(...) {
     contacts_list <- list(...)
     all(unlist(lapply(contacts_list, function(x) {
         identical(regions(contacts_list[[1]]), regions(x))
     })))
 }
+
+#' @rdname checks
+
 is_comparable <- function(...) {
     err <- c()
     if (!is_same_seqinfo(...)) {
@@ -84,6 +116,9 @@ is_comparable <- function(...) {
     }
     TRUE
 }
+
+#' @rdname checks
+
 is_square <- function(pair) {
     w1 <- GenomicRanges::width(S4Vectors::first(pair))
     w2 <- GenomicRanges::width(S4Vectors::second(pair))
@@ -92,6 +127,9 @@ is_square <- function(pair) {
     }
     TRUE
 }
+
+#' @rdname checks
+
 is_centered <- function(x) {
     if (is.character(focus(x))) {
         if (grepl(' x ', focus(x))) {

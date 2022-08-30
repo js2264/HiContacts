@@ -1,7 +1,9 @@
 #' getScalogram
+#' 
+#' In development.
 #'
 #' @importFrom dplyr group_modify
-#' @export
+#' @rdname scalograms
 
 getScalogram <- function(x, nbins = 250, ylim = c(1e5, 1e8), probs = c(0, 0.15, 0.3, 0.45, 0.6, 0.75, 1)) {
     pairsFile <- pairsFile(x)
@@ -43,9 +45,11 @@ getScalogram <- function(x, nbins = 250, ylim = c(1e5, 1e8), probs = c(0, 0.15, 
 
 #' ggScalogram
 #' 
+#' In development.
+#' 
 #' @import ggplot2
 #' @importFrom scales oob_squish
-#' @export
+#' @rdname scalograms
 
 ggScalogram <- function(x, aes, ylim = c(1e4, 1e7)) {
     x <- x %>%

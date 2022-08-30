@@ -1,7 +1,8 @@
 #' ggtheme_HiContacts
 #'
 #' @param ticks ticks
-#'
+#' @rdname ggplot2-HiContacts
+#' 
 #' @import ggplot2
 #' @export
 
@@ -16,7 +17,7 @@ ggtheme_HiContacts <- function(ticks = TRUE) {
     t
 }
 
-#' ggtheme_HiContacts_tracks
+#' @rdname ggplot2-HiContacts
 #'
 #' @import ggplot2
 #' @export
