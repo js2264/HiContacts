@@ -30,8 +30,10 @@ getAnchors <- function(file, resolution = NULL, balanced = "cooler") {
     return(anchors)
 }
 
-#' getCounts
+#' getCounts2
 #'
+#' Function to extract counts for a non-square matrix (@ a pair of coordinates).
+#' 
 #' This was adapted from `dovetail-genomics/coolR`
 #'
 #' @param file file
@@ -53,73 +55,106 @@ getAnchors <- function(file, resolution = NULL, balanced = "cooler") {
 #' @importFrom S4Vectors subjectHits
 #' @export
 
+getCounts2 <- function(file,
+                      pair,
+                      anchors,
+                      resolution = NULL, 
+                      BPPARAM = BiocParallel::bpparam()) {
+    
+    `%<-%` <- zeallot::`%<-%`
+
+    # Make sure pair is sorted (first is first, second is after)
+    pair <- sort_pairs(pair)
+
+    # For each pair, get the coords for first and second.
+    if (length(pair) > 1) {
+        coords_list <- lapply(pair, function(x) {
+            coords <- unlist(S4Vectors::zipup(x))
+            splitCoords(coords)
+        })
+    }
+    else {
+        coords <- unlist(S4Vectors::zipup(pair))
+        coords_list <- list(splitCoords(coords))
+    }
+
+    ## Check that queried chr. exists
+    chrs <- unlist(lapply(coords_list, '[[', 'chr'))
+    if (any(!chrs %in% as.vector(GenomicRanges::seqnames(anchors)) & !is.na(chrs))) {
+        sn <- paste0(unique(as.vector(GenomicRanges::seqnames(anchors))), collapse = ", ")
+        stop(glue::glue("Some chr. are not available. Available seqnames: {sn}"))
+    }
+
+    df <- BiocParallel::bplapply(seq_along(coords_list), function(i) {
+        # For a single pair of GRanges: Create start and end GRanges...
+        .x <- coords_list[[i]]
+        start <- GenomicRanges::GRanges(.x$chr, IRanges::IRanges(.x$start + 1, width = 1))
+        end <- GenomicRanges::GRanges(.x$chr, IRanges::IRanges(.x$end, width = 1))
+        start_idx <- S4Vectors::subjectHits(GenomicRanges::findOverlaps(start, anchors))
+        end_idx <- S4Vectors::subjectHits(GenomicRanges::findOverlaps(end, anchors))
+        bin1_idx_1 <- fetchCool(file, path = "indexes/bin1_offset", resolution, idx = seq(start_idx[1], end_idx[1]))
+        bin1_idx_2 <- fetchCool(file, path = "indexes/bin1_offset", resolution, idx = seq(start_idx[2], end_idx[2]))
+        chunks_1 <- seq(
+            bin1_idx_1[1] + 1,
+            bin1_idx_1[1] + 1 + {sum(bin1_idx_1[-1] - bin1_idx_1[-length(bin1_idx_1)])}
+        )
+        chunks_2 <- seq(
+            bin1_idx_2[1] + 1,
+            bin1_idx_2[1] + 1 + {sum(bin1_idx_2[-1] - bin1_idx_2[-length(bin1_idx_2)])}
+        )
+        valid_bin2 <- unique(fetchCool(file, path = "pixels/bin1_id", resolution, idx = chunks_2))
+        tidyr::tibble(
+            bin1_id = fetchCool(file, path = "pixels/bin1_id", resolution, idx = chunks_1),
+            bin2_id = fetchCool(file, path = "pixels/bin2_id", resolution, idx = chunks_1),
+            count = fetchCool(file, path = "pixels/count", resolution, idx = chunks_1)
+        ) %>% 
+            dplyr::filter(bin2_id %in% valid_bin2) %>% 
+            dplyr::mutate(pair = paste0(
+                as.character(S4Vectors::first(pair[i])), 
+                '_', 
+                as.character(S4Vectors::second(pair[i]))
+            ))
+    }, BPPARAM = BPPARAM) %>% dplyr::bind_rows()
+
+    return(df)
+}
+
+#' Function to extract counts for a square matrix from an mcool file
+
 getCounts <- function(file,
                       coords,
                       anchors,
-                      coords2 = NULL,
                       resolution = NULL) {
     
     `%<-%` <- zeallot::`%<-%`
+    `%within%` <- IRanges::`%within%`
     check_cool_format(file, resolution)
 
-    ## Get chunks to parse
-    if (length(coords) <= 1) { ## coords = NULL or 1 GRanges
-
-        ## Process coordinates
-        c(coords_chr, coords_start, coords_end) %<-% splitCoords(coords)
-        if (any(is.na(coords_start) & !is.na(coords_chr))) {
-            coords_start <- rep(1, length(coords_start))
-            coords_end <- GenomeInfoDb::seqlengths(anchors)[coords_chr]
-        }
-
-        ## Check that queried chr. exists
-        if (any(!coords_chr %in% as.vector(GenomicRanges::seqnames(anchors)) & !is.na(coords_chr))) {
-            sn <- paste0(unique(as.vector(GenomicRanges::seqnames(anchors))), collapse = ", ")
-            stop(glue::glue("{coords_chr} not in file. Available seqnames: {sn}"))
-        }
-
-        if (is.na(coords_chr)) {
-            chunks <- NULL
-        } 
-        else {
-            start <- GenomicRanges::GRanges(coords_chr, IRanges::IRanges(coords_start + 1, width = 1))
-            end <- GenomicRanges::GRanges(coords_chr, IRanges::IRanges(coords_end, width = 1))
-            start_idx <- S4Vectors::subjectHits(GenomicRanges::findOverlaps(start, anchors))
-            end_idx <- S4Vectors::subjectHits(GenomicRanges::findOverlaps(end, anchors))
-            bin1_idx <- fetchCool(file, path = "indexes/bin1_offset", resolution, idx = seq(start_idx, end_idx))
-            slice <- sum(bin1_idx[-1] - bin1_idx[-length(bin1_idx)])
-            chunks <- seq(
-                bin1_idx[1] + 1,
-                bin1_idx[1] + 1 + slice
-            )
-        }
+    ## Process coordinates
+    c(coords_chr, coords_start, coords_end) %<-% splitCoords(coords)
+    
+    # If only chr. names are provided, find their start and stop
+    if (any(is.na(coords_start) & !is.na(coords_chr))) {
+        coords_start <- rep(1, length(coords_start))
+        coords_end <- GenomeInfoDb::seqlengths(anchors)[coords_chr]
     }
 
-    else { ## If there are several GRanges provided (for APA)
-        
-        coords <- IRanges::subsetByOverlaps(coords, as(cool2seqinfo(file, resolution), 'GRanges'), type = 'within') ## Filter coords to exclude those out of mcool 
-        coords <- GenomicRanges::reduce(coords)
-        c(coords_chr, coords_start, coords_end) %<-% splitCoords(coords)
+    ## Check that queried chr. exist
+    if (any(!coords_chr %in% as.vector(GenomicRanges::seqnames(anchors)) & !is.na(coords_chr))) {
+        sn <- paste0(unique(as.vector(GenomicRanges::seqnames(anchors))), collapse = ", ")
+        stop(glue::glue("{coords_chr} not in file. Available seqnames: {sn}"))
+    }
 
-        ## Check that queried chr. exists
-        if (any(!coords_chr %in% as.vector(GenomicRanges::seqnames(anchors)) & !is.na(coords_chr))) {
-            sn <- paste0(unique(as.vector(GenomicRanges::seqnames(anchors))), collapse = ", ")
-            stop(glue::glue("{coords_chr} not in file. Available seqnames: {sn}"))
-        }
-
-        start <- GenomicRanges::GRanges(coords_chr, IRanges::IRanges(coords_start + 1, width = 1))
-        end <- GenomicRanges::GRanges(coords_chr, IRanges::IRanges(coords_end, width = 1))
-        start_idx <- S4Vectors::subjectHits(GenomicRanges::findOverlaps(start, anchors))
-        end_idx <- S4Vectors::subjectHits(GenomicRanges::findOverlaps(end, anchors))
-        chunks <- lapply(seq_along(start_idx), function(K) {
-            bin1_idx <- fetchCool(file, path = "indexes/bin1_offset", resolution, idx = seq(start_idx[K], end_idx[K]))
-            slice <- sum(bin1_idx[-1] - bin1_idx[-length(bin1_idx)])
-            seq(
-                bin1_idx[1] + 1,
-                bin1_idx[1] + 1 + slice
-            )
-        }) %>% unlist()
-
+    ## Find out which chunks of the mcool to recover
+    if (is.na(coords_chr)) {
+        chunks <- NULL
+    } 
+    else {
+        gr <- GRanges(coords_chr, IRanges::IRanges(coords_start, coords_end))
+        sub <- anchors %within% gr
+        s <- anchors$bin_id[sub]
+        bin_idx <- fetchCool(file, path = "indexes/bin1_offset", resolution, idx = s)
+        chunks <- seq(min(bin_idx)+1, max(bin_idx)+1, by = 1)
     }
 
     ## Reading the chunks from the cool file
@@ -129,40 +164,10 @@ getCounts <- function(file,
         count = fetchCool(file, path = "pixels/count", resolution, idx = chunks)
     )
 
-    ## ------- Case when coords2 are provided...
-    if (is.null(coords2)) {
-        df <- df[df$bin2_id %in% df$bin1_id, ]
-        return(df)
-    }
-    else {
-        c(coords_chr2, coords_start2, coords_end2) %<-% splitCoords(coords2)
-        if (is.na(coords_start2) & !is.na(coords_chr2)) {
-            coords_start2 <- 1
-            coords_end2 <- GenomeInfoDb::seqlengths(anchors)[coords_chr2]
-        }
-        else if (is.na(coords_chr2)) {
-            chunks <- NULL
-        } 
-        else {
-            start <- GenomicRanges::GRanges(coords_chr2, IRanges::IRanges(coords_start2 + 1, width = 1))
-            end <- GenomicRanges::GRanges(coords_chr2, IRanges::IRanges(coords_end2, width = 1))
-            start_idx <- S4Vectors::subjectHits(GenomicRanges::findOverlaps(start, anchors))
-            end_idx <- S4Vectors::subjectHits(GenomicRanges::findOverlaps(end, anchors))
-            bin2_idx <- fetchCool(file, path = "indexes/bin1_offset", res, idx = seq(start_idx, end_idx))
-            slice <- sum(bin2_idx[-1] - bin2_idx[-length(bin2_idx)])
-            chunks <- seq(
-                bin2_idx[1] + 1,
-                bin2_idx[1] + 1 + slice
-            )
-            df2 <- tidyr::tibble(
-                bin1_id = fetchCool(file, path = "pixels/bin1_id", res, idx = chunks),
-                bin2_id = fetchCool(file, path = "pixels/bin2_id", res, idx = chunks),
-                count = fetchCool(file, path = "pixels/count", res, idx = chunks)
-            )
-            df <- df[df$bin2_id %in% df2$bin1_id, ]
-            return(df)
-        }
-    }
+    ## Filter to only get interesting bins
+    df <- df[df$bin2_id %in% df$bin1_id, ]
+
+    return(df)
 
 }
 
@@ -316,7 +321,7 @@ cool2gi <- function(file, coords = NULL, resolution = NULL) {
         cnts <- getCounts(file, coords = coords, anchors = anchors, resolution = resolution)
     }
     else if (is_pair) {
-        coords_list <- lapply(pair, function(x) {
+        coords_list <- lapply(coords, function(x) {
             coords <- unlist(S4Vectors::zipup(x))
             splitCoords(coords)
         })
