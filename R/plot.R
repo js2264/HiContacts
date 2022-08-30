@@ -51,6 +51,9 @@ plotMatrix <- function(x, use.assay = 'balanced', scale = 'log10', loops = NULL,
     else if (scale == 'exp0.2') {
         gis$score <- gis$score^0.2
     }
+    else if (scale == 'linear') {
+        gis$score <- gis$score
+    }
 
     ## -- Set matrix limits
     if (!is.null(limits)) {
@@ -154,9 +157,7 @@ plotMatrix <- function(x, use.assay = 'balanced', scale = 'log10', loops = NULL,
                 mat %>% 
                     dplyr::mutate(x2 = y, y = x, x = x2) %>% 
                     dplyr::select(-x2)
-            ) %>% 
-                dplyr::group_by(seqnames1, seqnames2, x, y) %>% 
-                dplyr::summarize(score = sum(score), .groups = 'drop')
+            ) 
         } 
 
         ## -- Plot matrix

@@ -5,7 +5,7 @@
 ################################################################################
 
 setClassUnion("GRangesOrGInteractions", members = c("GRanges", "GInteractions"))
-setClassUnion("GRangesOrcharacterOrNULL", members = c("GRanges", "character", "NULL"))
+setClassUnion("GRangesOrPairsOrcharacterOrNULL", members = c("GRanges", "Pairs", "character", "NULL"))
 setClassUnion("numericOrcharacter", members = c("numeric", "character"))
 setClassUnion("characterOrNULL", members = c("character", "NULL"))
 
@@ -33,7 +33,7 @@ setClassUnion("characterOrNULL", members = c("character", "NULL"))
 methods::setClass("contacts", 
     contains = c("Annotated"), 
     slots = c(
-        focus = "GRangesOrcharacterOrNULL", 
+        focus = "GRangesOrPairsOrcharacterOrNULL", 
         metadata = "list", 
         seqinfo = "Seqinfo", 
         resolutions = "numeric", 
@@ -125,9 +125,22 @@ contacts <- function(cool_path, resolution = NULL, focus = NULL, metadata = NULL
     }
 
     ## -- Create contact object
+    if (methods::is(focus, 'Pairs')) {
+        foc <- paste0(
+            as.character(S4Vectors::first(focus)), 
+            ' x ', 
+            as.character(S4Vectors::second(focus))
+        )
+    }
+    else {
+        foc <- focus
+    }
     x <- methods::new("contacts", 
-        focus = focus, 
-        metadata = purrr::flatten(c(list(path = cool_path), metadata[names(metadata)!='path'])), 
+        focus = foc, 
+        metadata = purrr::flatten(c(
+            list(path = cool_path), 
+            metadata[names(metadata)!='path'])
+        ), 
         seqinfo = si, 
         resolutions = resolutions, 
         current_resolution = ifelse(is_mcool(cool_path), current_res, res), 
@@ -147,7 +160,7 @@ contacts <- function(cool_path, resolution = NULL, focus = NULL, metadata = NULL
 
 setValidity("contacts",
     function(object) {
-        if (!is(focus(object), "GRangesOrcharacterOrNULL"))
+        if (!is(focus(object), "GRangesOrPairsOrcharacterOrNULL"))
             return("'focus' slot must be a GRanges")
         if (!is(resolutions(object), "numeric"))
             return("'resolutions' slot must be an numeric vector")

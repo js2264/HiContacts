@@ -304,10 +304,13 @@ merge <- function(..., use.assay = 'balanced') {
     ## -- Create 'in silico' contacts
     files <- paste0(
         basename(unlist(lapply(contacts_list, path))), 
-        collapse = ' + '
+        collapse = ', '
     )
     res <- methods::new("contacts", 
-        focus = focus(x), 
+        focus = paste0(
+            basename(unlist(lapply(contacts_list, focus))), 
+            collapse = ', '
+        ), 
         metadata = list(
             path = '',
             merging = files, 

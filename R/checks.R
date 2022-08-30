@@ -1,5 +1,5 @@
 check_cool_file <- function(cool_path) {
-    if (!file.exists(cool_path)) {
+    if (!file.exists(cool_path) | !file.exists(Sys.readlink(cool_path))) {
         stop('File not found. Aborting now')
     }
     if (!{is_cool(cool_path) | is_mcool(cool_path)}) {
