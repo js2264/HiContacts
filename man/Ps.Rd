@@ -53,7 +53,7 @@ getPs(contacts_yeast)
 library(HiContacts)
 data(contacts_yeast)
 ps <- getPs(contacts_yeast)
-plotPs(ps, aes(x = binned_distance, y = norm_p))
+plotPs(ps, ggplot2::aes(x = binned_distance, y = norm_p))
 
 ## Comparing several P(s)
 
@@ -64,10 +64,10 @@ ps_wt <- getPs(contacts_yeast)
 ps_wt$sample <- 'WT'
 ps_eco1 <- getPs(contacts_yeast_eco1)
 ps_eco1$sample <- 'eco1'
-ps <- bind_rows(ps_wt, ps_eco1)
-plotPs(ps, aes(x = binned_distance, y = norm_p, group = sample, color = sample))
+ps <- rbind(ps_wt, ps_eco1)
+plotPs(ps, ggplot2::aes(x = binned_distance, y = norm_p, group = sample, color = sample))
 library(HiContacts)
 data(contacts_yeast)
 ps <- getPs(contacts_yeast)
-plotPsSlope(ps, aes(x = binned_distance, y = slope))
+plotPsSlope(ps, ggplot2::aes(x = binned_distance, y = slope))
 }

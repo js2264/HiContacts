@@ -397,7 +397,7 @@ cool2gi <- function(file, coords = NULL, resolution = NULL) {
 
 #' gi2cm
 #'
-#' @param gi A `GenomicInteractions` object
+#' @param gi A `GInteractions` object
 #' @return a ContactMatrix object
 #'
 #' @import InteractionSet

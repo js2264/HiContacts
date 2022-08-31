@@ -24,5 +24,5 @@ library(HiContacts)
 data(contacts_yeast)
 contacts_yeast <- autocorrelate(contacts_yeast)
 assays(contacts_yeast)
-plotMatrix(contacts_yeast, scale = 'linear', limits = c(-1, 1), cmap = bwr_colors)
+plotMatrix(contacts_yeast, scale = 'linear', limits = c(-1, 1), cmap = bwr_colors())
 }

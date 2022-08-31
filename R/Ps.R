@@ -43,7 +43,7 @@ getPs <- function(
         ) %>% 
             tidyr::drop_na() %>% 
             dplyr::filter(!chr %in% filtered_chr) %>% 
-            dplyr::mutate(binned_distance = breaks$break_pos[findInterval(distance, vec = breaks$break_pos, all.inside = TRUE)])
+            dplyr::mutate(binned_distance = PsBreaks()$break_pos[findInterval(distance, vec = PsBreaks()$break_pos, all.inside = TRUE)])
         if (by_chr) {
             df <- dplyr::group_by(df, chr, binned_distance)
         } 
@@ -52,7 +52,7 @@ getPs <- function(
         }
         d <- dplyr::summarize(df, ninter = sum(n)) %>%
             dplyr::mutate(p = ninter/sum(ninter)) %>% 
-            dplyr::left_join(breaks, by = c('binned_distance' = 'break_pos')) %>% 
+            dplyr::left_join(PsBreaks(), by = c('binned_distance' = 'break_pos')) %>% 
             dplyr::mutate(norm_p = p / binwidth)
         if (by_chr) {
             d <- dplyr::group_by(d, chr)
@@ -97,7 +97,7 @@ getPs <- function(
         ) %>% 
             tidyr::drop_na() %>% 
             dplyr::filter(!chr %in% filtered_chr) %>% 
-            dplyr::mutate(binned_distance = breaks$break_pos[findInterval(distance, vec = breaks$break_pos, all.inside = TRUE)])
+            dplyr::mutate(binned_distance = PsBreaks()$break_pos[findInterval(distance, vec = PsBreaks()$break_pos, all.inside = TRUE)])
         if (by_chr) {
             df <- dplyr::group_by(df, chr, binned_distance)
         } 
@@ -106,7 +106,7 @@ getPs <- function(
         }
         d <- dplyr::tally(df, name = 'ninter') %>%
             dplyr::mutate(p = ninter/sum(ninter)) %>% 
-            dplyr::left_join(breaks, by = c('binned_distance' = 'break_pos')) %>% 
+            dplyr::left_join(PsBreaks(), by = c('binned_distance' = 'break_pos')) %>% 
             dplyr::mutate(norm_p = p / binwidth)
         if (by_chr) {
             d <- dplyr::group_by(d, chr)
@@ -152,7 +152,7 @@ getPs <- function(
 #' library(HiContacts)
 #' data(contacts_yeast)
 #' ps <- getPs(contacts_yeast)
-#' plotPs(ps, aes(x = binned_distance, y = norm_p))
+#' plotPs(ps, ggplot2::aes(x = binned_distance, y = norm_p))
 #' 
 #' ## Comparing several P(s)
 #' 
@@ -163,8 +163,8 @@ getPs <- function(
 #' ps_wt$sample <- 'WT'
 #' ps_eco1 <- getPs(contacts_yeast_eco1)
 #' ps_eco1$sample <- 'eco1'
-#' ps <- bind_rows(ps_wt, ps_eco1)
-#' plotPs(ps, aes(x = binned_distance, y = norm_p, group = sample, color = sample))
+#' ps <- rbind(ps_wt, ps_eco1)
+#' plotPs(ps, ggplot2::aes(x = binned_distance, y = norm_p, group = sample, color = sample))
 
 plotPs <- function(..., xlim = c(5000, 4.99e5), ylim = c(1e-8, 1e-4)) {
     gg <- ggplot2::ggplot(...) + 
@@ -200,7 +200,7 @@ plotPs <- function(..., xlim = c(5000, 4.99e5), ylim = c(1e-8, 1e-4)) {
 #' library(HiContacts)
 #' data(contacts_yeast)
 #' ps <- getPs(contacts_yeast)
-#' plotPsSlope(ps, aes(x = binned_distance, y = slope))
+#' plotPsSlope(ps, ggplot2::aes(x = binned_distance, y = slope))
 
 plotPsSlope <- function(..., xlim = c(5000, 4.99e5), ylim = c(-3, 0)) {
     gg <- ggplot2::ggplot(...) + 
@@ -221,4 +221,63 @@ plotPsSlope <- function(..., xlim = c(5000, 4.99e5), ylim = c(-3, 0)) {
         ggplot2::annotation_logticks(sides = "b") + 
         ggplot2::labs(x = "Genomic distance", y = "Slope of P(s)")
     gg
+}
+
+#' PsBreaks
+#'
+#' @return tbl
+
+PsBreaks <- function() {
+    structure(list(break_pos = c(
+        1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11,
+        12, 13, 14, 16, 17, 19, 21, 23, 26, 28, 31, 34, 37, 41, 45, 50,
+        55, 60, 66, 73, 80, 88, 97, 107, 117, 129, 142, 156, 172, 189,
+        208, 229, 252, 277, 304, 335, 368, 405, 446, 490, 539, 593, 653,
+        718, 790, 869, 956, 1051, 1156, 1272, 1399, 1539, 1693, 1862,
+        2048, 2253, 2479, 2726, 2999, 3299, 3629, 3992, 4391, 4830, 5313,
+        5844, 6429, 7072, 7779, 8557, 9412, 10354, 11389, 12528, 13781,
+        15159, 16675, 18342, 20176, 22194, 24413, 26855, 29540, 32494,
+        35743, 39318, 43249, 47574, 52332, 57565, 63322, 69654, 76619,
+        84281, 92709, 101980, 112178, 123396, 135735, 149309, 164240,
+        180664, 198730, 218603, 240463, 264510, 290961, 320057, 352063,
+        387269, 425996, 468595, 515455, 567000, 623700, 686070, 754677,
+        830145, 913160, 1004475, 1104923, 1215415, 1336957, 1470653,
+        1617718, 1779490, 1957439, 2153182, 2368501, 2605351, 2865886,
+        3152474, 3467722, 3814494, 4195943, 4615538, 5077092, 5584801,
+        6143281, 6757609, 7433370, 8176707, 8994377, 9893815, 10883197,
+        11971516, 13168668, 14485535, 15934088, 17527497, 19280247, 21208271,
+        23329099, 25662008, 28228209, 31051030, 34156133, 37571747, 41328921,
+        45461813, 50007995, 55008794, 60509674, 66560641, 73216705, 80538375,
+        88592213, 97451434, 107196578, 117916236, 129707859, 142678645,
+        156946509, 172641160, 189905276, 208895804, 229785385, 252763923,
+        278040315, 305844347, 336428781, 370071660, 407078826, 447786708,
+        492565379, 541821917, 596004109, 655604519, 721164971, 793281468,
+        872609615, 959870577, 1055857635, 1161443398
+    ), binwidth = c(
+        1,
+        1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 1, 2, 2, 2, 3, 2, 3, 3,
+        3, 4, 4, 5, 5, 5, 6, 7, 7, 8, 9, 10, 10, 12, 13, 14, 16, 17,
+        19, 21, 23, 25, 27, 31, 33, 37, 41, 44, 49, 54, 60, 65, 72, 79,
+        87, 95, 105, 116, 127, 140, 154, 169, 186, 205, 226, 247, 273,
+        300, 330, 363, 399, 439, 483, 531, 585, 643, 707, 778, 855, 942,
+        1035, 1139, 1253, 1378, 1516, 1667, 1834, 2018, 2219, 2442, 2685,
+        2954, 3249, 3575, 3931, 4325, 4758, 5233, 5757, 6332, 6965, 7662,
+        8428, 9271, 10198, 11218, 12339, 13574, 14931, 16424, 18066,
+        19873, 21860, 24047, 26451, 29096, 32006, 35206, 38727, 42599,
+        46860, 51545, 56700, 62370, 68607, 75468, 83015, 91315, 100448,
+        110492, 121542, 133696, 147065, 161772, 177949, 195743, 215319,
+        236850, 260535, 286588, 315248, 346772, 381449, 419595, 461554,
+        507709, 558480, 614328, 675761, 743337, 817670, 899438, 989382,
+        1088319, 1197152, 1316867, 1448553, 1593409, 1752750, 1928024,
+        2120828, 2332909, 2566201, 2822821, 3105103, 3415614, 3757174,
+        4132892, 4546182, 5000799, 5500880, 6050967, 6656064, 7321670,
+        8053838, 8859221, 9745144, 10719658, 11791623, 12970786, 14267864,
+        15694651, 17264116, 18990528, 20889581, 22978538, 25276392, 27804032,
+        30584434, 33642879, 37007166, 40707882, 44778671, 49256538, 54182192,
+        59600410, 65560452, 72116497, 79328147, 87260962, 95987058, 105585763,
+        116144340
+    )), row.names = c(NA, -205L), class = c(
+        "tbl_df", "tbl",
+        "data.frame"
+    ))
 }

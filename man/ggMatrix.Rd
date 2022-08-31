@@ -4,7 +4,7 @@
 \alias{ggMatrix}
 \title{ggmatrix}
 \usage{
-ggMatrix(mat, ticks = TRUE, cols = afmhotr_colors, limits)
+ggMatrix(mat, ticks = TRUE, cols = afmhotr_colors(), limits)
 }
 \arguments{
 \item{mat}{mat}

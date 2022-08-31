@@ -29,8 +29,8 @@ contacts
 ## Plotting matrices 
 
 ```r
-plotMatrix(contacts, use.assay = 'raw')
-plotMatrix(contacts, use.assay = 'balanced', limits = c(-4, -1))
+plotMatrix(contacts, use.scores = 'raw')
+plotMatrix(contacts, use.scores = 'balanced', limits = c(-4, -1))
 ```
 
 ## P(s)

@@ -14,6 +14,17 @@ getScalogram(
 
 ggScalogram(x, aes, ylim = c(10000, 1e+07))
 }
+\arguments{
+\item{x}{x}
+
+\item{nbins}{nbins}
+
+\item{ylim}{ylim}
+
+\item{probs}{probs}
+
+\item{aes}{aes}
+}
 \value{
 a tibble
 

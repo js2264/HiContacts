@@ -132,7 +132,7 @@ serpentinify <- function(x, use.assay = 'balanced',
 #' data(contacts_yeast)
 #' contacts_yeast <- autocorrelate(contacts_yeast)
 #' assays(contacts_yeast)
-#' plotMatrix(contacts_yeast, scale = 'linear', limits = c(-1, 1), cmap = bwr_colors)
+#' plotMatrix(contacts_yeast, scale = 'linear', limits = c(-1, 1), cmap = bwr_colors())
 
 autocorrelate <- function(x, use.assay = 'balanced', ignore_ndiags = 3) {
     gis <- assay(x, use.assay)
@@ -185,7 +185,7 @@ autocorrelate <- function(x, use.assay = 'balanced', ignore_ndiags = 3) {
 #' data(contacts_yeast_eco1)
 #' div_contacts <- divide(contacts_yeast_eco1, by = contacts_yeast)
 #' div_contacts
-#' plotMatrix(div_contacts, scale = 'log2', limits = c(-2, 2), cmap = bwr_colors)
+#' plotMatrix(div_contacts, scale = 'log2', limits = c(-2, 2), cmap = bwr_colors())
 
 divide <- function(x, by, use.assay = 'balanced') {
     `%>%` <- tidyr::`%>%`

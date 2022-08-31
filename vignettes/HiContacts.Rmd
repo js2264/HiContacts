@@ -217,7 +217,7 @@ c2 <- contacts(
 )
 ps_1 <- getPs(c1) %>% mutate(sample = 'WT')
 ps_2 <- getPs(c2) %>% mutate(sample = 'Eco1-AID')
-ps <- bind_rows(ps_1, ps_2)
+ps <- rbind(ps_1, ps_2)
 plotPs(ps, aes(x = binned_distance, y = norm_p, group = sample, color = sample))
 plotPsSlope(ps, aes(x = binned_distance, y = slope, group = sample, color = sample))
 ```

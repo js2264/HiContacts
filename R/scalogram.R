@@ -2,6 +2,11 @@
 #' 
 #' In development.
 #' 
+#' @param x x
+#' @param nbins nbins
+#' @param ylim ylim
+#' @param probs probs
+#' @param aes aes
 #' @return a tibble
 #' 
 #' @importFrom dplyr group_modify

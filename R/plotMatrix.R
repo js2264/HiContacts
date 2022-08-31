@@ -101,7 +101,7 @@ plotMatrix <- function(
             cmap <- bwr_colors
         }
         else {
-            cmap <- afmhotr_colors
+            cmap <- afmhotr_colors()
         }
     }
     
@@ -268,7 +268,7 @@ plotMatrix <- function(
 #' @import ggplot2
 #' @importFrom scales unit_format
 
-ggMatrix <- function(mat, ticks = TRUE, cols = afmhotr_colors, limits) {
+ggMatrix <- function(mat, ticks = TRUE, cols = afmhotr_colors(), limits) {
     p <- ggplot2::ggplot(mat, ggplot2::aes(x, y, fill = score))
     p <- p + ggplot2::scale_fill_gradientn(
         colors = cols,
@@ -281,4 +281,41 @@ ggMatrix <- function(mat, ticks = TRUE, cols = afmhotr_colors, limits) {
         coord_fixed() +
         ggtheme_HiContacts()
     p
+}
+
+#' Matrix palettes
+#'
+#' @return ggplot
+#'
+#' @import ggplot2
+#' @importFrom scales unit_format
+#' @rdname palettes
+#' @export
+#' @examples
+#' bwr_colors()
+
+bwr_colors <- function() {
+    c("#1659b1", "#4778c2", "#ffffff", "#b13636", "#6C150E")
+}
+
+#' @export
+#' @rdname palettes
+#' @examples
+#' afmhotr_colors()
+
+afmhotr_colors <- function() {
+    c("#ffffff", "#f8f5c3", "#f4ee8d", "#f6be35", "#ee7d32",
+        "#c44228", "#821d19", "#381211", "#050606"
+    )
+}
+
+#' @export
+#' @rdname palettes
+#' @examples
+#' bbr_colors()
+
+bbr_colors <- function() {
+    c("#1659b1", "#4778c2", "#a9c3e7", "#ffffff", 
+        "#e2adad", "#b13636", "#6C150E"
+    )
 }

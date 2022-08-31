@@ -17,7 +17,7 @@
 #' @examples 
 #' library(HiContacts)
 #' data(contacts_yeast)
-#' virtual4C(contacts_yeast, GRanges('II:490000-510000'))
+#' virtual4C(contacts_yeast, GenomicRanges::GRanges('II:490000-510000'))
 
 virtual4C <- function(x, viewpoint, use.assay = 'balanced') {
     gis <- assay(x, use.assay)
@@ -47,8 +47,8 @@ virtual4C <- function(x, viewpoint, use.assay = 'balanced') {
 #' @examples 
 #' library(HiContacts)
 #' data(contacts_yeast)
-#' v4C <- virtual4C(contacts_yeast, GRanges('II:490000-510000'))
-#' plot4C(v4C, aes(x = center, y = score))
+#' v4C <- virtual4C(contacts_yeast, GenomicRanges::GRanges('II:490000-510000'))
+#' plot4C(v4C, ggplot2::aes(x = center, y = score))
 
 plot4C <- function(x, mapping) {
     p <- ggplot2::ggplot(x, mapping) + 

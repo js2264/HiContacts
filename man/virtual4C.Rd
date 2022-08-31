@@ -4,14 +4,14 @@
 \alias{virtual4C}
 \title{virtual4C}
 \usage{
-virtual4C(x, viewpoint, use.assay = "balanced")
+virtual4C(x, viewpoint, use.scores = "balanced")
 }
 \arguments{
 \item{x}{a \code{contacts} object}
 
 \item{viewpoint}{viewpoint defined as a GRanges}
 
-\item{use.assay}{use.assay}
+\item{use.scores}{use.scores}
 }
 \value{
 A tibble with the contact frequency of the viewpoint, per bin
@@ -23,5 +23,5 @@ virtual4C
 \examples{
 library(HiContacts)
 data(contacts_yeast)
-virtual4C(contacts_yeast, GRanges('II:490000-510000'))
+virtual4C(contacts_yeast, GenomicRanges::GRanges('II:490000-510000'))
 }

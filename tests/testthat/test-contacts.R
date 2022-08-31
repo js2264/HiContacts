@@ -20,7 +20,7 @@ test_that("v4C works", {
     expect_s3_class({
         data(contacts_yeast)
         v4C <- virtual4C(contacts_yeast, GRanges('II:490000-510000'))
-        plot4C(v4C, aes(x = center, y = score))
+        plot4C(v4C, ggplot2::aes(x = center, y = score))
     }, 'gg')
 })
 

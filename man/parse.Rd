@@ -72,7 +72,7 @@ Can also be a Pairs object of paired GRanges (length of 1).}
 
 \item{n}{n}
 
-\item{gi}{A \code{GenomicInteractions} object}
+\item{gi}{A \code{GInteractions} object}
 
 \item{cm}{A \code{ContactMatrix} object}
 
