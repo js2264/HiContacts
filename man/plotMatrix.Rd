@@ -6,7 +6,7 @@
 \usage{
 plotMatrix(
   x,
-  use.scores = "balanced",
+  use.scores = NULL,
   scale = "log10",
   loops = NULL,
   borders = NULL,

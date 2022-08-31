@@ -30,10 +30,18 @@ contact maps.
 
 ## Import a .(m)cool file as `contacts`
 
-`contacts()` can be used to import a Hi-C matrix. 
+The `HiContactsData` package gives access to a range of toy datasets stored 
+by Bioconductor in the `ExperimentHub`. 
 
 ```{r}
 cool_file <- HiContactsData::HiContactsData('yeast_wt', format = 'cool')
+cool_file
+```
+
+The `contacts()` function can be used to import a Hi-C matrix locally stored 
+as a cool/mcool file.  
+
+```{r}
 range <- 'I:20000-80000' # range of interest
 contacts <- contacts(cool_file, focus = range)
 contacts

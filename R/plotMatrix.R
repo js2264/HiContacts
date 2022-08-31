@@ -42,7 +42,7 @@
 
 plotMatrix <- function(
     x, 
-    use.scores = 'balanced', 
+    use.scores = NULL, 
     scale = 'log10', 
     loops = NULL, 
     borders = NULL, 
@@ -56,10 +56,12 @@ plotMatrix <- function(
     `%>%` <- tidyr::`%>%`
     `%over%` <- IRanges::`%over%`
     
-    if (!missing(use.scores))
+    ## -- Extrac scores
+    if (!is.null(use.scores)) {
         gis <- scores(x, use.scores)
+    }
     else {
-        gis <- scores(x)
+        gis <- scores(x, 1)
     }
 
     ## -- Put metric to plot in `score` column
