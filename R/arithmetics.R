@@ -1,8 +1,8 @@
 #' detrend
 #'
 #' @param x a `contacts` object
-#' @param use.assay use.assay
-#' @return a `contacts` object with two additional assays: `expected` and
+#' @param use.scores use.scores
+#' @return a `contacts` object with two additional scoress: `expected` and
 #'   `detrended`
 #'
 #' @importFrom scales rescale
@@ -20,10 +20,10 @@
 #' library(HiContacts)
 #' data(contacts_yeast)
 #' contacts_yeast <- detrend(contacts_yeast)
-#' assays(contacts_yeast)
+#' scores(contacts_yeast)
 
-detrend <- function(x, use.assay = 'balanced') {
-    gis <- assay(x, use.assay)
+detrend <- function(x, use.scores = 'balanced') {
+    gis <- scores(x, use.scores)
     gis$diag <- InteractionSet::pairdist(gis) / resolution(x)
     expected <- tibble::as_tibble(gis) %>% 
         dplyr::group_by(diag) %>% 
@@ -33,20 +33,20 @@ detrend <- function(x, use.assay = 'balanced') {
         dplyr::left_join(expected, by = 'diag') %>% 
         dplyr::pull(average_interaction_per_diag)
     gis$score_over_expected <- log2(gis$score / gis$expected)
-    x@assays[['expected']] <- gis$expected
-    x@assays[['detrended']] <- gis$score_over_expected
+    x@scores[['expected']] <- gis$expected
+    x@scores[['detrended']] <- gis$score_over_expected
     return(x)
 }
 
 #' serpentinify
 #'
 #' @param x a `contacts` object
-#' @param use.assay use.assay
+#' @param use.scores use.scores
 #' @param use_serpentine_trend whether to use the trend estimated with 
 #'   serpentine (this requires `reticulate` and the python package `serpentine`)
 #' @param serpentine_niter number of iterations to use for serpentine
 #' @param serpentine_ncores number of CPUs to use for serpentine
-#' @return a `contacts` object with a single `smoothen` assay
+#' @return a `contacts` object with a single `smoothen` scores
 #' 
 #' @import reticulate
 #' @import GenomicRanges
@@ -57,12 +57,12 @@ detrend <- function(x, use.assay = 'balanced') {
 #' @importFrom InteractionSet GInteractions
 #' @importFrom S4Vectors SimpleList
 
-serpentinify <- function(x, use.assay = 'balanced', 
+serpentinify <- function(x, use.scores = 'balanced', 
     use_serpentine_trend = TRUE, serpentine_niter = 10L, serpentine_ncores = 16L
 ) {
 
     sp <- reticulate::import('serpentine')
-    gis <- assay(x, use.assay)
+    gis <- scores(x, use.scores)
 
     ## Check that only 1 chromosome is present in the gis object
     seqnames <- unique(as.vector(GenomicRanges::seqnames(InteractionSet::anchors(gis)[[1]])))
@@ -108,7 +108,7 @@ serpentinify <- function(x, use.assay = 'balanced',
         regions = reg
     )
     x@interactions <- gi
-    x@assays <- S4Vectors::SimpleList(smoothen = gis_smoothened$score)
+    x@scores <- S4Vectors::SimpleList(smoothen = gis_smoothened$score)
     x@type <- 'smoothed'
     return(x)
 }
@@ -116,9 +116,9 @@ serpentinify <- function(x, use.assay = 'balanced',
 #' autocorrelate
 #'
 #' @param x a `contacts` object
-#' @param use.assay use.assay
+#' @param use.scores use.scores
 #' @param ignore_ndiags ignore N diagonals when calculating correlations
-#' @return a `contacts` object with a single `autocorrelation` assay
+#' @return a `contacts` object with a single `autocorrelation` scores
 #' 
 #' @import InteractionSet
 #' @import stringr
@@ -131,11 +131,11 @@ serpentinify <- function(x, use.assay = 'balanced',
 #' library(HiContacts)
 #' data(contacts_yeast)
 #' contacts_yeast <- autocorrelate(contacts_yeast)
-#' assays(contacts_yeast)
+#' scores(contacts_yeast)
 #' plotMatrix(contacts_yeast, scale = 'linear', limits = c(-1, 1), cmap = bwr_colors())
 
-autocorrelate <- function(x, use.assay = 'balanced', ignore_ndiags = 3) {
-    gis <- assay(x, use.assay)
+autocorrelate <- function(x, use.scores = 'balanced', ignore_ndiags = 3) {
+    gis <- scores(x, use.scores)
     reg <- regions(gis)
     mat <- cm2matrix(gi2cm(gis))
     sdiag(mat, 0) <- NA
@@ -154,7 +154,7 @@ autocorrelate <- function(x, use.assay = 'balanced', ignore_ndiags = 3) {
         score = as.array(mat2$corr)
     )
     x@interactions <- gis2
-    x@assays <- S4Vectors::SimpleList(autocorrelation = gis2$score)
+    x@scores <- S4Vectors::SimpleList(autocorrelation = gis2$score)
     x@type <- 'autocorr.'
     return(x)
 }
@@ -163,8 +163,8 @@ autocorrelate <- function(x, use.assay = 'balanced', ignore_ndiags = 3) {
 #'
 #' @param x a `contacts` object
 #' @param by a `contacts` object
-#' @param use.assay use.assay
-#' @return a `contacts` object with a single `ratio` assay
+#' @param use.scores use.scores
+#' @return a `contacts` object with a single `ratio` scores
 #'
 #' @import tidyr
 #' @import zeallot
@@ -187,15 +187,15 @@ autocorrelate <- function(x, use.assay = 'balanced', ignore_ndiags = 3) {
 #' div_contacts
 #' plotMatrix(div_contacts, scale = 'log2', limits = c(-2, 2), cmap = bwr_colors())
 
-divide <- function(x, by, use.assay = 'balanced') {
+divide <- function(x, by, use.scores = 'balanced') {
     `%>%` <- tidyr::`%>%`
     `%<-%` <- zeallot::`%<-%`
     
     ## -- Check that all objects are comparable (bins, regions, resolution, seqinfo)
     is_comparable(x, by)
 
-    x_gis <- assay(x, use.assay)
-    by_gis <- assay(by, use.assay)
+    x_gis <- scores(x, use.scores)
+    by_gis <- scores(by, use.scores)
 
     ## -- If regions are different, manually merge them 
     InteractionSet::replaceRegions(x_gis) <- unique(
@@ -275,7 +275,7 @@ divide <- function(x, by, use.assay = 'balanced') {
         current_resolution = binsize, 
         bins = bins, 
         interactions = gi, 
-        assays = S4Vectors::SimpleList(
+        scores = S4Vectors::SimpleList(
             'ratio' = mat$score[!is.na(mat$score) & is.finite(mat$score)]
         ), 
         features = S4Vectors::SimpleList(), 
@@ -289,9 +289,9 @@ divide <- function(x, by, use.assay = 'balanced') {
 #' merge
 #'
 #' @param ... `contacts` objects
-#' @param use.assay use.assay
-#' @return a `contacts` object. Each returned assay is the sum of the
-#'   corresponding assays from input `contacts`.
+#' @param use.scores use.scores
+#' @return a `contacts` object. Each returned scores is the sum of the
+#'   corresponding scores from input `contacts`.
 #'
 #' @import tidyr
 #' @import zeallot
@@ -313,7 +313,7 @@ divide <- function(x, by, use.assay = 'balanced') {
 #' merged_contacts <- merge(contacts_yeast_eco1, contacts_yeast)
 #' merged_contacts
 
-merge <- function(..., use.assay = 'balanced') {
+merge <- function(..., use.scores = 'balanced') {
     `%>%` <- tidyr::`%>%`
     `%<-%` <- zeallot::`%<-%`
     contacts_list <- list(...)
@@ -328,11 +328,11 @@ merge <- function(..., use.assay = 'balanced') {
         unique() %>% 
         sort()
     
-    # Set all scores for each assay to 0
-    asss <- lapply(names(assays(contacts_list[[1]])), function(name) {
+    # Set all scores for each scores to 0
+    asss <- lapply(names(scores(contacts_list[[1]])), function(name) {
         rep(0, length(ints))
     })
-    names(asss) <- names(assays(contacts_list[[1]]))
+    names(asss) <- names(scores(contacts_list[[1]]))
     asss <- S4Vectors::SimpleList(asss)
 
     ## -- Iterate over each contacts in `contacts_list`
@@ -345,7 +345,7 @@ merge <- function(..., use.assay = 'balanced') {
         )
         sub <- seq_along(ints) %in% sub
         for (K in seq_along(asss)) {
-            vals <- contacts_list[[idx]]@assays[[K]]
+            vals <- contacts_list[[idx]]@scores[[K]]
             vals[is.na(vals)] <- 0
             asss[[K]][sub] <- asss[[K]][sub] + 
                 vals
@@ -372,7 +372,7 @@ merge <- function(..., use.assay = 'balanced') {
         current_resolution = resolution(contacts_list[[1]]), 
         bins = bins(contacts_list[[1]]), 
         interactions = ints, 
-        assays = asss, 
+        scores = asss, 
         features = S4Vectors::SimpleList(), 
         pairsFile = NULL, 
         type = 'merged'

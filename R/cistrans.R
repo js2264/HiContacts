@@ -20,7 +20,7 @@ cis_trans <- function(x) {
     if (!is.null(focus(x))) {
         stop('Please provide a contact matrix over the entire genome. Aborting now.')
     }
-    cnts <- assay(x, 'raw') %>% 
+    cnts <- scores(x, 'raw') %>% 
         tibble::as_tibble() %>% 
         dplyr::relocate(c(seqnames1, seqnames2))
     cnts_dup <- cnts %>% 

@@ -8,7 +8,7 @@ APA(
   x,
   coords,
   bins = 50,
-  use.assay = "balanced",
+  use.scores = "balanced",
   BPPARAM = BiocParallel::bpparam()
 )
 }
@@ -19,7 +19,7 @@ APA(
 
 \item{bins}{bins}
 
-\item{use.assay}{use.assay}
+\item{use.scores}{use.scores}
 
 \item{BPPARAM}{BPPARAM}
 }

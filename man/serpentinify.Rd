@@ -6,7 +6,7 @@
 \usage{
 serpentinify(
   x,
-  use.assay = "balanced",
+  use.scores = "balanced",
   use_serpentine_trend = TRUE,
   serpentine_niter = 10L,
   serpentine_ncores = 16L
@@ -15,7 +15,7 @@ serpentinify(
 \arguments{
 \item{x}{a \code{contacts} object}
 
-\item{use.assay}{use.assay}
+\item{use.scores}{use.scores}
 
 \item{use_serpentine_trend}{whether to use the trend estimated with
 serpentine (this requires \code{reticulate} and the python package \code{serpentine})}
@@ -25,7 +25,7 @@ serpentine (this requires \code{reticulate} and the python package \code{serpent
 \item{serpentine_ncores}{number of CPUs to use for serpentine}
 }
 \value{
-a \code{contacts} object with a single \code{smoothen} assay
+a \code{contacts} object with a single \code{smoothen} scores
 }
 \description{
 serpentinify

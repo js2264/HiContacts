@@ -4,16 +4,16 @@
 \alias{merge}
 \title{merge}
 \usage{
-merge(..., use.assay = "balanced")
+merge(..., use.scores = "balanced")
 }
 \arguments{
 \item{...}{\code{contacts} objects}
 
-\item{use.assay}{use.assay}
+\item{use.scores}{use.scores}
 }
 \value{
-a \code{contacts} object. Each returned assay is the sum of the
-corresponding assays from input \code{contacts}.
+a \code{contacts} object. Each returned scores is the sum of the
+corresponding scores from input \code{contacts}.
 }
 \description{
 merge

@@ -58,12 +58,12 @@ contacts
 ```{r}
 ## Matrix centered over diagonal 
 contacts <- contacts(mcool_file, focus = 'II:0-800000', res = 1000)
-plotMatrix(contacts, use.assay = 'raw')
-plotMatrix(contacts, use.assay = 'balanced', limits = c(-4, -1))
+plotMatrix(contacts, use.scores = 'raw')
+plotMatrix(contacts, use.scores = 'balanced', limits = c(-4, -1))
 
 ## Uncentered matrix
 contacts <- contacts(mcool_file, focus = 'II:0-500000 x II:100000-600000', res = 1000)
-plotMatrix(contacts, use.assay = 'balanced', limits = c(-4, -1))
+plotMatrix(contacts, use.scores = 'balanced', limits = c(-4, -1))
 ```
 
 ### Plot loops
@@ -75,7 +75,7 @@ loops <- system.file("extdata", 'S288C-loops.bedpe', package = 'HiContacts') %>%
     InteractionSet::makeGInteractionsFromGRangesPairs()
 contacts(mcool_file, focus = 'IV', res = 1000) %>% 
     detrend() %>% 
-    plotMatrix(use.assay = 'detrended', loops = loops, scale = 'linear', limits = c(-2, 2))
+    plotMatrix(use.scores = 'detrended', loops = loops, scale = 'linear', limits = c(-2, 2))
 ```
 
 ### Plot borders
@@ -85,7 +85,7 @@ borders <- system.file("extdata", 'S288C-borders.bed', package = 'HiContacts') %
     rtracklayer::import()
 contacts(mcool_file, focus = 'IV', res = 1000) %>% 
     detrend() %>% 
-    plotMatrix(use.assay = 'detrended', loops = loops, borders = borders, scale = 'linear', limits = c(-2, 2))
+    plotMatrix(use.scores = 'detrended', loops = loops, borders = borders, scale = 'linear', limits = c(-2, 2))
 ```
 
 ## Digging into contact matrices: transformation, comparison and arithmetics
@@ -100,8 +100,8 @@ contacts_subset <- contacts[
     start(anchors(contacts)[[2]]) < 300000 & end(anchors(contacts)[[2]]) < 300000
 ]
 cowplot::plot_grid(
-    plotMatrix(contacts, use.assay = 'balanced', scale = 'log10', limits = c(-4, -1)),
-    plotMatrix(contacts_subset, use.assay = 'balanced', scale = 'log10', limits = c(-4, -1))
+    plotMatrix(contacts, use.scores = 'balanced', scale = 'log10', limits = c(-4, -1)),
+    plotMatrix(contacts_subset, use.scores = 'balanced', scale = 'log10', limits = c(-4, -1))
 )
 ```
 
@@ -122,9 +122,9 @@ mcool_file <- HiContactsData::HiContactsData('mESCs', format = 'mcool')
 contacts <- contacts(mcool_file, focus = 'chr18:20000000-35000000', res = 40000)
 detrended_contacts <- detrend(contacts)
 cowplot::plot_grid(
-    plotMatrix(contacts, use.assay = 'balanced', limits = c(-4, -1)),
-    plotMatrix(detrended_contacts, use.assay = 'expected'),
-    plotMatrix(detrended_contacts, use.assay = 'detrended', scale = 'linear', limits = c(-3, 3))
+    plotMatrix(contacts, use.scores = 'balanced', limits = c(-4, -1)),
+    plotMatrix(detrended_contacts, use.scores = 'expected'),
+    plotMatrix(detrended_contacts, use.scores = 'detrended', scale = 'linear', limits = c(-3, 3))
 )
 ```
 
@@ -146,9 +146,9 @@ contacts_2 <- contacts_2[
 merged_contacts <- merge(contacts_1, contacts_2) 
 merged_contacts
 cowplot::plot_grid(
-    plotMatrix(contacts_1, use.assay = 'balanced', scale = 'log10', limits = c(-4, -1)),
-    plotMatrix(contacts_2, use.assay = 'balanced', scale = 'log10', limits = c(-4, -1)),
-    plotMatrix(merged_contacts, use.assay = 'balanced', scale = 'log10', limits = c(-4, -1))
+    plotMatrix(contacts_1, use.scores = 'balanced', scale = 'log10', limits = c(-4, -1)),
+    plotMatrix(contacts_2, use.scores = 'balanced', scale = 'log10', limits = c(-4, -1)),
+    plotMatrix(merged_contacts, use.scores = 'balanced', scale = 'log10', limits = c(-4, -1))
 )
 ```
 
@@ -162,9 +162,9 @@ contacts_2 <- contacts(mcool_file_2, focus = 'II', res = 2000)
 div_contacts <- divide(contacts_1, by = contacts_2) 
 div_contacts
 cowplot::plot_grid(
-    plotMatrix(contacts_1, use.assay = 'balanced', scale = 'log10', limits = c(-4, -1)),
-    plotMatrix(contacts_2, use.assay = 'balanced', scale = 'log10', limits = c(-4, -1)),
-    plotMatrix(div_contacts, use.assay = 'ratio', scale = 'log2', limits = c(-2, 2), cmap = bwr_colors)
+    plotMatrix(contacts_1, use.scores = 'balanced', scale = 'log10', limits = c(-4, -1)),
+    plotMatrix(contacts_2, use.scores = 'balanced', scale = 'log10', limits = c(-4, -1)),
+    plotMatrix(div_contacts, use.scores = 'ratio', scale = 'log2', limits = c(-2, 2), cmap = bwr_colors)
 )
 ```
 
@@ -176,7 +176,7 @@ contacts <- contacts(mcool_file, focus = 'chr18:20000000-35000000', res = 40000)
 v4C <- virtual4C(contacts, viewpoint = GRanges('chr18:31000000-31050000'))
 cowplot::plot_grid(
     plot4C(v4C, aes(x = center, y = score)), 
-    plotMatrix(contacts, use.assay = 'balanced', limits = c(-4, -1)), 
+    plotMatrix(contacts, use.scores = 'balanced', limits = c(-4, -1)), 
     ncol = 1, align = 'hv', axis = 'tblr', rel_heights = c(0.2, 1)
 )
 ```

@@ -4,15 +4,15 @@
 \alias{detrend}
 \title{detrend}
 \usage{
-detrend(x, use.assay = "balanced")
+detrend(x, use.scores = "balanced")
 }
 \arguments{
 \item{x}{a \code{contacts} object}
 
-\item{use.assay}{use.assay}
+\item{use.scores}{use.scores}
 }
 \value{
-a \code{contacts} object with two additional assays: \code{expected} and
+a \code{contacts} object with two additional scoress: \code{expected} and
 \code{detrended}
 }
 \description{
@@ -22,5 +22,5 @@ detrend
 library(HiContacts)
 data(contacts_yeast)
 contacts_yeast <- detrend(contacts_yeast)
-assays(contacts_yeast)
+scores(contacts_yeast)
 }

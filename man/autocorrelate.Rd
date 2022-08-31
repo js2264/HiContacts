@@ -4,17 +4,17 @@
 \alias{autocorrelate}
 \title{autocorrelate}
 \usage{
-autocorrelate(x, use.assay = "balanced", ignore_ndiags = 3)
+autocorrelate(x, use.scores = "balanced", ignore_ndiags = 3)
 }
 \arguments{
 \item{x}{a \code{contacts} object}
 
-\item{use.assay}{use.assay}
+\item{use.scores}{use.scores}
 
 \item{ignore_ndiags}{ignore N diagonals when calculating correlations}
 }
 \value{
-a \code{contacts} object with a single \code{autocorrelation} assay
+a \code{contacts} object with a single \code{autocorrelation} scores
 }
 \description{
 autocorrelate
@@ -23,6 +23,6 @@ autocorrelate
 library(HiContacts)
 data(contacts_yeast)
 contacts_yeast <- autocorrelate(contacts_yeast)
-assays(contacts_yeast)
+scores(contacts_yeast)
 plotMatrix(contacts_yeast, scale = 'linear', limits = c(-1, 1), cmap = bwr_colors())
 }

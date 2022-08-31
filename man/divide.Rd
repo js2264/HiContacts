@@ -4,17 +4,17 @@
 \alias{divide}
 \title{divide}
 \usage{
-divide(x, by, use.assay = "balanced")
+divide(x, by, use.scores = "balanced")
 }
 \arguments{
 \item{x}{a \code{contacts} object}
 
 \item{by}{a \code{contacts} object}
 
-\item{use.assay}{use.assay}
+\item{use.scores}{use.scores}
 }
 \value{
-a \code{contacts} object with a single \code{ratio} assay
+a \code{contacts} object with a single \code{ratio} scores
 }
 \description{
 divide

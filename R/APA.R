@@ -3,7 +3,7 @@
 #' @param x x
 #' @param coords coords
 #' @param bins bins
-#' @param use.assay use.assay
+#' @param use.scores use.scores
 #' @param BPPARAM BPPARAM
 #' @return an aggregated contact matrix
 #'
@@ -29,7 +29,7 @@
 #' @importFrom methods as
 #' @importFrom S4Vectors SimpleList
 
-APA <- function(x, coords, bins = 50, use.assay = 'balanced', BPPARAM = BiocParallel::bpparam()) {
+APA <- function(x, coords, bins = 50, use.scores = 'balanced', BPPARAM = BiocParallel::bpparam()) {
     `%within%` <- IRanges::`%within%`
 
     ## -- Resize targets
@@ -60,7 +60,7 @@ APA <- function(x, coords, bins = 50, use.assay = 'balanced', BPPARAM = BiocPara
             subcoords <- IRanges::subsetByOverlaps(subcoords, as(seqinfo(x), 'GRanges'), type = 'within')
             subcoords_centers <- GenomicRanges::resize(subcoords, fix = 'center', width = 1)
             xx <- contacts(path(x), focus = subcoords, resolution = resolution(x))
-            gis <- assay(xx, use.assay)
+            gis <- scores(xx, use.scores)
             reg <- regions(gis)
             ans <- anchors(gis)
             
@@ -92,7 +92,7 @@ APA <- function(x, coords, bins = 50, use.assay = 'balanced', BPPARAM = BiocPara
         dplyr::summarize(score = mean(score, na.rm = TRUE), .groups = 'drop') %>% 
         dplyr::arrange(dist_column) 
     x@interactions <- ints
-    x@assays <- S4Vectors::SimpleList(
+    x@scores <- S4Vectors::SimpleList(
         APA = dplyr::left_join(
             tibble::as_tibble(ints), 
             dists, 
@@ -105,7 +105,7 @@ APA <- function(x, coords, bins = 50, use.assay = 'balanced', BPPARAM = BiocPara
     return(x)
 }
 
-APA_ <- function(x, coords, bins = 50, use.assay = 'balanced', BPPARAM = BiocParallel::bpparam()) {
+APA_ <- function(x, coords, bins = 50, use.scores = 'balanced', BPPARAM = BiocParallel::bpparam()) {
     `%within%` <- IRanges::`%within%`
     `%over%` <- IRanges::`%over%`
 
@@ -129,7 +129,7 @@ APA_ <- function(x, coords, bins = 50, use.assay = 'balanced', BPPARAM = BiocPar
             subcoords <- expanded_coords[GenomeInfoDb::seqnames(expanded_coords) == chr]
             subcoords_centers <- GenomicRanges::resize(subcoords, fix = 'center', width = 1)
             xx <- contacts(path(x), focus = subcoords, resolution = resolution(x))
-            gis <- assay(xx, use.assay)
+            gis <- scores(xx, use.scores)
             reg <- regions(gis)
             ans <- anchors(gis)
             
@@ -158,13 +158,13 @@ APA_ <- function(x, coords, bins = 50, use.assay = 'balanced', BPPARAM = BiocPar
         }
     ) %>% do.call(c, .)
     x@interactions <- gis_aggr
-    x@assays <- S4Vectors::SimpleList(APA = gis_aggr$score) 
+    x@scores <- S4Vectors::SimpleList(APA = gis_aggr$score) 
     x@features <- c(features(x), S4Vectors::SimpleList(APA = coords))
     x@type <- 'aggr.'
     return(x)
 }
 
-APA2 <- function(x, coords, bins = 50, use.assay = 'balanced', BPPARAM = BiocParallel::bpparam()) {
+APA2 <- function(x, coords, bins = 50, use.scores = 'balanced', BPPARAM = BiocParallel::bpparam()) {
     `%within%` <- IRanges::`%within%`
 
     ## -- Resize targets
@@ -184,7 +184,7 @@ APA2 <- function(x, coords, bins = 50, use.assay = 'balanced', BPPARAM = BiocPar
 
 
     x@interactions <- ints
-    x@assays <- S4Vectors::SimpleList(
+    x@scores <- S4Vectors::SimpleList(
         APA = dplyr::left_join(
             tibble::as_tibble(ints), 
             dists, 

@@ -6,7 +6,7 @@
 \usage{
 plotMatrix(
   x,
-  use.assay = "balanced",
+  use.scores = "balanced",
   scale = "log10",
   loops = NULL,
   borders = NULL,
@@ -21,7 +21,7 @@ plotMatrix(
 \arguments{
 \item{x}{x}
 
-\item{use.assay}{use.assay}
+\item{use.scores}{use.scores}
 
 \item{scale}{scale}
 
@@ -52,7 +52,7 @@ library(HiContacts)
 data(contacts_yeast)
 plotMatrix(
     contacts_yeast, 
-    use.assay = 'balanced', 
+    use.scores = 'balanced', 
     scale = 'log10', 
     limits = c(-4, -1)
 )

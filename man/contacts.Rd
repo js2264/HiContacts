@@ -10,12 +10,10 @@
 \alias{dim,contacts-method}
 \alias{[}
 \alias{[,contacts-method}
-\alias{assays}
-\alias{assays,contacts-method}
-\alias{assay}
-\alias{assay,contacts-method}
-\alias{"assay<-"}
-\alias{"assay<-",contacts-method}
+\alias{scores}
+\alias{scores,contacts-method}
+\alias{"scores<-"}
+\alias{"scores<-",contacts-method}
 \alias{features}
 \alias{features,contacts-method}
 \alias{feature}
@@ -50,11 +48,9 @@ contacts(
 
 \S4method{[}{contacts,ANY,ANY,ANY}(x, i)
 
-assays(x)
+scores(x, name)
 
-assay(x, name)
-
-assay(x, name) <- value
+scores(x, name) <- value
 
 features(x)
 
@@ -119,7 +115,7 @@ resolution}
 
 \item{\code{interactions}}{Genomic Interactions extracted from the .(m)cool object}
 
-\item{\code{assays}}{Available interaction scores.}
+\item{\code{scores}}{Available interaction scores.}
 
 \item{\code{features}}{Genomic features associated with the dataset (e.g.
 loops, borders, etc...)}
@@ -144,15 +140,11 @@ data(contacts_yeast)
 contacts_yeast[1:10]
 library(HiContacts)
 data(contacts_yeast)
-assays(contacts_yeast)
+scores(contacts_yeast)
 library(HiContacts)
 data(contacts_yeast)
-assay(contacts_yeast, 1)
-assay(contacts_yeast, 'raw')
-library(HiContacts)
-data(contacts_yeast)
-assay(contacts_yeast, 'test') <- runif(length(contacts_yeast))
-assay(contacts_yeast, 'test')
+scores(contacts_yeast, 'test') <- runif(length(contacts_yeast))
+scores(contacts_yeast, 'test')
 library(HiContacts)
 data(contacts_yeast)
 features(contacts_yeast)

@@ -22,16 +22,19 @@ HiContacts
 HiContactsData
 fpath <- HiContactsData::HiContactsData('yeast_wt', 'mcool')
 contacts_yeast <- contacts(fpath, 'II', resolution = 1000)
+usethis::use_data(contacts_yeast, overwrite = TRUE)
 
 HiContactsData
 fpath <- HiContactsData::HiContactsData('yeast_eco1', 'mcool')
 contacts_yeast_eco1 <- contacts(fpath, 'II', resolution = 1000)
+usethis::use_data(contacts_yeast_eco1, overwrite = TRUE)
 
 HiContactsData
 data(centros_yeast)
 fpath <- HiContactsData::HiContactsData('yeast_wt', 'mcool')
 full_contacts_yeast <- contacts(fpath, resolution = 16000)
 feature(full_contacts_yeast, 'centromeres') <- centros_yeast
+usethis::use_data(full_contacts_yeast, overwrite = TRUE)
 }
 \usage{
 data(centros_yeast)

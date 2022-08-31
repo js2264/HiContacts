@@ -17,7 +17,7 @@ getScalogram <- function(x, nbins = 250, ylim = c(1e5, 1e8), probs = c(0, 0.15, 
     if (is.null(pairsFile)) {
         stop("Please provide a pairsFile for `x`. Aborting now.")
         # message("pairsFile not specified. The P(s) curve will be an approximation.")
-        # pairs <- assay(x, 'raw')
+        # pairs <- scores(x, 'raw')
         # scalo <- FALSE
         # return(scalo)
     }

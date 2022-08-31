@@ -1,7 +1,7 @@
 #' plotMatrix
 #'
 #' @param x x
-#' @param use.assay use.assay
+#' @param use.scores use.scores
 #' @param scale scale
 #' @param limits limits
 #' @param loops loops
@@ -35,14 +35,14 @@
 #' data(contacts_yeast)
 #' plotMatrix(
 #'     contacts_yeast, 
-#'     use.assay = 'balanced', 
+#'     use.scores = 'balanced', 
 #'     scale = 'log10', 
 #'     limits = c(-4, -1)
 #' )
 
 plotMatrix <- function(
     x, 
-    use.assay = 'balanced', 
+    use.scores = 'balanced', 
     scale = 'log10', 
     loops = NULL, 
     borders = NULL, 
@@ -56,10 +56,10 @@ plotMatrix <- function(
     `%>%` <- tidyr::`%>%`
     `%over%` <- IRanges::`%over%`
     
-    if (!missing(use.assay))
-        gis <- assay(x, use.assay)
+    if (!missing(use.scores))
+        gis <- scores(x, use.scores)
     else {
-        gis <- assay(x)
+        gis <- scores(x)
     }
 
     ## -- Put metric to plot in `score` column

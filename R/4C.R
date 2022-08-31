@@ -2,7 +2,7 @@
 #'
 #' @param x a `contacts` object
 #' @param viewpoint viewpoint defined as a GRanges
-#' @param use.assay use.assay
+#' @param use.scores use.scores
 #' @return A tibble with the contact frequency of the viewpoint, per bin 
 #'   along the imported genomic range.
 #' 
@@ -19,8 +19,8 @@
 #' data(contacts_yeast)
 #' virtual4C(contacts_yeast, GenomicRanges::GRanges('II:490000-510000'))
 
-virtual4C <- function(x, viewpoint, use.assay = 'balanced') {
-    gis <- assay(x, use.assay)
+virtual4C <- function(x, viewpoint, use.scores = 'balanced') {
+    gis <- scores(x, use.scores)
     cm <- cm2matrix(gi2cm(gis))
     regions <- regions(gis)
     regions_in_viewpoint <- seq_along(regions) %in% S4Vectors::queryHits(findOverlaps(regions, viewpoint))

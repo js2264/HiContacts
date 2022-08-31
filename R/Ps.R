@@ -35,7 +35,7 @@ getPs <- function(
     if (is.null(pairsFile)) {
         # stop("Please provide a pairsFile for `x`. Aborting now.")
         message("pairsFile not specified. The P(s) curve will be an approximation.")
-        pairs <- assay(x, 'raw')
+        pairs <- scores(x, 'raw')
         df <- tibble::tibble(
             chr = as.vector(GenomeInfoDb::seqnames(InteractionSet::anchors(pairs)[[1]])),
             distance = InteractionSet::pairdist(pairs, type = 'gap'),
