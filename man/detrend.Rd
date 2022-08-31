@@ -11,6 +11,16 @@ detrend(x, use.assay = "balanced")
 
 \item{use.assay}{use.assay}
 }
+\value{
+a \code{contacts} object with two additional assays: \code{expected} and
+\code{detrended}
+}
 \description{
 detrend
+}
+\examples{
+library(HiContacts)
+data(contacts_yeast)
+contacts_yeast <- detrend(contacts_yeast)
+assays(contacts_yeast)
 }

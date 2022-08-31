@@ -14,6 +14,11 @@ getScalogram(
 
 ggScalogram(x, aes, ylim = c(10000, 1e+07))
 }
+\value{
+a tibble
+
+ggplot
+}
 \description{
 In development.
 

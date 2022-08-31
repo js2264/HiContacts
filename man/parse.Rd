@@ -90,6 +90,31 @@ Can also be a Pairs object of paired GRanges (length of 1).}
 
 \item{nrows}{Number of pairs to import}
 }
+\value{
+anchors from (m)cool, stored as a GRanges
+
+counts from (m)cool, stored as a tibble
+
+counts from (m)cool, stored as a tibble
+
+vector
+
+vector
+
+vector
+
+vector
+
+a Seqinfo object
+
+a GenomicInteractions object
+
+a ContactMatrix object
+
+a dense matrix
+
+a GenomicInteractions object
+}
 \description{
 Function to extract counts for a uncentered matrix (@ a pair of coordinates).
 

@@ -3,6 +3,7 @@
 #' @param file file
 #' @param resolution resolution
 #' @param balanced import balancing scores
+#' @return anchors from (m)cool, stored as a GRanges
 #'
 #' @importFrom GenomicRanges GRanges
 #' @importFrom GenomicRanges seqnames
@@ -41,6 +42,7 @@ getAnchors <- function(file, resolution = NULL, balanced = "cooler") {
 #'   (e.g. S4Vectors::Pairs(GRanges("II:200000-300000"), GRanges("II:70000-100000"))). 
 #' @param anchors anchors
 #' @param resolution resolution
+#' @return counts from (m)cool, stored as a tibble
 #'
 #' @import methods
 #' @import zeallot
@@ -56,9 +58,10 @@ getAnchors <- function(file, resolution = NULL, balanced = "cooler") {
 #' @rdname parse
 
 getCounts2 <- function(file,
-                      pair,
-                      anchors,
-                      resolution = NULL) {
+    pair,
+    anchors,
+    resolution = NULL
+) {
     
     `%<-%` <- zeallot::`%<-%`
     `%within%` <- IRanges::`%within%`
@@ -101,13 +104,6 @@ getCounts2 <- function(file,
     ## Filter to only get interesting bins
     df <- df[df$bin2_id %in% valid_bin2, ]
 
-    # z <- InteractionSet::GInteractions(
-    #     anchors[df$bin1_id],
-    #     anchors[df$bin2_id],
-    #     count = df$count
-    # )
-    # z[start(anchors(z)[[1]]) >= 4520000 & end(anchors(z)[[1]]) <= 4550000 & start(anchors(z)[[2]]) >= 4520000 & end(anchors(z)[[2]]) <= 4550000]
-
     return(df)
 }
 
@@ -119,6 +115,7 @@ getCounts2 <- function(file,
 #' @param coords coordinates 
 #' @param anchors anchors
 #' @param resolution resolution
+#' @return counts from (m)cool, stored as a tibble
 #'
 #' @import methods
 #' @import zeallot
@@ -134,9 +131,10 @@ getCounts2 <- function(file,
 #' @rdname parse
 
 getCounts <- function(file,
-                      coords,
-                      anchors,
-                      resolution = NULL) {
+    coords,
+    anchors,
+    resolution = NULL
+) {
     
     `%<-%` <- zeallot::`%<-%`
     `%within%` <- IRanges::`%within%`
@@ -189,6 +187,7 @@ getCounts <- function(file,
 #' @param resolution resolution
 #' @param idx idx to extract in cool file
 #' @param ... ...
+#' @return vector
 #'
 #' @importFrom glue glue
 #' @import rhdf5
@@ -207,6 +206,7 @@ fetchCool <- function(file, path, resolution = NULL, idx = NULL, ...) {
 #' lsCoolFiles
 #'
 #' @param file file
+#' @return vector
 #'
 #' @import rhdf5
 #' @import stringr
@@ -240,6 +240,7 @@ lsCoolFiles <- function(file) {
 #'
 #' @param file file
 #' @param verbose Print resolutions in the console
+#' @return vector
 #'
 #' @import tools
 #' @import rhdf5
@@ -272,6 +273,7 @@ lsCoolResolutions <- function(file, verbose = TRUE) {
 #' @param path path
 #' @param resolution resolution
 #' @param n n
+#' @return vector
 #'
 #' @importFrom Matrix head
 #' @importFrom glue glue
@@ -294,6 +296,7 @@ peekCool <- function(file, path, resolution = NULL, n = 10) {
 #'
 #' @param file file
 #' @param resolution resolution
+#' @return a Seqinfo object
 #'
 #' @importFrom GenomeInfoDb Seqinfo
 #' @rdname parse
@@ -314,6 +317,7 @@ cool2seqinfo <- function(file, resolution = NULL) {
 #' @param coords NULL, character, or GRanges. 
 #'   Can also be a Pairs object of paired GRanges (length of 1).
 #' @param resolution resolution
+#' @return a GenomicInteractions object
 #'
 #' @import InteractionSet
 #' @importFrom GenomicRanges seqnames
@@ -326,8 +330,10 @@ cool2gi <- function(file, coords = NULL, resolution = NULL) {
     check_cool_format(file, resolution)
     
     # Mutate Pairs provided as characters to real Pairs
-    if (grepl(' x ', coords)) {
-        coords <- char2pair(coords)
+    if (!is.null(coords)) {
+        if (grepl(' x ', coords)) {
+            coords <- char2pair(coords)
+        }
     }
 
     # Check if the provided coords are GRanges or Pairs
@@ -392,6 +398,7 @@ cool2gi <- function(file, coords = NULL, resolution = NULL) {
 #' gi2cm
 #'
 #' @param gi A `GenomicInteractions` object
+#' @return a ContactMatrix object
 #'
 #' @import InteractionSet
 #' @importFrom GenomicRanges mcols
@@ -410,6 +417,7 @@ gi2cm <- function(gi) {
 #'
 #' @param cm A `ContactMatrix` object
 #' @param replace_NA Replace NA values
+#' @return a dense matrix
 #'
 #' @importFrom Matrix as.matrix
 #' @rdname parse
@@ -429,6 +437,7 @@ cm2matrix <- function(cm, replace_NA = NA) {
 #' @param start2.field start2.field
 #' @param nThread Number of CPUs to use to import the `pairs` file in R
 #' @param nrows Number of pairs to import
+#' @return a GenomicInteractions object
 #'
 #' @importFrom data.table fread
 #' @importFrom glue glue

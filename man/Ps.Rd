@@ -2,8 +2,8 @@
 % Please edit documentation in R/Ps.R
 \name{getPs}
 \alias{getPs}
-\alias{ggPs}
-\alias{ggPsSlope}
+\alias{plotPs}
+\alias{plotPsSlope}
 \title{getPs}
 \usage{
 getPs(
@@ -12,9 +12,9 @@ getPs(
   filtered_chr = c("XII", "chrXII", "chr12", "12", "Mito", "MT", "chrM")
 )
 
-ggPs(..., xlim = c(5000, 499000), ylim = c(1e-08, 1e-04))
+plotPs(..., xlim = c(5000, 499000), ylim = c(1e-08, 1e-04))
 
-ggPsSlope(..., xlim = c(5000, 499000), ylim = c(-3, 0))
+plotPsSlope(..., xlim = c(5000, 499000), ylim = c(-3, 0))
 }
 \arguments{
 \item{x}{A \code{contacts} object}
@@ -29,10 +29,45 @@ ggPsSlope(..., xlim = c(5000, 499000), ylim = c(-3, 0))
 
 \item{ylim}{ylim}
 }
+\value{
+a tibble
+
+ggplot
+
+ggplot
+}
 \description{
 getPs
 
-ggPs
+plotPs
 
-ggPsSlope
+plotPsSlope
+}
+\examples{
+library(HiContacts)
+data(contacts_yeast)
+getPs(contacts_yeast)
+
+## Single P(s)
+
+library(HiContacts)
+data(contacts_yeast)
+ps <- getPs(contacts_yeast)
+plotPs(ps, aes(x = binned_distance, y = norm_p))
+
+## Comparing several P(s)
+
+library(HiContacts)
+data(contacts_yeast)
+data(contacts_yeast_eco1)
+ps_wt <- getPs(contacts_yeast)
+ps_wt$sample <- 'WT'
+ps_eco1 <- getPs(contacts_yeast_eco1)
+ps_eco1$sample <- 'eco1'
+ps <- bind_rows(ps_wt, ps_eco1)
+plotPs(ps, aes(x = binned_distance, y = norm_p, group = sample, color = sample))
+library(HiContacts)
+data(contacts_yeast)
+ps <- getPs(contacts_yeast)
+plotPsSlope(ps, aes(x = binned_distance, y = slope))
 }

@@ -1,10 +1,10 @@
 #' ggtheme_HiContacts
 #'
 #' @param ticks ticks
+#' @return a custom ggplot2 theme
 #' @rdname ggplot2-HiContacts
 #' 
 #' @import ggplot2
-#' @export
 
 ggtheme_HiContacts <- function(ticks = TRUE) {
     t <- ggplot2::theme_bw() +
@@ -17,10 +17,10 @@ ggtheme_HiContacts <- function(ticks = TRUE) {
     t
 }
 
+#' @return a custom ggplot2 theme
 #' @rdname ggplot2-HiContacts
 #'
 #' @import ggplot2
-#' @export
 
 ggtheme_HiContacts_tracks <- function() {
     ggplot2::theme(

@@ -38,7 +38,7 @@ is_comparable(...)
 
 is_square(pair)
 
-is_centered(x)
+is_centered(contacts)
 }
 \arguments{
 \item{cool_path}{Path of a (m)cool file}
@@ -48,6 +48,11 @@ is_centered(x)
 \item{resolution}{Resolution}
 
 \item{...}{\code{contacts} object}
+
+\item{pair}{Pairs object with length of 1}
+}
+\value{
+Logical
 }
 \description{
 Checks functions

@@ -1,6 +1,7 @@
 #' cis_trans
 #'
 #' @param x A `contacts` object over the full genome
+#' @return a tibble, listing for each chr. the % of cis/trans interactions
 #'
 #' @importFrom tibble as_tibble
 #' @importFrom tidyr pivot_wider
@@ -10,6 +11,10 @@
 #' @importFrom dplyr summarize
 #' @importFrom dplyr mutate
 #' @export
+#' @examples 
+#' library(HiContacts)
+#' data(full_contacts_yeast)
+#' cis_trans(full_contacts_yeast)
 
 cis_trans <- function(x) {
     if (!is.null(focus(x))) {

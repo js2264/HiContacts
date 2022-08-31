@@ -9,6 +9,14 @@ cis_trans(x)
 \arguments{
 \item{x}{A \code{contacts} object over the full genome}
 }
+\value{
+a tibble, listing for each chr. the \% of cis/trans interactions
+}
 \description{
 cis_trans
+}
+\examples{
+library(HiContacts)
+data(full_contacts_yeast)
+cis_trans(full_contacts_yeast)
 }

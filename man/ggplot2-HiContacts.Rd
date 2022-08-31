@@ -12,6 +12,11 @@ ggtheme_HiContacts_tracks()
 \arguments{
 \item{ticks}{ticks}
 }
+\value{
+a custom ggplot2 theme
+
+a custom ggplot2 theme
+}
 \description{
 ggtheme_HiContacts
 }

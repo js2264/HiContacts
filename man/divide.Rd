@@ -9,8 +9,21 @@ divide(x, by, use.assay = "balanced")
 \arguments{
 \item{x}{a \code{contacts} object}
 
+\item{by}{a \code{contacts} object}
+
 \item{use.assay}{use.assay}
+}
+\value{
+a \code{contacts} object with a single \code{ratio} assay
 }
 \description{
 divide
+}
+\examples{
+library(HiContacts)
+data(contacts_yeast)
+data(contacts_yeast_eco1)
+div_contacts <- divide(contacts_yeast_eco1, by = contacts_yeast)
+div_contacts
+plotMatrix(div_contacts, scale = 'log2', limits = c(-2, 2), cmap = bwr_colors)
 }

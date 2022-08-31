@@ -52,6 +52,23 @@ as_GInteractions(df)
 
 \item{df}{df}
 }
+\value{
+a list containing \code{chr}, \code{start} and \code{end}
+
+a character string
+
+a S4Vectors::Pairs object
+
+a list
+
+a GenomicInteractions object
+
+a matrix
+
+a Pairs object
+
+a GenomicInteractions object
+}
 \description{
 splitCoords
 

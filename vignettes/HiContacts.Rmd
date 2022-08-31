@@ -175,7 +175,7 @@ mcool_file <- HiContactsData::HiContactsData('mESCs', format = 'mcool')
 contacts <- contacts(mcool_file, focus = 'chr18:20000000-35000000', res = 40000)
 v4C <- virtual4C(contacts, viewpoint = GRanges('chr18:31000000-31050000'))
 cowplot::plot_grid(
-    gg4C(v4C, aes(x = center, y = score)), 
+    plot4C(v4C, aes(x = center, y = score)), 
     plotMatrix(contacts, use.assay = 'balanced', limits = c(-4, -1)), 
     ncol = 1, align = 'hv', axis = 'tblr', rel_heights = c(0.2, 1)
 )
@@ -196,13 +196,13 @@ cis_trans(contacts)
 mcool_file <- HiContactsData::HiContactsData('yeast_wt', format = 'mcool')
 contacts <- contacts(mcool_file, res = 1000)
 ps <- getPs(contacts)
-ggPs(ps, aes(x = binned_distance, y = norm_p))
+plotPs(ps, aes(x = binned_distance, y = norm_p))
 
 # With a pairs file
 pairsFile(contacts) <- HiContactsData::HiContactsData('yeast_wt', format = 'pairs.gz')
 ps <- getPs(contacts)
-ggPs(ps, aes(x = binned_distance, y = norm_p))
-ggPsSlope(ps, aes(x = binned_distance, y = slope))
+plotPs(ps, aes(x = binned_distance, y = norm_p))
+plotPsSlope(ps, aes(x = binned_distance, y = slope))
 
 # Comparing P(s) curves
 c1 <- contacts(
@@ -218,8 +218,8 @@ c2 <- contacts(
 ps_1 <- getPs(c1) %>% mutate(sample = 'WT')
 ps_2 <- getPs(c2) %>% mutate(sample = 'Eco1-AID')
 ps <- bind_rows(ps_1, ps_2)
-ggPs(ps, aes(x = binned_distance, y = norm_p, group = sample, color = sample))
-ggPsSlope(ps, aes(x = binned_distance, y = slope, group = sample, color = sample))
+plotPs(ps, aes(x = binned_distance, y = norm_p, group = sample, color = sample))
+plotPsSlope(ps, aes(x = binned_distance, y = slope, group = sample, color = sample))
 ```
 
 ### Aggregated Plot Analysis (APA)
@@ -240,4 +240,10 @@ p <- plotMatrix(apa_contacts, cmap = bwr_colors)
 
 ```{r}
 ## TBD
+```
+
+### Session info
+
+```{r}
+sessionInfo()
 ```

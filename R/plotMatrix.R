@@ -11,6 +11,7 @@
 #' @param symmetrical symmetrical
 #' @param chrom_lines chrom_lines
 #' @param cmap color map
+#' @return ggplot
 #'
 #' @importFrom ggrastr geom_tile_rast
 #' @import ggplot2
@@ -29,6 +30,15 @@
 #' @importFrom InteractionSet anchors
 #' @importFrom scales oob_squish
 #' @export
+#' @examples 
+#' library(HiContacts)
+#' data(contacts_yeast)
+#' plotMatrix(
+#'     contacts_yeast, 
+#'     use.assay = 'balanced', 
+#'     scale = 'log10', 
+#'     limits = c(-4, -1)
+#' )
 
 plotMatrix <- function(
     x, 
@@ -253,10 +263,10 @@ plotMatrix <- function(
 #' @param ticks ticks
 #' @param cols cols
 #' @param limits limits
+#' @return ggplot
 #'
 #' @import ggplot2
 #' @importFrom scales unit_format
-#' @export
 
 ggMatrix <- function(mat, ticks = TRUE, cols = afmhotr_colors, limits) {
     p <- ggplot2::ggplot(mat, ggplot2::aes(x, y, fill = score))

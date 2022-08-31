@@ -13,6 +13,16 @@ autocorrelate(x, use.assay = "balanced", ignore_ndiags = 3)
 
 \item{ignore_ndiags}{ignore N diagonals when calculating correlations}
 }
+\value{
+a \code{contacts} object with a single \code{autocorrelation} assay
+}
 \description{
 autocorrelate
+}
+\examples{
+library(HiContacts)
+data(contacts_yeast)
+contacts_yeast <- autocorrelate(contacts_yeast)
+assays(contacts_yeast)
+plotMatrix(contacts_yeast, scale = 'linear', limits = c(-1, 1), cmap = bwr_colors)
 }

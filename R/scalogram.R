@@ -1,7 +1,9 @@
 #' getScalogram
 #' 
 #' In development.
-#'
+#' 
+#' @return a tibble
+#' 
 #' @importFrom dplyr group_modify
 #' @rdname scalograms
 
@@ -46,6 +48,8 @@ getScalogram <- function(x, nbins = 250, ylim = c(1e5, 1e8), probs = c(0, 0.15, 
 #' ggScalogram
 #' 
 #' In development.
+#' 
+#' @return ggplot
 #' 
 #' @import ggplot2
 #' @importFrom scales oob_squish

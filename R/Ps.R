@@ -3,6 +3,7 @@
 #' @param x A `contacts` object
 #' @param by_chr by_chr
 #' @param filtered_chr filtered_chr
+#' @return a tibble
 #'
 #' @import tibble
 #' @importFrom dplyr filter
@@ -20,6 +21,10 @@
 #' @importFrom dplyr lead
 #' @rdname Ps
 #' @export
+#' @examples 
+#' library(HiContacts)
+#' data(contacts_yeast)
+#' getPs(contacts_yeast)
 
 getPs <- function(
     x, 
@@ -128,19 +133,40 @@ getPs <- function(
     }
 }
 
-#' ggPs
+#' plotPs
 #'
 #' @param ... ...
 #' @param xlim xlim
 #' @param ylim ylim
+#' @return ggplot
 #'
 #' @import ggplot2
 #' @importFrom scales trans_breaks
 #' @importFrom scales trans_format
 #' @rdname Ps
 #' @export
+#' @examples 
+#' 
+#' ## Single P(s)
+#' 
+#' library(HiContacts)
+#' data(contacts_yeast)
+#' ps <- getPs(contacts_yeast)
+#' plotPs(ps, aes(x = binned_distance, y = norm_p))
+#' 
+#' ## Comparing several P(s)
+#' 
+#' library(HiContacts)
+#' data(contacts_yeast)
+#' data(contacts_yeast_eco1)
+#' ps_wt <- getPs(contacts_yeast)
+#' ps_wt$sample <- 'WT'
+#' ps_eco1 <- getPs(contacts_yeast_eco1)
+#' ps_eco1$sample <- 'eco1'
+#' ps <- bind_rows(ps_wt, ps_eco1)
+#' plotPs(ps, aes(x = binned_distance, y = norm_p, group = sample, color = sample))
 
-ggPs <- function(..., xlim = c(5000, 4.99e5), ylim = c(1e-8, 1e-4)) {
+plotPs <- function(..., xlim = c(5000, 4.99e5), ylim = c(1e-8, 1e-4)) {
     gg <- ggplot2::ggplot(...) + 
         ggplot2::geom_line() + 
         ggplot2::theme_minimal() + 
@@ -163,13 +189,20 @@ ggPs <- function(..., xlim = c(5000, 4.99e5), ylim = c(1e-8, 1e-4)) {
     gg
 }
 
-#' ggPsSlope
+#' plotPsSlope
 #'
+#' @return ggplot
+#' 
 #' @import ggplot2
 #' @rdname Ps
 #' @export
+#' @examples 
+#' library(HiContacts)
+#' data(contacts_yeast)
+#' ps <- getPs(contacts_yeast)
+#' plotPsSlope(ps, aes(x = binned_distance, y = slope))
 
-ggPsSlope <- function(..., xlim = c(5000, 4.99e5), ylim = c(-3, 0)) {
+plotPsSlope <- function(..., xlim = c(5000, 4.99e5), ylim = c(-3, 0)) {
     gg <- ggplot2::ggplot(...) + 
         ggplot2::geom_line() + 
         ggplot2::theme_minimal() + 

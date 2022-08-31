@@ -17,21 +17,14 @@ APA(
 
 \item{coords}{coords}
 
+\item{bins}{bins}
+
+\item{use.assay}{use.assay}
+
 \item{BPPARAM}{BPPARAM}
-
-\item{res}{res}
-
-\item{limits}{limits}
-
-\item{dpi}{dpi}
-
-\item{rasterize}{rasterize}
-
-\item{symmetrical}{symmetrical}
-
-\item{scale}{scale}
-
-\item{cmap}{cmap}
+}
+\value{
+an aggregated contact matrix
 }
 \description{
 APA

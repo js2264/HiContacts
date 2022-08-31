@@ -13,6 +13,15 @@ virtual4C(x, viewpoint, use.assay = "balanced")
 
 \item{use.assay}{use.assay}
 }
+\value{
+A tibble with the contact frequency of the viewpoint, per bin
+along the imported genomic range.
+}
 \description{
 virtual4C
+}
+\examples{
+library(HiContacts)
+data(contacts_yeast)
+virtual4C(contacts_yeast, GRanges('II:490000-510000'))
 }

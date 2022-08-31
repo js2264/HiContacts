@@ -4,7 +4,9 @@
 #' @param cool_path Path of a (m)cool file
 #' @param contacts A `contacts` object
 #' @param resolution Resolution
+#' @param pair Pairs object with length of 1
 #' @param ... `contacts` object
+#' @return Logical
 #' 
 #' @rdname checks
 
@@ -130,16 +132,16 @@ is_square <- function(pair) {
 
 #' @rdname checks
 
-is_centered <- function(x) {
-    if (is.character(focus(x))) {
-        if (grepl(' x ', focus(x))) {
+is_centered <- function(contacts) {
+    if (is.character(focus(contacts))) {
+        if (grepl(' x ', focus(contacts))) {
             return(TRUE)
         }
         else {
             return(FALSE)
         }
     }
-    else if (methods::is(focus(x), 'Pairs')) {
+    else if (methods::is(focus(contacts), 'Pairs')) {
         return(TRUE)
     }
 }

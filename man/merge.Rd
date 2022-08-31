@@ -11,6 +11,17 @@ merge(..., use.assay = "balanced")
 
 \item{use.assay}{use.assay}
 }
+\value{
+a \code{contacts} object. Each returned assay is the sum of the
+corresponding assays from input \code{contacts}.
+}
 \description{
 merge
+}
+\examples{
+library(HiContacts)
+data(contacts_yeast)
+data(contacts_yeast_eco1)
+merged_contacts <- merge(contacts_yeast_eco1, contacts_yeast)
+merged_contacts
 }

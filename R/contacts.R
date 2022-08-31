@@ -4,18 +4,10 @@
 #                                                                              #
 ################################################################################
 
-#' @importClassesFrom S4Vectors Pairs
-#' @rdname contacts
-
-setClassUnion("GRangesOrGInteractions", members = c("GRanges", "GInteractions"))
-setClassUnion("GRangesOrPairsOrcharacterOrNULL", members = c("GRanges", "Pairs", "character", "NULL"))
-setClassUnion("numericOrcharacter", members = c("numeric", "character"))
-setClassUnion("characterOrNULL", members = c("character", "NULL"))
-
 #' contacts S4 class 
 #' 
-#' An S4 class to represent a file-stored (as .(m)cool) contact matrix 
-#' imported in R.
+#' @title `contacts` objects. An S4 class to represent 
+#'   a file-stored (as .(m)cool) contact matrix imported in R.
 #'
 #' @slot focus Chr. coordinates for which interaction counts are extracted 
 #'   from the .(m)cool file.
@@ -32,7 +24,13 @@ setClassUnion("characterOrNULL", members = c("character", "NULL"))
 #'   loops, borders, etc...)
 #' @slot pairsFile path for the .pairs file associated with the .(m)cool file
 #' @slot type Optional. Type of contacts matrix (sparse, full, aggr, ratio, ...)
-#' @rdname contacts
+#' 
+#' @importClassesFrom S4Vectors Pairs
+
+setClassUnion("GRangesOrGInteractions", members = c("GRanges", "GInteractions"))
+setClassUnion("GRangesOrPairsOrcharacterOrNULL", members = c("GRanges", "Pairs", "character", "NULL"))
+setClassUnion("numericOrcharacter", members = c("numeric", "character"))
+setClassUnion("characterOrNULL", members = c("character", "NULL"))
 
 methods::setClass("contacts", 
     contains = c("Annotated"), 
@@ -53,9 +51,23 @@ methods::setClass("contacts",
 
 #' contacts
 #' 
+#' @param cool_path Path of a (m)cool file
+#' @param resolution Resolution to use with mcool file
+#' @param focus focus Chr. coordinates for which 
+#'   interaction counts are extracted from the .(m)cool file.
+#'   Can be provided as a character string or as a GRanges object
+#' @param metadata list of metadata
+#' @param features features provided as a named SimpleList
+#' @param pairs Path to an associated .pairs file
+#' @return a new `contacts` object.
+#' 
 #' @import methods
 #' @rdname contacts
 #' @export
+#' @examples 
+#' library(HiContacts)
+#' data(contacts_yeast)
+#' contacts_yeast
 
 contacts <- function(
     cool_path, 
@@ -196,6 +208,10 @@ setValidity("contacts",
 #' @param x A \code{contacts} object.
 #'
 #' @export
+#' @examples 
+#' library(HiContacts)
+#' data(contacts_yeast)
+#' length(contacts_yeast)
 
 setMethod("length", "contacts", function(x) length(regions(x)))
 
@@ -209,6 +225,10 @@ setMethod("length", "contacts", function(x) length(regions(x)))
 #' @param x A \code{contacts} object.
 #'
 #' @export
+#' @examples 
+#' library(HiContacts)
+#' data(contacts_yeast)
+#' dim(contacts_yeast)
 
 setMethod("dim", "contacts", function(x) dim(gi2cm(assay(x, 1))))
 
@@ -220,8 +240,13 @@ setMethod("dim", "contacts", function(x) dim(gi2cm(assay(x, 1))))
 #' @aliases [,contacts-method
 #'
 #' @param x A \code{contacts} object.
+#' @param i a range or boolean vector.
 #'
 #' @export
+#' @examples 
+#' library(HiContacts)
+#' data(contacts_yeast)
+#' contacts_yeast[1:10]
 
 setMethod("[", signature("contacts"), function(x, i) {
     x@interactions <- interactions(x)[i]
@@ -306,9 +331,13 @@ setMethod("regions", "contacts", function(x) regions(assay(x, 1)))
 #' @rdname contacts
 #' @aliases show,contacts-method
 #'
-#' @param x A \code{contacts} object.
+#' @param object A \code{contacts} object.
 #'
 #' @export
+#' @examples 
+#' library(HiContacts)
+#' data(contacts_yeast)
+#' contacts_yeast
 
 setMethod("show", signature("contacts"), function(object) {
 

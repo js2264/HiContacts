@@ -2,14 +2,10 @@
 #'
 #' @param x x
 #' @param coords coords
-#' @param res res
-#' @param limits limits
-#' @param dpi dpi
-#' @param rasterize rasterize
-#' @param symmetrical symmetrical
+#' @param bins bins
+#' @param use.assay use.assay
 #' @param BPPARAM BPPARAM
-#' @param scale scale
-#' @param cmap cmap
+#' @return an aggregated contact matrix
 #'
 #' @import InteractionSet
 #' @import ggrastr
@@ -32,7 +28,6 @@
 #' @importFrom GenomicRanges start
 #' @importFrom methods as
 #' @importFrom S4Vectors SimpleList
-#' @export
 
 APA <- function(x, coords, bins = 50, use.assay = 'balanced', BPPARAM = BiocParallel::bpparam()) {
     `%within%` <- IRanges::`%within%`
@@ -168,7 +163,6 @@ APA_ <- function(x, coords, bins = 50, use.assay = 'balanced', BPPARAM = BiocPar
     x@type <- 'aggr.'
     return(x)
 }
-
 
 APA2 <- function(x, coords, bins = 50, use.assay = 'balanced', BPPARAM = BiocParallel::bpparam()) {
     `%within%` <- IRanges::`%within%`

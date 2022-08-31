@@ -3,7 +3,9 @@
 #' @param x a `contacts` object
 #' @param viewpoint viewpoint defined as a GRanges
 #' @param use.assay use.assay
-#'
+#' @return A tibble with the contact frequency of the viewpoint, per bin 
+#'   along the imported genomic range.
+#' 
 #' @import ggplot2
 #' @import tibble
 #' @importFrom scales unit_format
@@ -12,6 +14,10 @@
 #' @importFrom GenomicRanges end
 #' @importFrom GenomicRanges findOverlaps
 #' @export
+#' @examples 
+#' library(HiContacts)
+#' data(contacts_yeast)
+#' virtual4C(contacts_yeast, GRanges('II:490000-510000'))
 
 virtual4C <- function(x, viewpoint, use.assay = 'balanced') {
     gis <- assay(x, use.assay)
@@ -28,17 +34,23 @@ virtual4C <- function(x, viewpoint, use.assay = 'balanced') {
     )
 }
 
-#' gg4C
+#' plot4C
 #'
 #' @param x Output of virtual4C
 #' @param mapping aes to pass on to ggplot2
+#' @return ggplot
 #'
 #' @import ggplot2
 #' @import tibble
 #' @importFrom scales unit_format
 #' @export
+#' @examples 
+#' library(HiContacts)
+#' data(contacts_yeast)
+#' v4C <- virtual4C(contacts_yeast, GRanges('II:490000-510000'))
+#' plot4C(v4C, aes(x = center, y = score))
 
-gg4C <- function(x, mapping) {
+plot4C <- function(x, mapping) {
     p <- ggplot2::ggplot(x, mapping) + 
         ggplot2::geom_line() + 
         ggplot2::theme_minimal() + 

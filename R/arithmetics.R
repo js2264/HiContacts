@@ -2,6 +2,8 @@
 #'
 #' @param x a `contacts` object
 #' @param use.assay use.assay
+#' @return a `contacts` object with two additional assays: `expected` and
+#'   `detrended`
 #'
 #' @importFrom scales rescale
 #' @importFrom tibble as_tibble
@@ -14,6 +16,11 @@
 #' @importFrom dplyr left_join
 #' @import GenomicRanges
 #' @export
+#' @examples 
+#' library(HiContacts)
+#' data(contacts_yeast)
+#' contacts_yeast <- detrend(contacts_yeast)
+#' assays(contacts_yeast)
 
 detrend <- function(x, use.assay = 'balanced') {
     gis <- assay(x, use.assay)
@@ -31,7 +38,7 @@ detrend <- function(x, use.assay = 'balanced') {
     return(x)
 }
 
-#' smoothen
+#' serpentinify
 #'
 #' @param x a `contacts` object
 #' @param use.assay use.assay
@@ -39,6 +46,7 @@ detrend <- function(x, use.assay = 'balanced') {
 #'   serpentine (this requires `reticulate` and the python package `serpentine`)
 #' @param serpentine_niter number of iterations to use for serpentine
 #' @param serpentine_ncores number of CPUs to use for serpentine
+#' @return a `contacts` object with a single `smoothen` assay
 #' 
 #' @import reticulate
 #' @import GenomicRanges
@@ -48,9 +56,8 @@ detrend <- function(x, use.assay = 'balanced') {
 #' @importFrom InteractionSet anchors
 #' @importFrom InteractionSet GInteractions
 #' @importFrom S4Vectors SimpleList
-#' @export
 
-smoothen <- function(x, use.assay = 'balanced', 
+serpentinify <- function(x, use.assay = 'balanced', 
     use_serpentine_trend = TRUE, serpentine_niter = 10L, serpentine_ncores = 16L
 ) {
 
@@ -111,6 +118,7 @@ smoothen <- function(x, use.assay = 'balanced',
 #' @param x a `contacts` object
 #' @param use.assay use.assay
 #' @param ignore_ndiags ignore N diagonals when calculating correlations
+#' @return a `contacts` object with a single `autocorrelation` assay
 #' 
 #' @import InteractionSet
 #' @import stringr
@@ -119,6 +127,12 @@ smoothen <- function(x, use.assay = 'balanced',
 #' @importFrom dplyr rename
 #' @importFrom S4Vectors SimpleList
 #' @export
+#' @examples 
+#' library(HiContacts)
+#' data(contacts_yeast)
+#' contacts_yeast <- autocorrelate(contacts_yeast)
+#' assays(contacts_yeast)
+#' plotMatrix(contacts_yeast, scale = 'linear', limits = c(-1, 1), cmap = bwr_colors)
 
 autocorrelate <- function(x, use.assay = 'balanced', ignore_ndiags = 3) {
     gis <- assay(x, use.assay)
@@ -148,7 +162,9 @@ autocorrelate <- function(x, use.assay = 'balanced', ignore_ndiags = 3) {
 #' divide
 #'
 #' @param x a `contacts` object
+#' @param by a `contacts` object
 #' @param use.assay use.assay
+#' @return a `contacts` object with a single `ratio` assay
 #'
 #' @import tidyr
 #' @import zeallot
@@ -163,6 +179,13 @@ autocorrelate <- function(x, use.assay = 'balanced', ignore_ndiags = 3) {
 #' @importFrom S4Vectors metadata
 #' @importFrom S4Vectors SimpleList
 #' @export
+#' @examples 
+#' library(HiContacts)
+#' data(contacts_yeast)
+#' data(contacts_yeast_eco1)
+#' div_contacts <- divide(contacts_yeast_eco1, by = contacts_yeast)
+#' div_contacts
+#' plotMatrix(div_contacts, scale = 'log2', limits = c(-2, 2), cmap = bwr_colors)
 
 divide <- function(x, by, use.assay = 'balanced') {
     `%>%` <- tidyr::`%>%`
@@ -267,6 +290,8 @@ divide <- function(x, by, use.assay = 'balanced') {
 #'
 #' @param ... `contacts` objects
 #' @param use.assay use.assay
+#' @return a `contacts` object. Each returned assay is the sum of the
+#'   corresponding assays from input `contacts`.
 #'
 #' @import tidyr
 #' @import zeallot
@@ -281,6 +306,12 @@ divide <- function(x, by, use.assay = 'balanced') {
 #' @importFrom S4Vectors metadata
 #' @importFrom S4Vectors SimpleList
 #' @export
+#' @examples 
+#' library(HiContacts)
+#' data(contacts_yeast)
+#' data(contacts_yeast_eco1)
+#' merged_contacts <- merge(contacts_yeast_eco1, contacts_yeast)
+#' merged_contacts
 
 merge <- function(..., use.assay = 'balanced') {
     `%>%` <- tidyr::`%>%`
