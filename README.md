@@ -41,7 +41,7 @@ contacts <- contacts(
     pairs = HiContactsData::HiContactsData('yeast_wt', format = 'pairs')
 )
 ps <- getPs(contacts)
-ggPs(ps, aes(x = binned_distance, y = norm_p))
+plotPs(ps, aes(x = binned_distance, y = norm_p))
 ```
 
 ## Virtual 4C

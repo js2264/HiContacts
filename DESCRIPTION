@@ -15,7 +15,7 @@ License: MIT + file LICENSE
 URL: https://github.com/js2264/HiContacts
 BugReports: https://github.com/js2264/HiContacts/issues
 Depends:
-    R (>= 4.1)
+    R (>= 4.2)
 Imports:
     HiContactsData, 
     InteractionSet,
@@ -45,7 +45,8 @@ Imports:
     tools
 Suggests:
     cowplot,
-    knitr
+    knitr,
+    testthat (>= 3.0.0)
 biocViews: 
     HiC, 
     DNA3DStructure, 
