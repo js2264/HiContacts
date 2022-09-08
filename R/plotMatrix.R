@@ -202,7 +202,12 @@ plotMatrix <- function(
             p_borders + 
             ggplot2::labs(
                 x = unique(mat$seqnames1),
-                y = unique(mat$seqnames2)
+                y = "Genome coordinates", 
+                caption = paste(
+                    sep = '\n',
+                    paste0('file: ', basename(path(x))), 
+                    paste0('res: ', resolution(x))
+                )
             )
     }
 
@@ -241,7 +246,12 @@ plotMatrix <- function(
             plotFun +
             ggplot2::labs(
                 x = "Genome coordinates",
-                y = "Genome coordinates"
+                y = "Genome coordinates", 
+                caption = paste(
+                    sep = '\n',
+                    file(x), 
+                    paste0('res: ', resolution(x))
+                )
             )
         if (chrom_lines) {
             p <- p +

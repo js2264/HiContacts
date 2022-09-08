@@ -4,6 +4,11 @@
 #                                                                              #
 ################################################################################
 
+setClassUnion("GRangesOrGInteractions", members = c("GRanges", "GInteractions"))
+setClassUnion("GRangesOrPairsOrcharacterOrNULL", members = c("GRanges", "Pairs", "character", "NULL"))
+setClassUnion("numericOrcharacter", members = c("numeric", "character"))
+setClassUnion("characterOrNULL", members = c("character", "NULL"))
+
 #' contacts S4 class 
 #' 
 #' @title `contacts` objects. An S4 class to represent 
@@ -29,11 +34,6 @@
 #' @importClassesFrom S4Vectors Annotated
 #' @importFrom methods setClass
 #' @rdname contacts 
-
-setClassUnion("GRangesOrGInteractions", members = c("GRanges", "GInteractions"))
-setClassUnion("GRangesOrPairsOrcharacterOrNULL", members = c("GRanges", "Pairs", "character", "NULL"))
-setClassUnion("numericOrcharacter", members = c("numeric", "character"))
-setClassUnion("characterOrNULL", members = c("character", "NULL"))
 
 .contacts <- methods::setClass("contacts", 
     contains = c("Annotated"), 
@@ -240,7 +240,7 @@ setMethod("dim", "contacts", function(x) dim(gi2cm(scores(x, 1))))
 #' @name [
 #' @docType methods
 #' @rdname contacts
-#' @aliases [,contacts-method
+#' @aliases [,contacts,ANY,ANY,ANY-method
 #'
 #' @param x A \code{contacts} object.
 #' @param i a range or boolean vector.
@@ -279,7 +279,9 @@ setMethod("interactions", "contacts", function(x) x@interactions)
 #' @name scores
 #' @docType methods
 #' @rdname contacts
-#' @aliases scores,contacts-method
+#' @aliases scores,contacts,missing-method
+#' @aliases scores,contacts,character-method
+#' @aliases scores,contacts,numeric-method
 #'
 #' @param x A \code{contacts} object.
 #'
@@ -310,12 +312,14 @@ setMethod("scores", signature(x = "contacts", name = "numeric"), function(x, nam
 
 #' `scores<-` method for objects of class \code{contacts}.
 #'
-#' @name "scores<-"
+#' @name scores<-
 #' @docType methods
 #' @rdname contacts
-#' @aliases "scores<-",contacts-method
+#' @aliases scores<-,contacts,character,numeric-method
 #'
 #' @param x A \code{contacts} object.
+#' @param name name
+#' @param value value
 #'
 #' @export
 #' @examples 
@@ -345,54 +349,44 @@ setMethod("scores<-", c(x = "contacts", name = "character", value = "numeric"), 
 #' data(contacts_yeast)
 #' features(contacts_yeast)
 
-setGeneric("features", function(x) {standardGeneric("features")})
-setMethod("features", "contacts", function(x) {
+setGeneric("features", function(x, name) {standardGeneric("features")})
+setMethod("features", signature(x = "contacts", name = "missing"), function(x) {
     S4Vectors::SimpleList(as.list(x@features))
 })
-
-#' feature method for objects of class \code{contacts}.
-#'
-#' @name feature
-#' @docType methods
-#' @rdname contacts
-#' @aliases feature,contacts-method
-#'
-#' @param x A \code{contacts} object.
-#'
-#' @export
-#' @examples 
-#' library(HiContacts)
-#' data(full_contacts_yeast)
-#' feature(full_contacts_yeast, 1)
-#' feature(full_contacts_yeast, 'centromeres')
-
-setGeneric("feature", function(x, name) {standardGeneric("feature")})
-setMethod("feature", signature(x = "contacts", name = "numericOrcharacter"), function(x, name) {
-    features(x)[[name]]
+setMethod("features", signature(x = "contacts", name = "character"), function(x, name) {
+    if (!name %in% names(features(x))) {
+        stop(paste0(name, ' not in features.'))
+    }
+    x@features[[name]]
 })
-setMethod("feature", signature(x = "contacts", name = "missing"), function(x, name) {
-    features(x)[[1]]
+setMethod("features", signature(x = "contacts", name = "numeric"), function(x, name) {
+    if (name > length(features(x))) {
+        stop(paste0('Only ', length(features(x)), ' features in x.'))
+    }
+    x@features[[name]]
 })
 
 #' `feature<-` method for objects of class \code{contacts}.
 #'
-#' @name "feature<-"
+#' @name features<-
 #' @docType methods
 #' @rdname contacts
-#' @aliases "feature<-",contacts-method
+#' @aliases features<-,contacts,character,GRangesOrGInteractions-method
 #'
 #' @param x A \code{contacts} object.
+#' @param name name
+#' @param value value
 #'
 #' @export
 #' @examples 
 #' library(HiContacts)
 #' data(contacts_yeast)
 #' data(centros_yeast)
-#' feature(contacts_yeast, 'centromeres') <- centros_yeast
-#' feature(contacts_yeast, 'centromeres')
+#' features(contacts_yeast, 'centromeres') <- centros_yeast
+#' features(contacts_yeast, 'centromeres')
 
-setGeneric("feature<-", function(x, name, value) {standardGeneric("feature<-")})
-setMethod("feature<-", signature(x = "contacts", name = "character", value = "GRangesOrGInteractions"), function(x, name, value) {
+setGeneric("features<-", function(x, name, value) {standardGeneric("features<-")})
+setMethod("features<-", signature(x = "contacts", name = "character", value = "GRangesOrGInteractions"), function(x, name, value) {
     x@features[[name]] <- value
     return(x)
 })
@@ -419,12 +413,14 @@ setMethod("pairsFile", "contacts", function(x) {
 
 #' `pairsFile<-` method for objects of class \code{contacts}.
 #'
-#' @name "pairsFile<-"
+#' @name pairsFile<-
 #' @docType methods
 #' @rdname contacts
-#' @aliases "pairsFile<-",contacts-method
+#' @aliases pairsFile<-,contacts,character-method
 #'
 #' @param x A \code{contacts} object.
+#' @param name name
+#' @param value value
 #'
 #' @export
 
@@ -471,6 +467,28 @@ setMethod("anchors", "contacts", function(x) anchors(scores(x, 1)))
 
 setMethod("regions", "contacts", function(x) regions(scores(x, 1)))
 
+#' summary method for objects of class \code{contacts}.
+#'
+#' @name summary
+#' @docType methods
+#' @rdname contacts
+#' @aliases summary,contacts-method
+#'
+#' @param x A \code{contacts} object.
+#'
+#' @export
+#' @examples 
+#' library(HiContacts)
+#' data(contacts_yeast)
+#' summary(contacts_yeast)
+
+summary.contacts <- function(object) {
+    cat(glue::glue(
+        '{type(object)} `contacts` object with {format(length(interactions(object)), big.mark = ",")} interactions over {format(dim(object)[1], big.mark = ",")} regions'
+    ), '\n')
+}
+setMethod("summary", "contacts", summary.contacts)
+
 #' Show method for objects of class \code{contacts}.
 #'
 #' @name show
@@ -508,7 +526,7 @@ setMethod("show", signature("contacts"), function(object) {
         focus_str <- formatCoords(focus(object))
     }
 
-    cat(glue::glue('{type(object)} `contacts` object with {format(length(interactions(object)), big.mark = ",")} interactions over {format(dim(object)[1], big.mark = ",")} regions'), '\n')
+    cat(summary(object))
     cat(glue::glue('file: {path(object)}'), '\n')
     cat(glue::glue('focus: {focus_str}'), '\n')
     cat('------------\n')
