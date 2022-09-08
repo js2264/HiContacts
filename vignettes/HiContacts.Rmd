@@ -54,7 +54,7 @@ specify the resolution at which count values are recovered.
 mcool_file <- HiContactsData::HiContactsData('yeast_wt', format = 'mcool')
 range <- 'II:0-800000' # range of interest
 lsCoolResolutions(mcool_file)
-contacts <- contacts(mcool_file, focus = range) # This throws an error!
+# contacts <- contacts(mcool_file, focus = range) # This would throw an error!
 contacts <- contacts(mcool_file, focus = range, res = 1000)
 contacts
 ```
@@ -239,8 +239,8 @@ contacts <- contacts(mcool_file, res = 1000)
 borders <- system.file("extdata", 'S288C-borders.bed', package = 'HiContacts') %>% 
     rtracklayer::import()
 features(contacts)
-feature(contacts, 'borders') <- borders
-apa_contacts <- APA(contacts, feature(contacts, 'borders'))
+features(contacts, 'borders') <- borders
+apa_contacts <- APA(contacts, features(contacts, 'borders'))
 p <- plotMatrix(apa_contacts, cmap = bwr_colors)
 ```
 

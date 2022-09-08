@@ -246,6 +246,7 @@ lsCoolFiles <- function(file) {
 #' @import rhdf5
 #' @import tidyr
 #' @rdname parse
+#' @export
 
 lsCoolResolutions <- function(file, verbose = TRUE) {
     `%>%` <- tidyr::`%>%`

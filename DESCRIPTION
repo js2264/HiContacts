@@ -2,11 +2,12 @@ Package: HiContacts
 Title: HiContacts: R interface to cool files
 Version: 0.9.0
 Date: 2022-08-16
-Authors@R: 
-    person(given = "Jacques",
+Authors@R:
+    c(person(given = "Jacques",
            family = "Serizay",
            role = c("aut", "cre"),
-           email = "jacquesserizay@gmail.com")
+           email = "jacquesserizay@gmail.com",
+           comment = c(ORCID = "0000-0002-4295-0624")))
 Description: HiContacts: R interface to (m)cool files and other Hi-C 
     processed file formats.  HiContacts provides a collection of tools to 
     analyse and visualize Hi-C datasets. It can import data from pairs 
@@ -17,7 +18,7 @@ BugReports: https://github.com/js2264/HiContacts/issues
 Depends:
     R (>= 4.2)
 Imports:
-    HiContactsData, 
+    HiContactsData,
     InteractionSet,
     GenomicRanges,
     IRanges,
@@ -39,7 +40,7 @@ Imports:
     purrr,
     scales,
     stringr,
-    zeallot, 
+    zeallot,
     BiocParallel,
     reticulate,
     tools
@@ -47,8 +48,8 @@ Suggests:
     cowplot,
     knitr,
     testthat (>= 3.0.0)
-biocViews: 
-    HiC, 
+biocViews:
+    HiC,
     DNA3DStructure, 
     DataImport
 Encoding: UTF-8

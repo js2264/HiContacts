@@ -211,11 +211,10 @@ divide <- function(x, by, use.scores = 'balanced') {
     binsize <- resolution(x)
 
     serpentine <- FALSE
+    # serpentine <- TRUE
     ## Compute ratio
     if (serpentine) {
         ## -- Run serpentine
-        options(reticulate.repl.quiet = TRUE)
-        reticulate::use_condaenv('tm')
         sp <- reticulate::import('serpentine')
         c(trend, threshold) %<-% sp$MDbefore(m1, m2, show = FALSE)
         c(sm1, sm2, sK) %<-% sp$serpentin_binning(m1, m2, threshold = threshold, minthreshold = threshold/5, verbose = FALSE, iterations = serpentine_niter, parallel = serpentine_ncores)

@@ -33,7 +33,7 @@ HiContactsData
 data(centros_yeast)
 fpath <- HiContactsData::HiContactsData('yeast_wt', 'mcool')
 full_contacts_yeast <- contacts(fpath, resolution = 16000)
-feature(full_contacts_yeast, 'centromeres') <- centros_yeast
+features(full_contacts_yeast, 'centromeres') <- centros_yeast
 usethis::use_data(full_contacts_yeast, overwrite = TRUE)
 }
 \usage{
