@@ -136,7 +136,7 @@ cowplot::plot_grid(
 )
 ```
 
-### Summing maps
+### Summing two maps
 
 ```{r}
 mcool_file_1 <- HiContactsData::HiContactsData('yeast_eco1', format = 'mcool')
@@ -233,15 +233,7 @@ plotPsSlope(ps, aes(x = binned_distance, y = slope, group = sample, color = samp
 ### Aggregated Plot Analysis (APA)
 
 ```{r}
-mcool_file <- HiContactsData::HiContactsData('yeast_eco1', format = 'mcool')
-mcool_file <- '~/Projects/20220816_HiContacts_datasets/S288C_WT.mcool'
-contacts <- contacts(mcool_file, res = 1000)
-borders <- system.file("extdata", 'S288C-borders.bed', package = 'HiContacts') %>% 
-    rtracklayer::import()
-features(contacts)
-features(contacts, 'borders') <- borders
-apa_contacts <- APA(contacts, features(contacts, 'borders'))
-p <- plotMatrix(apa_contacts, cmap = bwr_colors)
+## TBD
 ```
 
 ### Scalograms
@@ -250,7 +242,7 @@ p <- plotMatrix(apa_contacts, cmap = bwr_colors)
 ## TBD
 ```
 
-### Session info
+## Session info
 
 ```{r}
 sessionInfo()

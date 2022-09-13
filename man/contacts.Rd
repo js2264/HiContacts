@@ -18,7 +18,9 @@
 \alias{scores<-}
 \alias{scores<-,contacts,character,numeric-method}
 \alias{features}
-\alias{features,contacts-method}
+\alias{features,contacts,missing-method}
+\alias{features,contacts,character-method}
+\alias{features,contacts,numeric-method}
 \alias{features<-}
 \alias{features<-,contacts,character,GRangesOrGInteractions-method}
 \alias{pairsFile}
@@ -29,6 +31,9 @@
 \alias{anchors,contacts-method}
 \alias{regions}
 \alias{regions,contacts-method}
+\alias{summary}
+\alias{.summary}
+\alias{summary,contacts-method}
 \alias{show}
 \alias{show,contacts-method}
 \title{\code{contacts} objects. An S4 class to represent
@@ -64,6 +69,8 @@ pairsFile(x) <- value
 \S4method{anchors}{contacts}(x)
 
 \S4method{regions}{contacts}(x)
+
+.summary(object)
 
 \S4method{show}{contacts}(object)
 }
@@ -165,6 +172,9 @@ anchors(full_contacts_yeast)
 library(HiContacts)
 data(full_contacts_yeast)
 regions(full_contacts_yeast)
+library(HiContacts)
+data(contacts_yeast)
+summary(contacts_yeast)
 library(HiContacts)
 data(contacts_yeast)
 contacts_yeast

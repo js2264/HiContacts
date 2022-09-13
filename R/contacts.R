@@ -126,7 +126,7 @@ contacts <- function(
     }
 
     ## -- Read interactions
-    gis <- cool2gi(cool_path, res = current_res, coords = focus)
+    gis <- cool2gi(cool_path, resolution = current_res, coords = focus)
     mcols <- GenomicRanges::mcols(gis)
     GenomicRanges::mcols(gis) <- NULL
 
@@ -339,7 +339,9 @@ setMethod("scores<-", c(x = "contacts", name = "character", value = "numeric"), 
 #' @name features
 #' @docType methods
 #' @rdname contacts
-#' @aliases features,contacts-method
+#' @aliases features,contacts,missing-method
+#' @aliases features,contacts,character-method
+#' @aliases features,contacts,numeric-method
 #'
 #' @param x A \code{contacts} object.
 #'
@@ -482,12 +484,12 @@ setMethod("regions", "contacts", function(x) regions(scores(x, 1)))
 #' data(contacts_yeast)
 #' summary(contacts_yeast)
 
-summary.contacts <- function(object) {
+.summary <- function(object) {
     cat(glue::glue(
         '{type(object)} `contacts` object with {format(length(interactions(object)), big.mark = ",")} interactions over {format(dim(object)[1], big.mark = ",")} regions'
     ), '\n')
 }
-setMethod("summary", "contacts", summary.contacts)
+setMethod("summary", "contacts", .summary)
 
 #' Show method for objects of class \code{contacts}.
 #'

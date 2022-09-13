@@ -3,6 +3,7 @@
 export("features<-")
 export("pairsFile<-")
 export("scores<-")
+export(.summary)
 export(afmhotr_colors)
 export(autocorrelate)
 export(bbr_colors)
