@@ -4,8 +4,8 @@
 .httr-oauth
 .DS_Store
 docs
-*bedpe
 *png
 *pdf
 .pre-commit-config.yaml
-inst/extdata/*
+/doc/
+/Meta/

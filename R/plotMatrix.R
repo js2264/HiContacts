@@ -100,7 +100,7 @@ plotMatrix <- function(
     ## -- Choose color map 
     if (is.null(cmap)) {
         if (has_negative_scores) {
-            cmap <- bwr_colors
+            cmap <- bwr_colors()
         }
         else {
             cmap <- afmhotr_colors()
@@ -185,7 +185,6 @@ plotMatrix <- function(
                     dplyr::select(-x2)
             )
             if (is_centered(x)) {
-                message("HELO")
                 coords <- unlist(S4Vectors::zipup(char2pair(focus(x))))
                 mat <- mat %>% 
                     filter(x >= GenomicRanges::start(coords[1]) & 

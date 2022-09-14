@@ -15,6 +15,10 @@ knitr::opts_chunk$set(
     comment = "#>"
 )
 suppressPackageStartupMessages({
+    library(ggplot2)
+    library(dplyr)
+    library(GenomicRanges)
+    library(HiContactsData)
     library(HiContacts)
 })
 ```
@@ -34,7 +38,8 @@ The `HiContactsData` package gives access to a range of toy datasets stored
 by Bioconductor in the `ExperimentHub`. 
 
 ```{r}
-cool_file <- HiContactsData::HiContactsData('yeast_wt', format = 'cool')
+library(HiContactsData)
+cool_file <- HiContactsData('yeast_wt', format = 'cool')
 cool_file
 ```
 
@@ -42,6 +47,10 @@ The `contacts()` function can be used to import a Hi-C matrix locally stored
 as a cool/mcool file.  
 
 ```{r}
+library(ggplot2)
+library(dplyr)
+library(GenomicRanges)
+library(HiContacts)
 range <- 'I:20000-80000' # range of interest
 contacts <- contacts(cool_file, focus = range)
 contacts
@@ -51,7 +60,7 @@ contacts
 specify the resolution at which count values are recovered. 
 
 ```{r}
-mcool_file <- HiContactsData::HiContactsData('yeast_wt', format = 'mcool')
+mcool_file <- HiContactsData('yeast_wt', format = 'mcool')
 range <- 'II:0-800000' # range of interest
 lsCoolResolutions(mcool_file)
 # contacts <- contacts(mcool_file, focus = range) # This would throw an error!
@@ -77,7 +86,7 @@ plotMatrix(contacts, use.scores = 'balanced', limits = c(-4, -1))
 ### Plot loops
 
 ```{r}
-mcool_file <- HiContactsData::HiContactsData('yeast_wt', format = 'mcool')
+mcool_file <- HiContactsData('yeast_wt', format = 'mcool')
 loops <- system.file("extdata", 'S288C-loops.bedpe', package = 'HiContacts') %>% 
     rtracklayer::import() %>% 
     InteractionSet::makeGInteractionsFromGRangesPairs()
@@ -101,7 +110,7 @@ contacts(mcool_file, focus = 'IV', res = 1000) %>%
 ### Subsetting a contact map 
 
 ```{r}
-mcool_file <- HiContactsData::HiContactsData('yeast_wt', format = 'mcool')
+mcool_file <- HiContactsData('yeast_wt', format = 'mcool')
 contacts <- contacts(mcool_file, focus = 'II', res = 2000)
 contacts_subset <- contacts[
     start(anchors(contacts)[[1]]) < 300000 & end(anchors(contacts)[[1]]) < 300000 & 
@@ -116,7 +125,7 @@ cowplot::plot_grid(
 ### Computing autocorrelated contact map 
 
 ```{r}
-mcool_file <- HiContactsData::HiContactsData('mESCs', format = 'mcool')
+mcool_file <- HiContactsData('mESCs', format = 'mcool')
 contacts <- contacts(mcool_file, focus = 'chr2', res = 160000)
 contacts %>% 
     autocorrelate(ignore_ndiags = 20) %>% 
@@ -126,7 +135,7 @@ contacts %>%
 ### Detrending contact map (map over expected)
 
 ```{r}
-mcool_file <- HiContactsData::HiContactsData('mESCs', format = 'mcool')
+mcool_file <- HiContactsData('mESCs', format = 'mcool')
 contacts <- contacts(mcool_file, focus = 'chr18:20000000-35000000', res = 40000)
 detrended_contacts <- detrend(contacts)
 cowplot::plot_grid(
@@ -139,8 +148,8 @@ cowplot::plot_grid(
 ### Summing two maps
 
 ```{r}
-mcool_file_1 <- HiContactsData::HiContactsData('yeast_eco1', format = 'mcool')
-mcool_file_2 <- HiContactsData::HiContactsData('yeast_wt', format = 'mcool')
+mcool_file_1 <- HiContactsData('yeast_eco1', format = 'mcool')
+mcool_file_2 <- HiContactsData('yeast_wt', format = 'mcool')
 contacts_1 <- contacts(mcool_file_1, focus = 'II', res = 2000)
 contacts_1 <- contacts_1[
     start(anchors(contacts_1)[[1]]) < 300000 & end(anchors(contacts_1)[[1]]) < 300000 & 
@@ -163,8 +172,8 @@ cowplot::plot_grid(
 ### Computing ratio between two maps
 
 ```{r}
-mcool_file_1 <- HiContactsData::HiContactsData('yeast_eco1', format = 'mcool')
-mcool_file_2 <- HiContactsData::HiContactsData('yeast_wt', format = 'mcool')
+mcool_file_1 <- HiContactsData('yeast_eco1', format = 'mcool')
+mcool_file_2 <- HiContactsData('yeast_wt', format = 'mcool')
 contacts_1 <- contacts(mcool_file_1, focus = 'II', res = 2000)
 contacts_2 <- contacts(mcool_file_2, focus = 'II', res = 2000)
 div_contacts <- divide(contacts_1, by = contacts_2) 
@@ -172,14 +181,14 @@ div_contacts
 cowplot::plot_grid(
     plotMatrix(contacts_1, use.scores = 'balanced', scale = 'log10', limits = c(-4, -1)),
     plotMatrix(contacts_2, use.scores = 'balanced', scale = 'log10', limits = c(-4, -1)),
-    plotMatrix(div_contacts, use.scores = 'ratio', scale = 'log2', limits = c(-2, 2), cmap = bwr_colors)
+    plotMatrix(div_contacts, use.scores = 'ratio', scale = 'log2', limits = c(-2, 2), cmap = bwr_colors())
 )
 ```
 
 ### Virtual 4C
 
 ```{r}
-mcool_file <- HiContactsData::HiContactsData('mESCs', format = 'mcool')
+mcool_file <- HiContactsData('mESCs', format = 'mcool')
 contacts <- contacts(mcool_file, focus = 'chr18:20000000-35000000', res = 40000)
 v4C <- virtual4C(contacts, viewpoint = GRanges('chr18:31000000-31050000'))
 cowplot::plot_grid(
@@ -192,7 +201,7 @@ cowplot::plot_grid(
 ### Cis-trans ratios
 
 ```{r}
-mcool_file <- HiContactsData::HiContactsData('yeast_wt', format = 'mcool')
+mcool_file <- HiContactsData('yeast_wt', format = 'mcool')
 contacts <- contacts(mcool_file, res = 1000)
 cis_trans(contacts)
 ```
@@ -201,27 +210,27 @@ cis_trans(contacts)
 
 ```{r}
 # Without a pairs file
-mcool_file <- HiContactsData::HiContactsData('yeast_wt', format = 'mcool')
+mcool_file <- HiContactsData('yeast_wt', format = 'mcool')
 contacts <- contacts(mcool_file, res = 1000)
 ps <- getPs(contacts)
 plotPs(ps, aes(x = binned_distance, y = norm_p))
 
 # With a pairs file
-pairsFile(contacts) <- HiContactsData::HiContactsData('yeast_wt', format = 'pairs.gz')
+pairsFile(contacts) <- HiContactsData('yeast_wt', format = 'pairs.gz')
 ps <- getPs(contacts)
 plotPs(ps, aes(x = binned_distance, y = norm_p))
 plotPsSlope(ps, aes(x = binned_distance, y = slope))
 
 # Comparing P(s) curves
 c1 <- contacts(
-    HiContactsData::HiContactsData('yeast_wt', format = 'mcool'), 
+    HiContactsData('yeast_wt', format = 'mcool'), 
     res = 1000, 
-    pairs = HiContactsData::HiContactsData('yeast_wt', format = 'pairs.gz')
+    pairs = HiContactsData('yeast_wt', format = 'pairs.gz')
 )
 c2 <- contacts(
-    HiContactsData::HiContactsData('yeast_eco1', format = 'mcool'), 
+    HiContactsData('yeast_eco1', format = 'mcool'), 
     res = 1000, 
-    pairs = HiContactsData::HiContactsData('yeast_eco1', format = 'pairs.gz')
+    pairs = HiContactsData('yeast_eco1', format = 'pairs.gz')
 )
 ps_1 <- getPs(c1) %>% mutate(sample = 'WT')
 ps_2 <- getPs(c2) %>% mutate(sample = 'Eco1-AID')
