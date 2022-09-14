@@ -10,6 +10,12 @@
     <loc>/LICENSE.html</loc>
   </url>
   <url>
+    <loc>/articles/HiContacts.html</loc>
+  </url>
+  <url>
+    <loc>/articles/index.html</loc>
+  </url>
+  <url>
     <loc>/authors.html</loc>
   </url>
   <url>
@@ -19,75 +25,69 @@
     <loc>/reference/APA.html</loc>
   </url>
   <url>
+    <loc>/reference/HiContacts.html</loc>
+  </url>
+  <url>
+    <loc>/reference/Ps.html</loc>
+  </url>
+  <url>
+    <loc>/reference/PsBreaks.html</loc>
+  </url>
+  <url>
+    <loc>/reference/autocorrelate.html</loc>
+  </url>
+  <url>
+    <loc>/reference/checks.html</loc>
+  </url>
+  <url>
+    <loc>/reference/cis_trans.html</loc>
+  </url>
+  <url>
     <loc>/reference/contacts.html</loc>
   </url>
   <url>
-    <loc>/reference/cool2gi.html</loc>
-  </url>
-  <url>
-    <loc>/reference/cool2seqinfo.html</loc>
+    <loc>/reference/datasets.html</loc>
   </url>
   <url>
     <loc>/reference/detrend.html</loc>
   </url>
   <url>
-    <loc>/reference/fetchCool.html</loc>
-  </url>
-  <url>
-    <loc>/reference/formatCoords.html</loc>
-  </url>
-  <url>
-    <loc>/reference/getAnchors.html</loc>
-  </url>
-  <url>
-    <loc>/reference/getCounts.html</loc>
-  </url>
-  <url>
-    <loc>/reference/getHicStats.html</loc>
-  </url>
-  <url>
-    <loc>/reference/getPs.html</loc>
-  </url>
-  <url>
-    <loc>/reference/gg4C.html</loc>
+    <loc>/reference/divide.html</loc>
   </url>
   <url>
     <loc>/reference/ggMatrix.html</loc>
   </url>
   <url>
-    <loc>/reference/ggPs.html</loc>
-  </url>
-  <url>
-    <loc>/reference/ggtheme_HiContacts.html</loc>
-  </url>
-  <url>
-    <loc>/reference/ggtheme_HiContacts_tracks.html</loc>
-  </url>
-  <url>
-    <loc>/reference/gi2cm.html</loc>
+    <loc>/reference/ggplot2-HiContacts.html</loc>
   </url>
   <url>
     <loc>/reference/index.html</loc>
   </url>
   <url>
-    <loc>/reference/lsCoolFiles.html</loc>
+    <loc>/reference/merge.html</loc>
   </url>
   <url>
-    <loc>/reference/lsCoolResolutions.html</loc>
+    <loc>/reference/palettes.html</loc>
   </url>
   <url>
-    <loc>/reference/pairs2gi.html</loc>
+    <loc>/reference/parse.html</loc>
   </url>
   <url>
-    <loc>/reference/peekCool.html</loc>
+    <loc>/reference/plot4C.html</loc>
   </url>
   <url>
     <loc>/reference/plotMatrix.html</loc>
   </url>
   <url>
-    <loc>/reference/splitCoords.html</loc>
+    <loc>/reference/scalograms.html</loc>
   </url>
   <url>
-    <loc>/reference/zoom.html</loc>
+    <loc>/reference/serpentinify.html</loc>
+  </url>
+  <url>
+    <loc>/reference/utils.html</loc>
+  </url>
+  <url>
+    <loc>/reference/virtual4C.html</loc>
   </url>
 </urlset>
