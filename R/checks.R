@@ -54,13 +54,15 @@ check_cool_format <- function(cool_path, resolution) {
 #' @rdname checks
 
 is_mcool <- function(cool_path) {
-    tools::file_ext(cool_path) == 'mcool'
+    x <- lsCoolFiles(cool_path)
+    all(grepl('^/resolutions', x))
 }
 
 #' @rdname checks
 
 is_cool <- function(cool_path) {
-    tools::file_ext(cool_path) == 'cool'
+    x <- lsCoolFiles(cool_path)
+    all(!grepl('^/resolutions', x))
 }
 
 #' @rdname checks
