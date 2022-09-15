@@ -463,7 +463,7 @@ pairs2gi <- function(
     nrows = Inf
 ) {
     ## Use zgrep if pairs file is zipped (.gz)
-    if (grepl('.gz$', file)) {
+    if (grepl('.gz$', file) | grepl('ExperimentHub', file)) {
         grep_cmd <- "zgrep"
     }
     else {
