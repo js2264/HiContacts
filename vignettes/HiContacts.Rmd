@@ -105,7 +105,7 @@ contacts(mcool_file, focus = 'IV', res = 1000) %>%
     plotMatrix(use.scores = 'detrended', loops = loops, borders = borders, scale = 'linear', limits = c(-2, 2))
 ```
 
-## Digging into contact matrices: transformation, comparison and arithmetics
+## Arithmetics
 
 ### Subsetting a contact map 
 
@@ -185,6 +185,8 @@ cowplot::plot_grid(
 )
 ```
 
+## Contact map analysis
+
 ### Virtual 4C
 
 ```{r}
@@ -194,7 +196,7 @@ v4C <- virtual4C(contacts, viewpoint = GRanges('chr18:31000000-31050000'))
 cowplot::plot_grid(
     plot4C(v4C, aes(x = center, y = score)), 
     plotMatrix(contacts, use.scores = 'balanced', limits = c(-4, -1)), 
-    ncol = 1, align = 'hv', axis = 'tblr', rel_heights = c(0.2, 1)
+    ncol = 1, align = 'hv', axis = 'tblr')
 )
 ```
 

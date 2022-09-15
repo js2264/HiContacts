@@ -6,7 +6,6 @@ test_that("contacts works", {
         validObject(contacts_yeast)
     })
     expect_error(length(contacts_yeast), NA)
-    expect_error(dim(contacts_yeast), NA)
     expect_error(contacts_yeast[1:10], NA)
     expect_error(contacts, NA)
 })

@@ -7,8 +7,6 @@
 \alias{contacts}
 \alias{length}
 \alias{length,contacts-method}
-\alias{dim}
-\alias{dim,contacts-method}
 \alias{[}
 \alias{[,contacts,ANY,ANY,ANY-method}
 \alias{scores}
@@ -36,8 +34,7 @@
 \alias{summary,contacts-method}
 \alias{show}
 \alias{show,contacts-method}
-\title{\code{contacts} objects. An S4 class to represent
-a file-stored (as .(m)cool) contact matrix imported in R.}
+\title{\code{contacts} S4 class and methods}
 \usage{
 contacts(
   cool_path,
@@ -49,8 +46,6 @@ contacts(
 )
 
 \S4method{length}{contacts}(x)
-
-\S4method{dim}{contacts}(x)
 
 \S4method{[}{contacts,ANY,ANY,ANY}(x, i)
 
@@ -103,7 +98,33 @@ Can be provided as a character string or as a GRanges object}
 a new \code{contacts} object.
 }
 \description{
-contacts S4 class
+\code{contacts} S4 class and methods
+
+contacts constructor
+
+length method for objects of class \code{contacts}.
+
+[ method for objects of class \code{contacts}.
+
+scores method for objects of class \code{contacts}.
+
+\verb{scores<-} method for objects of class \code{contacts}.
+
+features method for objects of class \code{contacts}.
+
+\verb{feature<-} method for objects of class \code{contacts}.
+
+pairsFile method for objects of class \code{contacts}.
+
+\verb{pairsFile<-} method for objects of class \code{contacts}.
+
+anchors method for objects of class \code{contacts}.
+
+regions method for objects of class \code{contacts}.
+
+summary method for objects of class \code{contacts}.
+
+Show method for objects of class \code{contacts}.
 }
 \section{Slots}{
 
@@ -142,9 +163,6 @@ contacts_yeast
 library(HiContacts)
 data(contacts_yeast)
 length(contacts_yeast)
-library(HiContacts)
-data(contacts_yeast)
-dim(contacts_yeast)
 library(HiContacts)
 data(contacts_yeast)
 contacts_yeast[1:10]

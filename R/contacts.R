@@ -9,10 +9,7 @@ setClassUnion("GRangesOrPairsOrcharacterOrNULL", members = c("GRanges", "Pairs",
 setClassUnion("numericOrcharacter", members = c("numeric", "character"))
 setClassUnion("characterOrNULL", members = c("character", "NULL"))
 
-#' contacts S4 class 
-#' 
-#' @title `contacts` objects. An S4 class to represent 
-#'   a file-stored (as .(m)cool) contact matrix imported in R.
+#' @title `contacts` S4 class and methods
 #'
 #' @slot focus Chr. coordinates for which interaction counts are extracted 
 #'   from the .(m)cool file.
@@ -217,23 +214,6 @@ setValidity("contacts",
 #' length(contacts_yeast)
 
 setMethod("length", "contacts", function(x) length(interactions(x)))
-
-#' dim method for objects of class \code{contacts}.
-#'
-#' @name dim
-#' @docType methods
-#' @rdname contacts
-#' @aliases dim,contacts-method
-#'
-#' @param x A \code{contacts} object.
-#'
-#' @export
-#' @examples 
-#' library(HiContacts)
-#' data(contacts_yeast)
-#' dim(contacts_yeast)
-
-setMethod("dim", "contacts", function(x) dim(gi2cm(scores(x, 1))))
 
 #' [ method for objects of class \code{contacts}.
 #'
@@ -486,7 +466,7 @@ setMethod("regions", "contacts", function(x) regions(scores(x, 1)))
 
 .summary <- function(object) {
     cat(glue::glue(
-        '{type(object)} `contacts` object with {format(length(interactions(object)), big.mark = ",")} interactions over {format(dim(object)[1], big.mark = ",")} regions'
+        '{type(object)} `contacts` object with {format(length(interactions(object)), big.mark = ",")} interactions over {format(length(regions(object)), big.mark = ",")} regions'
     ), '\n')
 }
 setMethod("summary", "contacts", .summary)

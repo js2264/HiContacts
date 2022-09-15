@@ -9,3 +9,4 @@ docs
 .pre-commit-config.yaml
 /doc/
 /Meta/
+..Rcheck
