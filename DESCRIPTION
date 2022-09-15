@@ -47,6 +47,7 @@ Imports:
 Suggests:
     cowplot,
     testthat (>= 3.0.0),
+    BiocStyle,
     knitr,
     rmarkdown
 biocViews:

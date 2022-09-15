@@ -1,8 +1,9 @@
 ---
-title: "HiContacts"
+title: "Introduction to HiContacts"
 author: "Jacques Serizay"
 date: "`r Sys.Date()`"
-output: rmarkdown::html_vignette
+output: 
+    BiocStyle::html_document
 vignette: >
     %\VignetteIndexEntry{Introduction to HiContacts}
     %\VignetteEngine{knitr::rmarkdown}
@@ -196,7 +197,7 @@ v4C <- virtual4C(contacts, viewpoint = GRanges('chr18:31000000-31050000'))
 cowplot::plot_grid(
     plot4C(v4C, aes(x = center, y = score)), 
     plotMatrix(contacts, use.scores = 'balanced', limits = c(-4, -1)), 
-    ncol = 1, align = 'hv', axis = 'tblr')
+    ncol = 1, align = 'hv', axis = 'tblr'
 )
 ```
 
