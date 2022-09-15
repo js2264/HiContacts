@@ -142,17 +142,14 @@ contacts <- function(
         if (!file.exists(pairs)) {
             stop("Provided pairs file does not exist. Aborting now.")
         }
-        pairsFile <- pairs
     }
-    else {
-        pairsFile <- NULL
-    }
+    pairsFile <- pairs
 
     ## -- Create contact object
     x <- methods::new("contacts", 
         focus = focus, 
         metadata = purrr::flatten(c(
-            list(path = cool_path), 
+            list(path = unname(cool_path)), 
             metadata[names(metadata)!='path'])
         ), 
         seqinfo = si, 

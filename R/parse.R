@@ -206,6 +206,7 @@ fetchCool <- function(file, path, resolution = NULL, idx = NULL, ...) {
 #' lsCoolFiles
 #'
 #' @param file file
+#' @param verbose verbose
 #' @return vector
 #'
 #' @import rhdf5
@@ -214,7 +215,7 @@ fetchCool <- function(file, path, resolution = NULL, idx = NULL, ...) {
 #' @import GenomicInteractions
 #' @rdname parse
 
-lsCoolFiles <- function(file) {
+lsCoolFiles <- function(file, verbose = TRUE) {
     `%>%` <- tidyr::`%>%`
     x <- rhdf5::h5ls(file) %>% 
         mutate(path = paste0(group, "/", name)) %>% 
@@ -222,16 +223,18 @@ lsCoolFiles <- function(file) {
         unique() %>% 
         stringr::str_replace("//", "/")
     len <- length(x)
-    if (len > 10) {
-        mess <- c(
-            paste0(x[seq_len(5)], "\n"), 
-            paste0("... (", len-10, " more paths)\n"), 
-            paste0(x[(len-5+1):len], "\n")
-        )
-        message(mess)
-    }
-    else {
-        message(x)
+    if (verbose) {
+        if (len > 10) {
+            mess <- c(
+                paste0(x[seq_len(5)], "\n"), 
+                paste0("... (", len-10, " more paths)\n"), 
+                paste0(x[(len-5+1):len], "\n")
+            )
+            message(mess)
+        }
+        else {
+            message(x)
+        }
     }
     invisible(x)
 }
