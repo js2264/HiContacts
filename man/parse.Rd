@@ -23,7 +23,7 @@ getCounts(file, coords, anchors, resolution = NULL)
 
 fetchCool(file, path, resolution = NULL, idx = NULL, ...)
 
-lsCoolFiles(file)
+lsCoolFiles(file, verbose = TRUE)
 
 lsCoolResolutions(file, verbose = TRUE)
 
