@@ -13,7 +13,7 @@
 \alias{is_same_regions}
 \alias{is_comparable}
 \alias{is_square}
-\alias{is_centered}
+\alias{is_symmetrical}
 \title{Checks functions}
 \usage{
 check_cool_file(cool_path)
@@ -38,7 +38,7 @@ is_comparable(...)
 
 is_square(pair)
 
-is_centered(contacts)
+is_symmetrical(contacts)
 }
 \arguments{
 \item{cool_path}{Path of a (m)cool file}

@@ -136,17 +136,18 @@ is_square <- function(pair) {
 }
 
 #' @rdname checks
+#' @export
 
-is_centered <- function(contacts) {
+is_symmetrical <- function(contacts) {
     if (is.character(focus(contacts))) {
         if (grepl(' x ', focus(contacts))) {
-            return(TRUE)
+            return(FALSE)
         }
         else {
-            return(FALSE)
+            return(TRUE)
         }
     }
     else if (methods::is(focus(contacts), 'Pairs')) {
-        return(TRUE)
+        return(FALSE)
     }
 }
