@@ -345,7 +345,7 @@ setMethod("features", signature(x = "contacts", name = "numeric"), function(x, n
     x@features[[name]]
 })
 
-#' `feature<-` method for objects of class \code{contacts}.
+#' `features<-` method for objects of class \code{contacts}.
 #'
 #' @name features<-
 #' @docType methods

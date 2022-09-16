@@ -61,7 +61,12 @@ plotMatrix <- function(
         gis <- scores(x, use.scores)
     }
     else {
-        gis <- scores(x, 1)
+        if ("balanced" %in% names(scores(x))) {
+            gis <- scores(x, "balanced")
+        } 
+        else {
+            gis <- scores(x, 1)
+        }
     }
 
     ## -- Put metric to plot in `score` column
@@ -184,7 +189,7 @@ plotMatrix <- function(
                     dplyr::mutate(x2 = y, y = x, x = x2) %>% 
                     dplyr::select(-x2)
             )
-            if (is_centered(x)) {
+            if (!is_symmetrical(x)) {
                 coords <- unlist(S4Vectors::zipup(char2pair(focus(x))))
                 mat <- mat %>% 
                     filter(x >= GenomicRanges::start(coords[1]) & 

@@ -112,7 +112,7 @@ scores method for objects of class \code{contacts}.
 
 features method for objects of class \code{contacts}.
 
-\verb{feature<-} method for objects of class \code{contacts}.
+\verb{features<-} method for objects of class \code{contacts}.
 
 pairsFile method for objects of class \code{contacts}.
 
