@@ -23,9 +23,9 @@ getCounts(file, coords, anchors, resolution = NULL)
 
 fetchCool(file, path, resolution = NULL, idx = NULL, ...)
 
-lsCoolFiles(file, verbose = TRUE)
+lsCoolFiles(file, verbose = FALSE)
 
-lsCoolResolutions(file, verbose = TRUE)
+lsCoolResolutions(file, verbose = FALSE)
 
 peekCool(file, path, resolution = NULL, n = 10)
 

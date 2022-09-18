@@ -97,7 +97,7 @@ APA <- function(x, coords, bins = 50, use.scores = 'balanced') {
     )
     
     x@features <- c(features(x), S4Vectors::SimpleList(APA = coords))
-    x@type <- 'aggr.'
+    x@matrixType <- 'aggr.'
     return(x)
 }
 
@@ -155,7 +155,7 @@ APA_ <- function(x, coords, bins = 50, use.scores = 'balanced') {
     x@interactions <- gis_aggr
     x@scores <- S4Vectors::SimpleList(APA = gis_aggr$score) 
     x@features <- c(features(x), S4Vectors::SimpleList(APA = coords))
-    x@type <- 'aggr.'
+    x@matrixType <- 'aggr.'
     return(x)
 }
 
@@ -188,6 +188,6 @@ APA2 <- function(x, coords, bins = 50, use.scores = 'balanced') {
     )
     
     x@features <- c(features(x), S4Vectors::SimpleList(APA = coords))
-    x@type <- 'aggr.'
+    x@matrixType <- 'aggr.'
     return(x)
 }

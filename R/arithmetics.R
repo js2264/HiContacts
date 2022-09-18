@@ -33,8 +33,8 @@ detrend <- function(x, use.scores = 'balanced') {
         dplyr::left_join(expected, by = 'diag') %>% 
         dplyr::pull(average_interaction_per_diag)
     gis$score_over_expected <- log2(gis$score / gis$expected)
-    x@scores[['expected']] <- gis$expected
-    x@scores[['detrended']] <- gis$score_over_expected
+    scores(x, "expected") <- gis$expected
+    scores(x, "detrended") <- gis$score_over_expected
     return(x)
 }
 
@@ -112,10 +112,23 @@ serpentinify <- function(x, use.scores = 'balanced',
         anchor2 = an2, 
         regions = reg
     )
-    x@interactions <- gi
-    x@scores <- S4Vectors::SimpleList(smoothen = gis_smoothened$score)
-    x@type <- 'smoothed'
-    return(x)
+
+    res <- methods::new("contacts", 
+        focus = focus(x), 
+        metadata = metadata(x),
+        seqinfo = seqinfo(x), 
+        resolutions = resolutions(x), 
+        current_resolution = resolution(x), 
+        bins = bins(x), 
+        interactions = gi, 
+        scores = S4Vectors::SimpleList(smoothen = gis_smoothened$score),
+        features = features(x), 
+        pairsFile = pairsFile(x), 
+        matrixType = 'smoothed', 
+        coolPath = coolPath(x)
+    )
+
+    return(res)
 }
 
 #' autocorrelate
@@ -163,10 +176,23 @@ autocorrelate <- function(x, use.scores = 'balanced', ignore_ndiags = 3) {
         anchor2 = stringr::str_replace(mat2$y, '_', ':') %>% stringr::str_replace('_', '-') %>% as('GRanges'), 
         score = as.array(mat2$corr)
     )
-    x@interactions <- gis2
-    x@scores <- S4Vectors::SimpleList(autocorrelation = gis2$score)
-    x@type <- 'autocorr.'
-    return(x)
+
+    res <- methods::new("contacts", 
+        focus = focus(x), 
+        metadata = metadata(x),
+        seqinfo = seqinfo(x), 
+        resolutions = resolutions(x), 
+        current_resolution = resolution(x), 
+        bins = bins(x), 
+        interactions = gis2, 
+        scores = S4Vectors::SimpleList(autocorrelation = gis2$score),
+        features = features(x), 
+        pairsFile = pairsFile(x), 
+        matrixType = 'autocorr.', 
+        coolPath = coolPath(x)
+    )
+
+    return(res)
 }
 
 #' divide
@@ -286,8 +312,8 @@ divide <- function(x, by, use.scores = 'balanced') {
         ), 
         features = S4Vectors::SimpleList(), 
         pairsFile = NULL, 
-        type = 'ratio', 
-        path = paste0(basename(coolPath(x)), ' / ', basename(coolPath(y)))
+        matrixType = 'ratio', 
+        coolPath = paste0(basename(coolPath(x)), ' / ', basename(coolPath(by)))
     )
     return(res)
 
@@ -349,7 +375,7 @@ merge <- function(..., use.scores = 'balanced') {
         )
         sub <- seq_along(ints) %in% sub
         for (K in seq_along(asss)) {
-            vals <- contacts_list[[idx]]@scores[[K]]
+            vals <- scores(contacts_list[[idx]])[[K]]
             vals[is.na(vals)] <- 0
             asss[[K]][sub] <- asss[[K]][sub] + 
                 vals
@@ -378,8 +404,8 @@ merge <- function(..., use.scores = 'balanced') {
         scores = asss, 
         features = S4Vectors::SimpleList(), 
         pairsFile = NULL, 
-        type = 'merged', 
-        path = ""
+        matrixType = 'merged', 
+        coolPath = ""
     )
     return(res)
 
