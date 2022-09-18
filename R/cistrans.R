@@ -1,4 +1,4 @@
-#' cis_trans
+#' cisTransRatio
 #'
 #' @param x A `contacts` object over the full genome
 #' @return a tibble, listing for each chr. the % of cis/trans interactions
@@ -14,9 +14,9 @@
 #' @examples 
 #' library(HiContacts)
 #' data(full_contacts_yeast)
-#' cis_trans(full_contacts_yeast)
+#' cisTransRatio(full_contacts_yeast)
 
-cis_trans <- function(x) {
+cisTransRatio <- function(x) {
     if (!is.null(focus(x))) {
         stop('Please provide a contact matrix over the entire genome. Aborting now.')
     }

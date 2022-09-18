@@ -31,7 +31,7 @@ getAnchors <- function(file, resolution = NULL, balanced = "cooler") {
     return(anchors)
 }
 
-#' getCounts2
+#' getCountsFromPair
 #'
 #' Function to extract counts for a uncentered matrix (@ a pair of coordinates).
 #' 
@@ -45,7 +45,6 @@ getAnchors <- function(file, resolution = NULL, balanced = "cooler") {
 #' @return counts from (m)cool, stored as a tibble
 #'
 #' @import methods
-#' @import zeallot
 #' @import tidyr
 #' @importFrom GenomeInfoDb seqlengths
 #' @importFrom GenomicRanges seqnames
@@ -57,17 +56,16 @@ getAnchors <- function(file, resolution = NULL, balanced = "cooler") {
 #' @importFrom S4Vectors subjectHits
 #' @rdname parse
 
-getCounts2 <- function(file,
+getCountsFromPair <- function(file,
     pair,
     anchors,
     resolution = NULL
 ) {
     
-    `%<-%` <- zeallot::`%<-%`
     `%within%` <- IRanges::`%within%`
 
     # Make sure pair is sorted (first is first, second is after)
-    pair <- sort_pairs(pair)
+    pair <- sortPairs(pair)
 
     # Make sure pair is squared (each GRanges has same width)
     is_square(pair)
@@ -118,7 +116,6 @@ getCounts2 <- function(file,
 #' @return counts from (m)cool, stored as a tibble
 #'
 #' @import methods
-#' @import zeallot
 #' @import tidyr
 #' @importFrom GenomeInfoDb seqlengths
 #' @importFrom GenomicRanges seqnames
@@ -136,12 +133,14 @@ getCounts <- function(file,
     resolution = NULL
 ) {
     
-    `%<-%` <- zeallot::`%<-%`
     `%within%` <- IRanges::`%within%`
     check_cool_format(file, resolution)
 
     ## Process coordinates
-    c(coords_chr, coords_start, coords_end) %<-% splitCoords(coords)
+    .v <- splitCoords(coords)
+    coords_chr <- .v[[1]]
+    coords_start <- .v[[2]]
+    coords_end <- .v[[3]]
     
     # If only chr. names are provided, find their start and stop
     if (any(is.na(coords_start) & !is.na(coords_chr))) {
@@ -245,7 +244,6 @@ lsCoolFiles <- function(file, verbose = TRUE) {
 #' @param verbose Print resolutions in the console
 #' @return vector
 #'
-#' @import tools
 #' @import rhdf5
 #' @import tidyr
 #' @rdname parse
@@ -330,7 +328,6 @@ cool2seqinfo <- function(file, resolution = NULL) {
 #' @rdname parse
 
 cool2gi <- function(file, coords = NULL, resolution = NULL) {
-    `%<-%` <- zeallot::`%<-%`
     check_cool_format(file, resolution)
     
     # Mutate Pairs provided as characters to real Pairs
@@ -348,12 +345,18 @@ cool2gi <- function(file, coords = NULL, resolution = NULL) {
 
     # Get raw counts for bins from mcool
     if (!is_pair) {
-        c(coords_chr, coords_start, coords_end) %<-% splitCoords(coords)
+        .v <- splitCoords(coords)
+        coords_chr <- .v[[1]]
+        coords_start <- .v[[2]]
+        coords_end <- .v[[3]]
         cnts <- getCounts(file, coords = coords, anchors = anchors, resolution = resolution)
     }
-    else if (is_pair) {
-        c(coords_chr, coords_start, coords_end) %<-% splitCoords(unlist(S4Vectors::zipup(coords)))
-        cnts <- getCounts2(file, pair = coords, anchors = anchors, resolution = resolution)
+    else {
+        .v <- splitCoords(unlist(S4Vectors::zipup(coords)))
+        coords_chr <- .v[[1]]
+        coords_start <- .v[[2]]
+        coords_end <- .v[[3]]
+        cnts <- getCountsFromPair(file, pair = coords, anchors = anchors, resolution = resolution)
     }
 
     # Associate raw counts for bins to corresponding anchors

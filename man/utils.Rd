@@ -7,8 +7,8 @@
 \alias{getHicStats}
 \alias{fullContactInteractions}
 \alias{sdiag<-}
-\alias{sort_pairs}
-\alias{as_GInteractions}
+\alias{sortPairs}
+\alias{asGInteractions}
 \title{splitCoords}
 \usage{
 splitCoords(coords)
@@ -23,9 +23,9 @@ fullContactInteractions(chr, start, end, binning)
 
 sdiag(A, k = 0) <- value
 
-sort_pairs(pairs)
+sortPairs(pairs)
 
-as_GInteractions(df)
+asGInteractions(df)
 }
 \arguments{
 \item{coords}{coords}
@@ -82,7 +82,7 @@ fullContactInteractions
 
 \verb{sdiag<-}
 
-sort_pairs
+sortPairs
 
-as_GInteractions
+asGInteractions
 }

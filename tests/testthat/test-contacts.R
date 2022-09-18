@@ -47,7 +47,7 @@ test_that("arithmetics works", {
 test_that("cistrans works", {
     data(full_contacts_yeast)
     expect_s3_class({
-        cis_trans(full_contacts_yeast)
+        cisTransRatio(full_contacts_yeast)
     }, 'tbl')
 })
 

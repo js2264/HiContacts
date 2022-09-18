@@ -105,10 +105,10 @@ plotMatrix <- function(
     ## -- Choose color map 
     if (is.null(cmap)) {
         if (has_negative_scores) {
-            cmap <- bwr_colors()
+            cmap <- bwrColors()
         }
         else {
-            cmap <- afmhotr_colors()
+            cmap <- afmhotrColors()
         }
     }
     
@@ -209,7 +209,7 @@ plotMatrix <- function(
                 y = "Genome coordinates", 
                 caption = paste(
                     sep = '\n',
-                    paste0('file: ', path(x)), 
+                    paste0('file: ', coolPath(x)), 
                     paste0('res: ', resolution(x))
                 )
             )
@@ -253,7 +253,7 @@ plotMatrix <- function(
                 y = "Genome coordinates", 
                 caption = paste(
                     sep = '\n',
-                    paste0('file: ', path(x)), 
+                    paste0('file: ', coolPath(x)), 
                     paste0('res: ', resolution(x))
                 )
             )
@@ -284,7 +284,7 @@ plotMatrix <- function(
 #' @import ggplot2
 #' @importFrom scales unit_format
 
-ggMatrix <- function(mat, ticks = TRUE, cols = afmhotr_colors(), limits) {
+ggMatrix <- function(mat, ticks = TRUE, cols = afmhotrColors(), limits) {
     p <- ggplot2::ggplot(mat, ggplot2::aes(x, y, fill = score))
     p <- p + ggplot2::scale_fill_gradientn(
         colors = cols,
@@ -295,7 +295,7 @@ ggMatrix <- function(mat, ticks = TRUE, cols = afmhotr_colors(), limits) {
         ggplot2::scale_y_reverse(expand = c(0, 0), labels = scales::unit_format(unit = "M", scale = 1e-6)) +
         ggplot2::guides(fill = ggplot2::guide_colorbar(barheight = ggplot2::unit(5, "cm"), barwidth = 0.5, frame.colour = "black")) + 
         coord_fixed() +
-        ggtheme_HiContacts()
+        ggthemeHiContacts()
     p
 }
 
@@ -308,18 +308,18 @@ ggMatrix <- function(mat, ticks = TRUE, cols = afmhotr_colors(), limits) {
 #' @rdname palettes
 #' @export
 #' @examples
-#' bwr_colors()
+#' bwrColors()
 
-bwr_colors <- function() {
+bwrColors <- function() {
     c("#1659b1", "#4778c2", "#ffffff", "#b13636", "#6C150E")
 }
 
 #' @export
 #' @rdname palettes
 #' @examples
-#' afmhotr_colors()
+#' afmhotrColors()
 
-afmhotr_colors <- function() {
+afmhotrColors <- function() {
     c("#ffffff", "#f8f5c3", "#f4ee8d", "#f6be35", "#ee7d32",
         "#c44228", "#821d19", "#381211", "#050606"
     )
@@ -328,9 +328,9 @@ afmhotr_colors <- function() {
 #' @export
 #' @rdname palettes
 #' @examples
-#' bbr_colors()
+#' bbrColors()
 
-bbr_colors <- function() {
+bbrColors <- function() {
     c("#1659b1", "#4778c2", "#a9c3e7", "#ffffff", 
         "#e2adad", "#b13636", "#6C150E"
     )

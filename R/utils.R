@@ -227,7 +227,7 @@ fullContactInteractions <- function(chr, start, end, binning) {
     A
 } 
 
-#' sort_pairs
+#' sortPairs
 #'
 #' @param pairs pairs
 #' @return a Pairs object
@@ -237,7 +237,7 @@ fullContactInteractions <- function(chr, start, end, binning) {
 #' @importFrom GenomicRanges GRangesList
 #' @rdname utils
 
-sort_pairs <- function(pairs) {
+sortPairs <- function(pairs) {
     p <- S4Vectors::zipup(pairs)
     p_sorted <- GenomicRanges::GRangesList(lapply(p, function(gr) {
         sort(gr)
@@ -245,7 +245,7 @@ sort_pairs <- function(pairs) {
     S4Vectors::zipdown(p_sorted)
 }
 
-#' as_GInteractions
+#' asGInteractions
 #'
 #' @param df df
 #' @return a GenomicInteractions object
@@ -255,7 +255,7 @@ sort_pairs <- function(pairs) {
 #' @importFrom InteractionSet GInteractions
 #' @rdname utils
 
-as_GInteractions <- function(df) {
+asGInteractions <- function(df) {
     gi <- InteractionSet::GInteractions(
         anchor1 = GenomicRanges::GRanges(
             df$seqnames1, IRanges::IRanges(df$start1, df$end1)

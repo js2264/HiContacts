@@ -1,4 +1,4 @@
-#' ggtheme_HiContacts
+#' ggthemeHiContacts
 #'
 #' @param ticks ticks
 #' @return a custom ggplot2 theme
@@ -6,7 +6,7 @@
 #' 
 #' @import ggplot2
 
-ggtheme_HiContacts <- function(ticks = TRUE) {
+ggthemeHiContacts <- function(ticks = TRUE) {
     t <- ggplot2::theme_bw() +
         ggplot2::theme(
             text = ggplot2::element_text(size = 8),
@@ -22,7 +22,7 @@ ggtheme_HiContacts <- function(ticks = TRUE) {
 #'
 #' @import ggplot2
 
-ggtheme_HiContacts_tracks <- function() {
+ggthemeHiContactsTracks <- function() {
     ggplot2::theme(
         text = ggplot2::element_text(size = 8),
         panel.grid.minor = ggplot2::element_blank(),

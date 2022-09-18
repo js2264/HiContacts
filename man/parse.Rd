@@ -2,7 +2,7 @@
 % Please edit documentation in R/parse.R
 \name{getAnchors}
 \alias{getAnchors}
-\alias{getCounts2}
+\alias{getCountsFromPair}
 \alias{getCounts}
 \alias{fetchCool}
 \alias{lsCoolFiles}
@@ -17,7 +17,7 @@
 \usage{
 getAnchors(file, resolution = NULL, balanced = "cooler")
 
-getCounts2(file, pair, anchors, resolution = NULL)
+getCountsFromPair(file, pair, anchors, resolution = NULL)
 
 getCounts(file, coords, anchors, resolution = NULL)
 
