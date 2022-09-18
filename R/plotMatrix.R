@@ -56,7 +56,7 @@ plotMatrix <- function(
     `%>%` <- tidyr::`%>%`
     `%over%` <- IRanges::`%over%`
     
-    ## -- Extrac scores
+    ## -- Extract scores
     if (!is.null(use.scores)) {
         gis <- scores(x, use.scores)
     }
