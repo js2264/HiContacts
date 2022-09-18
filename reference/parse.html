@@ -18,7 +18,7 @@ This was adapted from dovetail-genomics/coolR"><!-- mathjax --><script src="http
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">HiContacts</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.99.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.99.3</span>
       </span>
     </div>
 
@@ -57,15 +57,15 @@ This was adapted from dovetail-genomics/coolR"><!-- mathjax --><script src="http
     <div id="ref-usage">
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">getAnchors</span><span class="op">(</span><span class="va">file</span>, resolution <span class="op">=</span> <span class="cn">NULL</span>, balanced <span class="op">=</span> <span class="st">"cooler"</span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu">getCounts2</span><span class="op">(</span><span class="va">file</span>, <span class="va">pair</span>, <span class="va">anchors</span>, resolution <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span>
+<span><span class="fu">getCountsFromPair</span><span class="op">(</span><span class="va">file</span>, <span class="va">pair</span>, <span class="va">anchors</span>, resolution <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu">getCounts</span><span class="op">(</span><span class="va">file</span>, <span class="va">coords</span>, <span class="va">anchors</span>, resolution <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu">fetchCool</span><span class="op">(</span><span class="va">file</span>, <span class="va">path</span>, resolution <span class="op">=</span> <span class="cn">NULL</span>, idx <span class="op">=</span> <span class="cn">NULL</span>, <span class="va">...</span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu">lsCoolFiles</span><span class="op">(</span><span class="va">file</span><span class="op">)</span></span>
+<span><span class="fu">lsCoolFiles</span><span class="op">(</span><span class="va">file</span>, verbose <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu">lsCoolResolutions</span><span class="op">(</span><span class="va">file</span>, verbose <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="fu">lsCoolResolutions</span><span class="op">(</span><span class="va">file</span>, verbose <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu">peekCool</span><span class="op">(</span><span class="va">file</span>, <span class="va">path</span>, resolution <span class="op">=</span> <span class="cn">NULL</span>, n <span class="op">=</span> <span class="fl">10</span><span class="op">)</span></span>
 <span></span>

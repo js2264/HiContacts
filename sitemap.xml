@@ -22,9 +22,6 @@
     <loc>/index.html</loc>
   </url>
   <url>
-    <loc>/reference/APA.html</loc>
-  </url>
-  <url>
     <loc>/reference/HiContacts.html</loc>
   </url>
   <url>
@@ -40,7 +37,7 @@
     <loc>/reference/checks.html</loc>
   </url>
   <url>
-    <loc>/reference/cis_trans.html</loc>
+    <loc>/reference/cisTransRatio.html</loc>
   </url>
   <url>
     <loc>/reference/contacts.html</loc>
@@ -77,9 +74,6 @@
   </url>
   <url>
     <loc>/reference/plotMatrix.html</loc>
-  </url>
-  <url>
-    <loc>/reference/scalograms.html</loc>
   </url>
   <url>
     <loc>/reference/serpentinify.html</loc>
