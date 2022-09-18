@@ -3,12 +3,13 @@
 \docType{class}
 \name{contacts-class}
 \alias{contacts-class}
-\alias{.contacts}
 \alias{contacts}
 \alias{length}
 \alias{length,contacts-method}
 \alias{[}
 \alias{[,contacts,ANY,ANY,ANY-method}
+\alias{matrixType}
+\alias{matrixType,contacts-method}
 \alias{coolPath}
 \alias{coolPath,contacts-method}
 \alias{seqinfo,contacts-method}
@@ -62,6 +63,8 @@ contacts(
 \S4method{length}{contacts}(x)
 
 \S4method{[}{contacts,ANY,ANY,ANY}(x, i)
+
+matrixType(x)
 
 coolPath(x)
 
@@ -134,6 +137,8 @@ length method for objects of class \code{contacts}.
 
 [ method for objects of class \code{contacts}.
 
+matrixType method for objects of class \code{contacts}.
+
 coolPath method for objects of class \code{contacts}.
 
 seqinfo method for objects of class \code{contacts}.
@@ -195,9 +200,9 @@ loops, borders, etc...)}
 
 \item{\code{pairsFile}}{path for the .pairs file associated with the .(m)cool file}
 
-\item{\code{type}}{Type of contacts matrix (sparse, full, aggr, ratio, ...)}
+\item{\code{matrixType}}{Type of contacts matrix (sparse, full, aggr, ratio, ...)}
 
-\item{\code{path}}{Path of (m)cool file}
+\item{\code{coolPath}}{Path of (m)cool file}
 }}
 
 \examples{
@@ -210,6 +215,9 @@ length(contacts_yeast)
 library(HiContacts)
 data(contacts_yeast)
 contacts_yeast[1:10]
+library(HiContacts)
+data(contacts_yeast)
+matrixType(contacts_yeast)
 library(HiContacts)
 data(contacts_yeast)
 coolPath(contacts_yeast)

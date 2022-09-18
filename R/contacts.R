@@ -25,15 +25,16 @@ setClassUnion("characterOrNULL", members = c("character", "NULL"))
 #' @slot features Genomic features associated with the dataset (e.g. 
 #'   loops, borders, etc...)
 #' @slot pairsFile path for the .pairs file associated with the .(m)cool file
-#' @slot type Type of contacts matrix (sparse, full, aggr, ratio, ...)
-#' @slot path Path of (m)cool file
+#' @slot matrixType Type of contacts matrix (sparse, full, aggr, ratio, ...)
+#' @slot coolPath Path of (m)cool file
 #' 
 #' @importClassesFrom S4Vectors Pairs
 #' @importClassesFrom S4Vectors Annotated
 #' @importFrom methods setClass
+#' @export
 #' @rdname contacts 
 
-.contacts <- methods::setClass("contacts", 
+methods::setClass("contacts", 
     contains = c("Annotated"), 
     slots = c(
         focus = "GRangesOrPairsOrcharacterOrNULL", 
@@ -46,8 +47,8 @@ setClassUnion("characterOrNULL", members = c("character", "NULL"))
         scores = "SimpleList", 
         features = "SimpleList",
         pairsFile = "characterOrNULL", 
-        type = "characterOrNULL",
-        path = "character"
+        matrixType = "characterOrNULL",
+        coolPath = "character"
     )
 )
 
@@ -90,7 +91,7 @@ contacts <- function(
     check_cool_format(cool_path, resolution)
 
     ## -- Read resolutions
-    resolutions <- lsCoolResolutions(cool_path, verbose = FALSE)
+    resolutions <- lsCoolResolutions(cool_path)
     if (is_mcool(cool_path)) {
         res <- resolutions[length(resolutions)]
         if (!is.null(resolution)) {
@@ -157,8 +158,8 @@ contacts <- function(
         ), 
         features = features, 
         pairsFile = pairsFile, 
-        type = "sparse", 
-        path = as.character(cool_path)
+        matrixType = "sparse", 
+        coolPath = as.character(cool_path)
     )
     methods::validObject(x)
     return(x)
@@ -231,8 +232,23 @@ setMethod("[", signature("contacts"), function(x, i) {
     return(x)
 })
 
-setGeneric("type", function(x) {standardGeneric("type")})
-setMethod("type", "contacts", function(x) x@type)
+#' matrixType method for objects of class \code{contacts}.
+#'
+#' @name matrixType
+#' @docType methods
+#' @rdname contacts
+#' @aliases matrixType,contacts-method
+#'
+#' @param x A \code{contacts} object.
+#'
+#' @export
+#' @examples 
+#' library(HiContacts)
+#' data(contacts_yeast)
+#' matrixType(contacts_yeast)
+
+setGeneric("matrixType", function(x) {standardGeneric("matrixType")})
+ setMethod("matrixType", "contacts", function(x) x@matrixType)
 
 #' coolPath method for objects of class \code{contacts}.
 #'
@@ -250,7 +266,7 @@ setMethod("type", "contacts", function(x) x@type)
 #' coolPath(contacts_yeast)
 
 setGeneric("coolPath", function(x) {standardGeneric("coolPath")})
-setMethod("coolPath", "contacts", function(x) {x@path})
+setMethod("coolPath", "contacts", function(x) {x@coolPath})
 
 #' seqinfo method for objects of class \code{contacts}.
 #'
@@ -568,7 +584,7 @@ setMethod("regions", "contacts", function(x) regions(scores(x, 1)))
 
 setMethod("summary", "contacts", function(object) {
     cat(glue::glue(
-        '{type(object)} `contacts` object with {format(length(interactions(object)), big.mark = ",")} interactions over {format(length(regions(object)), big.mark = ",")} regions'
+        '{matrixType(object)} `contacts` object with {format(length(interactions(object)), big.mark = ",")} interactions over {format(length(regions(object)), big.mark = ",")} regions'
     ), '\n')
 })
 
@@ -611,7 +627,7 @@ setMethod("show", signature("contacts"), function(object) {
     }
 
     cat(summary(object))
-    cat(glue::glue('path: {coolPath(object)}'), '\n')
+    cat(glue::glue('coolPath: {coolPath(object)}'), '\n')
     cat(glue::glue('focus: {focus_str}'), '\n')
     cat('------------\n')
 
@@ -635,7 +651,7 @@ setMethod("show", signature("contacts"), function(object) {
     cat(glue::glue('features: {paste(paste0(names(features(object)), "(", lengths(features(object)), ")"), collapse = " ")}'), '\n')
 
     ## Pairs
-    cat(glue::glue('pairs: {ifelse(is.null(object@pairsFile), "N/A", object@pairsFile)}'), '\n')
+    cat(glue::glue('pairs: {ifelse(is.null(pairsFile(object)), "N/A", pairsFile(object))}'), '\n')
 
 })
 

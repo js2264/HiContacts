@@ -24,7 +24,7 @@ getAnchors <- function(file, resolution = NULL, balanced = "cooler") {
     if ("weight" %in% names(bins) & {
         balanced == "cooler" | balanced == TRUE
     }) {
-        anchors$weight <- bins$weight
+        anchors$weight <- as.numeric(bins$weight)
     } else {
         weight <- 1
     }
@@ -214,7 +214,7 @@ fetchCool <- function(file, path, resolution = NULL, idx = NULL, ...) {
 #' @import GenomicInteractions
 #' @rdname parse
 
-lsCoolFiles <- function(file, verbose = TRUE) {
+lsCoolFiles <- function(file, verbose = FALSE) {
     `%>%` <- tidyr::`%>%`
     x <- rhdf5::h5ls(file) %>% 
         mutate(path = paste0(group, "/", name)) %>% 
@@ -249,7 +249,7 @@ lsCoolFiles <- function(file, verbose = TRUE) {
 #' @rdname parse
 #' @export
 
-lsCoolResolutions <- function(file, verbose = TRUE) {
+lsCoolResolutions <- function(file, verbose = FALSE) {
     `%>%` <- tidyr::`%>%`
     if (is_cool(file)) {
         x <- rhdf5::h5ls(file)

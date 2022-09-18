@@ -13,7 +13,8 @@ vignette: >
 ```{r, eval = TRUE, echo=FALSE, results="hide", warning=FALSE}
 knitr::opts_chunk$set(
     collapse = TRUE,
-    comment = "#>"
+    comment = "#>", 
+    crop = NULL
 )
 suppressPackageStartupMessages({
     library(ggplot2)
@@ -86,18 +87,20 @@ Slots for a `contacts` object can be accessed using the following `getters`:
 
 ```{r}
 slotNames(contacts)
+focus(contacts)
+metadata(contacts)
+seqinfo(contacts)
 resolutions(contacts)
-interactions(contacts)
+bins(contacts)
 regions(contacts)
+interactions(contacts)
 scores(contacts)
 scores(contacts, 1)
 scores(contacts, 'balanced')
-seqinfo(contacts)
-bins(contacts)
 features(contacts)
 pairsFile(contacts)
-metadata(contacts)
-type(contacts)
+matrixType(contacts)
+coolPath(contacts)
 ```
 
 ## Slot setters

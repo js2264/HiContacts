@@ -39,7 +39,7 @@ check_cool_format <- function(cool_path, resolution) {
         if (is.null(resolution)) {
             stop("File is in .mcool format, a resolution must be provided. Aborting now.")
         }
-        if (!resolution %in% lsCoolResolutions(cool_path, verbose = FALSE)) {
+        if (!resolution %in% lsCoolResolutions(cool_path)) {
             stop("Resolution not stored in cool file. Aborting now.")
         }
     }
@@ -54,14 +54,14 @@ check_cool_format <- function(cool_path, resolution) {
 #' @rdname checks
 
 is_mcool <- function(cool_path) {
-    x <- lsCoolFiles(cool_path, verbose = FALSE)
+    x <- lsCoolFiles(cool_path)
     all(grepl('^/resolutions', x))
 }
 
 #' @rdname checks
 
 is_cool <- function(cool_path) {
-    x <- lsCoolFiles(cool_path, verbose = FALSE)
+    x <- lsCoolFiles(cool_path)
     all(!grepl('^/resolutions', x))
 }
 
