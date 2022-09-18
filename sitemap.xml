@@ -28,10 +28,7 @@
     <loc>/reference/Ps.html</loc>
   </url>
   <url>
-    <loc>/reference/PsBreaks.html</loc>
-  </url>
-  <url>
-    <loc>/reference/autocorrelate.html</loc>
+    <loc>/reference/arithmetics.html</loc>
   </url>
   <url>
     <loc>/reference/checks.html</loc>
@@ -46,22 +43,10 @@
     <loc>/reference/datasets.html</loc>
   </url>
   <url>
-    <loc>/reference/detrend.html</loc>
-  </url>
-  <url>
-    <loc>/reference/divide.html</loc>
-  </url>
-  <url>
-    <loc>/reference/ggMatrix.html</loc>
-  </url>
-  <url>
     <loc>/reference/ggplot2-HiContacts.html</loc>
   </url>
   <url>
     <loc>/reference/index.html</loc>
-  </url>
-  <url>
-    <loc>/reference/merge.html</loc>
   </url>
   <url>
     <loc>/reference/palettes.html</loc>
@@ -70,13 +55,7 @@
     <loc>/reference/parse.html</loc>
   </url>
   <url>
-    <loc>/reference/plot4C.html</loc>
-  </url>
-  <url>
     <loc>/reference/plotMatrix.html</loc>
-  </url>
-  <url>
-    <loc>/reference/serpentinify.html</loc>
   </url>
   <url>
     <loc>/reference/utils.html</loc>

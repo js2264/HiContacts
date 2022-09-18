@@ -106,7 +106,7 @@ toy datasets stored by Bioconductor in the
 <span><span class="co">#&gt; loading from cache</span></span>
 <span><span class="va">cool_file</span></span>
 <span><span class="co">#&gt;                                                 EH7701 </span></span>
-<span><span class="co">#&gt; "/github/home/.cache/R/ExperimentHub/3733b95ecb1_7751"</span></span></code></pre></div>
+<span><span class="co">#&gt; "/github/home/.cache/R/ExperimentHub/37125ee631b_7751"</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="importing--mcool-files-as-contacts-objects">Importing <code>.(m)/cool</code> files as <code>contacts</code>
@@ -122,7 +122,7 @@ creates a <code>contacts</code> object.</p>
 <span><span class="co">#&gt; sparse `contacts` object with 1,653 interactions over 59 regions</span></span>
 <span><span class="va">contacts</span></span>
 <span><span class="co">#&gt; sparse `contacts` object with 1,653 interactions over 59 regions </span></span>
-<span><span class="co">#&gt; coolPath: /github/home/.cache/R/ExperimentHub/3733b95ecb1_7751 </span></span>
+<span><span class="co">#&gt; coolPath: /github/home/.cache/R/ExperimentHub/37125ee631b_7751 </span></span>
 <span><span class="co">#&gt; focus: I:20,000-80,000 </span></span>
 <span><span class="co">#&gt; ------------</span></span>
 <span><span class="co">#&gt; metadata(0):</span></span>
@@ -147,7 +147,7 @@ values are recovered.</p>
 <span><span class="va">contacts</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/contacts.html">contacts</a></span><span class="op">(</span><span class="va">mcool_file</span>, focus <span class="op">=</span> <span class="va">range</span>, res <span class="op">=</span> <span class="fl">1000</span><span class="op">)</span></span>
 <span><span class="va">contacts</span></span>
 <span><span class="co">#&gt; sparse `contacts` object with 73,257 interactions over 790 regions </span></span>
-<span><span class="co">#&gt; coolPath: /github/home/.cache/R/ExperimentHub/3735215f42c_7752 </span></span>
+<span><span class="co">#&gt; coolPath: /github/home/.cache/R/ExperimentHub/37131179cc7_7752 </span></span>
 <span><span class="co">#&gt; focus: II:0-800,000 </span></span>
 <span><span class="co">#&gt; ------------</span></span>
 <span><span class="co">#&gt; metadata(0):</span></span>
@@ -297,7 +297,7 @@ following <code>getters</code>:</p>
 <span><span class="fu"><a href="../reference/contacts.html">matrixType</a></span><span class="op">(</span><span class="va">contacts</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] "sparse"</span></span>
 <span><span class="fu"><a href="../reference/contacts.html">coolPath</a></span><span class="op">(</span><span class="va">contacts</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] "/github/home/.cache/R/ExperimentHub/3735215f42c_7752"</span></span></code></pre></div>
+<span><span class="co">#&gt; [1] "/github/home/.cache/R/ExperimentHub/37131179cc7_7752"</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="slot-setters">Slot setters<a class="anchor" aria-label="anchor" href="#slot-setters"></a>
@@ -315,17 +315,17 @@ following <code>getters</code>:</p>
 <span><span class="co">#&gt; GInteractions object with 41468 interactions and 1 metadata column:</span></span>
 <span><span class="co">#&gt;           seqnames1       ranges1     seqnames2       ranges2 |     score</span></span>
 <span><span class="co">#&gt;               &lt;Rle&gt;     &lt;IRanges&gt;         &lt;Rle&gt;     &lt;IRanges&gt; | &lt;numeric&gt;</span></span>
-<span><span class="co">#&gt;       [1]        II        1-1000 ---        II 105001-106000 |  0.861598</span></span>
-<span><span class="co">#&gt;       [2]        II        1-1000 ---        II 119001-120000 |  0.813467</span></span>
-<span><span class="co">#&gt;       [3]        II        1-1000 ---        II 126001-127000 |  0.559331</span></span>
-<span><span class="co">#&gt;       [4]        II        1-1000 ---        II 136001-137000 |  0.555964</span></span>
-<span><span class="co">#&gt;       [5]        II        1-1000 ---        II 255001-256000 |  0.112881</span></span>
+<span><span class="co">#&gt;       [1]        II        1-1000 ---        II 105001-106000 |  0.460058</span></span>
+<span><span class="co">#&gt;       [2]        II        1-1000 ---        II 119001-120000 |  0.126305</span></span>
+<span><span class="co">#&gt;       [3]        II        1-1000 ---        II 126001-127000 |  0.782614</span></span>
+<span><span class="co">#&gt;       [4]        II        1-1000 ---        II 136001-137000 |  0.655421</span></span>
+<span><span class="co">#&gt;       [5]        II        1-1000 ---        II 255001-256000 |  0.754710</span></span>
 <span><span class="co">#&gt;       ...       ...           ... ...       ...           ... .       ...</span></span>
-<span><span class="co">#&gt;   [41464]        II 498001-499000 ---        II 586001-587000 | 0.6597508</span></span>
-<span><span class="co">#&gt;   [41465]        II 498001-499000 ---        II 587001-588000 | 0.0898482</span></span>
-<span><span class="co">#&gt;   [41466]        II 498001-499000 ---        II 591001-592000 | 0.8013769</span></span>
-<span><span class="co">#&gt;   [41467]        II 498001-499000 ---        II 594001-595000 | 0.3729636</span></span>
-<span><span class="co">#&gt;   [41468]        II 499001-500000 ---        II 499001-500000 | 0.4669831</span></span>
+<span><span class="co">#&gt;   [41464]        II 498001-499000 ---        II 586001-587000 | 0.9239669</span></span>
+<span><span class="co">#&gt;   [41465]        II 498001-499000 ---        II 587001-588000 | 0.8521231</span></span>
+<span><span class="co">#&gt;   [41466]        II 498001-499000 ---        II 591001-592000 | 0.0377447</span></span>
+<span><span class="co">#&gt;   [41467]        II 498001-499000 ---        II 594001-595000 | 0.0824928</span></span>
+<span><span class="co">#&gt;   [41468]        II 499001-500000 ---        II 499001-500000 | 0.4653994</span></span>
 <span><span class="co">#&gt;   -------</span></span>
 <span><span class="co">#&gt;   regions: 588 ranges and 2 metadata columns</span></span>
 <span><span class="co">#&gt;   seqinfo: 16 sequences from an unspecified genome</span></span></code></pre></div>
@@ -450,7 +450,7 @@ first scores available.</p>
 <span><span class="co">#&gt; see ?HiContactsData and browseVignettes('HiContactsData') for documentation</span></span>
 <span><span class="co">#&gt; loading from cache</span></span>
 <span><span class="va">contacts</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/contacts.html">contacts</a></span><span class="op">(</span><span class="va">mcool_file</span>, focus <span class="op">=</span> <span class="st">'chr2'</span>, res <span class="op">=</span> <span class="fl">160000</span><span class="op">)</span></span>
-<span><span class="va">autocorrelated</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/autocorrelate.html">autocorrelate</a></span><span class="op">(</span><span class="va">contacts</span>, ignore_ndiags <span class="op">=</span> <span class="fl">20</span><span class="op">)</span></span>
+<span><span class="va">autocorrelated</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/arithmetics.html">autocorrelate</a></span><span class="op">(</span><span class="va">contacts</span>, ignore_ndiags <span class="op">=</span> <span class="fl">20</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Warning: The `x` argument of `as_tibble.matrix()` must have unique column names if `.name_repair` is omitted as of tibble 2.0.0.</span></span>
 <span><span class="co">#&gt; Using compatibility `.name_repair`.</span></span>
 <span><span class="fu"><a href="../reference/contacts.html">scores</a></span><span class="op">(</span><span class="va">autocorrelated</span><span class="op">)</span></span>
@@ -469,7 +469,7 @@ first scores available.</p>
 <span><span class="co">#&gt; see ?HiContactsData and browseVignettes('HiContactsData') for documentation</span></span>
 <span><span class="co">#&gt; loading from cache</span></span>
 <span><span class="va">contacts</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/contacts.html">contacts</a></span><span class="op">(</span><span class="va">mcool_file</span>, focus <span class="op">=</span> <span class="st">'chr18:20000000-35000000'</span>, res <span class="op">=</span> <span class="fl">40000</span><span class="op">)</span></span>
-<span><span class="va">detrended_contacts</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/detrend.html">detrend</a></span><span class="op">(</span><span class="va">contacts</span><span class="op">)</span></span>
+<span><span class="va">detrended_contacts</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/arithmetics.html">detrend</a></span><span class="op">(</span><span class="va">contacts</span><span class="op">)</span></span>
 <span><span class="fu">cowplot</span><span class="fu">::</span><span class="fu"><a href="https://wilkelab.org/cowplot/reference/plot_grid.html" class="external-link">plot_grid</a></span><span class="op">(</span></span>
 <span>    <span class="fu"><a href="../reference/plotMatrix.html">plotMatrix</a></span><span class="op">(</span><span class="va">detrended_contacts</span>, use.scores <span class="op">=</span> <span class="st">'expected'</span>, dpi <span class="op">=</span> <span class="fl">120</span><span class="op">)</span>,</span>
 <span>    <span class="fu"><a href="../reference/plotMatrix.html">plotMatrix</a></span><span class="op">(</span><span class="va">detrended_contacts</span>, use.scores <span class="op">=</span> <span class="st">'detrended'</span>, scale <span class="op">=</span> <span class="st">'linear'</span>, limits <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">3</span>, <span class="fl">3</span><span class="op">)</span>, dpi <span class="op">=</span> <span class="fl">120</span><span class="op">)</span></span>
@@ -498,7 +498,7 @@ first scores available.</p>
 <span>    <span class="fu"><a href="https://rdrr.io/r/stats/start.html" class="external-link">start</a></span><span class="op">(</span><span class="fu"><a href="../reference/contacts.html">anchors</a></span><span class="op">(</span><span class="va">contacts_2</span><span class="op">)</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">)</span> <span class="op">&gt;</span> <span class="fl">500000</span> <span class="op">&amp;</span> <span class="fu"><a href="https://rdrr.io/r/stats/start.html" class="external-link">end</a></span><span class="op">(</span><span class="fu"><a href="../reference/contacts.html">anchors</a></span><span class="op">(</span><span class="va">contacts_2</span><span class="op">)</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">)</span> <span class="op">&gt;</span> <span class="fl">500000</span> <span class="op">&amp;</span> </span>
 <span>    <span class="fu"><a href="https://rdrr.io/r/stats/start.html" class="external-link">start</a></span><span class="op">(</span><span class="fu"><a href="../reference/contacts.html">anchors</a></span><span class="op">(</span><span class="va">contacts_2</span><span class="op">)</span><span class="op">[[</span><span class="fl">2</span><span class="op">]</span><span class="op">]</span><span class="op">)</span> <span class="op">&gt;</span> <span class="fl">500000</span> <span class="op">&amp;</span> <span class="fu"><a href="https://rdrr.io/r/stats/start.html" class="external-link">end</a></span><span class="op">(</span><span class="fu"><a href="../reference/contacts.html">anchors</a></span><span class="op">(</span><span class="va">contacts_2</span><span class="op">)</span><span class="op">[[</span><span class="fl">2</span><span class="op">]</span><span class="op">]</span><span class="op">)</span> <span class="op">&gt;</span> <span class="fl">500000</span></span>
 <span><span class="op">]</span></span>
-<span><span class="va">merged_contacts</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/merge.html">merge</a></span><span class="op">(</span><span class="va">contacts_1</span>, <span class="va">contacts_2</span><span class="op">)</span> </span>
+<span><span class="va">merged_contacts</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/arithmetics.html">merge</a></span><span class="op">(</span><span class="va">contacts_1</span>, <span class="va">contacts_2</span><span class="op">)</span> </span>
 <span><span class="va">merged_contacts</span></span>
 <span><span class="co">#&gt; merged `contacts` object with 18,861 interactions over 404 regions </span></span>
 <span><span class="co">#&gt; coolPath:  </span></span>
@@ -535,10 +535,10 @@ first scores available.</p>
 <span><span class="co">#&gt; loading from cache</span></span>
 <span><span class="va">contacts_1</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/contacts.html">contacts</a></span><span class="op">(</span><span class="va">mcool_file_1</span>, focus <span class="op">=</span> <span class="st">'II'</span>, res <span class="op">=</span> <span class="fl">2000</span><span class="op">)</span></span>
 <span><span class="va">contacts_2</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/contacts.html">contacts</a></span><span class="op">(</span><span class="va">mcool_file_2</span>, focus <span class="op">=</span> <span class="st">'II'</span>, res <span class="op">=</span> <span class="fl">2000</span><span class="op">)</span></span>
-<span><span class="va">div_contacts</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/divide.html">divide</a></span><span class="op">(</span><span class="va">contacts_1</span>, by <span class="op">=</span> <span class="va">contacts_2</span><span class="op">)</span> </span>
+<span><span class="va">div_contacts</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/arithmetics.html">divide</a></span><span class="op">(</span><span class="va">contacts_1</span>, by <span class="op">=</span> <span class="va">contacts_2</span><span class="op">)</span> </span>
 <span><span class="va">div_contacts</span></span>
 <span><span class="co">#&gt; ratio `contacts` object with 66,607 interactions over 404 regions </span></span>
-<span><span class="co">#&gt; coolPath: 37375ae999c_7754 / 3735215f42c_7752 </span></span>
+<span><span class="co">#&gt; coolPath: 3718f2b4d2_7754 / 37131179cc7_7752 </span></span>
 <span><span class="co">#&gt; focus: II </span></span>
 <span><span class="co">#&gt; ------------</span></span>
 <span><span class="co">#&gt; metadata(0):</span></span>
@@ -569,7 +569,7 @@ first scores available.</p>
 <span><span class="co">#&gt; loading from cache</span></span>
 <span><span class="va">contacts</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/contacts.html">contacts</a></span><span class="op">(</span><span class="va">mcool_file</span>, focus <span class="op">=</span> <span class="st">'chr18:20000000-35000000'</span>, res <span class="op">=</span> <span class="fl">40000</span><span class="op">)</span></span>
 <span><span class="va">v4C</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/virtual4C.html">virtual4C</a></span><span class="op">(</span><span class="va">contacts</span>, viewpoint <span class="op">=</span> <span class="fu">GRanges</span><span class="op">(</span><span class="st">'chr18:31000000-31050000'</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="fu"><a href="../reference/plot4C.html">plot4C</a></span><span class="op">(</span><span class="va">v4C</span>, <span class="fu">aes</span><span class="op">(</span>x <span class="op">=</span> <span class="va">center</span>, y <span class="op">=</span> <span class="va">score</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu"><a href="../reference/virtual4C.html">plot4C</a></span><span class="op">(</span><span class="va">v4C</span>, <span class="fu">aes</span><span class="op">(</span>x <span class="op">=</span> <span class="va">center</span>, y <span class="op">=</span> <span class="va">score</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <p><img src="HiContacts_files/figure-html/unnamed-chunk-18-1.png" width="700"></p>
 </div>
 <div class="section level3">
@@ -626,7 +626,7 @@ first scores available.</p>
 <span><span class="co">#&gt; see ?HiContactsData and browseVignettes('HiContactsData') for documentation</span></span>
 <span><span class="co">#&gt; loading from cache</span></span>
 <span><span class="va">ps</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/Ps.html">getPs</a></span><span class="op">(</span><span class="va">contacts</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Importing pairs file /github/home/.cache/R/ExperimentHub/37343259334_7753 in memory. This may take a while...</span></span>
+<span><span class="co">#&gt; Importing pairs file /github/home/.cache/R/ExperimentHub/3711194a50e_7753 in memory. This may take a while...</span></span>
 <span><span class="fu"><a href="../reference/Ps.html">plotPs</a></span><span class="op">(</span><span class="va">ps</span>, <span class="fu">aes</span><span class="op">(</span>x <span class="op">=</span> <span class="va">binned_distance</span>, y <span class="op">=</span> <span class="va">norm_p</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Warning: Removed 67 row(s) containing missing values (geom_path).</span></span></code></pre></div>
 <p><img src="HiContacts_files/figure-html/unnamed-chunk-20-2.png" width="700"></p>
@@ -660,9 +660,9 @@ first scores available.</p>
 <span><span class="co">#&gt; see ?HiContactsData and browseVignettes('HiContactsData') for documentation</span></span>
 <span><span class="co">#&gt; loading from cache</span></span>
 <span><span class="va">ps_1</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/Ps.html">getPs</a></span><span class="op">(</span><span class="va">c1</span><span class="op">)</span> <span class="op">%&gt;%</span> <span class="fu">mutate</span><span class="op">(</span>sample <span class="op">=</span> <span class="st">'WT'</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Importing pairs file /github/home/.cache/R/ExperimentHub/37343259334_7753 in memory. This may take a while...</span></span>
+<span><span class="co">#&gt; Importing pairs file /github/home/.cache/R/ExperimentHub/3711194a50e_7753 in memory. This may take a while...</span></span>
 <span><span class="va">ps_2</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/Ps.html">getPs</a></span><span class="op">(</span><span class="va">c2</span><span class="op">)</span> <span class="op">%&gt;%</span> <span class="fu">mutate</span><span class="op">(</span>sample <span class="op">=</span> <span class="st">'Eco1-AID'</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Importing pairs file /github/home/.cache/R/ExperimentHub/373c6f1bc4_7755 in memory. This may take a while...</span></span>
+<span><span class="co">#&gt; Importing pairs file /github/home/.cache/R/ExperimentHub/371567c727d_7755 in memory. This may take a while...</span></span>
 <span><span class="va">ps</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">rbind</a></span><span class="op">(</span><span class="va">ps_1</span>, <span class="va">ps_2</span><span class="op">)</span></span>
 <span><span class="fu"><a href="../reference/Ps.html">plotPs</a></span><span class="op">(</span><span class="va">ps</span>, <span class="fu">aes</span><span class="op">(</span>x <span class="op">=</span> <span class="va">binned_distance</span>, y <span class="op">=</span> <span class="va">norm_p</span>, group <span class="op">=</span> <span class="va">sample</span>, color <span class="op">=</span> <span class="va">sample</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Warning: Removed 134 row(s) containing missing values (geom_path).</span></span></code></pre></div>
