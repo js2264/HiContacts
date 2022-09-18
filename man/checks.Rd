@@ -57,3 +57,8 @@ Logical
 \description{
 Checks functions
 }
+\examples{
+library(HiContacts)
+data(contacts_yeast)
+is_symmetrical(contacts_yeast)
+}

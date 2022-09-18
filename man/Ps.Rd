@@ -47,7 +47,6 @@ plotPsSlope
 library(HiContacts)
 data(contacts_yeast)
 getPs(contacts_yeast)
-
 ## Single P(s)
 
 library(HiContacts)

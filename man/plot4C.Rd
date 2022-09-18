@@ -7,7 +7,7 @@
 plot4C(x, mapping)
 }
 \arguments{
-\item{x}{Output of virtual4C}
+\item{x}{GRanges, generally the output of \code{virtual4C()}}
 
 \item{mapping}{aes to pass on to ggplot2}
 }

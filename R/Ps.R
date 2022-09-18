@@ -146,7 +146,6 @@ getPs <- function(
 #' @rdname Ps
 #' @export
 #' @examples 
-#' 
 #' ## Single P(s)
 #' 
 #' library(HiContacts)

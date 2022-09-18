@@ -99,7 +99,6 @@ char2pair <- function(char) {
 #'
 #' @import stringr
 #' @rdname utils
-#' @export
 
 getHicStats <- function(hicstuff_log) {
     stats <- list()

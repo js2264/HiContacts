@@ -202,8 +202,6 @@ setValidity("contacts",
 #'
 #' @export
 #' @examples 
-#' library(HiContacts)
-#' data(contacts_yeast)
 #' length(contacts_yeast)
 
 setMethod("length", "contacts", function(x) length(interactions(x)))
@@ -220,8 +218,6 @@ setMethod("length", "contacts", function(x) length(interactions(x)))
 #'
 #' @export
 #' @examples 
-#' library(HiContacts)
-#' data(contacts_yeast)
 #' contacts_yeast[1:10]
 
 setMethod("[", signature("contacts"), function(x, i) {
@@ -243,12 +239,10 @@ setMethod("[", signature("contacts"), function(x, i) {
 #'
 #' @export
 #' @examples 
-#' library(HiContacts)
-#' data(contacts_yeast)
 #' matrixType(contacts_yeast)
 
 setGeneric("matrixType", function(x) {standardGeneric("matrixType")})
- setMethod("matrixType", "contacts", function(x) x@matrixType)
+setMethod("matrixType", "contacts", function(x) x@matrixType)
 
 #' coolPath method for objects of class \code{contacts}.
 #'
@@ -261,8 +255,6 @@ setGeneric("matrixType", function(x) {standardGeneric("matrixType")})
 #'
 #' @export
 #' @examples 
-#' library(HiContacts)
-#' data(contacts_yeast)
 #' coolPath(contacts_yeast)
 
 setGeneric("coolPath", function(x) {standardGeneric("coolPath")})
@@ -278,8 +270,6 @@ setMethod("coolPath", "contacts", function(x) {x@coolPath})
 #'
 #' @export
 #' @examples 
-#' library(HiContacts)
-#' data(contacts_yeast)
 #' seqinfo(contacts_yeast)
 
 setMethod("seqinfo", "contacts", function(x) x@seqinfo)
@@ -295,8 +285,6 @@ setMethod("seqinfo", "contacts", function(x) x@seqinfo)
 #'
 #' @export
 #' @examples 
-#' library(HiContacts)
-#' data(contacts_yeast)
 #' resolutions(contacts_yeast)
 
 setGeneric("resolutions", function(x) {standardGeneric("resolutions")})
@@ -313,8 +301,6 @@ setMethod("resolutions", "contacts", function(x) x@resolutions)
 #'
 #' @export
 #' @examples 
-#' library(HiContacts)
-#' data(contacts_yeast)
 #' resolution(contacts_yeast)
 
 setMethod("resolution", "contacts", function(x) x@current_resolution)
@@ -330,8 +316,6 @@ setMethod("resolution", "contacts", function(x) x@current_resolution)
 #'
 #' @export
 #' @examples 
-#' library(HiContacts)
-#' data(contacts_yeast)
 #' bins(contacts_yeast)
 
 setGeneric("bins", function(x) {standardGeneric("bins")})
@@ -348,8 +332,6 @@ setMethod("bins", "contacts", function(x) x@bins)
 #'
 #' @export
 #' @examples 
-#' library(HiContacts)
-#' data(contacts_yeast)
 #' focus(contacts_yeast)
 
 setGeneric("focus", function(x) {standardGeneric("focus")})
@@ -366,8 +348,6 @@ setMethod("focus", "contacts", function(x) x@focus)
 #'
 #' @export
 #' @examples 
-#' library(HiContacts)
-#' data(contacts_yeast)
 #' interactions(contacts_yeast)
 
 setMethod("interactions", "contacts", function(x) x@interactions)
@@ -385,9 +365,9 @@ setMethod("interactions", "contacts", function(x) x@interactions)
 #'
 #' @export
 #' @examples 
-#' library(HiContacts)
-#' data(contacts_yeast)
 #' scores(contacts_yeast)
+#' scores(contacts_yeast, 1)
+#' scores(contacts_yeast, 'balanced')
 
 setGeneric("scores", function(x, name) {standardGeneric("scores")})
 setMethod("scores", signature(x = "contacts", name = "missing"), function(x) x@scores)
@@ -421,8 +401,6 @@ setMethod("scores", signature(x = "contacts", name = "numeric"), function(x, nam
 #'
 #' @export
 #' @examples 
-#' library(HiContacts)
-#' data(contacts_yeast)
 #' scores(contacts_yeast, 'test') <- runif(length(contacts_yeast))
 #' scores(contacts_yeast, 'test')
 
@@ -445,9 +423,10 @@ setMethod("scores<-", c(x = "contacts", name = "character", value = "numeric"), 
 #'
 #' @export
 #' @examples 
-#' library(HiContacts)
-#' data(contacts_yeast)
-#' features(contacts_yeast)
+#' data(full_contacts_yeast)
+#' features(full_contacts_yeast)
+#' features(full_contacts_yeast, 1)
+#' features(full_contacts_yeast, 'centromeres')
 
 setGeneric("features", function(x, name) {standardGeneric("features")})
 setMethod("features", signature(x = "contacts", name = "missing"), function(x) {
@@ -479,8 +458,6 @@ setMethod("features", signature(x = "contacts", name = "numeric"), function(x, n
 #'
 #' @export
 #' @examples 
-#' library(HiContacts)
-#' data(contacts_yeast)
 #' data(centros_yeast)
 #' features(contacts_yeast, 'centromeres') <- centros_yeast
 #' features(contacts_yeast, 'centromeres')
@@ -502,8 +479,6 @@ setMethod("features<-", signature(x = "contacts", name = "character", value = "G
 #'
 #' @export
 #' @examples 
-#' library(HiContacts)
-#' data(full_contacts_yeast)
 #' pairsFile(full_contacts_yeast)
 
 setGeneric("pairsFile", function(x, name) {standardGeneric("pairsFile")})
@@ -544,9 +519,7 @@ setMethod("pairsFile<-", signature(x = "contacts", value = "character"), functio
 #'
 #' @export
 #' @examples 
-#' library(HiContacts)
-#' data(full_contacts_yeast)
-#' anchors(full_contacts_yeast)
+#' anchors(contacts_yeast)
 
 setMethod("anchors", "contacts", function(x) anchors(scores(x, 1)))
 
@@ -561,9 +534,7 @@ setMethod("anchors", "contacts", function(x) anchors(scores(x, 1)))
 #'
 #' @export
 #' @examples 
-#' library(HiContacts)
-#' data(full_contacts_yeast)
-#' regions(full_contacts_yeast)
+#' regions(contacts_yeast)
 
 setMethod("regions", "contacts", function(x) regions(scores(x, 1)))
 
@@ -578,8 +549,6 @@ setMethod("regions", "contacts", function(x) regions(scores(x, 1)))
 #'
 #' @export
 #' @examples 
-#' library(HiContacts)
-#' data(contacts_yeast)
 #' summary(contacts_yeast)
 
 setMethod("summary", "contacts", function(object) {
@@ -600,9 +569,7 @@ setMethod("summary", "contacts", function(object) {
 #'
 #' @export
 #' @examples 
-#' library(HiContacts)
-#' data(contacts_yeast)
-#' contacts_yeast
+#' show(contacts_yeast)
 
 setMethod("show", signature("contacts"), function(object) {
 

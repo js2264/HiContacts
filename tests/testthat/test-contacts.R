@@ -12,9 +12,9 @@ test_that("contacts works", {
 
 test_that("v4C works", {
     data(contacts_yeast)
-    expect_s3_class(
+    expect_s4_class(
         virtual4C(contacts_yeast, GRanges('II:490000-510000')),
-        'tbl'
+        'GRanges'
     )
     expect_s3_class({
         data(contacts_yeast)

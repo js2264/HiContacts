@@ -10,6 +10,8 @@
 #' @import tibble
 #' @importFrom scales unit_format
 #' @importFrom S4Vectors queryHits
+#' @importFrom IRanges IRanges
+#' @importFrom GenomicRanges GRanges
 #' @importFrom GenomicRanges start
 #' @importFrom GenomicRanges end
 #' @importFrom GenomicRanges findOverlaps
@@ -27,18 +29,23 @@ virtual4C <- function(x, viewpoint, use.scores = 'balanced') {
         GenomicRanges::findOverlaps(regions, viewpoint)
     )
     score <- rowSums(cm[, regions_in_viewpoint], na.rm = TRUE)
-    tibble::tibble(
+    GenomicRanges::GRanges(
+        seqnames = as.vector(GenomicRanges::seqnames(regions)),
+        IRanges::IRanges(
+            GenomicRanges::start(regions), 
+            GenomicRanges::end(regions)
+        ), 
+        score = score,
         viewpoint = as.character(viewpoint), 
-        chr = as.vector(seqnames(regions)), 
         center = GenomicRanges::start(regions) + 
             (GenomicRanges::end(regions) - GenomicRanges::start(regions))/2, 
-        score = score
+        in_viewpoint = regions_in_viewpoint
     )
 }
 
 #' plot4C
 #'
-#' @param x Output of virtual4C
+#' @param x GRanges, generally the output of `virtual4C()`
 #' @param mapping aes to pass on to ggplot2
 #' @return ggplot
 #'
@@ -53,6 +60,7 @@ virtual4C <- function(x, viewpoint, use.scores = 'balanced') {
 #' plot4C(v4C, ggplot2::aes(x = center, y = score))
 
 plot4C <- function(x, mapping) {
+    x <- tibble::as_tibble(x)
     p <- ggplot2::ggplot(x, mapping) + 
         ggplot2::geom_line() + 
         ggplot2::theme_minimal() + 
