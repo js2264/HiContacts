@@ -4,13 +4,7 @@
 \alias{APA}
 \title{APA}
 \usage{
-APA(
-  x,
-  coords,
-  bins = 50,
-  use.scores = "balanced",
-  BPPARAM = BiocParallel::bpparam()
-)
+APA(x, coords, bins = 50, use.scores = "balanced")
 }
 \arguments{
 \item{x}{x}
@@ -20,8 +14,6 @@ APA(
 \item{bins}{bins}
 
 \item{use.scores}{use.scores}
-
-\item{BPPARAM}{BPPARAM}
 }
 \value{
 an aggregated contact matrix

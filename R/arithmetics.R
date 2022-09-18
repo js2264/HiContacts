@@ -74,11 +74,16 @@ serpentinify <- function(x, use.scores = 'balanced',
     ## Run Serpentine
     B <- cm2matrix(gi2cm(gis), replace_NA = 0)
     A <- matrix(data = 1, nrow = nrow(B), ncol = ncol(B))
-    c(sm1, sm2, sK) %<-% sp$serpentin_binning(A, B, verbose = FALSE, iterations = serpentine_niter, parallel = serpentine_ncores)
+    .v <- sp$serpentin_binning(A, B, verbose = FALSE, iterations = serpentine_niter, parallel = serpentine_ncores)
+    sm1 <- .v[[1]]
+    sm2 <- .v[[2]]
+    sK <- .v[[3]]
     
     ## Re-center smoothened matrix 
     if (use_serpentine_trend) {
-        c(trend, threshold) %<-% sp$MDbefore(B, A, show = FALSE)
+        .v <- sp$MDbefore(B, A, show = FALSE)
+        trend <- .v[[1]]
+        threshold <- .v[[2]]
         if (is.na(trend)) trend <- mean(sK, na.rm = TRUE)
         sK <- sK - trend
     }
@@ -123,8 +128,9 @@ serpentinify <- function(x, use.scores = 'balanced',
 #' @import InteractionSet
 #' @import stringr
 #' @importFrom tidyr pivot_longer
-#' @importFrom corrr correlate
+#' @importFrom tibble as_tibble
 #' @importFrom dplyr rename
+#' @importFrom dplyr mutate
 #' @importFrom S4Vectors SimpleList
 #' @export
 #' @examples 
@@ -132,7 +138,7 @@ serpentinify <- function(x, use.scores = 'balanced',
 #' data(contacts_yeast)
 #' contacts_yeast <- autocorrelate(contacts_yeast)
 #' scores(contacts_yeast)
-#' plotMatrix(contacts_yeast, scale = 'linear', limits = c(-1, 1), cmap = bwr_colors())
+#' plotMatrix(contacts_yeast, scale = 'linear', limits = c(-1, 1), cmap = bwrColors())
 
 autocorrelate <- function(x, use.scores = 'balanced', ignore_ndiags = 3) {
     gis <- scores(x, use.scores)
@@ -142,7 +148,11 @@ autocorrelate <- function(x, use.scores = 'balanced', ignore_ndiags = 3) {
     for (K in seq(-ignore_ndiags, ignore_ndiags, by = 1)) {
         sdiag(mat, K) <- NA
     }
-    co <- corrr::correlate(log10(mat), diagonal = 0, method = "pearson", quiet = TRUE)
+    # co <- corrr::correlate(log10(mat), diagonal = 0, method = "pearson", quiet = TRUE)
+    co <- stats::cor(log10(mat), use = 'pairwise.complete.obs', method = "pearson")
+    co <- tibble::as_tibble(co) %>% 
+        dplyr::mutate(term = paste0('V', 1:nrow(.))) %>% 
+        dplyr::relocate(term)
     colnames(co) <- c('term', names(reg))
     co$term <- names(reg)
     mat2 <- co %>%
@@ -167,9 +177,7 @@ autocorrelate <- function(x, use.scores = 'balanced', ignore_ndiags = 3) {
 #' @return a `contacts` object with a single `ratio` scores
 #'
 #' @import tidyr
-#' @import zeallot
 #' @import reticulate
-#' @import plyranges
 #' @importFrom tibble as_tibble
 #' @importFrom dplyr mutate
 #' @importFrom tidyr pivot_longer
@@ -185,11 +193,10 @@ autocorrelate <- function(x, use.scores = 'balanced', ignore_ndiags = 3) {
 #' data(contacts_yeast_eco1)
 #' div_contacts <- divide(contacts_yeast_eco1, by = contacts_yeast)
 #' div_contacts
-#' plotMatrix(div_contacts, scale = 'log2', limits = c(-2, 2), cmap = bwr_colors())
+#' plotMatrix(div_contacts, scale = 'log2', limits = c(-2, 2), cmap = bwrColors())
 
 divide <- function(x, by, use.scores = 'balanced') {
     `%>%` <- tidyr::`%>%`
-    `%<-%` <- zeallot::`%<-%`
     
     ## -- Check that all objects are comparable (bins, regions, resolution, seqinfo)
     is_comparable(x, by)
@@ -211,13 +218,18 @@ divide <- function(x, by, use.scores = 'balanced') {
     binsize <- resolution(x)
 
     serpentine <- FALSE
-    # serpentine <- TRUE
+
     ## Compute ratio
     if (serpentine) {
         ## -- Run serpentine
         sp <- reticulate::import('serpentine')
-        c(trend, threshold) %<-% sp$MDbefore(m1, m2, show = FALSE)
-        c(sm1, sm2, sK) %<-% sp$serpentin_binning(m1, m2, threshold = threshold, minthreshold = threshold/5, verbose = FALSE, iterations = serpentine_niter, parallel = serpentine_ncores)
+        .v <- sp$serpentin_binning(m1, m2, threshold = threshold, minthreshold = threshold/5, verbose = FALSE, iterations = serpentine_niter, parallel = serpentine_ncores)
+        sm1 <- .v[[1]]
+        sm2 <- .v[[2]]
+        sK <- .v[[3]]
+        .v <- sp$MDbefore(m1, m2, show = FALSE)
+        trend <- .v[[1]]
+        threshold <- .v[[2]]
         sK <- sK - trend
     }
     else {
@@ -261,14 +273,9 @@ divide <- function(x, by, use.scores = 'balanced') {
     gi <- gi[!is.na(mat$score) & is.finite(mat$score)]
 
     ## -- Create 'in silico' contacts
-    path <- paste0(
-        basename(metadata(x)$path), ' / ', basename(metadata(by)$path)
-    )
     res <- methods::new("contacts", 
         focus = focus(x), 
-        metadata = list(
-            path = path, x_path = metadata(x)$path, by_path = metadata(by)$path
-        ), 
+        metadata = list(),
         seqinfo = seqinfo(x), 
         resolutions = binsize, 
         current_resolution = binsize, 
@@ -279,7 +286,8 @@ divide <- function(x, by, use.scores = 'balanced') {
         ), 
         features = S4Vectors::SimpleList(), 
         pairsFile = NULL, 
-        type = 'ratio'
+        type = 'ratio', 
+        path = paste0(basename(coolPath(x)), ' / ', basename(coolPath(y)))
     )
     return(res)
 
@@ -293,9 +301,7 @@ divide <- function(x, by, use.scores = 'balanced') {
 #'   corresponding scores from input `contacts`.
 #'
 #' @import tidyr
-#' @import zeallot
 #' @import reticulate
-#' @import plyranges
 #' @importFrom tibble as_tibble
 #' @importFrom dplyr mutate
 #' @importFrom tidyr pivot_longer
@@ -314,7 +320,6 @@ divide <- function(x, by, use.scores = 'balanced') {
 
 merge <- function(..., use.scores = 'balanced') {
     `%>%` <- tidyr::`%>%`
-    `%<-%` <- zeallot::`%<-%`
     contacts_list <- list(...)
     
     ## -- Check that all objects are comparable (bins, regions, resolution, seqinfo)
@@ -353,7 +358,7 @@ merge <- function(..., use.scores = 'balanced') {
 
     ## -- Create 'in silico' contacts
     files <- paste0(
-        basename(unlist(lapply(contacts_list, path))), 
+        basename(unlist(lapply(contacts_list, coolPath))), 
         collapse = ', '
     )
     res <- methods::new("contacts", 
@@ -362,7 +367,6 @@ merge <- function(..., use.scores = 'balanced') {
             collapse = ', '
         ), 
         metadata = list(
-            path = '',
             merging = files, 
             operation = 'sum'
         ), 
@@ -374,7 +378,8 @@ merge <- function(..., use.scores = 'balanced') {
         scores = asss, 
         features = S4Vectors::SimpleList(), 
         pairsFile = NULL, 
-        type = 'merged'
+        type = 'merged', 
+        path = ""
     )
     return(res)
 

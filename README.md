@@ -57,5 +57,5 @@ gg4C(v4C, aes(x = center, y = score, col = chr)) +
 
 ```r
 contacts <- contacts(mcool_file, res = 1000)
-cis_trans(contacts)
+cisTransRatio(contacts)
 ```

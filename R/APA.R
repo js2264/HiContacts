@@ -4,14 +4,11 @@
 #' @param coords coords
 #' @param bins bins
 #' @param use.scores use.scores
-#' @param BPPARAM BPPARAM
 #' @return an aggregated contact matrix
 #'
 #' @import InteractionSet
 #' @import ggrastr
 #' @import ggplot2
-#' @import BiocParallel
-#' @import zeallot
 #' @import tibble
 #' @importFrom dplyr filter
 #' @importFrom dplyr mutate
@@ -29,7 +26,7 @@
 #' @importFrom methods as
 #' @importFrom S4Vectors SimpleList
 
-APA <- function(x, coords, bins = 50, use.scores = 'balanced', BPPARAM = BiocParallel::bpparam()) {
+APA <- function(x, coords, bins = 50, use.scores = 'balanced') {
     `%within%` <- IRanges::`%within%`
 
     ## -- Resize targets
@@ -50,8 +47,7 @@ APA <- function(x, coords, bins = 50, use.scores = 'balanced', BPPARAM = BiocPar
     )
 
     ## -- Get scores ~ x/y, per chromosome
-    dists <- BiocParallel::bplapply(
-        BPPARAM = BPPARAM, 
+    dists <- lapply(
         unique(GenomeInfoDb::seqnames(coords)), 
         function(chr) {
         
@@ -59,7 +55,7 @@ APA <- function(x, coords, bins = 50, use.scores = 'balanced', BPPARAM = BiocPar
             subcoords <- expanded_coords[GenomeInfoDb::seqnames(expanded_coords) == chr]
             subcoords <- IRanges::subsetByOverlaps(subcoords, as(seqinfo(x), 'GRanges'), type = 'within')
             subcoords_centers <- GenomicRanges::resize(subcoords, fix = 'center', width = 1)
-            xx <- contacts(path(x), focus = subcoords, resolution = resolution(x))
+            xx <- contacts(coolPath(x), focus = subcoords, resolution = resolution(x))
             gis <- scores(xx, use.scores)
             reg <- regions(gis)
             ans <- anchors(gis)
@@ -105,7 +101,7 @@ APA <- function(x, coords, bins = 50, use.scores = 'balanced', BPPARAM = BiocPar
     return(x)
 }
 
-APA_ <- function(x, coords, bins = 50, use.scores = 'balanced', BPPARAM = BiocParallel::bpparam()) {
+APA_ <- function(x, coords, bins = 50, use.scores = 'balanced') {
     `%within%` <- IRanges::`%within%`
     `%over%` <- IRanges::`%over%`
 
@@ -121,14 +117,13 @@ APA_ <- function(x, coords, bins = 50, use.scores = 'balanced', BPPARAM = BiocPa
     centered_coords <- centered_coords[sub]
 
     ## -- Get scores ~ x/y, per chromosome
-    gis_aggr <- BiocParallel::bplapply(
-        BPPARAM = BPPARAM, 
+    gis_aggr <- lapply(
         unique(GenomeInfoDb::seqnames(coords)), 
         function(chr) {
             ## -- Pre-load the cool file for interactions in coords in chromosome `chr`
             subcoords <- expanded_coords[GenomeInfoDb::seqnames(expanded_coords) == chr]
             subcoords_centers <- GenomicRanges::resize(subcoords, fix = 'center', width = 1)
-            xx <- contacts(path(x), focus = subcoords, resolution = resolution(x))
+            xx <- contacts(coolPath(x), focus = subcoords, resolution = resolution(x))
             gis <- scores(xx, use.scores)
             reg <- regions(gis)
             ans <- anchors(gis)
@@ -148,13 +143,13 @@ APA_ <- function(x, coords, bins = 50, use.scores = 'balanced', BPPARAM = BiocPa
                         start2 = start2 - mid, 
                         end2 = end2 - mid
                     ) %>%
-                    as_GInteractions()
+                    asGInteractions()
             }) %>% 
                 do.call(c, .) %>%
                 as_tibble() %>% 
                 group_by(seqnames1, seqnames2, start1, end1, start2, end2) %>% 
                 summarize(score = sum(score, na.rm = TRUE)) %>% 
-                as_GInteractions()
+                asGInteractions()
         }
     ) %>% do.call(c, .)
     x@interactions <- gis_aggr
@@ -164,7 +159,7 @@ APA_ <- function(x, coords, bins = 50, use.scores = 'balanced', BPPARAM = BiocPa
     return(x)
 }
 
-APA2 <- function(x, coords, bins = 50, use.scores = 'balanced', BPPARAM = BiocParallel::bpparam()) {
+APA2 <- function(x, coords, bins = 50, use.scores = 'balanced') {
     `%within%` <- IRanges::`%within%`
 
     ## -- Resize targets

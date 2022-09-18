@@ -9,6 +9,19 @@
 \alias{length,contacts-method}
 \alias{[}
 \alias{[,contacts,ANY,ANY,ANY-method}
+\alias{coolPath}
+\alias{coolPath,contacts-method}
+\alias{seqinfo,contacts-method}
+\alias{resolutions}
+\alias{resolutions,contacts-method}
+\alias{resolution}
+\alias{resolution,contacts-method}
+\alias{bins}
+\alias{bins,contacts-method}
+\alias{focus}
+\alias{focus,contacts-method}
+\alias{interactions}
+\alias{interactions,contacts-method}
 \alias{scores}
 \alias{scores,contacts,missing-method}
 \alias{scores,contacts,character-method}
@@ -30,7 +43,6 @@
 \alias{regions}
 \alias{regions,contacts-method}
 \alias{summary}
-\alias{.summary}
 \alias{summary,contacts-method}
 \alias{show}
 \alias{show,contacts-method}
@@ -40,14 +52,30 @@ contacts(
   cool_path,
   resolution = NULL,
   focus = NULL,
-  metadata = NULL,
-  features = NULL,
+  metadata = list(),
+  features = S4Vectors::SimpleList(loops = GenomicRanges::GRanges(), borders =
+    GenomicRanges::GRanges(), compartments = GenomicRanges::GRanges(), viewpoints =
+    GenomicRanges::GRanges()),
   pairs = NULL
 )
 
 \S4method{length}{contacts}(x)
 
 \S4method{[}{contacts,ANY,ANY,ANY}(x, i)
+
+coolPath(x)
+
+\S4method{seqinfo}{contacts}(x)
+
+resolutions(x)
+
+\S4method{resolution}{contacts}(x)
+
+bins(x)
+
+focus(x)
+
+\S4method{interactions}{contacts}(x)
 
 scores(x, name)
 
@@ -65,7 +93,7 @@ pairsFile(x) <- value
 
 \S4method{regions}{contacts}(x)
 
-.summary(object)
+\S4method{summary}{contacts}(object)
 
 \S4method{show}{contacts}(object)
 }
@@ -106,6 +134,20 @@ length method for objects of class \code{contacts}.
 
 [ method for objects of class \code{contacts}.
 
+coolPath method for objects of class \code{contacts}.
+
+seqinfo method for objects of class \code{contacts}.
+
+resolutions method for objects of class \code{contacts}.
+
+resolution method for objects of class \code{contacts}.
+
+bins method for objects of class \code{contacts}.
+
+focus method for objects of class \code{contacts}.
+
+interactions method for objects of class \code{contacts}.
+
 scores method for objects of class \code{contacts}.
 
 \verb{scores<-} method for objects of class \code{contacts}.
@@ -132,7 +174,7 @@ Show method for objects of class \code{contacts}.
 \item{\code{focus}}{Chr. coordinates for which interaction counts are extracted
 from the .(m)cool file.}
 
-\item{\code{metadata}}{<etadata associated with the .(m)cool file.}
+\item{\code{metadata}}{metadata associated with the .(m)cool file.}
 
 \item{\code{seqinfo}}{Seqinfo, deduced from the largest resolution available
 in the .(m)cool file.}
@@ -153,7 +195,9 @@ loops, borders, etc...)}
 
 \item{\code{pairsFile}}{path for the .pairs file associated with the .(m)cool file}
 
-\item{\code{type}}{Optional. Type of contacts matrix (sparse, full, aggr, ratio, ...)}
+\item{\code{type}}{Type of contacts matrix (sparse, full, aggr, ratio, ...)}
+
+\item{\code{path}}{Path of (m)cool file}
 }}
 
 \examples{
@@ -166,6 +210,27 @@ length(contacts_yeast)
 library(HiContacts)
 data(contacts_yeast)
 contacts_yeast[1:10]
+library(HiContacts)
+data(contacts_yeast)
+coolPath(contacts_yeast)
+library(HiContacts)
+data(contacts_yeast)
+seqinfo(contacts_yeast)
+library(HiContacts)
+data(contacts_yeast)
+resolutions(contacts_yeast)
+library(HiContacts)
+data(contacts_yeast)
+resolution(contacts_yeast)
+library(HiContacts)
+data(contacts_yeast)
+bins(contacts_yeast)
+library(HiContacts)
+data(contacts_yeast)
+focus(contacts_yeast)
+library(HiContacts)
+data(contacts_yeast)
+interactions(contacts_yeast)
 library(HiContacts)
 data(contacts_yeast)
 scores(contacts_yeast)

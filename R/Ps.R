@@ -61,7 +61,7 @@ getPs <- function(
             d <- d
         }
         ps <- dplyr::group_split(d) %>% 
-            purrr::map(function(x) {
+            lapply(function(x) {
                 x %>% 
                     dplyr::mutate(
                         norm_p_unity = norm_p / 
@@ -115,7 +115,7 @@ getPs <- function(
             d <- d
         }
         ps <- dplyr::group_split(d) %>% 
-            purrr::map(function(x) {
+            lapply(function(x) {
                 dplyr::mutate(x, norm_p_unity = norm_p / {dplyr::slice(x, which.min(abs(x$binned_distance - 100000))) %>% dplyr::pull(norm_p)}) %>% 
                 dplyr::mutate(slope = (log10(dplyr::lead(norm_p)) - log10(norm_p)) / (log10(dplyr::lead(binned_distance)) - log10(binned_distance))) %>% 
                 dplyr::mutate(slope = c(0, predict(loess(slope ~ binned_distance, span = 0.5, data = .))))
