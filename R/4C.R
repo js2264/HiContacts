@@ -1,7 +1,10 @@
-#' virtual4C
+#' Computing virtual 4C profiles
+#' 
+#' From a (m)cool pre-imported in memory, computes a 4C profile 
+#' using a user-specified `viewpoint`. 
 #'
 #' @param x a `contacts` object
-#' @param viewpoint viewpoint defined as a GRanges
+#' @param viewpoint viewpoint, defined as a GRanges
 #' @param use.scores use.scores
 #' @return A tibble with the contact frequency of the viewpoint, per bin 
 #'   along the imported genomic range.
@@ -43,11 +46,11 @@ virtual4C <- function(x, viewpoint, use.scores = 'balanced') {
     )
 }
 
-#' plot4C
-#'
 #' @param x GRanges, generally the output of `virtual4C()`
 #' @param mapping aes to pass on to ggplot2
 #' @return ggplot
+#' 
+#' @rdname virtual4C
 #'
 #' @import ggplot2
 #' @import tibble

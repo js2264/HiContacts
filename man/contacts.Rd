@@ -131,32 +131,6 @@ a new \code{contacts} object.
 \description{
 \code{contacts} S4 class and methods
 
-contacts constructor
-
-length method for objects of class \code{contacts}.
-
-[ method for objects of class \code{contacts}.
-
-matrixType method for objects of class \code{contacts}.
-
-coolPath method for objects of class \code{contacts}.
-
-seqinfo method for objects of class \code{contacts}.
-
-resolutions method for objects of class \code{contacts}.
-
-resolution method for objects of class \code{contacts}.
-
-bins method for objects of class \code{contacts}.
-
-focus method for objects of class \code{contacts}.
-
-interactions method for objects of class \code{contacts}.
-
-scores method for objects of class \code{contacts}.
-
-\verb{scores<-} method for objects of class \code{contacts}.
-
 features method for objects of class \code{contacts}.
 
 \verb{features<-} method for objects of class \code{contacts}.

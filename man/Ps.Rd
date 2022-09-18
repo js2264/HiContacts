@@ -4,7 +4,8 @@
 \alias{getPs}
 \alias{plotPs}
 \alias{plotPsSlope}
-\title{getPs}
+\alias{PsBreaks}
+\title{Compute a distance-dependent contact frequency, a.k.a. P(s)}
 \usage{
 getPs(
   x,
@@ -15,6 +16,8 @@ getPs(
 plotPs(..., xlim = c(5000, 499000), ylim = c(1e-08, 1e-04))
 
 plotPsSlope(..., xlim = c(5000, 499000), ylim = c(-3, 0))
+
+PsBreaks()
 }
 \arguments{
 \item{x}{A \code{contacts} object}
@@ -35,13 +38,13 @@ a tibble
 ggplot
 
 ggplot
+
+tbl
 }
 \description{
-getPs
-
-plotPs
-
-plotPsSlope
+P(s) will be approximated if no pairs are provided, or the exact P(s)
+will be computed if a \code{.pairs} file is added to the \code{contacts} object
+using \code{pairsFile(x) <- "..."}.
 }
 \examples{
 library(HiContacts)

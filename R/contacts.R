@@ -28,6 +28,7 @@ setClassUnion("characterOrNULL", members = c("character", "NULL"))
 #' @slot matrixType Type of contacts matrix (sparse, full, aggr, ratio, ...)
 #' @slot coolPath Path of (m)cool file
 #' 
+#' @import methods
 #' @importClassesFrom S4Vectors Pairs
 #' @importClassesFrom S4Vectors Annotated
 #' @importFrom methods setClass
@@ -52,7 +53,7 @@ methods::setClass("contacts",
     )
 )
 
-#' contacts constructor
+#' @rdname contacts
 #' 
 #' @param cool_path Path of a (m)cool file
 #' @param resolution Resolution to use with mcool file
@@ -64,8 +65,6 @@ methods::setClass("contacts",
 #' @param pairs Path to an associated .pairs file
 #' @return a new `contacts` object.
 #' 
-#' @import methods
-#' @rdname contacts
 #' @export
 #' @examples 
 #' library(HiContacts)
@@ -181,21 +180,14 @@ setValidity("contacts",
 
 ################################################################################
 #                                                                              #
-#                                 SETTERS                                      #
+#                                 ACCESSORS                                    #
 #                                                                              #
 ################################################################################
 
-################################################################################
-#                                                                              #
-#                                 GETTERS                                      #
-#                                                                              #
-################################################################################
-
-#' length method for objects of class \code{contacts}.
+#' @rdname contacts
 #'
 #' @name length
 #' @docType methods
-#' @rdname contacts
 #' @aliases length,contacts-method
 #'
 #' @param x A \code{contacts} object.
@@ -206,11 +198,10 @@ setValidity("contacts",
 
 setMethod("length", "contacts", function(x) length(interactions(x)))
 
-#' [ method for objects of class \code{contacts}.
+#' @rdname contacts
 #'
 #' @name [
 #' @docType methods
-#' @rdname contacts
 #' @aliases [,contacts,ANY,ANY,ANY-method
 #'
 #' @param x A \code{contacts} object.
@@ -228,11 +219,10 @@ setMethod("[", signature("contacts"), function(x, i) {
     return(x)
 })
 
-#' matrixType method for objects of class \code{contacts}.
+#' @rdname contacts
 #'
 #' @name matrixType
 #' @docType methods
-#' @rdname contacts
 #' @aliases matrixType,contacts-method
 #'
 #' @param x A \code{contacts} object.
@@ -244,11 +234,10 @@ setMethod("[", signature("contacts"), function(x, i) {
 setGeneric("matrixType", function(x) {standardGeneric("matrixType")})
 setMethod("matrixType", "contacts", function(x) x@matrixType)
 
-#' coolPath method for objects of class \code{contacts}.
+#' @rdname contacts
 #'
 #' @name coolPath
 #' @docType methods
-#' @rdname contacts
 #' @aliases coolPath,contacts-method
 #'
 #' @param x A \code{contacts} object.
@@ -260,11 +249,10 @@ setMethod("matrixType", "contacts", function(x) x@matrixType)
 setGeneric("coolPath", function(x) {standardGeneric("coolPath")})
 setMethod("coolPath", "contacts", function(x) {x@coolPath})
 
-#' seqinfo method for objects of class \code{contacts}.
+#' @rdname contacts
 #'
 #' @name seqinfo,contacts-method
 #' @docType methods
-#' @rdname contacts
 #'
 #' @param x A \code{contacts} object.
 #'
@@ -274,11 +262,10 @@ setMethod("coolPath", "contacts", function(x) {x@coolPath})
 
 setMethod("seqinfo", "contacts", function(x) x@seqinfo)
 
-#' resolutions method for objects of class \code{contacts}.
+#' @rdname contacts
 #'
 #' @name resolutions
 #' @docType methods
-#' @rdname contacts
 #' @aliases resolutions,contacts-method
 #'
 #' @param x A \code{contacts} object.
@@ -290,11 +277,10 @@ setMethod("seqinfo", "contacts", function(x) x@seqinfo)
 setGeneric("resolutions", function(x) {standardGeneric("resolutions")})
 setMethod("resolutions", "contacts", function(x) x@resolutions)
 
-#' resolution method for objects of class \code{contacts}.
+#' @rdname contacts
 #'
 #' @name resolution
 #' @docType methods
-#' @rdname contacts
 #' @aliases resolution,contacts-method
 #'
 #' @param x A \code{contacts} object.
@@ -305,11 +291,10 @@ setMethod("resolutions", "contacts", function(x) x@resolutions)
 
 setMethod("resolution", "contacts", function(x) x@current_resolution)
 
-#' bins method for objects of class \code{contacts}.
+#' @rdname contacts
 #'
 #' @name bins
 #' @docType methods
-#' @rdname contacts
 #' @aliases bins,contacts-method
 #'
 #' @param x A \code{contacts} object.
@@ -321,11 +306,10 @@ setMethod("resolution", "contacts", function(x) x@current_resolution)
 setGeneric("bins", function(x) {standardGeneric("bins")})
 setMethod("bins", "contacts", function(x) x@bins)
 
-#' focus method for objects of class \code{contacts}.
+#' @rdname contacts
 #'
 #' @name focus
 #' @docType methods
-#' @rdname contacts
 #' @aliases focus,contacts-method
 #'
 #' @param x A \code{contacts} object.
@@ -337,11 +321,10 @@ setMethod("bins", "contacts", function(x) x@bins)
 setGeneric("focus", function(x) {standardGeneric("focus")})
 setMethod("focus", "contacts", function(x) x@focus)
 
-#' interactions method for objects of class \code{contacts}.
+#' @rdname contacts
 #'
 #' @name interactions
 #' @docType methods
-#' @rdname contacts
 #' @aliases interactions,contacts-method
 #'
 #' @param x A \code{contacts} object.
@@ -352,11 +335,10 @@ setMethod("focus", "contacts", function(x) x@focus)
 
 setMethod("interactions", "contacts", function(x) x@interactions)
 
-#' scores method for objects of class \code{contacts}.
+#' @rdname contacts
 #'
 #' @name scores
 #' @docType methods
-#' @rdname contacts
 #' @aliases scores,contacts,missing-method
 #' @aliases scores,contacts,character-method
 #' @aliases scores,contacts,numeric-method
@@ -388,11 +370,10 @@ setMethod("scores", signature(x = "contacts", name = "numeric"), function(x, nam
     return(gis)
 })
 
-#' `scores<-` method for objects of class \code{contacts}.
+#' @rdname contacts
 #'
 #' @name scores<-
 #' @docType methods
-#' @rdname contacts
 #' @aliases scores<-,contacts,character,numeric-method
 #'
 #' @param x A \code{contacts} object.

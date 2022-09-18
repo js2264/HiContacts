@@ -2,7 +2,8 @@
 % Please edit documentation in R/plotMatrix.R
 \name{plotMatrix}
 \alias{plotMatrix}
-\title{plotMatrix}
+\alias{ggMatrix}
+\title{Plotting a contact matrix}
 \usage{
 plotMatrix(
   x,
@@ -17,6 +18,8 @@ plotMatrix(
   chrom_lines = TRUE,
   cmap = NULL
 )
+
+ggMatrix(mat, ticks = TRUE, cols = afmhotrColors(), limits)
 }
 \arguments{
 \item{x}{x}
@@ -40,12 +43,22 @@ plotMatrix(
 \item{chrom_lines}{chrom_lines}
 
 \item{cmap}{color map}
+
+\item{mat}{mat}
+
+\item{ticks}{ticks}
+
+\item{cols}{cols}
 }
 \value{
 ggplot
+
+ggplot
 }
 \description{
-plotMatrix
+Plotting a contact matrix
+
+ggmatrix
 }
 \examples{
 library(HiContacts)

@@ -1,8 +1,9 @@
-#' ggthemeHiContacts
+#' ggplot2-related functions
+#' 
+#' @rdname ggplot2-HiContacts
 #'
 #' @param ticks ticks
 #' @return a custom ggplot2 theme
-#' @rdname ggplot2-HiContacts
 #' 
 #' @import ggplot2
 

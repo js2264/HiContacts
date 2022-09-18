@@ -1,4 +1,6 @@
 #' cisTransRatio
+#' 
+#' Quickly computes a cis-trans ratio of interactions. 
 #'
 #' @param x A `contacts` object over the full genome
 #' @return a tibble, listing for each chr. the % of cis/trans interactions

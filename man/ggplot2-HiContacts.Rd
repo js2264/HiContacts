@@ -2,7 +2,7 @@
 % Please edit documentation in R/ggthemes.R
 \name{ggthemeHiContacts}
 \alias{ggthemeHiContacts}
-\title{ggthemeHiContacts}
+\title{ggplot2-related functions}
 \usage{
 ggthemeHiContacts(ticks = TRUE)
 }
@@ -13,5 +13,5 @@ ggthemeHiContacts(ticks = TRUE)
 a custom ggplot2 theme
 }
 \description{
-ggthemeHiContacts
+ggplot2-related functions
 }

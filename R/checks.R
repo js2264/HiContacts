@@ -1,5 +1,7 @@
-#' @name Checks functions
-#' @title Checks functions
+#' Checks functions
+#' 
+#' Useful functions to validate the nature/structure of (m)cool files or 
+#' `contacts` objects.
 #' 
 #' @param cool_path Path of a (m)cool file
 #' @param contacts A `contacts` object

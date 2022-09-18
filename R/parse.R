@@ -1,4 +1,8 @@
-#' getAnchors
+#' Parsing (m)cool files
+#' 
+#' These functions are the workhorse internal functions used to import 
+#' a `.(m)cool` file as GenomicInteractions (wrapped into a `contacts` object
+#' by `contacts()` function).
 #'
 #' @param file file
 #' @param resolution resolution
@@ -31,12 +35,6 @@ getAnchors <- function(file, resolution = NULL, balanced = "cooler") {
     return(anchors)
 }
 
-#' getCountsFromPair
-#'
-#' Function to extract counts for a uncentered matrix (@ a pair of coordinates).
-#' 
-#' This was adapted from `dovetail-genomics/coolR`
-#'
 #' @param file file
 #' @param pair pair 
 #'   (e.g. S4Vectors::Pairs(GRanges("II:200000-300000"), GRanges("II:70000-100000"))). 
@@ -105,10 +103,6 @@ getCountsFromPair <- function(file,
     return(df)
 }
 
-#' Function to extract counts for a centered matrix from an mcool file
-#' 
-#' This was adapted from `dovetail-genomics/coolR`
-#' 
 #' @param file file
 #' @param coords coordinates 
 #' @param anchors anchors
@@ -179,8 +173,6 @@ getCounts <- function(file,
 
 }
 
-#' fetchCool
-#'
 #' @param file file
 #' @param path path
 #' @param resolution resolution
@@ -202,8 +194,6 @@ fetchCool <- function(file, path, resolution = NULL, idx = NULL, ...) {
     as.vector(rhdf5::h5read(file, name = path, index = list(idx), ...))
 }
 
-#' lsCoolFiles
-#'
 #' @param file file
 #' @param verbose verbose
 #' @return vector
@@ -238,8 +228,6 @@ lsCoolFiles <- function(file, verbose = FALSE) {
     invisible(x)
 }
 
-#' lsCoolResolutions
-#'
 #' @param file file
 #' @param verbose Print resolutions in the console
 #' @return vector
@@ -269,8 +257,6 @@ lsCoolResolutions <- function(file, verbose = FALSE) {
     invisible(as.integer(res))
 }
 
-#' peekCool
-#'
 #' @param file file
 #' @param path path
 #' @param resolution resolution
@@ -294,8 +280,6 @@ peekCool <- function(file, path, resolution = NULL, n = 10) {
     }
 }
 
-#' cool2seqinfo
-#'
 #' @param file file
 #' @param resolution resolution
 #' @return a Seqinfo object
@@ -313,8 +297,6 @@ cool2seqinfo <- function(file, resolution = NULL) {
     return(seqinfo)
 }
 
-#' cool2gi
-#'
 #' @param file file
 #' @param coords NULL, character, or GRanges. 
 #'   Can also be a Pairs object of paired GRanges (length of 1).
@@ -402,8 +384,6 @@ cool2gi <- function(file, coords = NULL, resolution = NULL) {
     return(gi)
 }
 
-#' gi2cm
-#'
 #' @param gi A `GInteractions` object
 #' @return a ContactMatrix object
 #'
@@ -420,8 +400,6 @@ gi2cm <- function(gi) {
     )
 }
 
-#' cm2matrix
-#'
 #' @param cm A `ContactMatrix` object
 #' @param replace_NA Replace NA values
 #' @return a dense matrix
@@ -435,8 +413,6 @@ cm2matrix <- function(cm, replace_NA = NA) {
     m
 }
 
-#' readPairs
-#'
 #' @param file pairs file: `<readname>\t<chr1>\t<start1>\t<chr2>\t<start2>`
 #' @param chr1.field chr1.field
 #' @param start1.field start1.field

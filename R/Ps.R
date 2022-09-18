@@ -1,5 +1,11 @@
-#' getPs
-#'
+#' Compute a distance-dependent contact frequency, a.k.a. P(s)
+#' 
+#' P(s) will be approximated if no pairs are provided, or the exact P(s) 
+#' will be computed if a `.pairs` file is added to the `contacts` object 
+#' using `pairsFile(x) <- "..."`. 
+#' 
+#' @rdname Ps
+#' 
 #' @param x A `contacts` object
 #' @param by_chr by_chr
 #' @param filtered_chr filtered_chr
@@ -19,7 +25,6 @@
 #' @importFrom dplyr tally
 #' @importFrom dplyr arrange
 #' @importFrom dplyr lead
-#' @rdname Ps
 #' @export
 #' @examples 
 #' library(HiContacts)
@@ -133,8 +138,8 @@ getPs <- function(
     }
 }
 
-#' plotPs
-#'
+#' @rdname Ps
+#' 
 #' @param ... ...
 #' @param xlim xlim
 #' @param ylim ylim
@@ -143,7 +148,6 @@ getPs <- function(
 #' @import ggplot2
 #' @importFrom scales trans_breaks
 #' @importFrom scales trans_format
-#' @rdname Ps
 #' @export
 #' @examples 
 #' ## Single P(s)
@@ -188,12 +192,11 @@ plotPs <- function(..., xlim = c(5000, 4.99e5), ylim = c(1e-8, 1e-4)) {
     gg
 }
 
-#' plotPsSlope
-#'
+#' @rdname Ps
+#' 
 #' @return ggplot
 #' 
 #' @import ggplot2
-#' @rdname Ps
 #' @export
 #' @examples 
 #' library(HiContacts)
@@ -222,7 +225,7 @@ plotPsSlope <- function(..., xlim = c(5000, 4.99e5), ylim = c(-3, 0)) {
     gg
 }
 
-#' PsBreaks
+#' @rdname Ps
 #'
 #' @return tbl
 

@@ -1,10 +1,22 @@
-#' detrend
+#' Arithmetics with (m)cool file(s)
+#' 
+#' Different operations can be performed:  
+#'  - Detrending a contact matrix, i.e. removing the distance-dependent 
+#' contact trend;
+#'  - Autocorrelate a contact matrix: this is is typically done to highlight 
+#' large-scale compartments;
+#'  - Divide one contact matrix by another; 
+#'  - Merge multiple contact matrices;
+#'  - Serpentinify, or smooth a contact matrix out. This requires `serpentine` 
+#' python package to be installed.
+#' 
+#' @rdname arithmetics
 #'
 #' @param x a `contacts` object
 #' @param use.scores use.scores
 #' @return a `contacts` object with two additional scoress: `expected` and
 #'   `detrended`
-#'
+#' 
 #' @importFrom scales rescale
 #' @importFrom tibble as_tibble
 #' @importFrom tibble tibble
@@ -17,6 +29,10 @@
 #' @import GenomicRanges
 #' @export
 #' @examples 
+#' #### -----
+#' #### Detrending a contact matrix
+#' #### -----
+#' 
 #' library(HiContacts)
 #' data(contacts_yeast)
 #' contacts_yeast <- detrend(contacts_yeast)
@@ -38,100 +54,7 @@ detrend <- function(x, use.scores = 'balanced') {
     return(x)
 }
 
-#' serpentinify
-#'
-#' @param x a `contacts` object
-#' @param use.scores use.scores
-#' @param use_serpentine_trend whether to use the trend estimated with 
-#'   serpentine (this requires `reticulate` and the python package `serpentine`)
-#' @param serpentine_niter number of iterations to use for serpentine
-#' @param serpentine_ncores number of CPUs to use for serpentine
-#' @return a `contacts` object with a single `smoothen` scores
-#' 
-#' @import reticulate
-#' @import GenomicRanges
-#' @importFrom dplyr mutate
-#' @importFrom tidyr pivot_longer
-#' @importFrom tibble as_tibble
-#' @importFrom InteractionSet anchors
-#' @importFrom InteractionSet GInteractions
-#' @importFrom S4Vectors SimpleList
-
-serpentinify <- function(x, use.scores = 'balanced', 
-    use_serpentine_trend = TRUE, serpentine_niter = 10L, serpentine_ncores = 16L
-) {
-
-    sp <- reticulate::import('serpentine')
-    gis <- scores(x, use.scores)
-
-    ## Check that only 1 chromosome is present in the gis object
-    seqnames <- unique(as.vector(GenomicRanges::seqnames(InteractionSet::anchors(gis)[[1]])))
-    if (length(seqnames) > 1) {
-        stop('Smoothing maps across multiple chromosomes is not supported. Aborting now.')
-    }
-    binsize <- resolution(x)
-
-    ## Run Serpentine
-    B <- cm2matrix(gi2cm(gis), replace_NA = 0)
-    A <- matrix(data = 1, nrow = nrow(B), ncol = ncol(B))
-    .v <- sp$serpentin_binning(A, B, verbose = FALSE, iterations = serpentine_niter, parallel = serpentine_ncores)
-    sm1 <- .v[[1]]
-    sm2 <- .v[[2]]
-    sK <- .v[[3]]
-    
-    ## Re-center smoothened matrix 
-    if (use_serpentine_trend) {
-        .v <- sp$MDbefore(B, A, show = FALSE)
-        trend <- .v[[1]]
-        threshold <- .v[[2]]
-        if (is.na(trend)) trend <- mean(sK, na.rm = TRUE)
-        sK <- sK - trend
-    }
-    else {
-        sK <- sK - mean(sK, na.rm = TRUE)
-    }
-
-    ## Make a full-featured interactions (storing smoothed scores in `score`)
-    gis_smoothened <- sK %>%
-        tibble::as_tibble() %>% 
-        stats::setNames(GenomicRanges::start(anchors(gi2cm(gis))$row)) %>%
-        dplyr::mutate(start1 = GenomicRanges::start(anchors(gi2cm(gis))$row)) %>% 
-        tidyr::pivot_longer(-start1, names_to = 'start2', values_to = 'score') %>% 
-        dplyr::mutate(start2 = as.numeric(start2))
-    an1 <- GenomicRanges::GRanges(
-        seqnames = seqnames, 
-        IRanges::IRanges(gis_smoothened$start1, width = binsize)
-    )
-    an2 <- GenomicRanges::GRanges(
-        seqnames = seqnames, 
-        IRanges::IRanges(gis_smoothened$start2, width = binsize)
-    )
-    reg <- unique(c(an1, an2))
-    gi <- InteractionSet::GInteractions(
-        anchor1 = an1, 
-        anchor2 = an2, 
-        regions = reg
-    )
-
-    res <- methods::new("contacts", 
-        focus = focus(x), 
-        metadata = metadata(x),
-        seqinfo = seqinfo(x), 
-        resolutions = resolutions(x), 
-        current_resolution = resolution(x), 
-        bins = bins(x), 
-        interactions = gi, 
-        scores = S4Vectors::SimpleList(smoothen = gis_smoothened$score),
-        features = features(x), 
-        pairsFile = pairsFile(x), 
-        matrixType = 'smoothed', 
-        coolPath = coolPath(x)
-    )
-
-    return(res)
-}
-
-#' autocorrelate
+#' @rdname arithmetics
 #'
 #' @param x a `contacts` object
 #' @param use.scores use.scores
@@ -147,8 +70,10 @@ serpentinify <- function(x, use.scores = 'balanced',
 #' @importFrom S4Vectors SimpleList
 #' @export
 #' @examples 
-#' library(HiContacts)
-#' data(contacts_yeast)
+#' #### -----
+#' #### Auto-correlate a contact matrix
+#' #### -----
+#' 
 #' contacts_yeast <- autocorrelate(contacts_yeast)
 #' scores(contacts_yeast)
 #' plotMatrix(contacts_yeast, scale = 'linear', limits = c(-1, 1), cmap = bwrColors())
@@ -195,7 +120,7 @@ autocorrelate <- function(x, use.scores = 'balanced', ignore_ndiags = 3) {
     return(res)
 }
 
-#' divide
+#' @rdname arithmetics
 #'
 #' @param x a `contacts` object
 #' @param by a `contacts` object
@@ -214,7 +139,10 @@ autocorrelate <- function(x, use.scores = 'balanced', ignore_ndiags = 3) {
 #' @importFrom S4Vectors SimpleList
 #' @export
 #' @examples 
-#' library(HiContacts)
+#' #### -----
+#' #### Divide 2 contact matrices
+#' #### -----
+#' 
 #' data(contacts_yeast)
 #' data(contacts_yeast_eco1)
 #' div_contacts <- divide(contacts_yeast_eco1, by = contacts_yeast)
@@ -319,7 +247,7 @@ divide <- function(x, by, use.scores = 'balanced') {
 
 }
 
-#' merge
+#' @rdname arithmetics
 #'
 #' @param ... `contacts` objects
 #' @param use.scores use.scores
@@ -338,9 +266,10 @@ divide <- function(x, by, use.scores = 'balanced') {
 #' @importFrom S4Vectors SimpleList
 #' @export
 #' @examples 
-#' library(HiContacts)
-#' data(contacts_yeast)
-#' data(contacts_yeast_eco1)
+#' #### -----
+#' #### Merge 2 contact matrices
+#' #### -----
+#' 
 #' merged_contacts <- merge(contacts_yeast_eco1, contacts_yeast)
 #' merged_contacts
 
@@ -410,3 +339,97 @@ merge <- function(..., use.scores = 'balanced') {
     return(res)
 
 }
+
+#' @rdname arithmetics
+#'
+#' @param x a `contacts` object
+#' @param use.scores use.scores
+#' @param use_serpentine_trend whether to use the trend estimated with 
+#'   serpentine (this requires `reticulate` and the python package `serpentine`)
+#' @param serpentine_niter number of iterations to use for serpentine
+#' @param serpentine_ncores number of CPUs to use for serpentine
+#' @return a `contacts` object with a single `smoothen` scores
+#' 
+#' @import reticulate
+#' @import GenomicRanges
+#' @importFrom dplyr mutate
+#' @importFrom tidyr pivot_longer
+#' @importFrom tibble as_tibble
+#' @importFrom InteractionSet anchors
+#' @importFrom InteractionSet GInteractions
+#' @importFrom S4Vectors SimpleList
+
+serpentinify <- function(x, use.scores = 'balanced', 
+    use_serpentine_trend = TRUE, serpentine_niter = 10L, serpentine_ncores = 16L
+) {
+
+    sp <- reticulate::import('serpentine')
+    gis <- scores(x, use.scores)
+
+    ## Check that only 1 chromosome is present in the gis object
+    seqnames <- unique(as.vector(GenomicRanges::seqnames(InteractionSet::anchors(gis)[[1]])))
+    if (length(seqnames) > 1) {
+        stop('Smoothing maps across multiple chromosomes is not supported. Aborting now.')
+    }
+    binsize <- resolution(x)
+
+    ## Run Serpentine
+    B <- cm2matrix(gi2cm(gis), replace_NA = 0)
+    A <- matrix(data = 1, nrow = nrow(B), ncol = ncol(B))
+    .v <- sp$serpentin_binning(A, B, verbose = FALSE, iterations = serpentine_niter, parallel = serpentine_ncores)
+    sm1 <- .v[[1]]
+    sm2 <- .v[[2]]
+    sK <- .v[[3]]
+    
+    ## Re-center smoothened matrix 
+    if (use_serpentine_trend) {
+        .v <- sp$MDbefore(B, A, show = FALSE)
+        trend <- .v[[1]]
+        threshold <- .v[[2]]
+        if (is.na(trend)) trend <- mean(sK, na.rm = TRUE)
+        sK <- sK - trend
+    }
+    else {
+        sK <- sK - mean(sK, na.rm = TRUE)
+    }
+
+    ## Make a full-featured interactions (storing smoothed scores in `score`)
+    gis_smoothened <- sK %>%
+        tibble::as_tibble() %>% 
+        stats::setNames(GenomicRanges::start(anchors(gi2cm(gis))$row)) %>%
+        dplyr::mutate(start1 = GenomicRanges::start(anchors(gi2cm(gis))$row)) %>% 
+        tidyr::pivot_longer(-start1, names_to = 'start2', values_to = 'score') %>% 
+        dplyr::mutate(start2 = as.numeric(start2))
+    an1 <- GenomicRanges::GRanges(
+        seqnames = seqnames, 
+        IRanges::IRanges(gis_smoothened$start1, width = binsize)
+    )
+    an2 <- GenomicRanges::GRanges(
+        seqnames = seqnames, 
+        IRanges::IRanges(gis_smoothened$start2, width = binsize)
+    )
+    reg <- unique(c(an1, an2))
+    gi <- InteractionSet::GInteractions(
+        anchor1 = an1, 
+        anchor2 = an2, 
+        regions = reg
+    )
+
+    res <- methods::new("contacts", 
+        focus = focus(x), 
+        metadata = metadata(x),
+        seqinfo = seqinfo(x), 
+        resolutions = resolutions(x), 
+        current_resolution = resolution(x), 
+        bins = bins(x), 
+        interactions = gi, 
+        scores = S4Vectors::SimpleList(smoothen = gis_smoothened$score),
+        features = features(x), 
+        pairsFile = pairsFile(x), 
+        matrixType = 'smoothed', 
+        coolPath = coolPath(x)
+    )
+
+    return(res)
+}
+

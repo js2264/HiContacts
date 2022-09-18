@@ -9,7 +9,7 @@
 \alias{sdiag<-}
 \alias{sortPairs}
 \alias{asGInteractions}
-\title{splitCoords}
+\title{Utils functions}
 \usage{
 splitCoords(coords)
 
@@ -70,19 +70,6 @@ a Pairs object
 a GenomicInteractions object
 }
 \description{
-splitCoords
-
-formatCoords
-
-char2pair
-
-getHicStats
-
-fullContactInteractions
-
-\verb{sdiag<-}
-
-sortPairs
-
-asGInteractions
+Utilities to facilitate parsing/handling of coordinates, GInteractions,
+Pairs, ...
 }

@@ -1,4 +1,7 @@
-#' splitCoords
+#' Utils functions 
+#' 
+#' Utilities to facilitate parsing/handling of coordinates, GInteractions, 
+#' Pairs, ...
 #'
 #' @param coords coords
 #' @return a list containing `chr`, `start` and `end`

@@ -1,4 +1,4 @@
-#' plotMatrix
+#' Plotting a contact matrix
 #'
 #' @param x x
 #' @param use.scores use.scores
@@ -281,6 +281,8 @@ plotMatrix <- function(
 #' @param limits limits
 #' @return ggplot
 #'
+#' @rdname plotMatrix
+#' 
 #' @import ggplot2
 #' @importFrom scales unit_format
 

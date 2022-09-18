@@ -13,7 +13,7 @@ cisTransRatio(x)
 a tibble, listing for each chr. the \% of cis/trans interactions
 }
 \description{
-cisTransRatio
+Quickly computes a cis-trans ratio of interactions.
 }
 \examples{
 library(HiContacts)
