@@ -19,14 +19,12 @@ Depends:
     R (>= 4.2)
 Imports:
     InteractionSet,
+    GenomicInteractions,
     GenomicRanges,
     IRanges,
-    GenomicInteractions,
     GenomeInfoDb,
-    plyranges,
     rhdf5,
     S4Vectors,
-    corrr,
     methods,
     Matrix,
     data.table,
@@ -36,13 +34,9 @@ Imports:
     tidyr,
     dplyr,
     glue,
-    purrr,
     scales,
     stringr,
-    zeallot,
-    BiocParallel,
-    reticulate,
-    tools
+    reticulate
 Suggests:
     HiContactsData,
     cowplot,
