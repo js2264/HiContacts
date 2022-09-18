@@ -294,18 +294,6 @@ plotPs(ps, aes(x = binned_distance, y = norm_p, group = sample, color = sample))
 plotPsSlope(ps, aes(x = binned_distance, y = slope, group = sample, color = sample))
 ```
 
-## Aggregated Plot Analysis (APA)
-
-```{r}
-## TBD
-```
-
-## Scalograms
-
-```{r}
-## TBD
-```
-
 # Session info
 
 ```{r}
