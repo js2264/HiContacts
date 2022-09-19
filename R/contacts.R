@@ -559,7 +559,7 @@ setMethod("pairsFile<-", signature(x = "contacts", value = "character"), functio
 #' @examples 
 #' anchors(contacts_yeast)
 
-setMethod("anchors", "contacts", function(x) anchors(scores(x, 1)))
+setMethod("anchors", "contacts", function(x) anchors(interactions(x)))
 
 #' @rdname contacts
 #' 
@@ -573,7 +573,7 @@ setMethod("anchors", "contacts", function(x) anchors(scores(x, 1)))
 #' @examples 
 #' regions(contacts_yeast)
 
-setMethod("regions", "contacts", function(x) regions(scores(x, 1)))
+setMethod("regions", "contacts", function(x) regions(interactions(x)))
 
 #' @rdname contacts
 #' 

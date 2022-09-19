@@ -125,7 +125,7 @@ plotMatrix <- function(
     ## -- If loops are provided, filter them and add
     if (!is.null(loops)) {
         filtered_loops <- tibble::as_tibble(
-            loops[anchors(loops)[['first']] %over% regions(gis) & anchors(loops)[['second']] %over% regions(gis)]
+            loops[anchors(loops)[['first']] %over% gis & anchors(loops)[['second']] %over% gis]
         )
         p_loops <- ggplot2::geom_point(
             data = filtered_loops, 
@@ -146,7 +146,7 @@ plotMatrix <- function(
     ## -- If borders are provided, filter them and add
     if (!is.null(borders)) {
         filtered_borders <- tibble::as_tibble(
-            borders[borders %over% regions(gis)]
+            borders[borders %over% gis]
         )
         p_borders <- ggplot2::geom_point(
             data = filtered_borders, 
