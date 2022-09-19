@@ -53,6 +53,8 @@
 \alias{summary,contacts-method}
 \alias{show}
 \alias{show,contacts-method}
+\alias{setAs}
+\alias{setAs,contacts-method}
 \title{\code{contacts} S4 class and methods}
 \usage{
 contacts(
@@ -207,4 +209,7 @@ anchors(contacts_yeast)
 regions(contacts_yeast)
 summary(contacts_yeast)
 show(contacts_yeast)
+as(contacts_yeast, 'GInteractions')
+as(contacts_yeast, 'ContactMatrix')
+as(contacts_yeast, 'matrix')[1:10, 1:10]
 }
