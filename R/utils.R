@@ -74,7 +74,7 @@ formatCoords <- function(coords) {
 
 #' char2pair
 #'
-#' @param char char (e.g. "II:30000-50000 x II:60000-80000")
+#' @param char char (e.g. "II:30000-50000" or "II:30000-50000 x II:60000-80000")
 #' @return a S4Vectors::Pairs object
 #'
 #' @import stringr
@@ -88,11 +88,25 @@ char2pair <- function(char) {
     if (methods::is(char, 'Pairs')) {
         return(char)
     }
-    splitst <- stringr::str_split(char, ' x ')[[1]]
-    S4Vectors::Pairs(
-        GenomicRanges::GRanges(splitst[[1]]), 
-        GenomicRanges::GRanges(splitst[[2]])
-    )
+    if (grepl(
+        '[A-Za-z0-9]*:[0-9]*-[0-9]* x [A-Za-z0-9]*:[0-9]*-[0-9]*$', 
+        char
+    )) {
+        splitst <- stringr::str_split(char, ' x ')[[1]]
+        S4Vectors::Pairs(
+            GenomicRanges::GRanges(splitst[[1]]), 
+            GenomicRanges::GRanges(splitst[[2]])
+        )
+    }
+    else if (grepl('[A-Za-z0-9]*:[0-9]*-[0-9]*$', char)) {
+        S4Vectors::Pairs(
+            GenomicRanges::GRanges(char), 
+            GenomicRanges::GRanges(char)
+        )
+    }
+    else {
+        stop("Cannot coerce string into a Pairs object")
+    }
 }
 
 #' getHicStats

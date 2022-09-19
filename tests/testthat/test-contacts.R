@@ -8,6 +8,19 @@ test_that("contacts works", {
     expect_s4_class(contacts_yeast, 'contacts')
     expect_identical(length(contacts_yeast), 74360L)
     expect_s4_class(contacts_yeast[1:10], 'contacts')
+    expect_s4_class({
+        sub <- c(
+            rep(TRUE, length(contacts_yeast)/2), 
+            rep(FALSE, length(contacts_yeast)/2)
+        )
+        contacts_yeast[sub]
+    }, 'contacts')
+    expect_s4_class({
+        contacts_yeast['II:1-10000']
+    }, 'contacts')
+    expect_s4_class({
+        contacts_yeast['II:1-10000 x II:20000-40000']
+    }, 'contacts')
     expect_identical(matrixType(contacts_yeast), 'sparse')
     expect_type(coolPath(contacts_yeast), 'character')
     expect_s4_class(seqinfo(contacts_yeast), 'Seqinfo')
