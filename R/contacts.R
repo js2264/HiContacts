@@ -38,7 +38,7 @@ setClassUnion("characterOrNULL", members = c("character", "NULL"))
 methods::setClass("contacts", 
     contains = c("Annotated"), 
     slots = c(
-        focus = "GRangesOrPairsOrcharacterOrNULL", 
+        focus = "characterOrNULL", 
         metadata = "list", 
         seqinfo = "Seqinfo", 
         resolutions = "numeric", 
@@ -48,18 +48,19 @@ methods::setClass("contacts",
         scores = "SimpleList", 
         features = "SimpleList",
         pairsFile = "characterOrNULL", 
-        matrixType = "characterOrNULL",
+        matrixType = "character",
         coolPath = "character"
     )
 )
 
 #' @rdname contacts
 #' 
-#' @param cool_path Path of a (m)cool file
+#' @param path Path of a (m)cool file
 #' @param resolution Resolution to use with mcool file
 #' @param focus focus Chr. coordinates for which 
-#'   interaction counts are extracted from the .(m)cool file.
-#'   Can be provided as a character string or as a GRanges object
+#'   interaction counts are extracted from the .(m)cool file, provided
+#'   as a character string (e.g. "II:4000-5000"). If not provided, 
+#'   the entire (m)cool file will be imported. 
 #' @param metadata list of metadata
 #' @param features features provided as a named SimpleList
 #' @param pairs Path to an associated .pairs file
@@ -72,7 +73,7 @@ methods::setClass("contacts",
 #' contacts_yeast
 
 contacts <- function(
-    cool_path, 
+    path, 
     resolution = NULL, 
     focus = NULL, 
     metadata = list(), 
@@ -86,12 +87,12 @@ contacts <- function(
 ) {
     
     ## -- Check that provided file is valid 
-    check_cool_file(cool_path)
-    check_cool_format(cool_path, resolution)
+    check_cool_file(path)
+    check_cool_format(path, resolution)
 
     ## -- Read resolutions
-    resolutions <- lsCoolResolutions(cool_path)
-    if (is_mcool(cool_path)) {
+    resolutions <- lsCoolResolutions(path)
+    if (is_mcool(path)) {
         res <- resolutions[length(resolutions)]
         if (!is.null(resolution)) {
             current_res <- resolution
@@ -106,15 +107,15 @@ contacts <- function(
     }
 
     ## -- Read seqinfo
-    if (is_mcool(cool_path)) {
-        si <- cool2seqinfo(cool_path, res)
+    if (is_mcool(path)) {
+        si <- cool2seqinfo(path, res)
     }
     else {
-        si <- cool2seqinfo(cool_path)
+        si <- cool2seqinfo(path)
     }
     
     ## -- Tile the genome
-    if (is_mcool(cool_path)) {
+    if (is_mcool(path)) {
         bins <- GenomicRanges::tileGenome(
             seqlengths = GenomeInfoDb::seqlengths(si), 
             tilewidth = current_res, 
@@ -130,7 +131,7 @@ contacts <- function(
     }
 
     ## -- Read interactions
-    gis <- cool2gi(cool_path, resolution = current_res, coords = focus)
+    gis <- cool2gi(path, resolution = current_res, coords = focus)
     mcols <- GenomicRanges::mcols(gis)
     GenomicRanges::mcols(gis) <- NULL
 
@@ -148,7 +149,7 @@ contacts <- function(
         metadata = metadata, 
         seqinfo = si, 
         resolutions = resolutions, 
-        current_resolution = ifelse(is_mcool(cool_path), current_res, res), 
+        current_resolution = ifelse(is_mcool(path), current_res, res), 
         bins = bins, 
         interactions = gis, 
         scores = S4Vectors::SimpleList(
@@ -158,7 +159,7 @@ contacts <- function(
         features = features, 
         pairsFile = pairsFile, 
         matrixType = "sparse", 
-        coolPath = as.character(cool_path)
+        coolPath = as.character(path)
     )
     methods::validObject(x)
     return(x)
@@ -166,8 +167,8 @@ contacts <- function(
 
 setValidity("contacts",
     function(object) {
-        if (!is(focus(object), "GRangesOrPairsOrcharacterOrNULL"))
-            return("'focus' slot must be a GRanges")
+        if (!is(focus(object), "characterOrNULL"))
+            return("'focus' slot must be a characterOrNULL")
         if (!is(resolutions(object), "numeric"))
             return("'resolutions' slot must be an numeric vector")
         if (!is(bins(object), "GRanges"))
@@ -202,7 +203,9 @@ setMethod("length", "contacts", function(x) length(interactions(x)))
 #'
 #' @name [
 #' @docType methods
-#' @aliases [,contacts,ANY,ANY,ANY-method
+#' @aliases [,contacts,numeric,ANY,ANY-method
+#' @aliases [,contacts,logical,ANY,ANY-method
+#' @aliases [,contacts,character,ANY,ANY-method
 #'
 #' @param x A \code{contacts} object.
 #' @param i a range or boolean vector.
@@ -211,11 +214,32 @@ setMethod("length", "contacts", function(x) length(interactions(x)))
 #' @examples 
 #' contacts_yeast[1:10]
 
-setMethod("[", signature("contacts"), function(x, i) {
-    x@interactions <- interactions(x)[i]
+setMethod("[", signature("contacts", "numeric"), function(x, i) {
+    interactions(x) <- interactions(x)[i]
     for (K in seq_along(scores(x))) {
         x@scores[[K]] <- x@scores[[K]][i]
     }
+    matrixType(x) <- "subset"
+    return(x)
+})
+setMethod("[", signature("contacts", "logical"), function(x, i) {
+    interactions(x) <- interactions(x)[i]
+    for (K in seq_along(scores(x))) {
+        x@scores[[K]] <- x@scores[[K]][i]
+    }
+    matrixType(x) <- "subset"
+    return(x)
+})
+setMethod("[", signature("contacts", "character"), function(x, i) {
+    `%over%` <- IRanges::`%over%`
+    i_ <- char2pair(i)
+    sub <- anchors(x)[['first']] %over% S4Vectors::first(i_) & 
+        anchors(x)[['second']] %over% S4Vectors::second(i_)
+    interactions(x) <- interactions(x)[sub]
+    for (K in seq_along(scores(x))) {
+        x@scores[[K]] <- x@scores[[K]][sub]
+    }
+    matrixType(x) <- "subset"
     return(x)
 })
 
@@ -233,6 +257,27 @@ setMethod("[", signature("contacts"), function(x, i) {
 
 setGeneric("matrixType", function(x) {standardGeneric("matrixType")})
 setMethod("matrixType", "contacts", function(x) x@matrixType)
+
+#' @rdname contacts
+#'
+#' @name matrixType<-
+#' @docType methods
+#' @aliases matrixType<-,contacts,character-method
+#'
+#' @param x A \code{contacts} object.
+#' @param name name
+#' @param value value
+#'
+#' @export
+#' @examples 
+#' matrixType(contacts_yeast) <- "custom"
+#' matrixType(contacts_yeast)
+
+setGeneric("matrixType<-", function(x, value) {standardGeneric("matrixType<-")})
+setMethod("matrixType<-", c(x = "contacts", value = "character"), function(x, value) {
+    x@matrixType <- value
+    return(x)
+})
 
 #' @rdname contacts
 #'
@@ -337,6 +382,24 @@ setMethod("interactions", "contacts", function(x) x@interactions)
 
 #' @rdname contacts
 #'
+#' @name interactions<-
+#' @docType methods
+#' @aliases interactions<-,contacts,GInteractions-method
+#'
+#' @param x A \code{contacts} object.
+#' @param name name
+#' @param value value
+#'
+#' @export
+
+setGeneric("interactions<-", function(x, value) {standardGeneric("interactions<-")})
+setMethod("interactions<-", signature(x = "contacts", value = "GInteractions"), function(x, value) {
+    x@interactions <- value
+    x
+})
+
+#' @rdname contacts
+#'
 #' @name scores
 #' @docType methods
 #' @aliases scores,contacts,missing-method
@@ -391,11 +454,10 @@ setMethod("scores<-", c(x = "contacts", name = "character", value = "numeric"), 
     return(x)
 })
 
-#' features method for objects of class \code{contacts}.
-#'
+#' @rdname contacts
+#' 
 #' @name features
 #' @docType methods
-#' @rdname contacts
 #' @aliases features,contacts,missing-method
 #' @aliases features,contacts,character-method
 #' @aliases features,contacts,numeric-method
@@ -426,11 +488,10 @@ setMethod("features", signature(x = "contacts", name = "numeric"), function(x, n
     x@features[[name]]
 })
 
-#' `features<-` method for objects of class \code{contacts}.
-#'
+#' @rdname contacts
+#' 
 #' @name features<-
 #' @docType methods
-#' @rdname contacts
 #' @aliases features<-,contacts,character,GRangesOrGInteractions-method
 #'
 #' @param x A \code{contacts} object.
@@ -449,11 +510,10 @@ setMethod("features<-", signature(x = "contacts", name = "character", value = "G
     return(x)
 })
 
-#' pairsFile method for objects of class \code{contacts}.
-#'
+#' @rdname contacts
+#' 
 #' @name pairsFile
 #' @docType methods
-#' @rdname contacts
 #' @aliases pairsFile,contacts-method
 #'
 #' @param x A \code{contacts} object.
@@ -467,11 +527,10 @@ setMethod("pairsFile", "contacts", function(x) {
     x@pairsFile
 })
 
-#' `pairsFile<-` method for objects of class \code{contacts}.
-#'
+#' @rdname contacts
+#' 
 #' @name pairsFile<-
 #' @docType methods
-#' @rdname contacts
 #' @aliases pairsFile<-,contacts,character-method
 #'
 #' @param x A \code{contacts} object.
@@ -489,11 +548,10 @@ setMethod("pairsFile<-", signature(x = "contacts", value = "character"), functio
     x
 })
 
-#' anchors method for objects of class \code{contacts}.
-#'
+#' @rdname contacts
+#' 
 #' @name anchors
 #' @docType methods
-#' @rdname contacts
 #' @aliases anchors,contacts-method
 #'
 #' @param x A \code{contacts} object.
@@ -504,11 +562,10 @@ setMethod("pairsFile<-", signature(x = "contacts", value = "character"), functio
 
 setMethod("anchors", "contacts", function(x) anchors(scores(x, 1)))
 
-#' regions method for objects of class \code{contacts}.
-#'
+#' @rdname contacts
+#' 
 #' @name regions
 #' @docType methods
-#' @rdname contacts
 #' @aliases regions,contacts-method
 #'
 #' @param x A \code{contacts} object.
@@ -519,11 +576,10 @@ setMethod("anchors", "contacts", function(x) anchors(scores(x, 1)))
 
 setMethod("regions", "contacts", function(x) regions(scores(x, 1)))
 
-#' summary method for objects of class \code{contacts}.
-#'
+#' @rdname contacts
+#' 
 #' @name summary
 #' @docType methods
-#' @rdname contacts
 #' @aliases summary,contacts-method
 #'
 #' @param x A \code{contacts} object.
@@ -539,11 +595,10 @@ setMethod("summary", "contacts", function(object) {
 })
 
 
-#' Show method for objects of class \code{contacts}.
-#'
+#' @rdname contacts
+#' 
 #' @name show
 #' @docType methods
-#' @rdname contacts
 #' @aliases show,contacts-method
 #'
 #' @param object A \code{contacts} object.
@@ -557,20 +612,7 @@ setMethod("show", signature("contacts"), function(object) {
     if (is.null(focus(object))) {
         focus_str <- "whole genome"
     } 
-    else if (is(focus(object), 'GRanges') & length(focus(object)) == 1) {
-        focus_str <- formatCoords(focus(object))
-    } 
-    else if (is(focus(object), 'GRanges') & length(focus(object)) > 1) {
-        focus_str <- glue::glue('multiple GRanges({length(focus(object))})')
-    }
-    else if (is(focus(object), 'Pairs')) {
-        focus_str <- paste0(
-            as.character(S4Vectors::first(focus(object))), 
-            ' x ', 
-            as.character(S4Vectors::second(focus(object)))
-        )
-    }
-    else if (is(focus(object), 'character')) {
+    else {
         focus_str <- formatCoords(focus(object))
     }
 
