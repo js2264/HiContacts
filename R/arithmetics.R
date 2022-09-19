@@ -277,6 +277,14 @@ merge <- function(..., use.scores = 'balanced') {
     `%>%` <- tidyr::`%>%`
     contacts_list <- list(...)
     
+    ## -- Check that at least 2 `contacts` objects are passed to `merge()`
+    if (length(contacts_list) < 2) {
+        stop("Please provide at least 2 `contacts` objects.")
+    } 
+    else if (!all(unlist(lapply(contacts_list, is, 'contacts')))) {
+        stop("Please only provide `contacts` objects.")
+    }
+
     ## -- Check that all objects are comparable (bins, regions, resolution, seqinfo)
     is_comparable(...)
 
