@@ -88,7 +88,7 @@
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">mcool_file</span> <span class="op">&lt;-</span> <span class="fu">HiContactsData</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/HiContactsData/man/HiContactsData.html" class="external-link">HiContactsData</a></span><span class="op">(</span><span class="st">'yeast_wt'</span>, format <span class="op">=</span> <span class="st">'mcool'</span><span class="op">)</span></span>
 <span><span class="va">range</span> <span class="op">&lt;-</span> <span class="st">'I:20000-80000'</span> <span class="co"># range of interest</span></span>
-<span><span class="fu"><a href="reference/parse.html">lsCoolResolutions</a></span><span class="op">(</span><span class="va">mcool_file</span><span class="op">)</span></span>
+<span><span class="fu"><a href="reference/parse.html">lsCoolResolutions</a></span><span class="op">(</span><span class="va">mcool_file</span>, verbose <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="va">contacts</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/contacts.html">contacts</a></span><span class="op">(</span><span class="va">mcool_file</span>, focus <span class="op">=</span> <span class="va">range</span>, res <span class="op">=</span> <span class="fl">1000</span><span class="op">)</span></span>
 <span><span class="va">contacts</span></span></code></pre></div>
 </div>
