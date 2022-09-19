@@ -15,15 +15,15 @@
 \alias{is_symmetrical}
 \title{Checks functions}
 \usage{
-check_cool_file(cool_path)
+check_cool_file(path)
 
 check_resolution(contacts, resolution)
 
-check_cool_format(cool_path, resolution)
+check_cool_format(path, resolution)
 
-is_mcool(cool_path)
+is_mcool(path)
 
-is_cool(cool_path)
+is_cool(path)
 
 is_same_seqinfo(...)
 
@@ -40,7 +40,7 @@ is_square(pair)
 is_symmetrical(contacts)
 }
 \arguments{
-\item{cool_path}{Path of a (m)cool file}
+\item{path}{Path of a (m)cool file}
 
 \item{contacts}{A \code{contacts} object}
 

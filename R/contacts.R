@@ -392,7 +392,6 @@ setMethod("interactions", "contacts", function(x) x@interactions)
 #'
 #' @export
 
-setGeneric("interactions<-", function(x, value) {standardGeneric("interactions<-")})
 setMethod("interactions<-", signature(x = "contacts", value = "GInteractions"), function(x, value) {
     x@interactions <- value
     x

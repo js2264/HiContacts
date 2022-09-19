@@ -7,9 +7,13 @@
 \alias{length}
 \alias{length,contacts-method}
 \alias{[}
-\alias{[,contacts,ANY,ANY,ANY-method}
+\alias{[,contacts,numeric,ANY,ANY-method}
+\alias{[,contacts,logical,ANY,ANY-method}
+\alias{[,contacts,character,ANY,ANY-method}
 \alias{matrixType}
 \alias{matrixType,contacts-method}
+\alias{matrixType<-}
+\alias{matrixType<-,contacts,character-method}
 \alias{coolPath}
 \alias{coolPath,contacts-method}
 \alias{seqinfo,contacts-method}
@@ -23,6 +27,8 @@
 \alias{focus,contacts-method}
 \alias{interactions}
 \alias{interactions,contacts-method}
+\alias{interactions<-}
+\alias{interactions<-,contacts,GInteractions-method}
 \alias{scores}
 \alias{scores,contacts,missing-method}
 \alias{scores,contacts,character-method}
@@ -50,7 +56,7 @@
 \title{\code{contacts} S4 class and methods}
 \usage{
 contacts(
-  cool_path,
+  path,
   resolution = NULL,
   focus = NULL,
   metadata = list(),
@@ -62,9 +68,11 @@ contacts(
 
 \S4method{length}{contacts}(x)
 
-\S4method{[}{contacts,ANY,ANY,ANY}(x, i)
+\S4method{[}{contacts,numeric,ANY,ANY}(x, i)
 
 matrixType(x)
+
+matrixType(x) <- value
 
 coolPath(x)
 
@@ -79,6 +87,8 @@ bins(x)
 focus(x)
 
 \S4method{interactions}{contacts}(x)
+
+\S4method{interactions}{contacts,GInteractions}(x) <- value
 
 scores(x, name)
 
@@ -101,13 +111,14 @@ pairsFile(x) <- value
 \S4method{show}{contacts}(object)
 }
 \arguments{
-\item{cool_path}{Path of a (m)cool file}
+\item{path}{Path of a (m)cool file}
 
 \item{resolution}{Resolution to use with mcool file}
 
 \item{focus}{focus Chr. coordinates for which
-interaction counts are extracted from the .(m)cool file.
-Can be provided as a character string or as a GRanges object}
+interaction counts are extracted from the .(m)cool file, provided
+as a character string (e.g. "II:4000-5000"). If not provided,
+the entire (m)cool file will be imported.}
 
 \item{metadata}{list of metadata}
 
@@ -119,9 +130,9 @@ Can be provided as a character string or as a GRanges object}
 
 \item{i}{a range or boolean vector.}
 
-\item{name}{name}
-
 \item{value}{value}
+
+\item{name}{name}
 
 \item{object}{A \code{contacts} object.}
 }
@@ -130,22 +141,6 @@ a new \code{contacts} object.
 }
 \description{
 \code{contacts} S4 class and methods
-
-features method for objects of class \code{contacts}.
-
-\verb{features<-} method for objects of class \code{contacts}.
-
-pairsFile method for objects of class \code{contacts}.
-
-\verb{pairsFile<-} method for objects of class \code{contacts}.
-
-anchors method for objects of class \code{contacts}.
-
-regions method for objects of class \code{contacts}.
-
-summary method for objects of class \code{contacts}.
-
-Show method for objects of class \code{contacts}.
 }
 \section{Slots}{
 
@@ -185,6 +180,8 @@ data(contacts_yeast)
 contacts_yeast
 length(contacts_yeast)
 contacts_yeast[1:10]
+matrixType(contacts_yeast)
+matrixType(contacts_yeast) <- "custom"
 matrixType(contacts_yeast)
 coolPath(contacts_yeast)
 seqinfo(contacts_yeast)
