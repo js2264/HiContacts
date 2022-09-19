@@ -21,7 +21,7 @@ remotes::install_github('js2264/HiContacts')
 ```r
 mcool_file <- HiContactsData::HiContactsData('yeast_wt', format = 'mcool')
 range <- 'I:20000-80000' # range of interest
-lsCoolResolutions(mcool_file)
+lsCoolResolutions(mcool_file, verbose = TRUE)
 contacts <- contacts(mcool_file, focus = range, res = 1000)
 contacts
 ```

@@ -367,7 +367,7 @@ serpentinify <- function(x, use.scores = 'balanced',
     gis <- scores(x, use.scores)
 
     ## Check that only 1 chromosome is present in the gis object
-    seqnames <- unique(as.vector(GenomicRanges::seqnames(InteractionSet::anchors(gis)[[1]])))
+    seqnames <- unique(as.vector(GenomicRanges::seqnames(InteractionSet::anchors(gis)[['first']])))
     if (length(seqnames) > 1) {
         stop('Smoothing maps across multiple chromosomes is not supported. Aborting now.')
     }

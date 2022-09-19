@@ -42,7 +42,7 @@ getPs <- function(
         message("pairsFile not specified. The P(s) curve will be an approximation.")
         pairs <- scores(x, 'raw')
         df <- tibble::tibble(
-            chr = as.vector(GenomeInfoDb::seqnames(InteractionSet::anchors(pairs)[[1]])),
+            chr = as.vector(GenomeInfoDb::seqnames(InteractionSet::anchors(pairs)[['first']])),
             distance = InteractionSet::pairdist(pairs, type = 'gap'),
             n = pairs$score
         ) %>% 
@@ -97,7 +97,7 @@ getPs <- function(
         message("Importing pairs file ", pairsFile, " in memory. This may take a while...")
         pairs <- pairs2gi(pairsFile)
         df <- tibble::tibble(
-            chr = as.vector(GenomeInfoDb::seqnames(InteractionSet::anchors(pairs)[[1]])),
+            chr = as.vector(GenomeInfoDb::seqnames(InteractionSet::anchors(pairs)[['first']])),
             distance = pairs$distance
         ) %>% 
             tidyr::drop_na() %>% 

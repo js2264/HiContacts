@@ -93,7 +93,7 @@ plotMatrix <- function(
     }
     else {
         an <- anchors(x)
-        diff_an <- an[[1]] != an[[2]]
+        diff_an <- an[['first']] != an[['second']]
         .scores <- gis$score[diff_an]
         .scores <- .scores[!is.na(.scores)]
         .scores <- .scores[!is.infinite(.scores)]
@@ -125,7 +125,7 @@ plotMatrix <- function(
     ## -- If loops are provided, filter them and add
     if (!is.null(loops)) {
         filtered_loops <- tibble::as_tibble(
-            loops[anchors(loops)[[1]] %over% regions(gis) & anchors(loops)[[2]] %over% regions(gis)]
+            loops[anchors(loops)[['first']] %over% regions(gis) & anchors(loops)[['second']] %over% regions(gis)]
         )
         p_loops <- ggplot2::geom_point(
             data = filtered_loops, 
@@ -164,7 +164,7 @@ plotMatrix <- function(
 
     # -- Check number of chromosomes that were extracted
     nseqnames <- length(unique(as.vector(
-        GenomicRanges::seqnames(InteractionSet::anchors(gis)[[1]])
+        GenomicRanges::seqnames(InteractionSet::anchors(gis)[['first']])
     )))
 
     if (nseqnames == 1) { ## Single chromosome coordinates to plot

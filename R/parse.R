@@ -353,12 +353,12 @@ cool2gi <- function(file, coords = NULL, resolution = NULL) {
     if (!is.null(coords_chr) & all(!is.na(coords_chr)) & !is_pair) {
         # Make sure no extra GInteractions is pulled from cool (happends e.g. when fetching whole chrs.)
         # DEFINITELY HACKY HERE
-        sub <- seqnames(InteractionSet::anchors(gi)[[1]]) == coords_chr & 
-            seqnames(InteractionSet::anchors(gi)[[2]]) == coords_chr
+        sub <- seqnames(InteractionSet::anchors(gi)[['first']]) == coords_chr & 
+            seqnames(InteractionSet::anchors(gi)[['second']]) == coords_chr
         gi <- gi[sub]
         regs <- unique(c(
-            InteractionSet::anchors(gi)[[1]], 
-            InteractionSet::anchors(gi)[[2]]
+            InteractionSet::anchors(gi)[['first']], 
+            InteractionSet::anchors(gi)[['second']]
         ))
         names(regs) <- paste(
             GenomicRanges::seqnames(regs), 

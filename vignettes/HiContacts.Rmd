@@ -66,7 +66,7 @@ specify the resolution at which count values are recovered.
 ```{r}
 mcool_file <- HiContactsData('yeast_wt', format = 'mcool')
 range <- 'II:0-800000' # range of interest
-lsCoolResolutions(mcool_file)
+lsCoolResolutions(mcool_file, verbose = TRUE)
 # contacts <- contacts(mcool_file, focus = range) # This would throw an error!
 contacts <- contacts(mcool_file, focus = range, res = 1000)
 contacts
@@ -174,12 +174,8 @@ p <- contacts(mcool_file, focus = 'IV', res = 1000) %>%
 ## Subsetting a contact map 
 
 ```{r}
-mcool_file <- HiContactsData('yeast_wt', format = 'mcool')
 contacts <- contacts(mcool_file, focus = range, res = 2000)
-contacts_subset <- contacts[
-    start(anchors(contacts)[[1]]) >= 25000 & end(anchors(contacts)[[1]]) <= 30000 & 
-    start(anchors(contacts)[[2]]) >= 25000 & end(anchors(contacts)[[2]]) <= 30000
-]
+contacts_subset <- contacts['II:20000-50000']
 InteractionSet::boundingBox(interactions(contacts))
 InteractionSet::boundingBox(interactions(contacts_subset))
 ```
@@ -212,17 +208,15 @@ cowplot::plot_grid(
 mcool_file_1 <- HiContactsData('yeast_eco1', format = 'mcool')
 mcool_file_2 <- HiContactsData('yeast_wt', format = 'mcool')
 contacts_1 <- contacts(mcool_file_1, focus = 'II', res = 2000)
-contacts_1 <- contacts_1[
-    start(anchors(contacts_1)[[1]]) < 300000 & end(anchors(contacts_1)[[1]]) < 300000 & 
-    start(anchors(contacts_1)[[2]]) < 300000 & end(anchors(contacts_1)[[2]]) < 300000
-]
+contacts_1 <- contacts_1['II:1-300000']
 contacts_2 <- contacts(mcool_file_2, focus = 'II', res = 2000)
-contacts_2 <- contacts_2[
-    start(anchors(contacts_2)[[1]]) > 500000 & end(anchors(contacts_2)[[1]]) > 500000 & 
-    start(anchors(contacts_2)[[2]]) > 500000 & end(anchors(contacts_2)[[2]]) > 500000
-]
+contacts_2 <- contacts_2['II:500001-800000']
 merged_contacts <- merge(contacts_1, contacts_2) 
+contacts_1
+contacts_2
 merged_contacts
+InteractionSet::boundingBox(interactions(contacts_1))
+InteractionSet::boundingBox(interactions(contacts_2))
 InteractionSet::boundingBox(interactions(merged_contacts))
 ```
 

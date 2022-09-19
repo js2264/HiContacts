@@ -3,7 +3,7 @@
 #' Useful functions to validate the nature/structure of (m)cool files or 
 #' `contacts` objects.
 #' 
-#' @param cool_path Path of a (m)cool file
+#' @param path Path of a (m)cool file
 #' @param contacts A `contacts` object
 #' @param resolution Resolution
 #' @param pair Pairs object with length of 1
@@ -12,14 +12,14 @@
 #' 
 #' @rdname checks
 
-check_cool_file <- function(cool_path) {
-    if (!file.exists(cool_path) | {
-        isTRUE(nzchar(Sys.readlink(cool_path), keepNA = TRUE)) & 
-        !file.exists(Sys.readlink(cool_path))
+check_cool_file <- function(path) {
+    if (!file.exists(path) | {
+        isTRUE(nzchar(Sys.readlink(path), keepNA = TRUE)) & 
+        !file.exists(Sys.readlink(path))
     }) {
         stop('File not found. Aborting now')
     }
-    if (!{is_cool(cool_path) | is_mcool(cool_path)}) {
+    if (!{is_cool(path) | is_mcool(path)}) {
         stop('Provided file is not a .cool/.mcool file.\n  Aborting now.')
     }
     TRUE
@@ -36,16 +36,16 @@ check_resolution <- function(contacts, resolution) {
 
 #' @rdname checks
 
-check_cool_format <- function(cool_path, resolution) {
-    if (is_mcool(cool_path)) {
+check_cool_format <- function(path, resolution) {
+    if (is_mcool(path)) {
         if (is.null(resolution)) {
             stop("File is in .mcool format, a resolution must be provided. Aborting now.")
         }
-        if (!resolution %in% lsCoolResolutions(cool_path)) {
+        if (!resolution %in% lsCoolResolutions(path)) {
             stop("Resolution not stored in cool file. Aborting now.")
         }
     }
-    if (is_cool(cool_path)) {
+    if (is_cool(path)) {
         if (!is.null(resolution)) {
             stop("File is in .cool format, please do not specify any resolution. Aborting now.")
         }
@@ -55,15 +55,15 @@ check_cool_format <- function(cool_path, resolution) {
 
 #' @rdname checks
 
-is_mcool <- function(cool_path) {
-    x <- lsCoolFiles(cool_path)
+is_mcool <- function(path) {
+    x <- lsCoolFiles(path)
     all(grepl('^/resolutions', x))
 }
 
 #' @rdname checks
 
-is_cool <- function(cool_path) {
-    x <- lsCoolFiles(cool_path)
+is_cool <- function(path) {
+    x <- lsCoolFiles(path)
     all(!grepl('^/resolutions', x))
 }
 
@@ -145,15 +145,10 @@ is_square <- function(pair) {
 #' is_symmetrical(contacts_yeast)
 
 is_symmetrical <- function(contacts) {
-    if (is.character(focus(contacts))) {
-        if (grepl(' x ', focus(contacts))) {
-            return(FALSE)
-        }
-        else {
-            return(TRUE)
-        }
-    }
-    else if (methods::is(focus(contacts), 'Pairs')) {
+    if (grepl(' x ', focus(contacts))) {
         return(FALSE)
+    }
+    else {
+        return(TRUE)
     }
 }
