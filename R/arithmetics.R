@@ -41,12 +41,12 @@
 detrend <- function(x, use.scores = 'balanced') {
     gis <- scores(x, use.scores)
     gis$diag <- InteractionSet::pairdist(gis) / resolution(x)
-    expected <- tibble::as_tibble(gis) %>% 
-        dplyr::group_by(diag) %>% 
-        dplyr::summarize(average_interaction_per_diag = mean(score, na.rm = TRUE)) %>% 
+    expected <- tibble::as_tibble(gis) |> 
+        dplyr::group_by(diag) |> 
+        dplyr::summarize(average_interaction_per_diag = mean(score, na.rm = TRUE)) |> 
         dplyr::mutate(average_interaction_per_diag = average_interaction_per_diag / 2)
-    gis$expected <- tibble::as_tibble(gis) %>% 
-        dplyr::left_join(expected, by = 'diag') %>% 
+    gis$expected <- tibble::as_tibble(gis) |> 
+        dplyr::left_join(expected, by = 'diag') |> 
         dplyr::pull(average_interaction_per_diag)
     gis$score_over_expected <- log2(gis$score / gis$expected)
     scores(x, "expected") <- gis$expected
@@ -67,6 +67,7 @@ detrend <- function(x, use.scores = 'balanced') {
 #' @importFrom tibble as_tibble
 #' @importFrom dplyr rename
 #' @importFrom dplyr mutate
+#' @importFrom dplyr n
 #' @importFrom S4Vectors SimpleList
 #' @export
 #' @examples 
@@ -88,17 +89,17 @@ autocorrelate <- function(x, use.scores = 'balanced', ignore_ndiags = 3) {
     }
     # co <- corrr::correlate(log10(mat), diagonal = 0, method = "pearson", quiet = TRUE)
     co <- stats::cor(log10(mat), use = 'pairwise.complete.obs', method = "pearson")
-    co <- tibble::as_tibble(co) %>% 
-        dplyr::mutate(term = paste0('V', 1:nrow(.))) %>% 
+    co <- tibble::as_tibble(co) |> 
+        dplyr::mutate(term = paste0('V', 1:dplyr::n())) |> 
         dplyr::relocate(term)
     colnames(co) <- c('term', names(reg))
     co$term <- names(reg)
-    mat2 <- co %>%
-        tidyr::pivot_longer(-term, names_to = "y", values_to = "corr") %>%
+    mat2 <- co |>
+        tidyr::pivot_longer(-term, names_to = "y", values_to = "corr") |>
         dplyr::rename("x" = "term")
     gis2 <- InteractionSet::GInteractions(
-        anchor1 = stringr::str_replace(mat2$x, '_', ':') %>% stringr::str_replace('_', '-') %>% as('GRanges'), 
-        anchor2 = stringr::str_replace(mat2$y, '_', ':') %>% stringr::str_replace('_', '-') %>% as('GRanges'), 
+        anchor1 = stringr::str_replace(mat2$x, '_', ':') |> stringr::str_replace('_', '-') |> as('GRanges'), 
+        anchor2 = stringr::str_replace(mat2$y, '_', ':') |> stringr::str_replace('_', '-') |> as('GRanges'), 
         score = as.array(mat2$corr)
     )
 
@@ -150,7 +151,6 @@ autocorrelate <- function(x, use.scores = 'balanced', ignore_ndiags = 3) {
 #' plotMatrix(div_contacts, scale = 'log2', limits = c(-2, 2), cmap = bwrColors())
 
 divide <- function(x, by, use.scores = 'balanced') {
-    `%>%` <- tidyr::`%>%`
     
     ## -- Check that all objects are comparable (bins, regions, resolution, seqinfo)
     is_comparable(x, by)
@@ -192,12 +192,12 @@ divide <- function(x, by, use.scores = 'balanced') {
 
     ## Make a full-featured interactions (storing divided scores in `score`)
     seqnames <- unique(GenomicRanges::seqnames(regions(x)))
-    mat <- sK %>%
-        tibble::as_tibble() %>% 
-        setNames(GenomicRanges::start(anchors(gi2cm(x_gis))$row)) %>%
-        dplyr::mutate(start2 = GenomicRanges::start(anchors(gi2cm(by_gis))$row)) %>% 
-        tidyr::pivot_longer(-start2, names_to = 'start1', values_to = 'score') %>% 
-        dplyr::mutate(start1 = as.numeric(start1)) %>%
+    mat <- sK |>
+        tibble::as_tibble() |> 
+        setNames(GenomicRanges::start(anchors(gi2cm(x_gis))$row)) |>
+        dplyr::mutate(start2 = GenomicRanges::start(anchors(gi2cm(by_gis))$row)) |> 
+        tidyr::pivot_longer(-start2, names_to = 'start1', values_to = 'score') |> 
+        dplyr::mutate(start1 = as.numeric(start1)) |>
         dplyr::mutate(
             end1 = start1 + binsize, 
             end2 = start2 + binsize
@@ -211,7 +211,7 @@ divide <- function(x, by, use.scores = 'balanced') {
         IRanges::IRanges(mat$start2, width = binsize)
     )
     reg <- unique(c(an1, an2))
-    bins <- c(bins(x), bins(by)) %>% 
+    bins <- c(bins(x), bins(by)) |> 
         unique() 
     gi <- InteractionSet::GInteractions(
         anchor1 = an1, 
@@ -274,7 +274,6 @@ divide <- function(x, by, use.scores = 'balanced') {
 #' merged_contacts
 
 merge <- function(..., use.scores = 'balanced') {
-    `%>%` <- tidyr::`%>%`
     contacts_list <- list(...)
     
     ## -- Check that at least 2 `contacts` objects are passed to `merge()`
@@ -291,8 +290,8 @@ merge <- function(..., use.scores = 'balanced') {
     # Unify all the interactions
     ints <- do.call(
         c, lapply(contacts_list, FUN = interactions) 
-    ) %>% 
-        unique() %>% 
+    ) |> 
+        unique() |> 
         sort()
     
     # Set all scores for each scores to 0
@@ -402,11 +401,11 @@ serpentinify <- function(x, use.scores = 'balanced',
     }
 
     ## Make a full-featured interactions (storing smoothed scores in `score`)
-    gis_smoothened <- sK %>%
-        tibble::as_tibble() %>% 
-        stats::setNames(GenomicRanges::start(anchors(gi2cm(gis))$row)) %>%
-        dplyr::mutate(start1 = GenomicRanges::start(anchors(gi2cm(gis))$row)) %>% 
-        tidyr::pivot_longer(-start1, names_to = 'start2', values_to = 'score') %>% 
+    gis_smoothened <- sK |>
+        tibble::as_tibble() |> 
+        stats::setNames(GenomicRanges::start(anchors(gi2cm(gis))$row)) |>
+        dplyr::mutate(start1 = GenomicRanges::start(anchors(gi2cm(gis))$row)) |> 
+        tidyr::pivot_longer(-start1, names_to = 'start2', values_to = 'score') |> 
         dplyr::mutate(start2 = as.numeric(start2))
     an1 <- GenomicRanges::GRanges(
         seqnames = seqnames, 

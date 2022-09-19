@@ -25,6 +25,7 @@
 #' @importFrom dplyr tally
 #' @importFrom dplyr arrange
 #' @importFrom dplyr lead
+#' @importFrom dplyr cur_data
 #' @export
 #' @examples 
 #' library(HiContacts)
@@ -45,9 +46,9 @@ getPs <- function(
             chr = as.vector(GenomeInfoDb::seqnames(InteractionSet::anchors(pairs)[['first']])),
             distance = InteractionSet::pairdist(pairs, type = 'gap'),
             n = pairs$score
-        ) %>% 
-            tidyr::drop_na() %>% 
-            dplyr::filter(!chr %in% filtered_chr) %>% 
+        ) |> 
+            tidyr::drop_na() |> 
+            dplyr::filter(!chr %in% filtered_chr) |> 
             dplyr::mutate(binned_distance = PsBreaks()$break_pos[findInterval(distance, vec = PsBreaks()$break_pos, all.inside = TRUE)])
         if (by_chr) {
             df <- dplyr::group_by(df, chr, binned_distance)
@@ -55,9 +56,9 @@ getPs <- function(
         else {
             df <- dplyr::group_by(df, binned_distance)
         }
-        d <- dplyr::summarize(df, ninter = sum(n)) %>%
-            dplyr::mutate(p = ninter/sum(ninter)) %>% 
-            dplyr::left_join(PsBreaks(), by = c('binned_distance' = 'break_pos')) %>% 
+        d <- dplyr::summarize(df, ninter = sum(n)) |>
+            dplyr::mutate(p = ninter/sum(ninter)) |> 
+            dplyr::left_join(PsBreaks(), by = c('binned_distance' = 'break_pos')) |> 
             dplyr::mutate(norm_p = p / binwidth)
         if (by_chr) {
             d <- dplyr::group_by(d, chr)
@@ -65,30 +66,30 @@ getPs <- function(
         else {
             d <- d
         }
-        ps <- dplyr::group_split(d) %>% 
+        ps <- dplyr::group_split(d) |> 
             lapply(function(x) {
-                x %>% 
+                x |> 
                     dplyr::mutate(
                         norm_p_unity = norm_p / 
-                            {dplyr::slice(x, which.min(abs(x$binned_distance - 100000))) %>% dplyr::pull(norm_p)}
-                    ) %>% 
+                            {dplyr::slice(x, which.min(abs(x$binned_distance - 100000))) |> dplyr::pull(norm_p)}
+                    ) |> 
                     dplyr::mutate(
                         slope = (log10(dplyr::lead(norm_p)) - log10(norm_p)) / 
                             (log10(dplyr::lead(binned_distance)) - log10(binned_distance))
-                    ) %>% 
+                    ) |> 
                     dplyr::mutate(
                         slope = c(0, predict(
-                            loess(slope ~ binned_distance, span = 0.5, data = .)
+                            loess(slope ~ binned_distance, span = 0.5, data = dplyr::cur_data())
                         ))
                     )
-            }) %>% 
+            }) |> 
             dplyr::bind_rows()
         if (by_chr) {
-            ps <- dplyr::select(ps, chr, binned_distance, p, norm_p, norm_p_unity, slope) %>% 
+            ps <- dplyr::select(ps, chr, binned_distance, p, norm_p, norm_p_unity, slope) |> 
                 dplyr::arrange(chr, binned_distance)
         } 
         else {
-            ps <- dplyr::select(ps, binned_distance, p, norm_p, norm_p_unity, slope) %>% 
+            ps <- dplyr::select(ps, binned_distance, p, norm_p, norm_p_unity, slope) |> 
                 dplyr::arrange(binned_distance)
         }
         return(ps)
@@ -99,9 +100,9 @@ getPs <- function(
         df <- tibble::tibble(
             chr = as.vector(GenomeInfoDb::seqnames(InteractionSet::anchors(pairs)[['first']])),
             distance = pairs$distance
-        ) %>% 
-            tidyr::drop_na() %>% 
-            dplyr::filter(!chr %in% filtered_chr) %>% 
+        ) |> 
+            tidyr::drop_na() |> 
+            dplyr::filter(!chr %in% filtered_chr) |> 
             dplyr::mutate(binned_distance = PsBreaks()$break_pos[findInterval(distance, vec = PsBreaks()$break_pos, all.inside = TRUE)])
         if (by_chr) {
             df <- dplyr::group_by(df, chr, binned_distance)
@@ -109,9 +110,9 @@ getPs <- function(
         else {
             df <- dplyr::group_by(df, binned_distance)
         }
-        d <- dplyr::tally(df, name = 'ninter') %>%
-            dplyr::mutate(p = ninter/sum(ninter)) %>% 
-            dplyr::left_join(PsBreaks(), by = c('binned_distance' = 'break_pos')) %>% 
+        d <- dplyr::tally(df, name = 'ninter') |>
+            dplyr::mutate(p = ninter/sum(ninter)) |> 
+            dplyr::left_join(PsBreaks(), by = c('binned_distance' = 'break_pos')) |> 
             dplyr::mutate(norm_p = p / binwidth)
         if (by_chr) {
             d <- dplyr::group_by(d, chr)
@@ -119,19 +120,19 @@ getPs <- function(
         else {
             d <- d
         }
-        ps <- dplyr::group_split(d) %>% 
+        ps <- dplyr::group_split(d) |> 
             lapply(function(x) {
-                dplyr::mutate(x, norm_p_unity = norm_p / {dplyr::slice(x, which.min(abs(x$binned_distance - 100000))) %>% dplyr::pull(norm_p)}) %>% 
-                dplyr::mutate(slope = (log10(dplyr::lead(norm_p)) - log10(norm_p)) / (log10(dplyr::lead(binned_distance)) - log10(binned_distance))) %>% 
-                dplyr::mutate(slope = c(0, predict(loess(slope ~ binned_distance, span = 0.5, data = .))))
-            }) %>% 
+                dplyr::mutate(x, norm_p_unity = norm_p / {dplyr::slice(x, which.min(abs(x$binned_distance - 100000))) |> dplyr::pull(norm_p)}) |> 
+                dplyr::mutate(slope = (log10(dplyr::lead(norm_p)) - log10(norm_p)) / (log10(dplyr::lead(binned_distance)) - log10(binned_distance))) |> 
+                dplyr::mutate(slope = c(0, predict(loess(slope ~ binned_distance, span = 0.5, data = dplyr::cur_data()))))
+            }) |> 
             dplyr::bind_rows()
         if (by_chr) {
-            ps <- dplyr::select(ps, chr, binned_distance, p, norm_p, norm_p_unity, slope) %>% 
+            ps <- dplyr::select(ps, chr, binned_distance, p, norm_p, norm_p_unity, slope) |> 
                 dplyr::arrange(binned_distance)
         } 
         else {
-            ps <- dplyr::select(ps, binned_distance, p, norm_p, norm_p_unity, slope) %>% 
+            ps <- dplyr::select(ps, binned_distance, p, norm_p, norm_p_unity, slope) |> 
                 dplyr::arrange(binned_distance)
         }
         return(ps)

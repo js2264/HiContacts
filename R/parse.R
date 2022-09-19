@@ -205,11 +205,10 @@ fetchCool <- function(file, path, resolution = NULL, idx = NULL, ...) {
 #' @rdname parse
 
 lsCoolFiles <- function(file, verbose = FALSE) {
-    `%>%` <- tidyr::`%>%`
-    x <- rhdf5::h5ls(file) %>% 
-        mutate(path = paste0(group, "/", name)) %>% 
-        pull(path) %>% 
-        unique() %>% 
+    x <- rhdf5::h5ls(file) |> 
+        mutate(path = paste0(group, "/", name)) |> 
+        pull(path) |> 
+        unique() |> 
         stringr::str_replace("//", "/")
     len <- length(x)
     if (verbose) {
@@ -238,7 +237,6 @@ lsCoolFiles <- function(file, verbose = FALSE) {
 #' @export
 
 lsCoolResolutions <- function(file, verbose = FALSE) {
-    `%>%` <- tidyr::`%>%`
     if (is_cool(file)) {
         x <- rhdf5::h5ls(file)
         bin_ends <- peekCool(file, '/bins/end', n = 2)
@@ -246,11 +244,11 @@ lsCoolResolutions <- function(file, verbose = FALSE) {
     }
     if (is_mcool(file)) {
         x <- rhdf5::h5ls(file)
-        res <- gsub("/resolutions/", "", x$group) %>%
-            grep(., , pattern = "/", invert = TRUE, value = TRUE) %>%
-            unique() %>%
-            as.numeric() %>%
-            sort() %>%
+        res <- gsub("/resolutions/", "", x$group) |>
+            grep(pattern = "/", invert = TRUE, value = TRUE) |>
+            unique() |>
+            as.numeric() |>
+            sort() |>
             as.character()
     }
     if (verbose) message(S4Vectors::coolcat("resolutions(%d): %s", res))

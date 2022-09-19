@@ -99,11 +99,6 @@ test_that("cistrans works", {
 test_that("plotMatrix works", {
     data(contacts_yeast)
     data(full_contacts_yeast)
-    loops <- system.file("extdata", 'S288C-loops.bedpe', package = 'HiContacts') %>% 
-        rtracklayer::import() %>% 
-        InteractionSet::makeGInteractionsFromGRangesPairs()
-    borders <- system.file("extdata", 'S288C-borders.bed', package = 'HiContacts') %>% 
-        rtracklayer::import()
     expect_s3_class(plotMatrix(contacts_yeast), 'gg')
     expect_s3_class(plotMatrix(contacts_yeast, scale = 'linear'), 'gg')
     expect_s3_class(plotMatrix(contacts_yeast, scale = 'log2'), 'gg')
@@ -204,4 +199,18 @@ test_that("parse works", {
     expect_s4_class({
         contacts(file, focus = 'II:1-10000', resolution = 2000)
     }, 'contacts')
+})
+
+test_that("coerce works", {
+
+    expect_s4_class({
+        as(contacts_yeast, 'GInteractions')
+    }, 'GInteractions')
+    expect_s4_class({
+        as(contacts_yeast, 'ContactMatrix')
+    }, 'ContactMatrix')
+    expect_is({
+        as(contacts_yeast, 'matrix')
+    }, 'matrix')
+
 })

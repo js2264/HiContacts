@@ -53,7 +53,6 @@ plotMatrix <- function(
     chrom_lines = TRUE, 
     cmap = NULL
 ) {
-    `%>%` <- tidyr::`%>%`
     `%over%` <- IRanges::`%over%`
     
     ## -- Extract scores
@@ -170,12 +169,12 @@ plotMatrix <- function(
     if (nseqnames == 1) { ## Single chromosome coordinates to plot
 
         ## -- Convert gis to table and extract x/y
-        mat <- gis %>%
-            tibble::as_tibble() %>%
+        mat <- gis |>
+            tibble::as_tibble() |>
             dplyr::mutate(
                 x = floor(end1 - (end1 - start1) / 2),
                 y = floor(end2 - (end2 - start2) / 2)
-            ) %>% 
+            ) |> 
             drop_na(score)
 
         ## -- Clamp scores to limits
@@ -185,15 +184,15 @@ plotMatrix <- function(
         if (symmetrical) {
             mat <- rbind(
                 mat, 
-                mat %>% 
-                    dplyr::mutate(x2 = y, y = x, x = x2) %>% 
+                mat |> 
+                    dplyr::mutate(x2 = y, y = x, x = x2) |> 
                     dplyr::select(-x2)
             )
             if (!is_symmetrical(x)) {
                 coords <- unlist(S4Vectors::zipup(char2pair(focus(x))))
-                mat <- mat %>% 
+                mat <- mat |> 
                     filter(x >= GenomicRanges::start(coords[1]) & 
-                        x <= GenomicRanges::end(coords[1])) %>% 
+                        x <= GenomicRanges::end(coords[1])) |> 
                     filter(y >= GenomicRanges::start(coords[2]) & 
                         y <= GenomicRanges::end(coords[2]))
             }
@@ -216,20 +215,20 @@ plotMatrix <- function(
     }
 
     else {
-        chroms <- gis %>%
-            tidyr::as_tibble() %>%
-            dplyr::group_by(seqnames2) %>%
-            dplyr::slice_max(order_by = end2, n = 1) %>%
-            dplyr::select(seqnames2, end2) %>%
+        chroms <- gis |>
+            tidyr::as_tibble() |>
+            dplyr::group_by(seqnames2) |>
+            dplyr::slice_max(order_by = end2, n = 1) |>
+            dplyr::select(seqnames2, end2) |>
             dplyr::distinct()
         chroms$cumlength <- cumsum(c(0, chroms$end2)[seq_len(nrow(chroms))])
         chroms$end2 <- NULL
-        mat <- gis %>%
-            tibble::as_tibble() %>%
-            dplyr::left_join(chroms, by = c(seqnames1 = "seqnames2")) %>%
-            dplyr::rename(cumlength_x = cumlength) %>%
-            dplyr::left_join(chroms, by = c(seqnames2 = "seqnames2")) %>%
-            dplyr::rename(cumlength_y = cumlength) %>%
+        mat <- gis |>
+            tibble::as_tibble() |>
+            dplyr::left_join(chroms, by = c(seqnames1 = "seqnames2")) |>
+            dplyr::rename(cumlength_x = cumlength) |>
+            dplyr::left_join(chroms, by = c(seqnames2 = "seqnames2")) |>
+            dplyr::rename(cumlength_y = cumlength) |>
             dplyr::mutate(
                 x = floor(end1 - (end1 - start1) / 2) + cumlength_x,
                 y = floor(end2 - (end2 - start2) / 2) + cumlength_y
@@ -240,8 +239,8 @@ plotMatrix <- function(
         )
         mat <- rbind(
             mat, 
-            mat %>% 
-                dplyr::mutate(x2 = y, y = x, x = x2) %>% 
+            mat |> 
+                dplyr::mutate(x2 = y, y = x, x = x2) |> 
                 dplyr::select(-x2)
         )
 
