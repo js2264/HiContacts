@@ -52,6 +52,7 @@ test_that("checks work", {
         second = 'I:10000-20000'
     )))
     expect_true(is_symmetrical(contacts_yeast))
+    expect_true(is_symmetrical(full_contacts_yeast))
 })
 
 test_that("v4C works", {
@@ -117,9 +118,17 @@ test_that("plotMatrix works", {
     )
     expect_s3_class(
         plotMatrix(
-            full_contacts_yeast, 
-            loops = loops,
-            borders = borders,
+            full_contacts_yeast,
+            scale = 'exp0.2', 
+            limits = c(-1, 1), 
+            cmap = bbrColors()
+        ),
+        'gg'
+    )
+    expect_s3_class(
+        plotMatrix(
+            full_contacts_yeast['II:1-800000'],
+            borders = features(full_contacts_yeast, 'centromeres'),
             scale = 'exp0.2', 
             limits = c(-1, 1), 
             cmap = bbrColors()

@@ -145,6 +145,9 @@ is_square <- function(pair) {
 #' is_symmetrical(contacts_yeast)
 
 is_symmetrical <- function(contacts) {
+    if (is.null(focus(contacts))) {
+        return(TRUE)
+    }
     if (grepl(' x ', focus(contacts))) {
         return(FALSE)
     }
