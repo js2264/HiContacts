@@ -153,8 +153,8 @@ contacts <- function(
         bins = bins, 
         interactions = gis, 
         scores = S4Vectors::SimpleList(
-            'raw' = mcols$count, 
-            'balanced' = mcols$score
+            'raw' = as.numeric(mcols$count),
+            'balanced' = as.numeric(mcols$score)
         ), 
         features = features, 
         pairsFile = pairsFile, 
@@ -410,8 +410,8 @@ setMethod("interactions<-", signature(x = "contacts", value = "GInteractions"), 
 #' @export
 #' @examples 
 #' scores(contacts_yeast)
-#' scores(contacts_yeast, 1)
-#' scores(contacts_yeast, 'balanced')
+#' tail(scores(contacts_yeast, 1))
+#' tail(scores(contacts_yeast, 'balanced'))
 
 setGeneric("scores", function(x, name) {standardGeneric("scores")})
 setMethod("scores", signature(x = "contacts", name = "missing"), function(x) x@scores)
@@ -441,7 +441,7 @@ setMethod("scores", signature(x = "contacts", name = "numeric"), function(x, nam
 #' @export
 #' @examples 
 #' scores(contacts_yeast, 'test') <- runif(length(contacts_yeast))
-#' scores(contacts_yeast, 'test')
+#' tail(scores(contacts_yeast, 'test'))
 
 setGeneric("scores<-", function(x, name, value) {standardGeneric("scores<-")})
 setMethod("scores<-", c(x = "contacts", name = "character", value = "numeric"), function(x, name, value) {
@@ -662,17 +662,16 @@ setMethod("show", signature("contacts"), function(object) {
 setAs("contacts", "GInteractions", function(from) interactions(from))
 setAs("contacts", "ContactMatrix", function(from) {
     if ('balanced' %in% names(scores(from))) {
-        scores(from, 'balanced') |> gi2cm()
+        x <- interactions(from)
+        x$score <- scores(from, 'balanced')
+        gi2cm(x)
     } 
     else {
-        scores(from, 1) |> gi2cm()
+        x <- interactions(from)
+        x$score <- scores(from, 1)
+        gi2cm(x)
     }
 })
 setAs("contacts", "matrix", function(from) {
-    if ('balanced' %in% names(scores(from))) {
-        scores(from, 'balanced') |> gi2cm() |> cm2matrix()
-    } 
-    else {
-        scores(from, 1) |> gi2cm() |> cm2matrix()
-    }
+    as(from, "ContactMatrix") |> cm2matrix()
 })

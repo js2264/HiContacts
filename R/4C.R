@@ -25,7 +25,8 @@
 #' virtual4C(contacts_yeast, GenomicRanges::GRanges('II:490000-510000'))
 
 virtual4C <- function(x, viewpoint, use.scores = 'balanced') {
-    gis <- scores(x, use.scores)
+    gis <- interactions(x)
+    gis$score <- scores(x, use.scores)
     cm <- cm2matrix(gi2cm(gis))
     regions <- regions(gis)
     regions_in_viewpoint <- seq_along(regions) %in% S4Vectors::queryHits(

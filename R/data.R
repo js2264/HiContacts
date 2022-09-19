@@ -1,4 +1,4 @@
-#' Centromere position in S288c genome
+#' Data provided in HiContacts
 #' 
 #' @format An object of class \code{"GRanges"}.
 #' @docType data
@@ -10,8 +10,6 @@
 #' centros_yeast
 "centros_yeast"
 
-#' Example of a `contacts` object
-#' 
 #' @format An object of class \code{"contacts"}.
 #' @docType data
 #' @usage data(contacts_yeast)
@@ -25,8 +23,6 @@
 #' contacts_yeast
 "contacts_yeast"
 
-#' Example of a `contacts` object
-#' 
 #' @format An object of class \code{"contacts"}.
 #' @docType data
 #' @usage data(contacts_yeast_eco1)
@@ -40,8 +36,6 @@
 #' contacts_yeast_eco1
 "contacts_yeast_eco1"
 
-#' Example of a `contacts` object
-#' 
 #' @format An object of class \code{"contacts"}.
 #' @docType data
 #' @usage data(full_contacts_yeast)

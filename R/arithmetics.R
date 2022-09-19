@@ -39,7 +39,8 @@
 #' scores(contacts_yeast)
 
 detrend <- function(x, use.scores = 'balanced') {
-    gis <- scores(x, use.scores)
+    gis <- interactions(x)
+    gis$score <- scores(x, use.scores)
     gis$diag <- InteractionSet::pairdist(gis) / resolution(x)
     expected <- tibble::as_tibble(gis) |> 
         dplyr::group_by(diag) |> 
@@ -80,7 +81,8 @@ detrend <- function(x, use.scores = 'balanced') {
 #' plotMatrix(contacts_yeast, scale = 'linear', limits = c(-1, 1), cmap = bwrColors())
 
 autocorrelate <- function(x, use.scores = 'balanced', ignore_ndiags = 3) {
-    gis <- scores(x, use.scores)
+    gis <- interactions(x)
+    gis$score <- scores(x, use.scores)
     reg <- regions(gis)
     mat <- cm2matrix(gi2cm(gis))
     sdiag(mat, 0) <- NA
@@ -155,8 +157,10 @@ divide <- function(x, by, use.scores = 'balanced') {
     ## -- Check that all objects are comparable (bins, regions, resolution, seqinfo)
     is_comparable(x, by)
 
-    x_gis <- scores(x, use.scores)
-    by_gis <- scores(by, use.scores)
+    x_gis <- interactions(x)
+    x_gis$score <- scores(x, use.scores)
+    by_gis <- interactions(by)
+    by_gis$score <- scores(by, use.scores)
 
     ## -- If regions are different, manually merge them 
     InteractionSet::replaceRegions(x_gis) <- unique(
@@ -311,7 +315,7 @@ merge <- function(..., use.scores = 'balanced') {
         )
         sub <- seq_along(ints) %in% sub
         for (K in seq_along(asss)) {
-            vals <- scores(contacts_list[[idx]])[[K]]
+            vals <- scores(contacts_list[[idx]], K)
             vals[is.na(vals)] <- 0
             asss[[K]][sub] <- asss[[K]][sub] + 
                 vals
@@ -371,7 +375,8 @@ serpentinify <- function(x, use.scores = 'balanced',
 ) {
 
     sp <- reticulate::import('serpentine')
-    gis <- scores(x, use.scores)
+    gis <- interactions(x)
+    gis$score <- scores(x, use.scores)
 
     ## Check that only 1 chromosome is present in the gis object
     seqnames <- unique(as.vector(GenomicRanges::seqnames(InteractionSet::anchors(gis)[['first']])))

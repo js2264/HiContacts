@@ -57,14 +57,17 @@ plotMatrix <- function(
     
     ## -- Extract scores
     if (!is.null(use.scores)) {
-        gis <- scores(x, use.scores)
+        gis <- interactions(x)
+        gis$score <- scores(x, use.scores)
     }
     else {
         if ("balanced" %in% names(scores(x))) {
-            gis <- scores(x, "balanced")
+            gis <- interactions(x)
+            gis$score <- scores(x, "balanced")
         } 
         else {
-            gis <- scores(x, 1)
+            gis <- interactions(x)
+            gis$score <- scores(x, 1)
         }
     }
 

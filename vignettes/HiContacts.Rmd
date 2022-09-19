@@ -103,8 +103,8 @@ bins(contacts)
 regions(contacts)
 interactions(contacts)
 scores(contacts)
-scores(contacts, 1)
-scores(contacts, 'balanced')
+tail(scores(contacts, 1))
+tail(scores(contacts, 'balanced'))
 features(contacts)
 pairsFile(contacts)
 matrixType(contacts)
@@ -120,7 +120,7 @@ Add any `scores` metric using a numerical vector.
 ```{r}
 scores(contacts, 'random') <- runif(length(contacts))
 scores(contacts)
-scores(contacts, 'random')
+tail(scores(contacts, 'random'))
 ```
 
 ### Features 
@@ -196,7 +196,7 @@ mcool_file <- HiContactsData('mESCs', format = 'mcool')
 contacts <- contacts(mcool_file, focus = 'chr2', res = 160000)
 autocorrelated <- autocorrelate(contacts, ignore_ndiags = 20)
 scores(autocorrelated)
-summary(scores(autocorrelated, 1)$score, na.rm = TRUE)
+summary(scores(autocorrelated, 1))
 ```
 
 ## Detrending contact map (map over expected)

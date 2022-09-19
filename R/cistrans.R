@@ -22,7 +22,9 @@ cisTransRatio <- function(x) {
     if (!is.null(focus(x))) {
         stop('Please provide a contact matrix over the entire genome. Aborting now.')
     }
-    cnts <- scores(x, 'raw') |> 
+    gis <- interactions(x)
+    gis$score <- scores(x, 'raw')
+    cnts <- gis |> 
         tibble::as_tibble() |> 
         dplyr::relocate(c(seqnames1, seqnames2))
     cnts_dup <- cnts |> 
