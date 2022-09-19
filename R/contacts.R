@@ -593,7 +593,6 @@ setMethod("summary", "contacts", function(object) {
     ), '\n')
 })
 
-
 #' @rdname contacts
 #' 
 #' @name show
@@ -644,3 +643,40 @@ setMethod("show", signature("contacts"), function(object) {
 
 })
 
+################################################################################
+#                                                                              #
+#                                 COERCING                                    -#
+#                                                                              #
+################################################################################
+
+#' @rdname contacts
+#' 
+#' @name setAs
+#' @docType methods
+#' @aliases setAs,contacts-method
+#'
+#' @param x A \code{contacts} object.
+#'
+#' @export
+#' @examples 
+#' as(contacts_yeast, 'GInteractions')
+#' as(contacts_yeast, 'ContactMatrix')
+#' as(contacts_yeast, 'matrix')[1:10, 1:10]
+
+setAs("contacts", "GInteractions", function(from) interactions(from))
+setAs("contacts", "ContactMatrix", function(from) {
+    if ('balanced' %in% names(scores(from))) {
+        scores(from, 'balanced') |> gi2cm()
+    } 
+    else {
+        scores(from, 1) |> gi2cm()
+    }
+})
+setAs("contacts", "matrix", function(from) {
+    if ('balanced' %in% names(scores(from))) {
+        scores(from, 'balanced') |> gi2cm() |> cm2matrix()
+    } 
+    else {
+        scores(from, 1) |> gi2cm() |> cm2matrix()
+    }
+})
