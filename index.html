@@ -78,31 +78,58 @@
 <div class="section level2">
 <h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
 </h2>
+<p><code>HiContacts</code> will soon be available in Bioconductor. To install the current release use:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu">remotes</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">'js2264/HiContacts'</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/ns-load.html" class="external-link">requireNamespace</a></span><span class="op">(</span><span class="st">"BiocManager"</span>, quietly <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span></span>
+<span>    <span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"BiocManager"</span><span class="op">)</span></span>
+<span><span class="fu">BiocManager</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/BiocManager/man/install.html" class="external-link">install</a></span><span class="op">(</span><span class="st">"HiContacts"</span><span class="op">)</span></span></code></pre></div>
+<p>For now, <code>HiContacts</code> can be installed from Github as follows:</p>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"devtools"</span><span class="op">)</span></span>
+<span><span class="fu">devtools</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">"js2264/HiContacts"</span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/js2264/HiContacts" class="external-link">HiContacts</a></span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
-<h2 id="import-a-mcool-file-as-contacts">Import a .(m)cool file as <code>contacts</code>
-<a class="anchor" aria-label="anchor" href="#import-a-mcool-file-as-contacts"></a>
+<h2 id="citation">Citation<a class="anchor" aria-label="anchor" href="#citation"></a>
 </h2>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<p>If you are using <code>HiContacts</code> in your research, please cite:</p>
+<blockquote>
+<p>Serizay J (2022). <em>HiContacts: HiContacts: R interface to cool files</em>. R package version 0.99.0 <a href="https://github.com/js2264/HiContacts" class="external-link uri">https://github.com/js2264/HiContacts</a>.</p>
+</blockquote>
+</div>
+<div class="section level2">
+<h2 id="how-to-use-hicontacts">How to use <code>HiContacts</code>
+<a class="anchor" aria-label="anchor" href="#how-to-use-hicontacts"></a>
+</h2>
+<p><code>HiContacts</code> includes a introduction vignette where its usage is illustrated. To access the vignette, please use:</p>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/vignette.html" class="external-link">vignette</a></span><span class="op">(</span><span class="st">'HiContacts'</span><span class="op">)</span></span></code></pre></div>
+</div>
+<div class="section level2">
+<h2 id="overview">Overview<a class="anchor" aria-label="anchor" href="#overview"></a>
+</h2>
+<div class="section level3">
+<h3 id="import-a-mcool-file-as-contacts">Import a .(m)cool file as <code>contacts</code>
+<a class="anchor" aria-label="anchor" href="#import-a-mcool-file-as-contacts"></a>
+</h3>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">mcool_file</span> <span class="op">&lt;-</span> <span class="fu">HiContactsData</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/HiContactsData/man/HiContactsData.html" class="external-link">HiContactsData</a></span><span class="op">(</span><span class="st">'yeast_wt'</span>, format <span class="op">=</span> <span class="st">'mcool'</span><span class="op">)</span></span>
 <span><span class="va">range</span> <span class="op">&lt;-</span> <span class="st">'I:20000-80000'</span> <span class="co"># range of interest</span></span>
 <span><span class="fu"><a href="reference/parse.html">lsCoolResolutions</a></span><span class="op">(</span><span class="va">mcool_file</span>, verbose <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="va">contacts</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/contacts.html">contacts</a></span><span class="op">(</span><span class="va">mcool_file</span>, focus <span class="op">=</span> <span class="va">range</span>, res <span class="op">=</span> <span class="fl">1000</span><span class="op">)</span></span>
 <span><span class="va">contacts</span></span></code></pre></div>
 </div>
-<div class="section level2">
-<h2 id="plotting-matrices">Plotting matrices<a class="anchor" aria-label="anchor" href="#plotting-matrices"></a>
-</h2>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<div class="section level3">
+<h3 id="plotting-matrices">Plotting matrices<a class="anchor" aria-label="anchor" href="#plotting-matrices"></a>
+</h3>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="reference/plotMatrix.html">plotMatrix</a></span><span class="op">(</span><span class="va">contacts</span>, use.scores <span class="op">=</span> <span class="st">'raw'</span><span class="op">)</span></span>
 <span><span class="fu"><a href="reference/plotMatrix.html">plotMatrix</a></span><span class="op">(</span><span class="va">contacts</span>, use.scores <span class="op">=</span> <span class="st">'balanced'</span>, limits <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">4</span>, <span class="op">-</span><span class="fl">1</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 </div>
-<div class="section level2">
-<h2 id="ps">P(s)<a class="anchor" aria-label="anchor" href="#ps"></a>
-</h2>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<div class="section level3">
+<h3 id="ps">P(s)<a class="anchor" aria-label="anchor" href="#ps"></a>
+</h3>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">contacts</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/contacts.html">contacts</a></span><span class="op">(</span></span>
 <span>    <span class="va">mcool_file</span>, </span>
 <span>    pairs <span class="op">=</span> <span class="fu">HiContactsData</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/HiContactsData/man/HiContactsData.html" class="external-link">HiContactsData</a></span><span class="op">(</span><span class="st">'yeast_wt'</span>, format <span class="op">=</span> <span class="st">'pairs'</span><span class="op">)</span></span>
@@ -110,21 +137,22 @@
 <span><span class="va">ps</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/Ps.html">getPs</a></span><span class="op">(</span><span class="va">contacts</span><span class="op">)</span></span>
 <span><span class="fu"><a href="reference/Ps.html">plotPs</a></span><span class="op">(</span><span class="va">ps</span>, <span class="fu">aes</span><span class="op">(</span>x <span class="op">=</span> <span class="va">binned_distance</span>, y <span class="op">=</span> <span class="va">norm_p</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 </div>
-<div class="section level2">
-<h2 id="virtual-4c">Virtual 4C<a class="anchor" aria-label="anchor" href="#virtual-4c"></a>
-</h2>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<div class="section level3">
+<h3 id="virtual-4c">Virtual 4C<a class="anchor" aria-label="anchor" href="#virtual-4c"></a>
+</h3>
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">contacts</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/contacts.html">contacts</a></span><span class="op">(</span><span class="va">mcool_file</span>, res <span class="op">=</span> <span class="fl">1000</span><span class="op">)</span></span>
 <span><span class="va">v4C</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/virtual4C.html">virtual4C</a></span><span class="op">(</span><span class="va">contacts</span>, viewpoint <span class="op">=</span> <span class="fu">GRanges</span><span class="op">(</span><span class="st">'V:150000-170000'</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu">gg4C</span><span class="op">(</span><span class="va">v4C</span>, <span class="fu">aes</span><span class="op">(</span>x <span class="op">=</span> <span class="va">center</span>, y <span class="op">=</span> <span class="va">score</span>, col <span class="op">=</span> <span class="va">chr</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span> </span>
 <span>    <span class="fu">facet_wrap</span><span class="op">(</span><span class="op">~</span><span class="va">chr</span>, scales <span class="op">=</span> <span class="st">'free_x'</span><span class="op">)</span></span></code></pre></div>
 </div>
-<div class="section level2">
-<h2 id="cis-trans-ratios">Cis-trans ratios<a class="anchor" aria-label="anchor" href="#cis-trans-ratios"></a>
-</h2>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<div class="section level3">
+<h3 id="cis-trans-ratios">Cis-trans ratios<a class="anchor" aria-label="anchor" href="#cis-trans-ratios"></a>
+</h3>
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">contacts</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/contacts.html">contacts</a></span><span class="op">(</span><span class="va">mcool_file</span>, res <span class="op">=</span> <span class="fl">1000</span><span class="op">)</span></span>
 <span><span class="fu"><a href="reference/cisTransRatio.html">cisTransRatio</a></span><span class="op">(</span><span class="va">contacts</span><span class="op">)</span></span></code></pre></div>
+</div>
 </div>
 </div>
   </div>

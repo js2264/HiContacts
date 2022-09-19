@@ -162,7 +162,7 @@ toy datasets stored by Bioconductor in the
 <span><span class="co">#&gt; loading from cache</span></span>
 <span><span class="va">cool_file</span></span>
 <span><span class="co">#&gt;                                                 EH7701 </span></span>
-<span><span class="co">#&gt; "/github/home/.cache/R/ExperimentHub/43e3a9c2b31_7751"</span></span></code></pre></div>
+<span><span class="co">#&gt; "/github/home/.cache/R/ExperimentHub/43e47c05e0b_7751"</span></span></code></pre></div>
 <p>The <code><a href="../reference/contacts.html">contacts()</a></code> function can be used to import a Hi-C
 matrix locally stored as a <code>cool</code>/<code>mcool</code> file. It
 creates a <code>contacts</code> object.</p>
@@ -173,7 +173,7 @@ creates a <code>contacts</code> object.</p>
 <span><span class="co">#&gt; sparse `contacts` object with 1,653 interactions over 59 regions</span></span>
 <span><span class="va">contacts</span></span>
 <span><span class="co">#&gt; sparse `contacts` object with 1,653 interactions over 59 regions </span></span>
-<span><span class="co">#&gt; coolPath: /github/home/.cache/R/ExperimentHub/43e3a9c2b31_7751 </span></span>
+<span><span class="co">#&gt; coolPath: /github/home/.cache/R/ExperimentHub/43e47c05e0b_7751 </span></span>
 <span><span class="co">#&gt; focus: I:20,000-80,000 </span></span>
 <span><span class="co">#&gt; ------------</span></span>
 <span><span class="co">#&gt; metadata(0):</span></span>
@@ -200,7 +200,7 @@ values are recovered.</p>
 <span><span class="va">contacts</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/contacts.html">contacts</a></span><span class="op">(</span><span class="va">mcool_file</span>, focus <span class="op">=</span> <span class="va">range</span>, res <span class="op">=</span> <span class="fl">1000</span><span class="op">)</span></span>
 <span><span class="va">contacts</span></span>
 <span><span class="co">#&gt; sparse `contacts` object with 73,257 interactions over 790 regions </span></span>
-<span><span class="co">#&gt; coolPath: /github/home/.cache/R/ExperimentHub/43e2417364f_7752 </span></span>
+<span><span class="co">#&gt; coolPath: /github/home/.cache/R/ExperimentHub/43e3d1cf319_7752 </span></span>
 <span><span class="co">#&gt; focus: II:0-800,000 </span></span>
 <span><span class="co">#&gt; ------------</span></span>
 <span><span class="co">#&gt; metadata(0):</span></span>
@@ -350,7 +350,7 @@ following <code>getters</code>:</p>
 <span><span class="fu"><a href="../reference/contacts.html">matrixType</a></span><span class="op">(</span><span class="va">contacts</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] "sparse"</span></span>
 <span><span class="fu"><a href="../reference/contacts.html">coolPath</a></span><span class="op">(</span><span class="va">contacts</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] "/github/home/.cache/R/ExperimentHub/43e2417364f_7752"</span></span></code></pre></div>
+<span><span class="co">#&gt; [1] "/github/home/.cache/R/ExperimentHub/43e3d1cf319_7752"</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="slot-setters">Slot setters<a class="anchor" aria-label="anchor" href="#slot-setters"></a>
@@ -368,17 +368,17 @@ following <code>getters</code>:</p>
 <span><span class="co">#&gt; GInteractions object with 41468 interactions and 1 metadata column:</span></span>
 <span><span class="co">#&gt;           seqnames1       ranges1     seqnames2       ranges2 |     score</span></span>
 <span><span class="co">#&gt;               &lt;Rle&gt;     &lt;IRanges&gt;         &lt;Rle&gt;     &lt;IRanges&gt; | &lt;numeric&gt;</span></span>
-<span><span class="co">#&gt;       [1]        II        1-1000 ---        II 105001-106000 | 0.2866561</span></span>
-<span><span class="co">#&gt;       [2]        II        1-1000 ---        II 119001-120000 | 0.1536467</span></span>
-<span><span class="co">#&gt;       [3]        II        1-1000 ---        II 126001-127000 | 0.0398116</span></span>
-<span><span class="co">#&gt;       [4]        II        1-1000 ---        II 136001-137000 | 0.7170215</span></span>
-<span><span class="co">#&gt;       [5]        II        1-1000 ---        II 255001-256000 | 0.5499163</span></span>
+<span><span class="co">#&gt;       [1]        II        1-1000 ---        II 105001-106000 |  0.747380</span></span>
+<span><span class="co">#&gt;       [2]        II        1-1000 ---        II 119001-120000 |  0.841291</span></span>
+<span><span class="co">#&gt;       [3]        II        1-1000 ---        II 126001-127000 |  0.212009</span></span>
+<span><span class="co">#&gt;       [4]        II        1-1000 ---        II 136001-137000 |  0.863483</span></span>
+<span><span class="co">#&gt;       [5]        II        1-1000 ---        II 255001-256000 |  0.635170</span></span>
 <span><span class="co">#&gt;       ...       ...           ... ...       ...           ... .       ...</span></span>
-<span><span class="co">#&gt;   [41464]        II 498001-499000 ---        II 586001-587000 |  0.823026</span></span>
-<span><span class="co">#&gt;   [41465]        II 498001-499000 ---        II 587001-588000 |  0.340348</span></span>
-<span><span class="co">#&gt;   [41466]        II 498001-499000 ---        II 591001-592000 |  0.742384</span></span>
-<span><span class="co">#&gt;   [41467]        II 498001-499000 ---        II 594001-595000 |  0.139220</span></span>
-<span><span class="co">#&gt;   [41468]        II 499001-500000 ---        II 499001-500000 |  0.716978</span></span>
+<span><span class="co">#&gt;   [41464]        II 498001-499000 ---        II 586001-587000 |  0.911215</span></span>
+<span><span class="co">#&gt;   [41465]        II 498001-499000 ---        II 587001-588000 |  0.469109</span></span>
+<span><span class="co">#&gt;   [41466]        II 498001-499000 ---        II 591001-592000 |  0.647144</span></span>
+<span><span class="co">#&gt;   [41467]        II 498001-499000 ---        II 594001-595000 |  0.805628</span></span>
+<span><span class="co">#&gt;   [41468]        II 499001-500000 ---        II 499001-500000 |  0.627803</span></span>
 <span><span class="co">#&gt;   -------</span></span>
 <span><span class="co">#&gt;   regions: 588 ranges and 2 metadata columns</span></span>
 <span><span class="co">#&gt;   seqinfo: 16 sequences from an unspecified genome</span></span></code></pre></div>
@@ -570,7 +570,7 @@ first scores available.</p>
 <span><span class="va">merged_contacts</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/arithmetics.html">merge</a></span><span class="op">(</span><span class="va">contacts_1</span>, <span class="va">contacts_2</span><span class="op">)</span> </span>
 <span><span class="va">contacts_1</span></span>
 <span><span class="co">#&gt; subset `contacts` object with 9,607 interactions over 404 regions </span></span>
-<span><span class="co">#&gt; coolPath: /github/home/.cache/R/ExperimentHub/43ed01c79d_7754 </span></span>
+<span><span class="co">#&gt; coolPath: /github/home/.cache/R/ExperimentHub/43e208dbdf7_7754 </span></span>
 <span><span class="co">#&gt; focus: II </span></span>
 <span><span class="co">#&gt; ------------</span></span>
 <span><span class="co">#&gt; metadata(0):</span></span>
@@ -583,7 +583,7 @@ first scores available.</p>
 <span><span class="co">#&gt; pairs: N/A</span></span>
 <span><span class="va">contacts_2</span></span>
 <span><span class="co">#&gt; subset `contacts` object with 8,893 interactions over 404 regions </span></span>
-<span><span class="co">#&gt; coolPath: /github/home/.cache/R/ExperimentHub/43e2417364f_7752 </span></span>
+<span><span class="co">#&gt; coolPath: /github/home/.cache/R/ExperimentHub/43e3d1cf319_7752 </span></span>
 <span><span class="co">#&gt; focus: II </span></span>
 <span><span class="co">#&gt; ------------</span></span>
 <span><span class="co">#&gt; metadata(0):</span></span>
@@ -649,7 +649,7 @@ first scores available.</p>
 <span><span class="va">div_contacts</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/arithmetics.html">divide</a></span><span class="op">(</span><span class="va">contacts_1</span>, by <span class="op">=</span> <span class="va">contacts_2</span><span class="op">)</span> </span>
 <span><span class="va">div_contacts</span></span>
 <span><span class="co">#&gt; ratio `contacts` object with 66,607 interactions over 404 regions </span></span>
-<span><span class="co">#&gt; coolPath: 43ed01c79d_7754 / 43e2417364f_7752 </span></span>
+<span><span class="co">#&gt; coolPath: 43e208dbdf7_7754 / 43e3d1cf319_7752 </span></span>
 <span><span class="co">#&gt; focus: II </span></span>
 <span><span class="co">#&gt; ------------</span></span>
 <span><span class="co">#&gt; metadata(0):</span></span>
@@ -737,7 +737,7 @@ first scores available.</p>
 <span><span class="co">#&gt; see ?HiContactsData and browseVignettes('HiContactsData') for documentation</span></span>
 <span><span class="co">#&gt; loading from cache</span></span>
 <span><span class="va">ps</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/Ps.html">getPs</a></span><span class="op">(</span><span class="va">contacts</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Importing pairs file /github/home/.cache/R/ExperimentHub/43e59760b28_7753 in memory. This may take a while...</span></span>
+<span><span class="co">#&gt; Importing pairs file /github/home/.cache/R/ExperimentHub/43e857c22c_7753 in memory. This may take a while...</span></span>
 <span><span class="fu"><a href="../reference/Ps.html">plotPs</a></span><span class="op">(</span><span class="va">ps</span>, <span class="fu">aes</span><span class="op">(</span>x <span class="op">=</span> <span class="va">binned_distance</span>, y <span class="op">=</span> <span class="va">norm_p</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Warning: Removed 67 row(s) containing missing values (geom_path).</span></span></code></pre></div>
 <p><img src="HiContacts_files/figure-html/unnamed-chunk-22-2.png" width="700"></p>
@@ -771,9 +771,9 @@ first scores available.</p>
 <span><span class="co">#&gt; see ?HiContactsData and browseVignettes('HiContactsData') for documentation</span></span>
 <span><span class="co">#&gt; loading from cache</span></span>
 <span><span class="va">ps_1</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/Ps.html">getPs</a></span><span class="op">(</span><span class="va">c1</span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu">mutate</span><span class="op">(</span>sample <span class="op">=</span> <span class="st">'WT'</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Importing pairs file /github/home/.cache/R/ExperimentHub/43e59760b28_7753 in memory. This may take a while...</span></span>
+<span><span class="co">#&gt; Importing pairs file /github/home/.cache/R/ExperimentHub/43e857c22c_7753 in memory. This may take a while...</span></span>
 <span><span class="va">ps_2</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/Ps.html">getPs</a></span><span class="op">(</span><span class="va">c2</span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu">mutate</span><span class="op">(</span>sample <span class="op">=</span> <span class="st">'Eco1-AID'</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Importing pairs file /github/home/.cache/R/ExperimentHub/43e69617220_7755 in memory. This may take a while...</span></span>
+<span><span class="co">#&gt; Importing pairs file /github/home/.cache/R/ExperimentHub/43e5bc1ff78_7755 in memory. This may take a while...</span></span>
 <span><span class="va">ps</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">rbind</a></span><span class="op">(</span><span class="va">ps_1</span>, <span class="va">ps_2</span><span class="op">)</span></span>
 <span><span class="fu"><a href="../reference/Ps.html">plotPs</a></span><span class="op">(</span><span class="va">ps</span>, <span class="fu">aes</span><span class="op">(</span>x <span class="op">=</span> <span class="va">binned_distance</span>, y <span class="op">=</span> <span class="va">norm_p</span>, group <span class="op">=</span> <span class="va">sample</span>, color <span class="op">=</span> <span class="va">sample</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Warning: Removed 134 row(s) containing missing values (geom_path).</span></span></code></pre></div>

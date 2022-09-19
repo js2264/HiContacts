@@ -370,17 +370,17 @@ loops, borders, etc...)</p></dd>
 <span class="r-out co"><span class="r-pr">#&gt;</span> GInteractions object with 74360 interactions and 1 metadata column:</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>           seqnames1       ranges1     seqnames2       ranges2 |     score</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>               &lt;Rle&gt;     &lt;IRanges&gt;         &lt;Rle&gt;     &lt;IRanges&gt; | &lt;numeric&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>       [1]        II        1-1000 ---        II     1001-2000 |  0.552625</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>       [2]        II        1-1000 ---        II     5001-6000 |  0.972833</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>       [3]        II        1-1000 ---        II     6001-7000 |  0.462359</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>       [4]        II        1-1000 ---        II     8001-9000 |  0.303868</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>       [5]        II        1-1000 ---        II    9001-10000 |  0.239977</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>       [1]        II        1-1000 ---        II     1001-2000 |  0.494192</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>       [2]        II        1-1000 ---        II     5001-6000 |  0.400669</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>       [3]        II        1-1000 ---        II     6001-7000 |  0.284440</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>       [4]        II        1-1000 ---        II     8001-9000 |  0.996136</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>       [5]        II        1-1000 ---        II    9001-10000 |  0.381015</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>       ...       ...           ... ...       ...           ... .       ...</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   [74356]        II 807001-808000 ---        II 809001-810000 |  0.911353</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   [74357]        II 807001-808000 ---        II 810001-811000 |  0.528801</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   [74358]        II 808001-809000 ---        II 808001-809000 |  0.550792</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   [74359]        II 808001-809000 ---        II 809001-810000 |  0.589177</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   [74360]        II 809001-810000 ---        II 809001-810000 |  0.229674</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   [74356]        II 807001-808000 ---        II 809001-810000 | 0.5293562</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   [74357]        II 807001-808000 ---        II 810001-811000 | 0.0825698</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   [74358]        II 808001-809000 ---        II 808001-809000 | 0.7837852</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   [74359]        II 808001-809000 ---        II 809001-810000 | 0.0203914</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   [74360]        II 809001-810000 ---        II 809001-810000 | 0.5841546</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   -------</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   regions: 802 ranges and 2 metadata columns</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   seqinfo: 16 sequences from an unspecified genome</span>
@@ -501,6 +501,55 @@ loops, borders, etc...)</p></dd>
 <span class="r-out co"><span class="r-pr">#&gt;</span> scores(3): raw balanced test </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> features: loops(0) borders(0) compartments(0) viewpoints(0) centromeres(16) </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> pairs: N/A </span>
+<span class="r-in"><span><span class="fu">as</span><span class="op">(</span><span class="va">contacts_yeast</span>, <span class="st">'GInteractions'</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> GInteractions object with 74360 interactions and 0 metadata columns:</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>           seqnames1       ranges1     seqnames2       ranges2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>               &lt;Rle&gt;     &lt;IRanges&gt;         &lt;Rle&gt;     &lt;IRanges&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>       [1]        II        1-1000 ---        II     1001-2000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>       [2]        II        1-1000 ---        II     5001-6000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>       [3]        II        1-1000 ---        II     6001-7000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>       [4]        II        1-1000 ---        II     8001-9000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>       [5]        II        1-1000 ---        II    9001-10000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>       ...       ...           ... ...       ...           ...</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   [74356]        II 807001-808000 ---        II 809001-810000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   [74357]        II 807001-808000 ---        II 810001-811000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   [74358]        II 808001-809000 ---        II 808001-809000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   [74359]        II 808001-809000 ---        II 809001-810000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   [74360]        II 809001-810000 ---        II 809001-810000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   -------</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   regions: 802 ranges and 2 metadata columns</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   seqinfo: 16 sequences from an unspecified genome</span>
+<span class="r-in"><span><span class="fu">as</span><span class="op">(</span><span class="va">contacts_yeast</span>, <span class="st">'ContactMatrix'</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> class: ContactMatrix </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> dim: 802 802 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> type: matrix </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> rownames: NULL</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> colnames: NULL</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> metadata(0):</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> regions: 802</span>
+<span class="r-in"><span><span class="fu">as</span><span class="op">(</span><span class="va">contacts_yeast</span>, <span class="st">'matrix'</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">10</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">10</span><span class="op">]</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>       [,1] [,2]       [,3] [,4] [,5]       [,6]       [,7]       [,8]</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [1,]   NA   NA         NA   NA   NA         NA         NA         NA</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [2,]   NA   NA         NA   NA   NA         NA         NA         NA</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [3,]   NA   NA         NA   NA   NA 0.02617935 0.08584875 0.06135093</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [4,]   NA   NA         NA   NA   NA         NA         NA         NA</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [5,]   NA   NA         NA   NA   NA         NA         NA         NA</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [6,]   NA   NA 0.02617935   NA   NA 0.05122552 0.05990950 0.09589496</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [7,]   NA   NA 0.08584875   NA   NA 0.05990950 0.02521393 0.05526944</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [8,]   NA   NA 0.06135093   NA   NA 0.09589496 0.05526944 0.01959171</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [9,]   NA   NA 0.02450783   NA   NA 0.05256588 0.06928067 0.06583294</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [10,]   NA   NA 0.04734105   NA   NA 0.05344208 0.05735461 0.05394987</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>             [,9]      [,10]</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [1,]         NA         NA</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [2,]         NA         NA</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [3,] 0.02450783 0.04734105</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [4,]         NA         NA</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [5,]         NA         NA</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [6,] 0.05256588 0.05344208</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [7,] 0.06928067 0.05735461</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [8,] 0.06583294 0.05394987</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [9,] 0.02330981 0.08755227</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [10,] 0.08755227 0.03221374</span>
 </code></pre></div>
     </div>
   </div>
