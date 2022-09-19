@@ -416,20 +416,16 @@ setMethod("interactions<-", signature(x = "contacts", value = "GInteractions"), 
 setGeneric("scores", function(x, name) {standardGeneric("scores")})
 setMethod("scores", signature(x = "contacts", name = "missing"), function(x) x@scores)
 setMethod("scores", signature(x = "contacts", name = "character"), function(x, name) {
-    gis <- x@interactions
     if (!name %in% names(scores(x))) {
         stop(paste0(name, ' not in scores.'))
     }
-    gis$score <- x@scores[[name]]
-    return(gis)
+    return(x@scores[[name]])
 })
 setMethod("scores", signature(x = "contacts", name = "numeric"), function(x, name) {
-    gis <- x@interactions
     if (name > length(scores(x))) {
         stop(paste0('Only ', length(scores(x)), ' scores in x.'))
     }
-    gis$score <- x@scores[[name]]
-    return(gis)
+    return(x@scores[[name]])
 })
 
 #' @rdname contacts
