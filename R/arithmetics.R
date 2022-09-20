@@ -112,7 +112,7 @@ autocorrelate <- function(x, use.scores = 'balanced', ignore_ndiags = 3) {
         bins = bins(x), 
         interactions = gis2, 
         scores = S4Vectors::SimpleList(autocorrelation = gis2$score),
-        features = features(x), 
+        topologicalFeatures = topologicalFeatures(x), 
         pairsFile = pairsFile(x), 
         matrixType = 'autocorr.', 
         coolPath = coolPath(x)
@@ -238,7 +238,7 @@ divide <- function(x, by, use.scores = 'balanced') {
         scores = S4Vectors::SimpleList(
             'ratio' = mat$score[!is.na(mat$score) & is.finite(mat$score)]
         ), 
-        features = S4Vectors::SimpleList(), 
+        topologicalFeatures = S4Vectors::SimpleList(), 
         pairsFile = NULL, 
         matrixType = 'ratio', 
         coolPath = paste0(basename(coolPath(x)), ' / ', basename(coolPath(by)))
@@ -338,7 +338,7 @@ merge <- function(..., use.scores = 'balanced') {
         bins = bins(contacts_list[[1]]), 
         interactions = ints, 
         scores = asss, 
-        features = S4Vectors::SimpleList(), 
+        topologicalFeatures = S4Vectors::SimpleList(), 
         pairsFile = NULL, 
         matrixType = 'merged', 
         coolPath = ""
@@ -431,7 +431,7 @@ serpentinify <- function(x, use.scores = 'balanced',
         bins = bins(x), 
         interactions = gi, 
         scores = S4Vectors::SimpleList(smoothen = gis_smoothened$score),
-        features = features(x), 
+        topologicalFeatures = topologicalFeatures(x), 
         pairsFile = pairsFile(x), 
         matrixType = 'smoothed', 
         coolPath = coolPath(x)

@@ -105,7 +105,7 @@ interactions(contacts)
 scores(contacts)
 scores(contacts, 1)
 scores(contacts, 'balanced')
-features(contacts)
+topologicalFeatures(contacts)
 pairsFile(contacts)
 matrixType(contacts)
 coolPath(contacts)
@@ -125,12 +125,12 @@ scores(contacts, 'random')
 
 ### Features 
 
-Add any `features` using a `GRanges`. 
+Add `topologicalFeatures` using `GRanges` or `Pairs`. 
 
 ```{r}
-features(contacts, 'viewpoints') <- GRanges("II:300000-320000")
-features(contacts)
-features(contacts, 'viewpoints')
+topologicalFeatures(contacts, 'viewpoints') <- GRanges("II:300000-320000")
+topologicalFeatures(contacts)
+topologicalFeatures(contacts, 'viewpoints')
 ```
 
 ## Coercing `contacts`

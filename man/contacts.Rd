@@ -35,12 +35,12 @@
 \alias{scores,contacts,numeric-method}
 \alias{scores<-}
 \alias{scores<-,contacts,character,numeric-method}
-\alias{features}
-\alias{features,contacts,missing-method}
-\alias{features,contacts,character-method}
-\alias{features,contacts,numeric-method}
-\alias{features<-}
-\alias{features<-,contacts,character,GRangesOrGInteractions-method}
+\alias{topologicalFeatures}
+\alias{topologicalFeatures,contacts,missing-method}
+\alias{topologicalFeatures,contacts,character-method}
+\alias{topologicalFeatures,contacts,numeric-method}
+\alias{topologicalFeatures<-}
+\alias{topologicalFeatures<-,contacts,character,GRangesOrGInteractions-method}
 \alias{pairsFile}
 \alias{pairsFile,contacts-method}
 \alias{pairsFile<-}
@@ -62,7 +62,8 @@ contacts(
   resolution = NULL,
   focus = NULL,
   metadata = list(),
-  features = S4Vectors::SimpleList(loops = GenomicRanges::GRanges(), borders =
+  topologicalFeatures = S4Vectors::SimpleList(loops =
+    S4Vectors::Pairs(GenomicRanges::GRanges(), GenomicRanges::GRanges()), borders =
     GenomicRanges::GRanges(), compartments = GenomicRanges::GRanges(), viewpoints =
     GenomicRanges::GRanges()),
   pairs = NULL
@@ -96,9 +97,9 @@ scores(x, name)
 
 scores(x, name) <- value
 
-features(x, name)
+topologicalFeatures(x, name)
 
-features(x, name) <- value
+topologicalFeatures(x, name) <- value
 
 pairsFile(x, name)
 
@@ -124,7 +125,7 @@ the entire (m)cool file will be imported.}
 
 \item{metadata}{list of metadata}
 
-\item{features}{features provided as a named SimpleList}
+\item{topologicalFeatures}{topologicalFeatures provided as a named SimpleList}
 
 \item{pairs}{Path to an associated .pairs file}
 
@@ -166,8 +167,9 @@ resolution}
 
 \item{\code{scores}}{Available interaction scores.}
 
-\item{\code{features}}{Genomic features associated with the dataset (e.g.
-loops, borders, etc...)}
+\item{\code{topologicalFeatures}}{Topological features associated with the dataset
+(e.g. loops (\<Pairs\>), borders (\<GRanges\>),
+viewpoints (\<GRanges\>), etc...)}
 
 \item{\code{pairsFile}}{path for the .pairs file associated with the .(m)cool file}
 
@@ -197,13 +199,13 @@ scores(contacts_yeast, 1)
 scores(contacts_yeast, 'balanced')
 scores(contacts_yeast, 'test') <- runif(length(contacts_yeast))
 scores(contacts_yeast, 'test')
-data(full_contacts_yeast)
-features(full_contacts_yeast)
-features(full_contacts_yeast, 1)
-features(full_contacts_yeast, 'centromeres')
+full_contacts_yeast <- full_contacts_yeast()
+topologicalFeatures(full_contacts_yeast)
+topologicalFeatures(full_contacts_yeast, 1)
+topologicalFeatures(full_contacts_yeast, 'centromeres')
 data(centros_yeast)
-features(contacts_yeast, 'centromeres') <- centros_yeast
-features(contacts_yeast, 'centromeres')
+topologicalFeatures(contacts_yeast, 'centromeres') <- centros_yeast
+topologicalFeatures(contacts_yeast, 'centromeres')
 pairsFile(full_contacts_yeast)
 anchors(contacts_yeast)
 regions(contacts_yeast)

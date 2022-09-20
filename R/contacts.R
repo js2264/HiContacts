@@ -18,12 +18,11 @@ setClassUnion("characterOrNULL", members = c("character", "NULL"))
 #'   in the .(m)cool file.
 #' @slot resolutions Resolutions available in the .(m)cool file.
 #' @slot current_resolution Current resolution
-#' @slot bins Genomic bins (computed on-the-fly) of seqinfo at the current 
-#'   resolution
 #' @slot interactions Genomic Interactions extracted from the .(m)cool object
 #' @slot scores Available interaction scores. 
-#' @slot features Genomic features associated with the dataset (e.g. 
-#'   loops, borders, etc...)
+#' @slot topologicalFeatures Topological features associated with the dataset 
+#'   (e.g. loops (\<Pairs\>), borders (\<GRanges\>), 
+#'   viewpoints (\<GRanges\>), etc...)
 #' @slot pairsFile path for the .pairs file associated with the .(m)cool file
 #' @slot matrixType Type of contacts matrix (sparse, full, aggr, ratio, ...)
 #' @slot coolPath Path of (m)cool file
@@ -46,7 +45,7 @@ methods::setClass("contacts",
         bins = "GRanges",
         interactions = "GInteractions",
         scores = "SimpleList", 
-        features = "SimpleList",
+        topologicalFeatures = "SimpleList",
         pairsFile = "characterOrNULL", 
         matrixType = "character",
         coolPath = "character"
@@ -62,7 +61,7 @@ methods::setClass("contacts",
 #'   as a character string (e.g. "II:4000-5000"). If not provided, 
 #'   the entire (m)cool file will be imported. 
 #' @param metadata list of metadata
-#' @param features features provided as a named SimpleList
+#' @param topologicalFeatures topologicalFeatures provided as a named SimpleList
 #' @param pairs Path to an associated .pairs file
 #' @return a new `contacts` object.
 #' 
@@ -77,8 +76,11 @@ contacts <- function(
     resolution = NULL, 
     focus = NULL, 
     metadata = list(), 
-    features = S4Vectors::SimpleList(
-        'loops' = GenomicRanges::GRanges(), 
+    topologicalFeatures = S4Vectors::SimpleList(
+        'loops' = S4Vectors::Pairs(
+            GenomicRanges::GRanges(), 
+            GenomicRanges::GRanges()
+        ), 
         'borders' = GenomicRanges::GRanges(), 
         'compartments' = GenomicRanges::GRanges(), 
         'viewpoints' = GenomicRanges::GRanges()
@@ -156,7 +158,7 @@ contacts <- function(
             'raw' = mcols$count, 
             'balanced' = mcols$score
         ), 
-        features = features, 
+        topologicalFeatures = topologicalFeatures, 
         pairsFile = pairsFile, 
         matrixType = "sparse", 
         coolPath = as.character(path)
@@ -455,43 +457,43 @@ setMethod("scores<-", c(x = "contacts", name = "character", value = "numeric"), 
 
 #' @rdname contacts
 #' 
-#' @name features
+#' @name topologicalFeatures
 #' @docType methods
-#' @aliases features,contacts,missing-method
-#' @aliases features,contacts,character-method
-#' @aliases features,contacts,numeric-method
+#' @aliases topologicalFeatures,contacts,missing-method
+#' @aliases topologicalFeatures,contacts,character-method
+#' @aliases topologicalFeatures,contacts,numeric-method
 #'
 #' @param x A \code{contacts} object.
 #'
 #' @export
 #' @examples 
-#' data(full_contacts_yeast)
-#' features(full_contacts_yeast)
-#' features(full_contacts_yeast, 1)
-#' features(full_contacts_yeast, 'centromeres')
+#' full_contacts_yeast <- full_contacts_yeast()
+#' topologicalFeatures(full_contacts_yeast)
+#' topologicalFeatures(full_contacts_yeast, 1)
+#' topologicalFeatures(full_contacts_yeast, 'centromeres')
 
-setGeneric("features", function(x, name) {standardGeneric("features")})
-setMethod("features", signature(x = "contacts", name = "missing"), function(x) {
-    S4Vectors::SimpleList(as.list(x@features))
+setGeneric("topologicalFeatures", function(x, name) {standardGeneric("topologicalFeatures")})
+setMethod("topologicalFeatures", signature(x = "contacts", name = "missing"), function(x) {
+    S4Vectors::SimpleList(as.list(x@topologicalFeatures))
 })
-setMethod("features", signature(x = "contacts", name = "character"), function(x, name) {
-    if (!name %in% names(features(x))) {
-        stop(paste0(name, ' not in features.'))
+setMethod("topologicalFeatures", signature(x = "contacts", name = "character"), function(x, name) {
+    if (!name %in% names(topologicalFeatures(x))) {
+        stop(paste0(name, ' not in topologicalFeatures.'))
     }
-    x@features[[name]]
+    x@topologicalFeatures[[name]]
 })
-setMethod("features", signature(x = "contacts", name = "numeric"), function(x, name) {
-    if (name > length(features(x))) {
-        stop(paste0('Only ', length(features(x)), ' features in x.'))
+setMethod("topologicalFeatures", signature(x = "contacts", name = "numeric"), function(x, name) {
+    if (name > length(topologicalFeatures(x))) {
+        stop(paste0('Only ', length(topologicalFeatures(x)), ' topologicalFeatures in x.'))
     }
-    x@features[[name]]
+    x@topologicalFeatures[[name]]
 })
 
 #' @rdname contacts
 #' 
-#' @name features<-
+#' @name topologicalFeatures<-
 #' @docType methods
-#' @aliases features<-,contacts,character,GRangesOrGInteractions-method
+#' @aliases topologicalFeatures<-,contacts,character,GRangesOrGInteractions-method
 #'
 #' @param x A \code{contacts} object.
 #' @param name name
@@ -500,12 +502,12 @@ setMethod("features", signature(x = "contacts", name = "numeric"), function(x, n
 #' @export
 #' @examples 
 #' data(centros_yeast)
-#' features(contacts_yeast, 'centromeres') <- centros_yeast
-#' features(contacts_yeast, 'centromeres')
+#' topologicalFeatures(contacts_yeast, 'centromeres') <- centros_yeast
+#' topologicalFeatures(contacts_yeast, 'centromeres')
 
-setGeneric("features<-", function(x, name, value) {standardGeneric("features<-")})
-setMethod("features<-", signature(x = "contacts", name = "character", value = "GRangesOrGInteractions"), function(x, name, value) {
-    x@features[[name]] <- value
+setGeneric("topologicalFeatures<-", function(x, name, value) {standardGeneric("topologicalFeatures<-")})
+setMethod("topologicalFeatures<-", signature(x = "contacts", name = "character", value = "GRangesOrGInteractions"), function(x, name, value) {
+    x@topologicalFeatures[[name]] <- value
     return(x)
 })
 
@@ -635,8 +637,8 @@ setMethod("show", signature("contacts"), function(object) {
     ## Scores
     cat(glue::glue('scores({length(scores(object))}): {paste(names(scores(object)), collapse = " ")}'), '\n')
 
-    ## Features
-    cat(glue::glue('features: {paste(paste0(names(features(object)), "(", lengths(features(object)), ")"), collapse = " ")}'), '\n')
+    ## topologicalFeatures
+    cat(glue::glue('topologicalFeatures: {paste(paste0(names(topologicalFeatures(object)), "(", lengths(topologicalFeatures(object)), ")"), collapse = " ")}'), '\n')
 
     ## Pairs
     cat(glue::glue('pairs: {ifelse(is.null(pairsFile(object)), "N/A", pairsFile(object))}'), '\n')

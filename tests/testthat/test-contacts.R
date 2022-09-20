@@ -29,8 +29,9 @@ test_that("contacts works", {
     expect_s4_class(scores(contacts_yeast, 'raw'), 'GInteractions')
     expect_type(scores(contacts_yeast)[[1]], 'integer')
     expect_type(scores(contacts_yeast)[[2]], 'double')
-    expect_s4_class(features(contacts_yeast), 'SimpleList')
-    expect_s4_class(features(contacts_yeast, 1), 'GRanges')
+    expect_s4_class(topologicalFeatures(contacts_yeast), 'SimpleList')
+    expect_s4_class(topologicalFeatures(contacts_yeast, 'loops'), 'Pairs')
+    expect_s4_class(topologicalFeatures(contacts_yeast, 'borders'), 'GRanges')
     expect_type(pairsFile(contacts_yeast), 'NULL')
     expect_type(anchors(contacts_yeast), 'list')
     expect_error(summary(contacts_yeast), NA)
@@ -117,7 +118,7 @@ test_that("plotMatrix works", {
     expect_s3_class(
         plotMatrix(
             full_contacts_yeast['II:1-800000'],
-            borders = features(full_contacts_yeast, 'centromeres'),
+            borders = topologicalFeatures(full_contacts_yeast, 'centromeres'),
             scale = 'exp0.2', 
             limits = c(-1, 1), 
             cmap = bbrColors()
