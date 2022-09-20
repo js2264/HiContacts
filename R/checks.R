@@ -106,6 +106,7 @@ is_same_regions <- function(...) {
 #' @rdname checks
 
 is_comparable <- function(...) {
+    are_contacts(...)
     err <- c()
     if (!is_same_seqinfo(...)) {
         err <- c(err, "seqinfos")
@@ -133,6 +134,17 @@ is_square <- function(pair) {
     w2 <- GenomicRanges::width(S4Vectors::second(pair))
     if (w1 != w2) {
         stop("Provided pair is not square.")
+    }
+    TRUE
+}
+
+#' @rdname checks
+
+are_contacts <- function(...) {
+    args <- list(...)
+    if (!all(unlist(lapply(args, is, 'contacts')))) {
+        stop("Provided arguments are not all `contacts` objects. 
+        Please only use `contacts` objects with this function.")
     }
     TRUE
 }

@@ -12,6 +12,7 @@
 \alias{is_same_regions}
 \alias{is_comparable}
 \alias{is_square}
+\alias{are_contacts}
 \alias{is_symmetrical}
 \title{Checks functions}
 \usage{
@@ -36,6 +37,8 @@ is_same_regions(...)
 is_comparable(...)
 
 is_square(pair)
+
+are_contacts(...)
 
 is_symmetrical(contacts)
 }
