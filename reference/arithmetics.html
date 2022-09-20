@@ -151,7 +151,10 @@ corresponding scores from input <code>contacts</code>.</p>
 <span class="r-in"><span><span class="co">#### -----</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/js2264/HiContacts" class="external-link">HiContacts</a></span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">contacts_yeast</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">contacts_yeast</span> <span class="op">&lt;-</span> <span class="fu"><a href="datasets.html">contacts_yeast</a></span><span class="op">(</span><span class="op">)</span></span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> snapshotDate(): 2022-08-23</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> see ?HiContactsData and browseVignettes('HiContactsData') for documentation</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> loading from cache</span>
 <span class="r-in"><span><span class="va">contacts_yeast</span> <span class="op">&lt;-</span> <span class="fu">detrend</span><span class="op">(</span><span class="va">contacts_yeast</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="contacts.html">scores</a></span><span class="op">(</span><span class="va">contacts_yeast</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> List of length 4</span>
@@ -172,22 +175,46 @@ corresponding scores from input <code>contacts</code>.</p>
 <span class="r-in"><span><span class="co">#### Divide 2 contact matrices</span></span></span>
 <span class="r-in"><span><span class="co">#### -----</span></span></span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">contacts_yeast</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">contacts_yeast_eco1</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">contacts_yeast</span> <span class="op">&lt;-</span> <span class="fu"><a href="datasets.html">contacts_yeast</a></span><span class="op">(</span><span class="op">)</span></span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> snapshotDate(): 2022-08-23</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> see ?HiContactsData and browseVignettes('HiContactsData') for documentation</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> loading from cache</span>
+<span class="r-in"><span><span class="va">contacts_yeast_eco1</span> <span class="op">&lt;-</span> <span class="fu"><a href="datasets.html">contacts_yeast_eco1</a></span><span class="op">(</span><span class="op">)</span></span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> snapshotDate(): 2022-08-23</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> see ?HiContactsData and browseVignettes('HiContactsData') for documentation</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> loading from cache</span>
 <span class="r-in"><span><span class="va">div_contacts</span> <span class="op">&lt;-</span> <span class="fu">divide</span><span class="op">(</span><span class="va">contacts_yeast_eco1</span>, by <span class="op">=</span> <span class="va">contacts_yeast</span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in is_comparable(x, by):</span> Provided contacts have different regions.</span>
 <span class="r-in"><span><span class="va">div_contacts</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in eval(expr, envir, enclos):</span> object 'div_contacts' not found</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `contacts` object with 146,082 interactions over 802 regions </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> -------</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> fileName: "3e0fd375c2_7754 / 3e04c1c3baa_7752" </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> focus: "II" </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> resolutions(1): 1000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> current resolution: 1000 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> interactions: 146082 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> scores(1): ratio </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> topologicalFeatures: () </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> pairsFile: N/A </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> metadata(0):</span>
 <span class="r-in"><span><span class="fu"><a href="plotMatrix.html">plotMatrix</a></span><span class="op">(</span><span class="va">div_contacts</span>, scale <span class="op">=</span> <span class="st">'log2'</span>, limits <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">2</span>, <span class="fl">2</span><span class="op">)</span>, cmap <span class="op">=</span> <span class="fu"><a href="palettes.html">bwrColors</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in h(simpleError(msg, call)):</span> error in evaluating the argument 'x' in selecting a method for function 'scores': object 'div_contacts' not found</span>
+<span class="r-plt img"><img src="arithmetics-2.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span><span class="co">#### -----</span></span></span>
 <span class="r-in"><span><span class="co">#### Merge 2 contact matrices</span></span></span>
 <span class="r-in"><span><span class="co">#### -----</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="va">merged_contacts</span> <span class="op">&lt;-</span> <span class="fu">merge</span><span class="op">(</span><span class="va">contacts_yeast_eco1</span>, <span class="va">contacts_yeast</span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in is_comparable(...):</span> Provided contacts have different regions.</span>
 <span class="r-in"><span><span class="va">merged_contacts</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in eval(expr, envir, enclos):</span> object 'merged_contacts' not found</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `contacts` object with 158,048 interactions over 802 regions </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> -------</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> fileName: "" </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> focus: "II, II" </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> resolutions(5): 1000 2000 4000 8000 16000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> current resolution: 1000 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> interactions: 158048 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> scores(2): raw balanced </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> topologicalFeatures: () </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> pairsFile: N/A </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> metadata(2): merging operation</span>
 </code></pre></div>
     </div>
   </div>
