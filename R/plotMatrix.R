@@ -32,7 +32,7 @@
 #' @export
 #' @examples 
 #' library(HiContacts)
-#' data(contacts_yeast)
+#' contacts_yeast <- contacts_yeast()
 #' plotMatrix(
 #'     contacts_yeast, 
 #'     use.scores = 'balanced', 
@@ -211,7 +211,7 @@ plotMatrix <- function(
                 y = "Genome coordinates", 
                 caption = paste(
                     sep = '\n',
-                    paste0('file: ', coolPath(x)), 
+                    paste0('file: ', fileName(x)), 
                     paste0('res: ', resolution(x))
                 )
             )
@@ -255,7 +255,7 @@ plotMatrix <- function(
                 y = "Genome coordinates", 
                 caption = paste(
                     sep = '\n',
-                    paste0('file: ', coolPath(x)), 
+                    paste0('file: ', fileName(x)), 
                     paste0('res: ', resolution(x))
                 )
             )

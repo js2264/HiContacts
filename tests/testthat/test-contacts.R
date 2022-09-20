@@ -1,13 +1,8 @@
 test_that("contacts works", {
-    expect_true({
-        #fpath <- HiContactsData::HiContactsData('yeast_wt', 'mcool')
-        #contacts_yeast <- contacts(fpath, focus = 'II', resolution = 1000)
-        data(contacts_yeast)
-        validObject(contacts_yeast)
-    })
+    contacts_yeast <- contacts_yeast()
     expect_s4_class(contacts_yeast, 'contacts')
     expect_identical(length(contacts_yeast), 74360L)
-    expect_s4_class(contacts_yeast[1:10], 'contacts')
+    expect_s4_class(contacts_yeast[seq_len(10)], 'contacts')
     expect_s4_class({
         sub <- c(
             rep(TRUE, length(contacts_yeast)/2), 
@@ -21,8 +16,7 @@ test_that("contacts works", {
     expect_s4_class({
         contacts_yeast['II:1-10000 x II:20000-40000']
     }, 'contacts')
-    expect_identical(matrixType(contacts_yeast), 'sparse')
-    expect_type(coolPath(contacts_yeast), 'character')
+    expect_type(fileName(contacts_yeast), 'character')
     expect_s4_class(seqinfo(contacts_yeast), 'Seqinfo')
     expect_type(resolutions(contacts_yeast), 'integer')
     expect_equal(resolution(contacts_yeast), 1000L)
@@ -33,16 +27,17 @@ test_that("contacts works", {
     expect_type(scores(contacts_yeast, 1), 'double')
     expect_type(scores(contacts_yeast, 'raw'), 'double')
     expect_type(scores(contacts_yeast, 'balanced'), 'double')
-    expect_s4_class(features(contacts_yeast), 'SimpleList')
-    expect_s4_class(features(contacts_yeast, 1), 'GRanges')
+    expect_s4_class(topologicalFeatures(contacts_yeast), 'SimpleList')
+    expect_s4_class(topologicalFeatures(contacts_yeast, 'loops'), 'Pairs')
+    expect_s4_class(topologicalFeatures(contacts_yeast, 'borders'), 'GRanges')
     expect_type(pairsFile(contacts_yeast), 'NULL')
     expect_type(anchors(contacts_yeast), 'list')
     expect_error(summary(contacts_yeast), NA)
 })
 
 test_that("checks work", {
-    data(contacts_yeast)
-    data(full_contacts_yeast)
+    contacts_yeast <- contacts_yeast()
+    full_contacts_yeast <- full_contacts_yeast()
     expect_true(check_resolution(contacts_yeast, 2000))
     expect_error(check_resolution(contacts_yeast, 3000))
     expect_error(is_comparable(contacts_yeast, full_contacts_yeast))
@@ -55,21 +50,20 @@ test_that("checks work", {
 })
 
 test_that("v4C works", {
-    data(contacts_yeast)
+    contacts_yeast <- contacts_yeast()
     expect_s4_class(
         virtual4C(contacts_yeast, GRanges('II:490000-510000')),
         'GRanges'
     )
     expect_s3_class({
-        data(contacts_yeast)
         v4C <- virtual4C(contacts_yeast, GRanges('II:490000-510000'))
         plot4C(v4C, ggplot2::aes(x = center, y = score))
     }, 'gg')
 })
 
 test_that("arithmetics works", {
-    data(contacts_yeast)
-    data(contacts_yeast_eco1)
+    contacts_yeast <- contacts_yeast()
+    contacts_yeast_eco1 <- contacts_yeast_eco1()
     expect_true({
         x <- detrend(contacts_yeast)
         validObject(x)
@@ -89,15 +83,15 @@ test_that("arithmetics works", {
 })
 
 test_that("cistrans works", {
-    data(full_contacts_yeast)
+    full_contacts_yeast <- full_contacts_yeast()
     expect_s3_class({
         cisTransRatio(full_contacts_yeast)
     }, 'tbl')
 })
 
 test_that("plotMatrix works", {
-    data(contacts_yeast)
-    data(full_contacts_yeast)
+    contacts_yeast <- contacts_yeast()
+    full_contacts_yeast <- full_contacts_yeast()
     expect_s3_class(plotMatrix(contacts_yeast), 'gg')
     expect_s3_class(plotMatrix(contacts_yeast, scale = 'linear'), 'gg')
     expect_s3_class(plotMatrix(contacts_yeast, scale = 'log2'), 'gg')
@@ -122,7 +116,7 @@ test_that("plotMatrix works", {
     expect_s3_class(
         plotMatrix(
             full_contacts_yeast['II:1-800000'],
-            borders = features(full_contacts_yeast, 'centromeres'),
+            borders = topologicalFeatures(full_contacts_yeast, 'centromeres'),
             scale = 'exp0.2', 
             limits = c(-1, 1), 
             cmap = bbrColors()
@@ -132,7 +126,7 @@ test_that("plotMatrix works", {
 })
 
 test_that("Ps works", {
-    data(contacts_yeast)
+    contacts_yeast <- contacts_yeast()
     x <- getPs(contacts_yeast)
     pairsFile(contacts_yeast) <- HiContactsData::HiContactsData(
         'yeast_wt', format = 'pairs.gz'
@@ -189,19 +183,34 @@ test_that("utils works", {
 })
 
 test_that("parse works", {
-    file <- HiContactsData::HiContactsData(
+    cool <- HiContactsData::HiContactsData(
+        'yeast_wt', format = 'cool'
+    )
+    mcool <- HiContactsData::HiContactsData(
         'yeast_wt', format = 'mcool'
     )
     expect_s4_class({
-        contacts(file, resolution = 16000)
+        contacts(cool, focus = 'II:1-10000')
     }, 'contacts')
     expect_s4_class({
-        contacts(file, focus = 'II:1-10000', resolution = 2000)
+        contacts(cool)
     }, 'contacts')
+    expect_s4_class({
+        contacts(mcool, focus = 'II:1-10000', resolution = 2000)
+    }, 'contacts')
+    expect_s4_class({
+        contacts(mcool, resolution = 16000)
+    }, 'contacts')
+    expect_error({
+        contacts(cool, resolution = 16000)
+    })
+    expect_error({
+        contacts(mcool)
+    })
 })
 
 test_that("coerce works", {
-
+    contacts_yeast <- contacts_yeast()
     expect_s4_class({
         as(contacts_yeast, 'GInteractions')
     }, 'GInteractions')
@@ -211,5 +220,4 @@ test_that("coerce works", {
     expect_is({
         as(contacts_yeast, 'matrix')
     }, 'matrix')
-
 })

@@ -62,7 +62,7 @@ ggmatrix
 }
 \examples{
 library(HiContacts)
-data(contacts_yeast)
+contacts_yeast <- contacts_yeast()
 plotMatrix(
     contacts_yeast, 
     use.scores = 'balanced', 

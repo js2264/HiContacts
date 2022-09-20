@@ -15,7 +15,7 @@
 #' @export
 #' @examples 
 #' library(HiContacts)
-#' data(full_contacts_yeast)
+#' full_contacts_yeast <- full_contacts_yeast()
 #' cisTransRatio(full_contacts_yeast)
 
 cisTransRatio <- function(x) {

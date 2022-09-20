@@ -38,8 +38,8 @@ and **visualization** tools to investigate contact maps directly in `R`.
 
 ```{r}
 showClass('contacts')
-data(contacts_yeast)
-contacts_yeast
+contacts <- contacts_yeast()
+contacts
 ```
 
 ```{r}
@@ -95,20 +95,26 @@ Slots for a `contacts` object can be accessed using the following `getters`:
 
 ```{r}
 slotNames(contacts)
+fileName(contacts)
 focus(contacts)
-metadata(contacts)
-seqinfo(contacts)
 resolutions(contacts)
-bins(contacts)
-regions(contacts)
+resolution(contacts)
 interactions(contacts)
 scores(contacts)
 tail(scores(contacts, 1))
 tail(scores(contacts, 'balanced'))
-features(contacts)
+topologicalFeatures(contacts)
 pairsFile(contacts)
-matrixType(contacts)
-coolPath(contacts)
+metadata(contacts)
+```
+
+Several extra functions are available as well: 
+
+```{r}
+seqinfo(contacts) ## To recover the `Seqinfo` object from the `.(m)cool` file
+bins(contacts) ## To bin the genome at the current resolution
+regions(contacts) ## To extract unique regions of the contact matrix
+anchors(contacts) ## To extract "first" and "second" anchors for each interaction
 ```
 
 ## Slot setters
@@ -125,12 +131,12 @@ tail(scores(contacts, 'random'))
 
 ### Features 
 
-Add any `features` using a `GRanges`. 
+Add `topologicalFeatures` using `GRanges` or `Pairs`. 
 
 ```{r}
-features(contacts, 'viewpoints') <- GRanges("II:300000-320000")
-features(contacts)
-features(contacts, 'viewpoints')
+topologicalFeatures(contacts, 'viewpoints') <- GRanges("II:300000-320000")
+topologicalFeatures(contacts)
+topologicalFeatures(contacts, 'viewpoints')
 ```
 
 ## Coercing `contacts`

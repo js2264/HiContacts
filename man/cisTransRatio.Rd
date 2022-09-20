@@ -17,6 +17,6 @@ Quickly computes a cis-trans ratio of interactions.
 }
 \examples{
 library(HiContacts)
-data(full_contacts_yeast)
+full_contacts_yeast <- full_contacts_yeast()
 cisTransRatio(full_contacts_yeast)
 }

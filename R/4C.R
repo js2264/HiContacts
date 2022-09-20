@@ -21,8 +21,9 @@
 #' @export
 #' @examples 
 #' library(HiContacts)
-#' data(contacts_yeast)
-#' virtual4C(contacts_yeast, GenomicRanges::GRanges('II:490000-510000'))
+#' contacts_yeast <- contacts_yeast()
+#' v4C <- virtual4C(contacts_yeast, GenomicRanges::GRanges('II:490000-510000'))
+#' v4C
 
 virtual4C <- function(x, viewpoint, use.scores = 'balanced') {
     gis <- interactions(x)
@@ -58,9 +59,6 @@ virtual4C <- function(x, viewpoint, use.scores = 'balanced') {
 #' @importFrom scales unit_format
 #' @export
 #' @examples 
-#' library(HiContacts)
-#' data(contacts_yeast)
-#' v4C <- virtual4C(contacts_yeast, GenomicRanges::GRanges('II:490000-510000'))
 #' plot4C(v4C, ggplot2::aes(x = center, y = score))
 
 plot4C <- function(x, mapping) {
