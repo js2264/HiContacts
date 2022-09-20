@@ -153,61 +153,6 @@ setValidity("contacts",
 
 #' @rdname contacts
 #'
-#' @name length
-#' @docType methods
-#' @aliases length,contacts-method
-#'
-#' @param x A \code{contacts} object.
-#'
-#' @export
-#' @examples 
-#' length(contacts_yeast)
-
-setMethod("length", "contacts", function(x) length(interactions(x)))
-
-#' @rdname contacts
-#'
-#' @name [
-#' @docType methods
-#' @aliases [,contacts,numeric,ANY,ANY-method
-#' @aliases [,contacts,logical,ANY,ANY-method
-#' @aliases [,contacts,character,ANY,ANY-method
-#'
-#' @param x A \code{contacts} object.
-#' @param i a range or boolean vector.
-#'
-#' @export
-#' @examples 
-#' contacts_yeast[seq_len(10)]
-
-setMethod("[", signature("contacts", "numeric"), function(x, i) {
-    interactions(x) <- interactions(x)[i]
-    for (K in seq_along(scores(x))) {
-        x@scores[[K]] <- x@scores[[K]][i]
-    }
-    return(x)
-})
-setMethod("[", signature("contacts", "logical"), function(x, i) {
-    interactions(x) <- interactions(x)[i]
-    for (K in seq_along(scores(x))) {
-        x@scores[[K]] <- x@scores[[K]][i]
-    }
-    return(x)
-})
-setMethod("[", signature("contacts", "character"), function(x, i) {
-    `%over%` <- IRanges::`%over%`
-    i_ <- char2pair(i)
-    sub <- anchors(x)[['first']] %over% S4Vectors::first(i_) & 
-        anchors(x)[['second']] %over% S4Vectors::second(i_)
-    interactions(x) <- interactions(x)[sub]
-    for (K in seq_along(scores(x))) {
-        x@scores[[K]] <- x@scores[[K]][sub]
-    }
-    return(x)
-})
-
-#' @rdname contacts
-#'
 #' @name fileName
 #' @docType methods
 #' @aliases fileName,contacts-method
@@ -231,16 +176,6 @@ setMethod("fileName", "contacts", function(object) object@fileName)
 #' @export
 #' @examples 
 #' seqinfo(contacts_yeast)
-
-setMethod("seqinfo", "contacts", function(x) {
-    if (is_mcool(fileName(x))) {
-        si <- cool2seqinfo(fileName(x), resolution(x))
-    }
-    else {
-        si <- cool2seqinfo(fileName(x))
-    }
-    return(si)
-})
 
 #' @rdname contacts
 #'
@@ -270,31 +205,6 @@ setMethod("resolutions", "contacts", function(x) x@resolutions)
 #' resolution(contacts_yeast)
 
 setMethod("resolution", "contacts", function(x) x@resolution)
-
-#' @rdname contacts
-#'
-#' @name bins
-#' @docType methods
-#' @aliases bins,contacts-method
-#'
-#' @param x A \code{contacts} object.
-#'
-#' @export
-#' @examples 
-#' bins(contacts_yeast)
-
-setGeneric("bins", function(x) {standardGeneric("bins")})
-setMethod("bins", "contacts", function(x) {
-    bins <- GenomicRanges::tileGenome(
-        seqlengths = GenomeInfoDb::seqlengths(seqinfo(x)), 
-        tilewidth = resolution(x), 
-        cut.last.tile.in.chrom = TRUE
-    )
-    seqinfo(bins) <- seqinfo(x)
-    bins$bin_id <- seq_along(bins)
-    # bins <- bins[GenomicRanges::width(bins) == resolution(x)]
-    return(bins)
-})
 
 #' @rdname contacts
 #'
@@ -490,6 +400,120 @@ setMethod("pairsFile<-", signature(x = "contacts", value = "character"), functio
     }
     x@pairsFile <- value
     x
+})
+
+#' @rdname contacts
+#' 
+#' @name metadata<-
+#' @docType methods
+#' @aliases metadata<-,contacts,list-method
+#'
+#' @param x A \code{contacts} object.
+#' @param name name
+#' @param value value
+#'
+#' @export
+
+setGeneric("metadata<-", function(x, value) {standardGeneric("metadata<-")})
+setMethod("metadata<-", signature(x = "contacts", value = "list"), function(x, value) {
+    x@metadata <- value
+    x
+})
+
+################################################################################
+#                                                                              #
+#                                 OTHER METHODS                                #
+#                                                                              #
+################################################################################
+
+#' @rdname contacts
+#'
+#' @name length
+#' @docType methods
+#' @aliases length,contacts-method
+#'
+#' @param x A \code{contacts} object.
+#'
+#' @export
+#' @examples 
+#' length(contacts_yeast)
+
+setMethod("length", "contacts", function(x) length(interactions(x)))
+
+#' @rdname contacts
+#'
+#' @name [
+#' @docType methods
+#' @aliases [,contacts,numeric,ANY,ANY-method
+#' @aliases [,contacts,logical,ANY,ANY-method
+#' @aliases [,contacts,character,ANY,ANY-method
+#'
+#' @param x A \code{contacts} object.
+#' @param i a range or boolean vector.
+#'
+#' @export
+#' @examples 
+#' contacts_yeast[seq_len(10)]
+
+setMethod("[", signature("contacts", "numeric"), function(x, i) {
+    interactions(x) <- interactions(x)[i]
+    for (K in seq_along(scores(x))) {
+        x@scores[[K]] <- x@scores[[K]][i]
+    }
+    return(x)
+})
+setMethod("[", signature("contacts", "logical"), function(x, i) {
+    interactions(x) <- interactions(x)[i]
+    for (K in seq_along(scores(x))) {
+        x@scores[[K]] <- x@scores[[K]][i]
+    }
+    return(x)
+})
+setMethod("[", signature("contacts", "character"), function(x, i) {
+    `%over%` <- IRanges::`%over%`
+    i_ <- char2pair(i)
+    sub <- anchors(x)[['first']] %over% S4Vectors::first(i_) & 
+        anchors(x)[['second']] %over% S4Vectors::second(i_)
+    interactions(x) <- interactions(x)[sub]
+    for (K in seq_along(scores(x))) {
+        x@scores[[K]] <- x@scores[[K]][sub]
+    }
+    return(x)
+})
+
+setMethod("seqinfo", "contacts", function(x) {
+    if (is_mcool(fileName(x))) {
+        si <- cool2seqinfo(fileName(x), resolution(x))
+    }
+    else {
+        si <- cool2seqinfo(fileName(x))
+    }
+    return(si)
+})
+
+#' @rdname contacts
+#'
+#' @name bins
+#' @docType methods
+#' @aliases bins,contacts-method
+#'
+#' @param x A \code{contacts} object.
+#'
+#' @export
+#' @examples 
+#' bins(contacts_yeast)
+
+setGeneric("bins", function(x) {standardGeneric("bins")})
+setMethod("bins", "contacts", function(x) {
+    bins <- GenomicRanges::tileGenome(
+        seqlengths = GenomeInfoDb::seqlengths(seqinfo(x)), 
+        tilewidth = resolution(x), 
+        cut.last.tile.in.chrom = TRUE
+    )
+    seqinfo(bins) <- seqinfo(x)
+    bins$bin_id <- seq_along(bins)
+    # bins <- bins[GenomicRanges::width(bins) == resolution(x)]
+    return(bins)
 })
 
 #' @rdname contacts

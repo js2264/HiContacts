@@ -41,6 +41,8 @@
 \alias{pairsFile,contacts-method}
 \alias{pairsFile<-}
 \alias{pairsFile<-,contacts,character-method}
+\alias{metadata<-}
+\alias{metadata<-,contacts,list-method}
 \alias{anchors}
 \alias{anchors,contacts-method}
 \alias{regions}
@@ -96,6 +98,8 @@ topologicalFeatures(x, name) <- value
 pairsFile(x, name)
 
 pairsFile(x) <- value
+
+metadata(x) <- value
 
 \S4method{anchors}{contacts}(x)
 
