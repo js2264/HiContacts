@@ -229,7 +229,7 @@ viewpoints (\&lt;GRanges\&gt;), etc...)</p></dd>
 <span class="r-in"><span><span class="va">contacts_yeast</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> `contacts` object with 74,360 interactions over 802 regions </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> -------</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> fileName: "/github/home/.cache/R/ExperimentHub/36739f8b423_7752" </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> fileName: "/github/home/.cache/R/ExperimentHub/3667eb5d688_7752" </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> focus: "II" </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> resolutions(5): 1000 2000 4000 8000 16000</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> current resolution: 1000 </span>
@@ -243,7 +243,7 @@ viewpoints (\&lt;GRanges\&gt;), etc...)</p></dd>
 <span class="r-in"><span><span class="va">contacts_yeast</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq_len</a></span><span class="op">(</span><span class="fl">10</span><span class="op">)</span><span class="op">]</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> `contacts` object with 10 interactions over 802 regions </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> -------</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> fileName: "/github/home/.cache/R/ExperimentHub/36739f8b423_7752" </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> fileName: "/github/home/.cache/R/ExperimentHub/3667eb5d688_7752" </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> focus: "II" </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> resolutions(5): 1000 2000 4000 8000 16000</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> current resolution: 1000 </span>
@@ -253,7 +253,7 @@ viewpoints (\&lt;GRanges\&gt;), etc...)</p></dd>
 <span class="r-out co"><span class="r-pr">#&gt;</span> pairsFile: N/A </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> metadata(0):</span>
 <span class="r-in"><span><span class="fu">fileName</span><span class="op">(</span><span class="va">contacts_yeast</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "/github/home/.cache/R/ExperimentHub/36739f8b423_7752"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "/github/home/.cache/R/ExperimentHub/3667eb5d688_7752"</span>
 <span class="r-in"><span><span class="fu">seqinfo</span><span class="op">(</span><span class="va">contacts_yeast</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Seqinfo object with 16 sequences from an unspecified genome:</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   seqnames seqlengths isCircular genome</span>
@@ -312,61 +312,13 @@ viewpoints (\&lt;GRanges\&gt;), etc...)</p></dd>
 <span class="r-in"><span><span class="fu">scores</span><span class="op">(</span><span class="va">contacts_yeast</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> List of length 2</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> names(2): raw balanced</span>
-<span class="r-in"><span><span class="fu">scores</span><span class="op">(</span><span class="va">contacts_yeast</span>, <span class="fl">1</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> GInteractions object with 74360 interactions and 1 metadata column:</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>           seqnames1       ranges1     seqnames2       ranges2 |     score</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>               &lt;Rle&gt;     &lt;IRanges&gt;         &lt;Rle&gt;     &lt;IRanges&gt; | &lt;integer&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>       [1]        II        1-1000 ---        II     1001-2000 |         1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>       [2]        II        1-1000 ---        II     5001-6000 |         2</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>       [3]        II        1-1000 ---        II     6001-7000 |         1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>       [4]        II        1-1000 ---        II     8001-9000 |         2</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>       [5]        II        1-1000 ---        II    9001-10000 |         3</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>       ...       ...           ... ...       ...           ... .       ...</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   [74356]        II 807001-808000 ---        II 809001-810000 |         8</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   [74357]        II 807001-808000 ---        II 810001-811000 |         1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   [74358]        II 808001-809000 ---        II 808001-809000 |         1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   [74359]        II 808001-809000 ---        II 809001-810000 |         7</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   [74360]        II 809001-810000 ---        II 809001-810000 |         2</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   -------</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   regions: 802 ranges and 2 metadata columns</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   seqinfo: 16 sequences from an unspecified genome</span>
-<span class="r-in"><span><span class="fu">scores</span><span class="op">(</span><span class="va">contacts_yeast</span>, <span class="st">'balanced'</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> GInteractions object with 74360 interactions and 1 metadata column:</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>           seqnames1       ranges1     seqnames2       ranges2 |     score</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>               &lt;Rle&gt;     &lt;IRanges&gt;         &lt;Rle&gt;     &lt;IRanges&gt; | &lt;numeric&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>       [1]        II        1-1000 ---        II     1001-2000 |       NaN</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>       [2]        II        1-1000 ---        II     5001-6000 |       NaN</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>       [3]        II        1-1000 ---        II     6001-7000 |       NaN</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>       [4]        II        1-1000 ---        II     8001-9000 |       NaN</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>       [5]        II        1-1000 ---        II    9001-10000 |       NaN</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>       ...       ...           ... ...       ...           ... .       ...</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   [74356]        II 807001-808000 ---        II 809001-810000 | 0.0472023</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   [74357]        II 807001-808000 ---        II 810001-811000 |       NaN</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   [74358]        II 808001-809000 ---        II 808001-809000 |       NaN</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   [74359]        II 808001-809000 ---        II 809001-810000 |       NaN</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   [74360]        II 809001-810000 ---        II 809001-810000 | 0.0411355</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   -------</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   regions: 802 ranges and 2 metadata columns</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   seqinfo: 16 sequences from an unspecified genome</span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">tail</a></span><span class="op">(</span><span class="fu">scores</span><span class="op">(</span><span class="va">contacts_yeast</span>, <span class="fl">1</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 14  8  1  1  7  2</span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">tail</a></span><span class="op">(</span><span class="fu">scores</span><span class="op">(</span><span class="va">contacts_yeast</span>, <span class="st">'balanced'</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1]        NaN 0.04720230        NaN        NaN        NaN 0.04113549</span>
 <span class="r-in"><span><span class="fu">scores</span><span class="op">(</span><span class="va">contacts_yeast</span>, <span class="st">'test'</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html" class="external-link">runif</a></span><span class="op">(</span><span class="fu">length</span><span class="op">(</span><span class="va">contacts_yeast</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="fu">scores</span><span class="op">(</span><span class="va">contacts_yeast</span>, <span class="st">'test'</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> GInteractions object with 74360 interactions and 1 metadata column:</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>           seqnames1       ranges1     seqnames2       ranges2 |     score</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>               &lt;Rle&gt;     &lt;IRanges&gt;         &lt;Rle&gt;     &lt;IRanges&gt; | &lt;numeric&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>       [1]        II        1-1000 ---        II     1001-2000 |  0.582908</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>       [2]        II        1-1000 ---        II     5001-6000 |  0.614150</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>       [3]        II        1-1000 ---        II     6001-7000 |  0.566441</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>       [4]        II        1-1000 ---        II     8001-9000 |  0.960866</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>       [5]        II        1-1000 ---        II    9001-10000 |  0.576051</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>       ...       ...           ... ...       ...           ... .       ...</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   [74356]        II 807001-808000 ---        II 809001-810000 |  0.167713</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   [74357]        II 807001-808000 ---        II 810001-811000 |  0.779007</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   [74358]        II 808001-809000 ---        II 808001-809000 |  0.878181</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   [74359]        II 808001-809000 ---        II 809001-810000 |  0.380095</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   [74360]        II 809001-810000 ---        II 809001-810000 |  0.841730</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   -------</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   regions: 802 ranges and 2 metadata columns</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   seqinfo: 16 sequences from an unspecified genome</span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">tail</a></span><span class="op">(</span><span class="fu">scores</span><span class="op">(</span><span class="va">contacts_yeast</span>, <span class="st">'test'</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.4340942 0.0366653 0.7579076 0.1420236 0.2873017 0.4189317</span>
 <span class="r-in"><span><span class="va">full_contacts_yeast</span> <span class="op">&lt;-</span> <span class="fu"><a href="datasets.html">full_contacts_yeast</a></span><span class="op">(</span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> snapshotDate(): 2022-08-23</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> see ?HiContactsData and browseVignettes('HiContactsData') for documentation</span>
@@ -475,7 +427,7 @@ viewpoints (\&lt;GRanges\&gt;), etc...)</p></dd>
 <span class="r-in"><span><span class="fu">show</span><span class="op">(</span><span class="va">contacts_yeast</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> `contacts` object with 74,360 interactions over 802 regions </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> -------</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> fileName: "/github/home/.cache/R/ExperimentHub/36739f8b423_7752" </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> fileName: "/github/home/.cache/R/ExperimentHub/3667eb5d688_7752" </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> focus: "II" </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> resolutions(5): 1000 2000 4000 8000 16000</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> current resolution: 1000 </span>
