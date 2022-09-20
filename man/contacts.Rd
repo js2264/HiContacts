@@ -153,9 +153,6 @@ from the .(m)cool file.}
 
 \item{\code{metadata}}{metadata associated with the .(m)cool file.}
 
-\item{\code{seqinfo}}{Seqinfo, deduced from the largest resolution available
-in the .(m)cool file.}
-
 \item{\code{resolutions}}{Resolutions available in the .(m)cool file.}
 
 \item{\code{current_resolution}}{Current resolution}

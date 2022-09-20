@@ -106,15 +106,12 @@ autocorrelate <- function(x, use.scores = 'balanced', ignore_ndiags = 3) {
     res <- methods::new("contacts", 
         focus = focus(x), 
         metadata = metadata(x),
-        seqinfo = seqinfo(x), 
         resolutions = resolutions(x), 
-        current_resolution = resolution(x), 
-        bins = bins(x), 
+        resolution = resolution(x), 
         interactions = gis2, 
         scores = S4Vectors::SimpleList(autocorrelation = gis2$score),
         topologicalFeatures = topologicalFeatures(x), 
         pairsFile = pairsFile(x), 
-        matrixType = 'autocorr.', 
         coolPath = coolPath(x)
     )
 
@@ -230,17 +227,14 @@ divide <- function(x, by, use.scores = 'balanced') {
     res <- methods::new("contacts", 
         focus = focus(x), 
         metadata = list(),
-        seqinfo = seqinfo(x), 
         resolutions = binsize, 
-        current_resolution = binsize, 
-        bins = bins, 
+        resolution = binsize, 
         interactions = gi, 
         scores = S4Vectors::SimpleList(
             'ratio' = mat$score[!is.na(mat$score) & is.finite(mat$score)]
         ), 
         topologicalFeatures = S4Vectors::SimpleList(), 
         pairsFile = NULL, 
-        matrixType = 'ratio', 
         coolPath = paste0(basename(coolPath(x)), ' / ', basename(coolPath(by)))
     )
     return(res)
@@ -332,15 +326,12 @@ merge <- function(..., use.scores = 'balanced') {
             merging = files, 
             operation = 'sum'
         ), 
-        seqinfo = seqinfo(contacts_list[[1]]), 
         resolutions = resolutions(contacts_list[[1]]), 
-        current_resolution = resolution(contacts_list[[1]]), 
-        bins = bins(contacts_list[[1]]), 
+        resolution = resolution(contacts_list[[1]]), 
         interactions = ints, 
         scores = asss, 
         topologicalFeatures = S4Vectors::SimpleList(), 
         pairsFile = NULL, 
-        matrixType = 'merged', 
         coolPath = ""
     )
     return(res)
@@ -425,15 +416,12 @@ serpentinify <- function(x, use.scores = 'balanced',
     res <- methods::new("contacts", 
         focus = focus(x), 
         metadata = metadata(x),
-        seqinfo = seqinfo(x), 
         resolutions = resolutions(x), 
-        current_resolution = resolution(x), 
-        bins = bins(x), 
+        resolution = resolution(x), 
         interactions = gi, 
         scores = S4Vectors::SimpleList(smoothen = gis_smoothened$score),
         topologicalFeatures = topologicalFeatures(x), 
         pairsFile = pairsFile(x), 
-        matrixType = 'smoothed', 
         coolPath = coolPath(x)
     )
 

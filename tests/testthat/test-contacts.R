@@ -16,7 +16,6 @@ test_that("contacts works", {
     expect_s4_class({
         contacts_yeast['II:1-10000 x II:20000-40000']
     }, 'contacts')
-    expect_identical(matrixType(contacts_yeast), 'sparse')
     expect_type(coolPath(contacts_yeast), 'character')
     expect_s4_class(seqinfo(contacts_yeast), 'Seqinfo')
     expect_type(resolutions(contacts_yeast), 'integer')

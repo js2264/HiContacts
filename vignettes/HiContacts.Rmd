@@ -95,20 +95,24 @@ Slots for a `contacts` object can be accessed using the following `getters`:
 
 ```{r}
 slotNames(contacts)
+coolPath(contacts)
 focus(contacts)
-metadata(contacts)
-seqinfo(contacts)
 resolutions(contacts)
-bins(contacts)
-regions(contacts)
+resolution(contacts)
 interactions(contacts)
 scores(contacts)
-scores(contacts, 1)
-scores(contacts, 'balanced')
+metadata(contacts)
 topologicalFeatures(contacts)
 pairsFile(contacts)
-matrixType(contacts)
-coolPath(contacts)
+```
+
+Several extra functions are available as well: 
+
+```{r}
+seqinfo(contacts) ## To recover the `Seqinfo` object from the `.(m)cool` file
+bins(contacts) ## To bin the genome at the current resolution
+regions(contacts) ## To extract unique regions of the contact matrix
+anchors(contacts) ## To extract "first" and "second" anchors for each interaction
 ```
 
 ## Slot setters
@@ -120,7 +124,7 @@ Add any `scores` metric using a numerical vector.
 ```{r}
 scores(contacts, 'random') <- runif(length(contacts))
 scores(contacts)
-scores(contacts, 'random')
+tail(scores(contacts, 'random'))
 ```
 
 ### Features 
