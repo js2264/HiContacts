@@ -3,7 +3,7 @@ title: "Introduction to HiContacts"
 author: "Jacques Serizay"
 date: "`r Sys.Date()`"
 output: 
-    rmarkdown::html_vignette
+    BiocStyle::html_document
 vignette: >
     %\VignetteIndexEntry{Introduction to HiContacts}
     %\VignetteEngine{knitr::rmarkdown}
