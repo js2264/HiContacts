@@ -30,15 +30,15 @@ Imports:
     rhdf5,
     Matrix,
     data.table,
-    ggplot2,
-    ggrastr,
     tibble,
     tidyr,
     dplyr,
     glue,
-    scales,
     stringr,
-    reticulate
+    reticulate,
+    ggplot2,
+    ggrastr,
+    scales
 Suggests:
     cowplot,
     testthat (>= 3.0.0),

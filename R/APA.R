@@ -7,7 +7,7 @@
 #' @return an aggregated contact matrix
 #'
 #' @import InteractionSet
-#' @import ggrastr
+#' @importFrom ggrastr geom_tile_rast
 #' @import ggplot2
 #' @import tibble
 #' @importFrom dplyr filter
@@ -26,174 +26,26 @@
 #' @importFrom methods as
 #' @importFrom S4Vectors SimpleList
 
-# x <- contacts_yeast()
-# ints <- interactions(x)
-# sc <- scores(x, use.scores)
-# r <- regions(interactions(contacts["II:200000-300000"])) 
-# sc[table(anchors(ints, 'first') %over% r & anchors(ints, 'second') %over% r)] 
-
-APA <- function(x, coords, bins = 50, use.scores = 'balanced') {
+APA <- function(x, coords, nbins = 50, use.scores = 'balanced') {
     `%within%` <- IRanges::`%within%`
 
     ## -- Resize targets
-    expand <- bins*unique(GenomicRanges::width(coords))
-    expanded_coords <- GenomicRanges::resize(coords, fix = 'center', width = expand)
-    centered_coords <- GenomicRanges::resize(coords, fix = 'center', width = 1)
-
-    ## -- Filter targets
-    sub <- expanded_coords %within% GenomicRanges::reduce(regions(x))
-    coords <- coords[sub]
-    expanded_coords <- expanded_coords[sub]
-    centered_coords <- centered_coords[sub]
+    expand <- resize(coords, fix = 'center', width = resolution(x) * nbins)
+    GenomeInfoDb::seqlevels(expand) <- GenomeInfoDb::seqlevels(x)
+    seqinfo(expand) <- seqinfo(x)
+    expand <- trim(expand)
+    expand <- expand[width(expand) == resolution(x) * nbins]
 
     ## -- Create aggregated GInteractions obj
-    ints <- fullContactInteractions(
-        chr = 'aggr', start = -expand/2, end = {expand/2}, 
-        binning = resolution(x)
-    )
+    # ints <- fullContactInteractions(
+    #     chr = 'aggr', start = -expand/2, end = {expand/2}, 
+    #     binning = resolution(x)
+    # )
 
-    ## -- Get scores ~ x/y, per chromosome
-    dists <- lapply(
-        unique(GenomeInfoDb::seqnames(coords)), 
-        function(chr) {
-        
-            ## -- Pre-load the cool file for subcoords (in chromosome `chr`)
-            subcoords <- expanded_coords[GenomeInfoDb::seqnames(expanded_coords) == chr]
-            subcoords <- IRanges::subsetByOverlaps(subcoords, as(seqinfo(x), 'GRanges'), type = 'within')
-            subcoords_centers <- GenomicRanges::resize(subcoords, fix = 'center', width = 1)
-            xx <- contacts(coolPath(x), focus = subcoords, resolution = resolution(x))
-            gis <- scores(xx, use.scores)
-            reg <- regions(gis)
-            ans <- anchors(gis)
-            
-            # -- For each `row`/`column` anchor, get the distance to centered_coords
-            nearest_to_row <- GenomicRanges::nearest(ans[['first']], subcoords_centers)
-            nearest_to_column <- GenomicRanges::nearest(ans[['second']], subcoords_centers)
-            df <- tibble::tibble(
-                chr = chr,
-                row_center = GenomicRanges::start(ans[['first']]) + resolution(x)/2 - 1,
-                dist_row = row_center - GenomicRanges::start(subcoords_centers[nearest_to_row]),
-                column_center = GenomicRanges::start(ans[['second']]) + resolution(x)/2 - 1,
-                dist_column = column_center - GenomicRanges::start(subcoords_centers[nearest_to_column]),
-                score = gis$score
-            ) %>% 
-                dplyr::filter(
-                    abs(dist_row) <= expand/2, 
-                    abs(dist_column) <= expand/2, 
-                    dist_row < expand/2, 
-                    dist_column < expand/2
-                ) 
-            df$dist_column[df$dist_column < df$dist_row & abs(df$dist_column) > df$dist_row] <- -{df$dist_column[df$dist_column < df$dist_row & abs(df$dist_column) > df$dist_row]}
-            df$dist_row[df$dist_column < df$dist_row & df$dist_column < abs(df$dist_row)] <- -{df$dist_row[df$dist_column < df$dist_row & df$dist_column < abs(df$dist_row)]}
-            # message(glue::glue('Finishing {chr}...'))
-            return(df)
-        }
-    ) %>% 
-        dplyr::bind_rows() %>% 
-        dplyr::group_by(dist_row, dist_column) %>% 
-        dplyr::summarize(score = mean(score, na.rm = TRUE), .groups = 'drop') %>% 
-        dplyr::arrange(dist_column) 
-    x@interactions <- ints
-    x@scores <- S4Vectors::SimpleList(
-        APA = dplyr::left_join(
-            tibble::as_tibble(ints), 
-            dists, 
-            by = c(start1 = 'dist_row', start2 = 'dist_column')
-        )$score
-    )
+    lapply(seq_along(expand), function(K) {
+        gr <- expand[K]
+        x[as.character(gr)]
+    })
     
-    x@features <- c(features(x), S4Vectors::SimpleList(APA = coords))
-    x@matrixType <- 'aggr.'
-    return(x)
-}
-
-APA_ <- function(x, coords, bins = 50, use.scores = 'balanced') {
-    `%within%` <- IRanges::`%within%`
-    `%over%` <- IRanges::`%over%`
-
-    ## -- Resize targets
-    expand <- bins*unique(GenomicRanges::width(coords))
-    expanded_coords <- GenomicRanges::resize(coords, fix = 'center', width = expand)
-    centered_coords <- GenomicRanges::resize(coords, fix = 'center', width = 1)
-
-    ## -- Filter targets
-    sub <- expanded_coords %within% GenomicRanges::reduce(bins(x))
-    coords <- coords[sub]
-    expanded_coords <- expanded_coords[sub]
-    centered_coords <- centered_coords[sub]
-
-    ## -- Get scores ~ x/y, per chromosome
-    gis_aggr <- lapply(
-        unique(GenomeInfoDb::seqnames(coords)), 
-        function(chr) {
-            ## -- Pre-load the cool file for interactions in coords in chromosome `chr`
-            subcoords <- expanded_coords[GenomeInfoDb::seqnames(expanded_coords) == chr]
-            subcoords_centers <- GenomicRanges::resize(subcoords, fix = 'center', width = 1)
-            xx <- contacts(coolPath(x), focus = subcoords, resolution = resolution(x))
-            gis <- scores(xx, use.scores)
-            reg <- regions(gis)
-            ans <- anchors(gis)
-            
-            # -- For each subcoord, fetch overlapping interactions
-            lapply(seq_along(subcoords), function(K) {
-                gr <- subcoords[K]
-                mid <- start(subcoords_centers[K])
-                sub_first <- ans[['first']] %within% gr
-                sub_second <- ans[['second']] %within% gr
-                as_tibble(gis[sub_first & sub_second]) %>% 
-                    mutate(
-                        seqnames1 = 'aggr', 
-                        seqnames2 = 'aggr', 
-                        start1 = start1 - mid, 
-                        end1 = end1 - mid, 
-                        start2 = start2 - mid, 
-                        end2 = end2 - mid
-                    ) %>%
-                    asGInteractions()
-            }) %>% 
-                do.call(c, .) %>%
-                as_tibble() %>% 
-                group_by(seqnames1, seqnames2, start1, end1, start2, end2) %>% 
-                summarize(score = sum(score, na.rm = TRUE)) %>% 
-                asGInteractions()
-        }
-    ) %>% do.call(c, .)
-    x@interactions <- gis_aggr
-    x@scores <- S4Vectors::SimpleList(APA = gis_aggr$score) 
-    x@features <- c(features(x), S4Vectors::SimpleList(APA = coords))
-    x@matrixType <- 'aggr.'
-    return(x)
-}
-
-APA2 <- function(x, coords, bins = 50, use.scores = 'balanced') {
-    `%within%` <- IRanges::`%within%`
-
-    ## -- Resize targets
-    expand <- bins*unique(GenomicRanges::width(coords))
-    expanded_coords <- GenomicRanges::resize(coords, fix = 'center', width = expand)
-    centered_coords <- GenomicRanges::resize(coords, fix = 'center', width = 1)
-
-    ## -- Filter targets
-    sub <- expanded_coords %within% GenomicRanges::reduce(regions(x))
-    coords <- coords[sub]
-    expanded_coords <- expanded_coords[sub]
-    centered_coords <- centered_coords[sub]
-
-    ## -- Iterate over each target
-
-
-
-
-    x@interactions <- ints
-    x@scores <- S4Vectors::SimpleList(
-        APA = dplyr::left_join(
-            tibble::as_tibble(ints), 
-            dists, 
-            by = c(start1 = 'dist_row', start2 = 'dist_column')
-        )$score
-    )
-    
-    x@features <- c(features(x), S4Vectors::SimpleList(APA = coords))
-    x@matrixType <- 'aggr.'
     return(x)
 }
