@@ -1,4 +1,4 @@
-#' APA
+#' Aggregated Plot Analysis
 #'
 #' @param x x
 #' @param coords coords
