@@ -105,7 +105,7 @@ contacts <- function(
     ## -- Read interactions
     gis <- cool2gi(file, resolution = current_res, coords = focus)
     mcols <- GenomicRanges::mcols(gis)
-    GenomicRanges::mcols(gis) <- mcols[, c('bin1', 'bin2')]
+    GenomicRanges::mcols(gis) <- mcols[, c('bin_id1', 'bin_id2')]
 
     ## -- Check pairs file
     if (!is.null(pairsFile)) {
@@ -470,7 +470,7 @@ setMethod("[", signature("contacts", "character"), function(x, i) {
     valid_bins_second <- subsetByOverlaps(
         bi_, S4Vectors::second(i_), type = 'within'
     )$bin_id
-    sub <- ints_$bin1 %in% valid_bins_first & ints_$bin2 %in% valid_bins_second
+    sub <- ints_$bin_id1 %in% valid_bins_first & ints_$bin_id2 %in% valid_bins_second
     interactions(x) <- InteractionSet::reduceRegions(
         ints_[sub]
     )

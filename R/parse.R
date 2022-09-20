@@ -345,8 +345,8 @@ cool2gi <- function(file, coords = NULL, resolution = NULL) {
         anchors[cnts$bin2_id],
         count = cnts$count
     )
-    gi$bin1 <- cnts$bin1_id
-    gi$bin2 <- cnts$bin2_id
+    gi$bin_id1 <- cnts$bin1_id
+    gi$bin_id2 <- cnts$bin2_id
     
     if (!is.null(coords_chr) & all(!is.na(coords_chr)) & !is_pair) {
         # Make sure no extra GInteractions is pulled from cool (happends e.g. when fetching whole chrs.)
