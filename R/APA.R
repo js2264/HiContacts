@@ -26,6 +26,12 @@
 #' @importFrom methods as
 #' @importFrom S4Vectors SimpleList
 
+# x <- contacts_yeast()
+# ints <- interactions(x)
+# sc <- scores(x, use.scores)
+# r <- regions(interactions(contacts["II:200000-300000"])) 
+# sc[table(anchors(ints, 'first') %over% r & anchors(ints, 'second') %over% r)] 
+
 APA <- function(x, coords, bins = 50, use.scores = 'balanced') {
     `%within%` <- IRanges::`%within%`
 
