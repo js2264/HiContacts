@@ -4,6 +4,8 @@
 \name{centros_yeast}
 \alias{centros_yeast}
 \alias{contacts_yeast}
+\alias{contacts_yeast_eco1}
+\alias{full_contacts_yeast}
 \title{Example datasets provided in \code{HiContacts} & \code{HiContactsData}}
 \format{
 An object of class \code{"GRanges"}.
@@ -17,6 +19,10 @@ HiContacts
 data(centros_yeast)
 
 contacts_yeast()
+
+contacts_yeast_eco1()
+
+full_contacts_yeast()
 }
 \description{
 Example datasets provided in \code{HiContacts} & \code{HiContactsData}
@@ -26,5 +32,6 @@ data(centros_yeast)
 centros_yeast
 contacts_yeast()
 contacts_yeast_eco1()
+full_contacts_yeast()
 }
 \keyword{datasets}

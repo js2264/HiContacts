@@ -18,6 +18,7 @@ BugReports: https://github.com/js2264/HiContacts/issues
 Depends:
     R (>= 4.2)
 Imports:
+    HiContactsData,
     InteractionSet,
     GenomicInteractions,
     GenomicRanges,
@@ -38,7 +39,6 @@ Imports:
     stringr,
     reticulate
 Suggests:
-    HiContactsData,
     cowplot,
     testthat (>= 3.0.0),
     BiocStyle,
