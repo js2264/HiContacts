@@ -95,7 +95,7 @@ Slots for a `contacts` object can be accessed using the following `getters`:
 
 ```{r}
 slotNames(contacts)
-coolPath(contacts)
+fileName(contacts)
 focus(contacts)
 resolutions(contacts)
 resolution(contacts)

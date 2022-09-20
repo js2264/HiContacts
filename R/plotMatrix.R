@@ -208,7 +208,7 @@ plotMatrix <- function(
                 y = "Genome coordinates", 
                 caption = paste(
                     sep = '\n',
-                    paste0('file: ', coolPath(x)), 
+                    paste0('file: ', fileName(x)), 
                     paste0('res: ', resolution(x))
                 )
             )
@@ -252,7 +252,7 @@ plotMatrix <- function(
                 y = "Genome coordinates", 
                 caption = paste(
                     sep = '\n',
-                    paste0('file: ', coolPath(x)), 
+                    paste0('file: ', fileName(x)), 
                     paste0('res: ', resolution(x))
                 )
             )

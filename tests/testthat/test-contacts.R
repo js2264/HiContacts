@@ -2,7 +2,7 @@ test_that("contacts works", {
     contacts_yeast <- contacts_yeast()
     expect_s4_class(contacts_yeast, 'contacts')
     expect_identical(length(contacts_yeast), 74360L)
-    expect_s4_class(contacts_yeast[1:10], 'contacts')
+    expect_s4_class(contacts_yeast[seq_len(10)], 'contacts')
     expect_s4_class({
         sub <- c(
             rep(TRUE, length(contacts_yeast)/2), 
@@ -16,7 +16,7 @@ test_that("contacts works", {
     expect_s4_class({
         contacts_yeast['II:1-10000 x II:20000-40000']
     }, 'contacts')
-    expect_type(coolPath(contacts_yeast), 'character')
+    expect_type(fileName(contacts_yeast), 'character')
     expect_s4_class(seqinfo(contacts_yeast), 'Seqinfo')
     expect_type(resolutions(contacts_yeast), 'integer')
     expect_equal(resolution(contacts_yeast), 1000L)
@@ -202,6 +202,12 @@ test_that("parse works", {
     expect_s4_class({
         contacts(mcool, resolution = 16000)
     }, 'contacts')
+    expect_error({
+        contacts(cool, resolution = 16000)
+    })
+    expect_error({
+        contacts(mcool)
+    })
 })
 
 test_that("coerce works", {

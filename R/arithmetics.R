@@ -90,7 +90,7 @@ autocorrelate <- function(x, use.scores = 'balanced', ignore_ndiags = 3) {
     # co <- corrr::correlate(log10(mat), diagonal = 0, method = "pearson", quiet = TRUE)
     co <- stats::cor(log10(mat), use = 'pairwise.complete.obs', method = "pearson")
     co <- tibble::as_tibble(co) |> 
-        dplyr::mutate(term = paste0('V', 1:dplyr::n())) |> 
+        dplyr::mutate(term = paste0('V', seq_len(dplyr::n()))) |> 
         dplyr::relocate(term)
     colnames(co) <- c('term', names(reg))
     co$term <- names(reg)
@@ -112,7 +112,7 @@ autocorrelate <- function(x, use.scores = 'balanced', ignore_ndiags = 3) {
         scores = S4Vectors::SimpleList(autocorrelation = gis2$score),
         topologicalFeatures = topologicalFeatures(x), 
         pairsFile = pairsFile(x), 
-        coolPath = coolPath(x)
+        fileName = fileName(x)
     )
 
     return(res)
@@ -235,7 +235,7 @@ divide <- function(x, by, use.scores = 'balanced') {
         ), 
         topologicalFeatures = S4Vectors::SimpleList(), 
         pairsFile = NULL, 
-        coolPath = paste0(basename(coolPath(x)), ' / ', basename(coolPath(by)))
+        fileName = paste0(basename(fileName(x)), ' / ', basename(fileName(by)))
     )
     return(res)
 
@@ -314,7 +314,7 @@ merge <- function(..., use.scores = 'balanced') {
 
     ## -- Create 'in silico' contacts
     files <- paste0(
-        basename(unlist(lapply(contacts_list, coolPath))), 
+        basename(unlist(lapply(contacts_list, fileName))), 
         collapse = ', '
     )
     res <- methods::new("contacts", 
@@ -332,7 +332,7 @@ merge <- function(..., use.scores = 'balanced') {
         scores = asss, 
         topologicalFeatures = S4Vectors::SimpleList(), 
         pairsFile = NULL, 
-        coolPath = ""
+        fileName = ""
     )
     return(res)
 
@@ -422,7 +422,7 @@ serpentinify <- function(x, use.scores = 'balanced',
         scores = S4Vectors::SimpleList(smoothen = gis_smoothened$score),
         topologicalFeatures = topologicalFeatures(x), 
         pairsFile = pairsFile(x), 
-        coolPath = coolPath(x)
+        fileName = fileName(x)
     )
 
     return(res)

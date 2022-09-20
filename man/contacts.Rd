@@ -10,12 +10,8 @@
 \alias{[,contacts,numeric,ANY,ANY-method}
 \alias{[,contacts,logical,ANY,ANY-method}
 \alias{[,contacts,character,ANY,ANY-method}
-\alias{matrixType}
-\alias{matrixType,contacts-method}
-\alias{matrixType<-}
-\alias{matrixType<-,contacts,character-method}
-\alias{coolPath}
-\alias{coolPath,contacts-method}
+\alias{fileName}
+\alias{fileName,contacts-method}
 \alias{seqinfo,contacts-method}
 \alias{resolutions}
 \alias{resolutions,contacts-method}
@@ -58,7 +54,7 @@
 \title{\code{contacts} S4 class and methods}
 \usage{
 contacts(
-  path,
+  file,
   resolution = NULL,
   focus = NULL,
   metadata = list(),
@@ -66,18 +62,14 @@ contacts(
     S4Vectors::Pairs(GenomicRanges::GRanges(), GenomicRanges::GRanges()), borders =
     GenomicRanges::GRanges(), compartments = GenomicRanges::GRanges(), viewpoints =
     GenomicRanges::GRanges()),
-  pairs = NULL
+  pairsFile = NULL
 )
 
 \S4method{length}{contacts}(x)
 
 \S4method{[}{contacts,numeric,ANY,ANY}(x, i)
 
-matrixType(x)
-
-matrixType(x) <- value
-
-coolPath(x)
+\S4method{fileName}{contacts}(object)
 
 \S4method{seqinfo}{contacts}(x)
 
@@ -114,7 +106,7 @@ pairsFile(x) <- value
 \S4method{show}{contacts}(object)
 }
 \arguments{
-\item{path}{Path of a (m)cool file}
+\item{file}{Path to a (m)cool file}
 
 \item{resolution}{Resolution to use with mcool file}
 
@@ -127,17 +119,17 @@ the entire (m)cool file will be imported.}
 
 \item{topologicalFeatures}{topologicalFeatures provided as a named SimpleList}
 
-\item{pairs}{Path to an associated .pairs file}
+\item{pairsFile}{Path to an associated .pairs file}
 
 \item{x}{A \code{contacts} object.}
 
 \item{i}{a range or boolean vector.}
 
+\item{object}{A \code{contacts} object.}
+
 \item{value}{value}
 
 \item{name}{name}
-
-\item{object}{A \code{contacts} object.}
 }
 \value{
 a new \code{contacts} object.
@@ -148,17 +140,14 @@ a new \code{contacts} object.
 \section{Slots}{
 
 \describe{
+\item{\code{fileName}}{Path of (m)cool file}
+
 \item{\code{focus}}{Chr. coordinates for which interaction counts are extracted
 from the .(m)cool file.}
 
-\item{\code{metadata}}{metadata associated with the .(m)cool file.}
-
 \item{\code{resolutions}}{Resolutions available in the .(m)cool file.}
 
-\item{\code{current_resolution}}{Current resolution}
-
-\item{\code{bins}}{Genomic bins (computed on-the-fly) of seqinfo at the current
-resolution}
+\item{\code{resolution}}{Current resolution}
 
 \item{\code{interactions}}{Genomic Interactions extracted from the .(m)cool object}
 
@@ -168,11 +157,9 @@ resolution}
 (e.g. loops (\<Pairs\>), borders (\<GRanges\>),
 viewpoints (\<GRanges\>), etc...)}
 
-\item{\code{pairsFile}}{path for the .pairs file associated with the .(m)cool file}
+\item{\code{pairsFile}}{Path to the .pairs file associated with the .(m)cool file}
 
-\item{\code{matrixType}}{Type of contacts matrix (sparse, full, aggr, ratio, ...)}
-
-\item{\code{coolPath}}{Path of (m)cool file}
+\item{\code{metadata}}{metadata associated with the .(m)cool file.}
 }}
 
 \examples{
@@ -180,11 +167,8 @@ library(HiContacts)
 contacts_yeast <- contacts_yeast()
 contacts_yeast
 length(contacts_yeast)
-contacts_yeast[1:10]
-matrixType(contacts_yeast)
-matrixType(contacts_yeast) <- "custom"
-matrixType(contacts_yeast)
-coolPath(contacts_yeast)
+contacts_yeast[seq_len(10)]
+fileName(contacts_yeast)
 seqinfo(contacts_yeast)
 resolutions(contacts_yeast)
 resolution(contacts_yeast)
@@ -210,5 +194,5 @@ summary(contacts_yeast)
 show(contacts_yeast)
 as(contacts_yeast, 'GInteractions')
 as(contacts_yeast, 'ContactMatrix')
-as(contacts_yeast, 'matrix')[1:10, 1:10]
+as(contacts_yeast, 'matrix')[seq_len(10), seq_len(10)]
 }

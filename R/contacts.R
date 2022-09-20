@@ -11,17 +11,18 @@ setClassUnion("characterOrNULL", members = c("character", "NULL"))
 
 #' @title `contacts` S4 class and methods
 #'
+#' @slot fileName Path of (m)cool file
 #' @slot focus Chr. coordinates for which interaction counts are extracted 
 #'   from the .(m)cool file.
 #' @slot resolutions Resolutions available in the .(m)cool file.
 #' @slot resolution Current resolution
-#' @slot metadata metadata associated with the .(m)cool file.
 #' @slot interactions Genomic Interactions extracted from the .(m)cool object
 #' @slot scores Available interaction scores. 
 #' @slot topologicalFeatures Topological features associated with the dataset 
 #'   (e.g. loops (\<Pairs\>), borders (\<GRanges\>), 
 #'   viewpoints (\<GRanges\>), etc...)
 #' @slot pairsFile Path to the .pairs file associated with the .(m)cool file
+#' @slot metadata metadata associated with the .(m)cool file.
 #' 
 #' @import methods
 #' @importClassesFrom S4Vectors Pairs
@@ -33,20 +34,21 @@ setClassUnion("characterOrNULL", members = c("character", "NULL"))
 methods::setClass("contacts", 
     contains = c("Annotated"), 
     slots = c(
+        fileName = "character",
         focus = "characterOrNULL", 
         resolutions = "numeric", 
         resolution = "numeric", 
         interactions = "GInteractions",
         scores = "SimpleList", 
-        metadata = "list", 
         topologicalFeatures = "SimpleList",
-        pairsFile = "characterOrNULL"
+        pairsFile = "characterOrNULL",
+        metadata = "list"
     )
 )
 
 #' @rdname contacts
 #' 
-#' @param path Path of a (m)cool file
+#' @param file Path to a (m)cool file
 #' @param resolution Resolution to use with mcool file
 #' @param focus focus Chr. coordinates for which 
 #'   interaction counts are extracted from the .(m)cool file, provided
@@ -54,7 +56,7 @@ methods::setClass("contacts",
 #'   the entire (m)cool file will be imported. 
 #' @param metadata list of metadata
 #' @param topologicalFeatures topologicalFeatures provided as a named SimpleList
-#' @param pairs Path to an associated .pairs file
+#' @param pairsFile Path to an associated .pairs file
 #' @return a new `contacts` object.
 #' 
 #' @export
@@ -64,7 +66,7 @@ methods::setClass("contacts",
 #' contacts_yeast
 
 contacts <- function(
-    path, 
+    file, 
     resolution = NULL, 
     focus = NULL, 
     metadata = list(), 
@@ -81,12 +83,12 @@ contacts <- function(
 ) {
     
     ## -- Check that provided file is valid 
-    check_cool_file(path)
-    check_cool_format(path, resolution)
+    check_cool_file(file)
+    check_cool_format(file, resolution)
 
     ## -- Read resolutions
-    resolutions <- lsCoolResolutions(path)
-    if (is_mcool(path)) {
+    resolutions <- lsCoolResolutions(file)
+    if (is_mcool(file)) {
         res <- resolutions[length(resolutions)]
         if (!is.null(resolution)) {
             current_res <- resolution
@@ -100,46 +102,22 @@ contacts <- function(
         current_res <- NULL
     }
 
-    ## -- Read seqinfo
-    if (is_mcool(path)) {
-        si <- cool2seqinfo(path, res)
-    }
-    else {
-        si <- cool2seqinfo(path)
-    }
-    
-    ## -- Tile the genome
-    if (is_mcool(path)) {
-        bins <- GenomicRanges::tileGenome(
-            seqlengths = GenomeInfoDb::seqlengths(si), 
-            tilewidth = current_res, 
-            cut.last.tile.in.chrom = TRUE
-        )    
-    }
-    else {
-        bins <- GenomicRanges::tileGenome(
-            seqlengths = GenomeInfoDb::seqlengths(si), 
-            tilewidth = res, 
-            cut.last.tile.in.chrom = TRUE
-        )
-    }
-
     ## -- Read interactions
-    gis <- cool2gi(path, resolution = current_res, coords = focus)
+    gis <- cool2gi(file, resolution = current_res, coords = focus)
     mcols <- GenomicRanges::mcols(gis)
     GenomicRanges::mcols(gis) <- NULL
 
     ## -- Check pairs file
-    if (!is.null(pairs)) {
-        if (!file.exists(pairs)) {
-            stop("Provided pairs file does not exist. Aborting now.")
+    if (!is.null(pairsFile)) {
+        if (!file.exists(pairsFile)) {
+            stop("Provided pairsFile does not exist. Aborting now.")
         }
     }
 
     ## -- Create contact object
     x <- methods::new("contacts", 
+        fileName = as.character(file),
         focus = focus, 
-        metadata = metadata, 
         resolutions = resolutions, 
         resolution = ifelse(is_mcool(file), current_res, res), 
         interactions = gis, 
@@ -149,8 +127,7 @@ contacts <- function(
         ), 
         topologicalFeatures = topologicalFeatures, 
         pairsFile = pairsFile, 
-        matrixType = "sparse", 
-        coolPath = as.character(path)
+        metadata = metadata
     )
     methods::validObject(x)
     return(x)
@@ -201,7 +178,7 @@ setMethod("length", "contacts", function(x) length(interactions(x)))
 #'
 #' @export
 #' @examples 
-#' contacts_yeast[1:10]
+#' contacts_yeast[seq_len(10)]
 
 setMethod("[", signature("contacts", "numeric"), function(x, i) {
     interactions(x) <- interactions(x)[i]
@@ -231,54 +208,18 @@ setMethod("[", signature("contacts", "character"), function(x, i) {
 
 #' @rdname contacts
 #'
-#' @name matrixType
+#' @name fileName
 #' @docType methods
-#' @aliases matrixType,contacts-method
+#' @aliases fileName,contacts-method
 #'
 #' @param x A \code{contacts} object.
 #'
+#' @importMethodsFrom BiocGenerics fileName
 #' @export
 #' @examples 
-#' matrixType(contacts_yeast)
+#' fileName(contacts_yeast)
 
-setGeneric("matrixType", function(x) {standardGeneric("matrixType")})
-setMethod("matrixType", "contacts", function(x) x@matrixType)
-
-#' @rdname contacts
-#'
-#' @name matrixType<-
-#' @docType methods
-#' @aliases matrixType<-,contacts,character-method
-#'
-#' @param x A \code{contacts} object.
-#' @param name name
-#' @param value value
-#'
-#' @export
-#' @examples 
-#' matrixType(contacts_yeast) <- "custom"
-#' matrixType(contacts_yeast)
-
-setGeneric("matrixType<-", function(x, value) {standardGeneric("matrixType<-")})
-setMethod("matrixType<-", c(x = "contacts", value = "character"), function(x, value) {
-    x@matrixType <- value
-    return(x)
-})
-
-#' @rdname contacts
-#'
-#' @name coolPath
-#' @docType methods
-#' @aliases coolPath,contacts-method
-#'
-#' @param x A \code{contacts} object.
-#'
-#' @export
-#' @examples 
-#' coolPath(contacts_yeast)
-
-setGeneric("coolPath", function(x) {standardGeneric("coolPath")})
-setMethod("coolPath", "contacts", function(x) {x@coolPath})
+setMethod("fileName", "contacts", function(object) object@fileName)
 
 #' @rdname contacts
 #'
@@ -545,7 +486,7 @@ setMethod("pairsFile", "contacts", function(x) {
 setGeneric("pairsFile<-", function(x, value) {standardGeneric("pairsFile<-")})
 setMethod("pairsFile<-", signature(x = "contacts", value = "character"), function(x, value) {
     if (!file.exists(value)) {
-        stop("Provided pairs file does not exist. Aborting now.")
+        stop("Provided pairsFile does not exist. Aborting now.")
     }
     x@pairsFile <- value
     x
@@ -620,12 +561,7 @@ setMethod("show", signature("contacts"), function(object) {
 
     cat(summary(object))
     cat('-------\n')
-    cat(glue::glue('coolPath: {coolPath(object)}'), '\n')
-    cat(glue::glue('focus: {focus_str}'), '\n')
-    cat('------------\n')
-
-    ## Metadata
-    S4Vectors::coolcat("metadata(%d): %s\n", names(S4Vectors::metadata(object)))
+    cat(glue::glue('fileName: "{fileName(object)}"'), '\n')
     cat(glue::glue('focus: "{focus_str}"'), '\n')
 
     ## Resolutions
@@ -642,7 +578,7 @@ setMethod("show", signature("contacts"), function(object) {
     cat(glue::glue('topologicalFeatures: {paste(paste0(names(topologicalFeatures(object)), "(", lengths(topologicalFeatures(object)), ")"), collapse = " ")}'), '\n')
 
     ## Pairs
-    cat(glue::glue('pairs: {ifelse(is.null(pairsFile(object)), "N/A", pairsFile(object))}'), '\n')
+    cat(glue::glue('pairsFile: {ifelse(is.null(pairsFile(object)), "N/A", pairsFile(object))}'), '\n')
 
     ## Metadata
     S4Vectors::coolcat("metadata(%d): %s\n", names(S4Vectors::metadata(object)))
@@ -667,7 +603,7 @@ setMethod("show", signature("contacts"), function(object) {
 #' @examples 
 #' as(contacts_yeast, 'GInteractions')
 #' as(contacts_yeast, 'ContactMatrix')
-#' as(contacts_yeast, 'matrix')[1:10, 1:10]
+#' as(contacts_yeast, 'matrix')[seq_len(10), seq_len(10)]
 
 setAs("contacts", "GInteractions", function(from) interactions(from))
 setAs("contacts", "ContactMatrix", function(from) {
