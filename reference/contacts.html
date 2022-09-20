@@ -66,23 +66,12 @@
 )
 
 # S4 method for contacts
-length(x)
-
-# S4 method for contacts,numeric,ANY,ANY
-[(x, i)
-
-# S4 method for contacts
 fileName(object)
-
-# S4 method for contacts
-seqinfo(x)
 
 resolutions(x)
 
 # S4 method for contacts
 resolution(x)
-
-bins(x)
 
 focus(x)
 
@@ -105,6 +94,17 @@ pairsFile(x, name)
 pairsFile(x) &lt;- value
 
 metadata(x) &lt;- value
+
+# S4 method for contacts
+length(x)
+
+# S4 method for contacts,numeric,ANY,ANY
+[(x, i)
+
+# S4 method for contacts
+seqinfo(x)
+
+bins(x)
 
 # S4 method for contacts
 anchors(x)
@@ -148,15 +148,11 @@ the entire (m)cool file will be imported.</p></dd>
 <dd><p>Path to an associated .pairs file</p></dd>
 
 
-<dt>x</dt>
+<dt>object</dt>
 <dd><p>A <code>contacts</code> object.</p></dd>
 
 
-<dt>i</dt>
-<dd><p>a range or boolean vector.</p></dd>
-
-
-<dt>object</dt>
+<dt>x</dt>
 <dd><p>A <code>contacts</code> object.</p></dd>
 
 
@@ -166,6 +162,10 @@ the entire (m)cool file will be imported.</p></dd>
 
 <dt>name</dt>
 <dd><p>name</p></dd>
+
+
+<dt>i</dt>
+<dd><p>a range or boolean vector.</p></dd>
 
 </dl></div>
     <div id="value">
@@ -229,7 +229,7 @@ viewpoints (\&lt;GRanges\&gt;), etc...)</p></dd>
 <span class="r-in"><span><span class="va">contacts_yeast</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> `contacts` object with 74,360 interactions over 802 regions </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> -------</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> fileName: "/github/home/.cache/R/ExperimentHub/3667eb5d688_7752" </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> fileName: "/github/home/.cache/R/ExperimentHub/36a177ee0f8_7752" </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> focus: "II" </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> resolutions(5): 1000 2000 4000 8000 16000</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> current resolution: 1000 </span>
@@ -238,57 +238,12 @@ viewpoints (\&lt;GRanges\&gt;), etc...)</p></dd>
 <span class="r-out co"><span class="r-pr">#&gt;</span> topologicalFeatures: loops(0) borders(0) compartments(0) viewpoints(0) </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> pairsFile: N/A </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> metadata(0):</span>
-<span class="r-in"><span><span class="fu">length</span><span class="op">(</span><span class="va">contacts_yeast</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 74360</span>
-<span class="r-in"><span><span class="va">contacts_yeast</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq_len</a></span><span class="op">(</span><span class="fl">10</span><span class="op">)</span><span class="op">]</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `contacts` object with 10 interactions over 802 regions </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> -------</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> fileName: "/github/home/.cache/R/ExperimentHub/3667eb5d688_7752" </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> focus: "II" </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> resolutions(5): 1000 2000 4000 8000 16000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> current resolution: 1000 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> interactions: 10 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> scores(2): raw balanced </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> topologicalFeatures: loops(0) borders(0) compartments(0) viewpoints(0) </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> pairsFile: N/A </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> metadata(0):</span>
 <span class="r-in"><span><span class="fu">fileName</span><span class="op">(</span><span class="va">contacts_yeast</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "/github/home/.cache/R/ExperimentHub/3667eb5d688_7752"</span>
-<span class="r-in"><span><span class="fu">seqinfo</span><span class="op">(</span><span class="va">contacts_yeast</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Seqinfo object with 16 sequences from an unspecified genome:</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   seqnames seqlengths isCircular genome</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   I            230218       &lt;NA&gt;   &lt;NA&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   II           813184       &lt;NA&gt;   &lt;NA&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   III          316620       &lt;NA&gt;   &lt;NA&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   IV          1531933       &lt;NA&gt;   &lt;NA&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   V            576874       &lt;NA&gt;   &lt;NA&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   ...             ...        ...    ...</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   XII         1078177       &lt;NA&gt;   &lt;NA&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   XIII         924431       &lt;NA&gt;   &lt;NA&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   XIV          784333       &lt;NA&gt;   &lt;NA&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   XV          1091291       &lt;NA&gt;   &lt;NA&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   XVI          948066       &lt;NA&gt;   &lt;NA&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "/github/home/.cache/R/ExperimentHub/36a177ee0f8_7752"</span>
 <span class="r-in"><span><span class="fu">resolutions</span><span class="op">(</span><span class="va">contacts_yeast</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1]  1000  2000  4000  8000 16000</span>
 <span class="r-in"><span><span class="fu">resolution</span><span class="op">(</span><span class="va">contacts_yeast</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] 1000</span>
-<span class="r-in"><span><span class="fu">bins</span><span class="op">(</span><span class="va">contacts_yeast</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> GRanges object with 12079 ranges and 1 metadata column:</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>           seqnames        ranges strand |    bin_id</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>              &lt;Rle&gt;     &lt;IRanges&gt;  &lt;Rle&gt; | &lt;integer&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>       [1]        I        1-1000      * |         1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>       [2]        I     1001-2000      * |         2</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>       [3]        I     2001-3000      * |         3</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>       [4]        I     3001-4000      * |         4</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>       [5]        I     4001-5000      * |         5</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>       ...      ...           ...    ... .       ...</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   [12075]      XVI 944001-945000      * |     12075</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   [12076]      XVI 945001-946000      * |     12076</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   [12077]      XVI 946001-947000      * |     12077</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   [12078]      XVI 947001-948000      * |     12078</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   [12079]      XVI 948001-948066      * |     12079</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   -------</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   seqinfo: 16 sequences from an unspecified genome</span>
 <span class="r-in"><span><span class="fu">focus</span><span class="op">(</span><span class="va">contacts_yeast</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] "II"</span>
 <span class="r-in"><span><span class="fu">interactions</span><span class="op">(</span><span class="va">contacts_yeast</span><span class="op">)</span></span></span>
@@ -318,7 +273,7 @@ viewpoints (\&lt;GRanges\&gt;), etc...)</p></dd>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1]        NaN 0.04720230        NaN        NaN        NaN 0.04113549</span>
 <span class="r-in"><span><span class="fu">scores</span><span class="op">(</span><span class="va">contacts_yeast</span>, <span class="st">'test'</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html" class="external-link">runif</a></span><span class="op">(</span><span class="fu">length</span><span class="op">(</span><span class="va">contacts_yeast</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">tail</a></span><span class="op">(</span><span class="fu">scores</span><span class="op">(</span><span class="va">contacts_yeast</span>, <span class="st">'test'</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.4340942 0.0366653 0.7579076 0.1420236 0.2873017 0.4189317</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.32810914 0.47962691 0.09501623 0.28594161 0.57743177 0.11880148</span>
 <span class="r-in"><span><span class="va">full_contacts_yeast</span> <span class="op">&lt;-</span> <span class="fu"><a href="datasets.html">full_contacts_yeast</a></span><span class="op">(</span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> snapshotDate(): 2022-08-23</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> see ?HiContactsData and browseVignettes('HiContactsData') for documentation</span>
@@ -368,6 +323,51 @@ viewpoints (\&lt;GRanges\&gt;), etc...)</p></dd>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   seqinfo: 17 sequences (1 circular) from R64-1-1 genome</span>
 <span class="r-in"><span><span class="fu">pairsFile</span><span class="op">(</span><span class="va">full_contacts_yeast</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> NULL</span>
+<span class="r-in"><span><span class="fu">length</span><span class="op">(</span><span class="va">contacts_yeast</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 74360</span>
+<span class="r-in"><span><span class="va">contacts_yeast</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq_len</a></span><span class="op">(</span><span class="fl">10</span><span class="op">)</span><span class="op">]</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `contacts` object with 10 interactions over 802 regions </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> -------</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> fileName: "/github/home/.cache/R/ExperimentHub/36a177ee0f8_7752" </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> focus: "II" </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> resolutions(5): 1000 2000 4000 8000 16000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> current resolution: 1000 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> interactions: 10 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> scores(3): raw balanced test </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> topologicalFeatures: loops(0) borders(0) compartments(0) viewpoints(0) centromeres(16) </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> pairsFile: N/A </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> metadata(0):</span>
+<span class="r-in"><span><span class="fu">seqinfo</span><span class="op">(</span><span class="va">contacts_yeast</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Seqinfo object with 16 sequences from an unspecified genome:</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   seqnames seqlengths isCircular genome</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   I            230218       &lt;NA&gt;   &lt;NA&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   II           813184       &lt;NA&gt;   &lt;NA&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   III          316620       &lt;NA&gt;   &lt;NA&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   IV          1531933       &lt;NA&gt;   &lt;NA&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   V            576874       &lt;NA&gt;   &lt;NA&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   ...             ...        ...    ...</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   XII         1078177       &lt;NA&gt;   &lt;NA&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   XIII         924431       &lt;NA&gt;   &lt;NA&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   XIV          784333       &lt;NA&gt;   &lt;NA&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   XV          1091291       &lt;NA&gt;   &lt;NA&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   XVI          948066       &lt;NA&gt;   &lt;NA&gt;</span>
+<span class="r-in"><span><span class="fu">bins</span><span class="op">(</span><span class="va">contacts_yeast</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> GRanges object with 12079 ranges and 1 metadata column:</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>           seqnames        ranges strand |    bin_id</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>              &lt;Rle&gt;     &lt;IRanges&gt;  &lt;Rle&gt; | &lt;integer&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>       [1]        I        1-1000      * |         1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>       [2]        I     1001-2000      * |         2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>       [3]        I     2001-3000      * |         3</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>       [4]        I     3001-4000      * |         4</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>       [5]        I     4001-5000      * |         5</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>       ...      ...           ...    ... .       ...</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   [12075]      XVI 944001-945000      * |     12075</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   [12076]      XVI 945001-946000      * |     12076</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   [12077]      XVI 946001-947000      * |     12077</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   [12078]      XVI 947001-948000      * |     12078</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   [12079]      XVI 948001-948066      * |     12079</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   -------</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   seqinfo: 16 sequences from an unspecified genome</span>
 <span class="r-in"><span><span class="fu">anchors</span><span class="op">(</span><span class="va">contacts_yeast</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $first</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> GRanges object with 74360 ranges and 2 metadata columns:</span>
@@ -427,7 +427,7 @@ viewpoints (\&lt;GRanges\&gt;), etc...)</p></dd>
 <span class="r-in"><span><span class="fu">show</span><span class="op">(</span><span class="va">contacts_yeast</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> `contacts` object with 74,360 interactions over 802 regions </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> -------</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> fileName: "/github/home/.cache/R/ExperimentHub/3667eb5d688_7752" </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> fileName: "/github/home/.cache/R/ExperimentHub/36a177ee0f8_7752" </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> focus: "II" </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> resolutions(5): 1000 2000 4000 8000 16000</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> current resolution: 1000 </span>
