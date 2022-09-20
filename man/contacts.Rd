@@ -4,41 +4,45 @@
 \name{contacts-class}
 \alias{contacts-class}
 \alias{contacts}
-\alias{length}
-\alias{length,contacts-method}
-\alias{[}
-\alias{[,contacts,ANY,ANY,ANY-method}
-\alias{matrixType}
-\alias{matrixType,contacts-method}
-\alias{coolPath}
-\alias{coolPath,contacts-method}
-\alias{seqinfo,contacts-method}
+\alias{fileName}
+\alias{fileName,contacts-method}
 \alias{resolutions}
 \alias{resolutions,contacts-method}
 \alias{resolution}
 \alias{resolution,contacts-method}
-\alias{bins}
-\alias{bins,contacts-method}
 \alias{focus}
 \alias{focus,contacts-method}
 \alias{interactions}
 \alias{interactions,contacts-method}
+\alias{interactions<-}
+\alias{interactions<-,contacts,GInteractions-method}
 \alias{scores}
 \alias{scores,contacts,missing-method}
 \alias{scores,contacts,character-method}
 \alias{scores,contacts,numeric-method}
 \alias{scores<-}
 \alias{scores<-,contacts,character,numeric-method}
-\alias{features}
-\alias{features,contacts,missing-method}
-\alias{features,contacts,character-method}
-\alias{features,contacts,numeric-method}
-\alias{features<-}
-\alias{features<-,contacts,character,GRangesOrGInteractions-method}
+\alias{topologicalFeatures}
+\alias{topologicalFeatures,contacts,missing-method}
+\alias{topologicalFeatures,contacts,character-method}
+\alias{topologicalFeatures,contacts,numeric-method}
+\alias{topologicalFeatures<-}
+\alias{topologicalFeatures<-,contacts,character,GRangesOrGInteractions-method}
 \alias{pairsFile}
 \alias{pairsFile,contacts-method}
 \alias{pairsFile<-}
 \alias{pairsFile<-,contacts,character-method}
+\alias{metadata<-}
+\alias{metadata<-,contacts,list-method}
+\alias{length}
+\alias{length,contacts-method}
+\alias{[}
+\alias{[,contacts,numeric,ANY,ANY-method}
+\alias{[,contacts,logical,ANY,ANY-method}
+\alias{[,contacts,character,ANY,ANY-method}
+\alias{seqinfo,contacts-method}
+\alias{bins}
+\alias{bins,contacts-method}
 \alias{anchors}
 \alias{anchors,contacts-method}
 \alias{regions}
@@ -47,50 +51,55 @@
 \alias{summary,contacts-method}
 \alias{show}
 \alias{show,contacts-method}
+\alias{setAs}
+\alias{setAs,contacts-method}
 \title{\code{contacts} S4 class and methods}
 \usage{
 contacts(
-  cool_path,
+  file,
   resolution = NULL,
   focus = NULL,
   metadata = list(),
-  features = S4Vectors::SimpleList(loops = GenomicRanges::GRanges(), borders =
+  topologicalFeatures = S4Vectors::SimpleList(loops =
+    S4Vectors::Pairs(GenomicRanges::GRanges(), GenomicRanges::GRanges()), borders =
     GenomicRanges::GRanges(), compartments = GenomicRanges::GRanges(), viewpoints =
     GenomicRanges::GRanges()),
-  pairs = NULL
+  pairsFile = NULL
 )
 
-\S4method{length}{contacts}(x)
-
-\S4method{[}{contacts,ANY,ANY,ANY}(x, i)
-
-matrixType(x)
-
-coolPath(x)
-
-\S4method{seqinfo}{contacts}(x)
+\S4method{fileName}{contacts}(object)
 
 resolutions(x)
 
 \S4method{resolution}{contacts}(x)
 
-bins(x)
-
 focus(x)
 
 \S4method{interactions}{contacts}(x)
+
+\S4method{interactions}{contacts,GInteractions}(x) <- value
 
 scores(x, name)
 
 scores(x, name) <- value
 
-features(x, name)
+topologicalFeatures(x, name)
 
-features(x, name) <- value
+topologicalFeatures(x, name) <- value
 
 pairsFile(x, name)
 
 pairsFile(x) <- value
+
+metadata(x) <- value
+
+\S4method{length}{contacts}(x)
+
+\S4method{[}{contacts,numeric,ANY,ANY}(x, i)
+
+\S4method{seqinfo}{contacts}(x)
+
+bins(x)
 
 \S4method{anchors}{contacts}(x)
 
@@ -101,139 +110,93 @@ pairsFile(x) <- value
 \S4method{show}{contacts}(object)
 }
 \arguments{
-\item{cool_path}{Path of a (m)cool file}
+\item{file}{Path to a (m)cool file}
 
 \item{resolution}{Resolution to use with mcool file}
 
 \item{focus}{focus Chr. coordinates for which
-interaction counts are extracted from the .(m)cool file.
-Can be provided as a character string or as a GRanges object}
+interaction counts are extracted from the .(m)cool file, provided
+as a character string (e.g. "II:4000-5000"). If not provided,
+the entire (m)cool file will be imported.}
 
 \item{metadata}{list of metadata}
 
-\item{features}{features provided as a named SimpleList}
+\item{topologicalFeatures}{topologicalFeatures provided as a named SimpleList}
 
-\item{pairs}{Path to an associated .pairs file}
+\item{pairsFile}{Path to an associated .pairs file}
+
+\item{object}{A \code{contacts} object.}
 
 \item{x}{A \code{contacts} object.}
 
-\item{i}{a range or boolean vector.}
+\item{value}{value}
 
 \item{name}{name}
 
-\item{value}{value}
-
-\item{object}{A \code{contacts} object.}
+\item{i}{a range or boolean vector.}
 }
 \value{
 a new \code{contacts} object.
 }
 \description{
 \code{contacts} S4 class and methods
-
-contacts constructor
-
-length method for objects of class \code{contacts}.
-
-[ method for objects of class \code{contacts}.
-
-matrixType method for objects of class \code{contacts}.
-
-coolPath method for objects of class \code{contacts}.
-
-seqinfo method for objects of class \code{contacts}.
-
-resolutions method for objects of class \code{contacts}.
-
-resolution method for objects of class \code{contacts}.
-
-bins method for objects of class \code{contacts}.
-
-focus method for objects of class \code{contacts}.
-
-interactions method for objects of class \code{contacts}.
-
-scores method for objects of class \code{contacts}.
-
-\verb{scores<-} method for objects of class \code{contacts}.
-
-features method for objects of class \code{contacts}.
-
-\verb{features<-} method for objects of class \code{contacts}.
-
-pairsFile method for objects of class \code{contacts}.
-
-\verb{pairsFile<-} method for objects of class \code{contacts}.
-
-anchors method for objects of class \code{contacts}.
-
-regions method for objects of class \code{contacts}.
-
-summary method for objects of class \code{contacts}.
-
-Show method for objects of class \code{contacts}.
 }
 \section{Slots}{
 
 \describe{
+\item{\code{fileName}}{Path of (m)cool file}
+
 \item{\code{focus}}{Chr. coordinates for which interaction counts are extracted
 from the .(m)cool file.}
 
-\item{\code{metadata}}{metadata associated with the .(m)cool file.}
-
-\item{\code{seqinfo}}{Seqinfo, deduced from the largest resolution available
-in the .(m)cool file.}
-
 \item{\code{resolutions}}{Resolutions available in the .(m)cool file.}
 
-\item{\code{current_resolution}}{Current resolution}
-
-\item{\code{bins}}{Genomic bins (computed on-the-fly) of seqinfo at the current
-resolution}
+\item{\code{resolution}}{Current resolution}
 
 \item{\code{interactions}}{Genomic Interactions extracted from the .(m)cool object}
 
 \item{\code{scores}}{Available interaction scores.}
 
-\item{\code{features}}{Genomic features associated with the dataset (e.g.
-loops, borders, etc...)}
+\item{\code{topologicalFeatures}}{Topological features associated with the dataset
+(e.g. loops (\<Pairs\>), borders (\<GRanges\>),
+viewpoints (\<GRanges\>), etc...)}
 
-\item{\code{pairsFile}}{path for the .pairs file associated with the .(m)cool file}
+\item{\code{pairsFile}}{Path to the .pairs file associated with the .(m)cool file}
 
-\item{\code{matrixType}}{Type of contacts matrix (sparse, full, aggr, ratio, ...)}
-
-\item{\code{coolPath}}{Path of (m)cool file}
+\item{\code{metadata}}{metadata associated with the .(m)cool file.}
 }}
 
 \examples{
 library(HiContacts)
-data(contacts_yeast)
+contacts_yeast <- contacts_yeast()
 contacts_yeast
-length(contacts_yeast)
-contacts_yeast[1:10]
-matrixType(contacts_yeast)
-coolPath(contacts_yeast)
-seqinfo(contacts_yeast)
+fileName(contacts_yeast)
 resolutions(contacts_yeast)
 resolution(contacts_yeast)
-bins(contacts_yeast)
 focus(contacts_yeast)
 interactions(contacts_yeast)
 scores(contacts_yeast)
-scores(contacts_yeast, 1)
-scores(contacts_yeast, 'balanced')
+tail(scores(contacts_yeast, 1))
+tail(scores(contacts_yeast, 'balanced'))
 scores(contacts_yeast, 'test') <- runif(length(contacts_yeast))
-scores(contacts_yeast, 'test')
-data(full_contacts_yeast)
-features(full_contacts_yeast)
-features(full_contacts_yeast, 1)
-features(full_contacts_yeast, 'centromeres')
+tail(scores(contacts_yeast, 'test'))
+full_contacts_yeast <- full_contacts_yeast()
+topologicalFeatures(full_contacts_yeast)
+topologicalFeatures(full_contacts_yeast, 1)
+topologicalFeatures(full_contacts_yeast, 'centromeres')
 data(centros_yeast)
-features(contacts_yeast, 'centromeres') <- centros_yeast
-features(contacts_yeast, 'centromeres')
+topologicalFeatures(contacts_yeast, 'centromeres') <- centros_yeast
+topologicalFeatures(contacts_yeast, 'centromeres')
 pairsFile(full_contacts_yeast)
+length(contacts_yeast)
+contacts_yeast[seq_len(10)]
+seqinfo(contacts_yeast)
+bins(contacts_yeast)
 anchors(contacts_yeast)
 regions(contacts_yeast)
 summary(contacts_yeast)
 show(contacts_yeast)
+as(contacts_yeast, 'GInteractions')
+as(contacts_yeast, 'ContactMatrix')
+as(contacts_yeast, 'matrix')[seq_len(10), seq_len(10)]
 }

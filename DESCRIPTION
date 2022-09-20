@@ -1,6 +1,6 @@
 Package: HiContacts
 Title: HiContacts: R interface to cool files
-Version: 0.99.3
+Version: 0.99.6
 Date: 2022-08-16
 Authors@R:
     c(person(given = "Jacques",
@@ -18,14 +18,16 @@ BugReports: https://github.com/js2264/HiContacts/issues
 Depends:
     R (>= 4.2)
 Imports:
+    HiContactsData,
     InteractionSet,
     GenomicInteractions,
     GenomicRanges,
     IRanges,
     GenomeInfoDb,
-    rhdf5,
     S4Vectors,
+    BiocGenerics,
     methods,
+    rhdf5,
     Matrix,
     data.table,
     ggplot2,
@@ -38,7 +40,6 @@ Imports:
     stringr,
     reticulate
 Suggests:
-    HiContactsData,
     cowplot,
     testthat (>= 3.0.0),
     BiocStyle,

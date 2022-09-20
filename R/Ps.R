@@ -1,5 +1,11 @@
-#' getPs
-#'
+#' Compute a distance-dependent contact frequency, a.k.a. P(s)
+#' 
+#' P(s) will be approximated if no pairs are provided, or the exact P(s) 
+#' will be computed if a `.pairs` file is added to the `contacts` object 
+#' using `pairsFile(x) <- "..."`. 
+#' 
+#' @rdname Ps
+#' 
 #' @param x A `contacts` object
 #' @param by_chr by_chr
 #' @param filtered_chr filtered_chr
@@ -19,12 +25,13 @@
 #' @importFrom dplyr tally
 #' @importFrom dplyr arrange
 #' @importFrom dplyr lead
-#' @rdname Ps
+#' @importFrom dplyr cur_data
 #' @export
 #' @examples 
 #' library(HiContacts)
-#' data(contacts_yeast)
-#' getPs(contacts_yeast)
+#' contacts_yeast <- contacts_yeast()
+#' ps <- getPs(contacts_yeast)
+#' ps
 
 getPs <- function(
     x, 
@@ -35,14 +42,15 @@ getPs <- function(
     if (is.null(pairsFile)) {
         # stop("Please provide a pairsFile for `x`. Aborting now.")
         message("pairsFile not specified. The P(s) curve will be an approximation.")
-        pairs <- scores(x, 'raw')
+        pairs <- interactions(x)
+        pairs$score <- scores(x, 'raw')
         df <- tibble::tibble(
-            chr = as.vector(GenomeInfoDb::seqnames(InteractionSet::anchors(pairs)[[1]])),
+            chr = as.vector(GenomeInfoDb::seqnames(InteractionSet::anchors(pairs)[['first']])),
             distance = InteractionSet::pairdist(pairs, type = 'gap'),
             n = pairs$score
-        ) %>% 
-            tidyr::drop_na() %>% 
-            dplyr::filter(!chr %in% filtered_chr) %>% 
+        ) |> 
+            tidyr::drop_na() |> 
+            dplyr::filter(!chr %in% filtered_chr) |> 
             dplyr::mutate(binned_distance = PsBreaks()$break_pos[findInterval(distance, vec = PsBreaks()$break_pos, all.inside = TRUE)])
         if (by_chr) {
             df <- dplyr::group_by(df, chr, binned_distance)
@@ -50,9 +58,9 @@ getPs <- function(
         else {
             df <- dplyr::group_by(df, binned_distance)
         }
-        d <- dplyr::summarize(df, ninter = sum(n)) %>%
-            dplyr::mutate(p = ninter/sum(ninter)) %>% 
-            dplyr::left_join(PsBreaks(), by = c('binned_distance' = 'break_pos')) %>% 
+        d <- dplyr::summarize(df, ninter = sum(n)) |>
+            dplyr::mutate(p = ninter/sum(ninter)) |> 
+            dplyr::left_join(PsBreaks(), by = c('binned_distance' = 'break_pos')) |> 
             dplyr::mutate(norm_p = p / binwidth)
         if (by_chr) {
             d <- dplyr::group_by(d, chr)
@@ -60,30 +68,30 @@ getPs <- function(
         else {
             d <- d
         }
-        ps <- dplyr::group_split(d) %>% 
+        ps <- dplyr::group_split(d) |> 
             lapply(function(x) {
-                x %>% 
+                x |> 
                     dplyr::mutate(
                         norm_p_unity = norm_p / 
-                            {dplyr::slice(x, which.min(abs(x$binned_distance - 100000))) %>% dplyr::pull(norm_p)}
-                    ) %>% 
+                            {dplyr::slice(x, which.min(abs(x$binned_distance - 100000))) |> dplyr::pull(norm_p)}
+                    ) |> 
                     dplyr::mutate(
                         slope = (log10(dplyr::lead(norm_p)) - log10(norm_p)) / 
                             (log10(dplyr::lead(binned_distance)) - log10(binned_distance))
-                    ) %>% 
+                    ) |> 
                     dplyr::mutate(
                         slope = c(0, predict(
-                            loess(slope ~ binned_distance, span = 0.5, data = .)
+                            loess(slope ~ binned_distance, span = 0.5, data = dplyr::cur_data())
                         ))
                     )
-            }) %>% 
+            }) |> 
             dplyr::bind_rows()
         if (by_chr) {
-            ps <- dplyr::select(ps, chr, binned_distance, p, norm_p, norm_p_unity, slope) %>% 
+            ps <- dplyr::select(ps, chr, binned_distance, p, norm_p, norm_p_unity, slope) |> 
                 dplyr::arrange(chr, binned_distance)
         } 
         else {
-            ps <- dplyr::select(ps, binned_distance, p, norm_p, norm_p_unity, slope) %>% 
+            ps <- dplyr::select(ps, binned_distance, p, norm_p, norm_p_unity, slope) |> 
                 dplyr::arrange(binned_distance)
         }
         return(ps)
@@ -92,11 +100,11 @@ getPs <- function(
         message("Importing pairs file ", pairsFile, " in memory. This may take a while...")
         pairs <- pairs2gi(pairsFile)
         df <- tibble::tibble(
-            chr = as.vector(GenomeInfoDb::seqnames(InteractionSet::anchors(pairs)[[1]])),
+            chr = as.vector(GenomeInfoDb::seqnames(InteractionSet::anchors(pairs)[['first']])),
             distance = pairs$distance
-        ) %>% 
-            tidyr::drop_na() %>% 
-            dplyr::filter(!chr %in% filtered_chr) %>% 
+        ) |> 
+            tidyr::drop_na() |> 
+            dplyr::filter(!chr %in% filtered_chr) |> 
             dplyr::mutate(binned_distance = PsBreaks()$break_pos[findInterval(distance, vec = PsBreaks()$break_pos, all.inside = TRUE)])
         if (by_chr) {
             df <- dplyr::group_by(df, chr, binned_distance)
@@ -104,9 +112,9 @@ getPs <- function(
         else {
             df <- dplyr::group_by(df, binned_distance)
         }
-        d <- dplyr::tally(df, name = 'ninter') %>%
-            dplyr::mutate(p = ninter/sum(ninter)) %>% 
-            dplyr::left_join(PsBreaks(), by = c('binned_distance' = 'break_pos')) %>% 
+        d <- dplyr::tally(df, name = 'ninter') |>
+            dplyr::mutate(p = ninter/sum(ninter)) |> 
+            dplyr::left_join(PsBreaks(), by = c('binned_distance' = 'break_pos')) |> 
             dplyr::mutate(norm_p = p / binwidth)
         if (by_chr) {
             d <- dplyr::group_by(d, chr)
@@ -114,27 +122,27 @@ getPs <- function(
         else {
             d <- d
         }
-        ps <- dplyr::group_split(d) %>% 
+        ps <- dplyr::group_split(d) |> 
             lapply(function(x) {
-                dplyr::mutate(x, norm_p_unity = norm_p / {dplyr::slice(x, which.min(abs(x$binned_distance - 100000))) %>% dplyr::pull(norm_p)}) %>% 
-                dplyr::mutate(slope = (log10(dplyr::lead(norm_p)) - log10(norm_p)) / (log10(dplyr::lead(binned_distance)) - log10(binned_distance))) %>% 
-                dplyr::mutate(slope = c(0, predict(loess(slope ~ binned_distance, span = 0.5, data = .))))
-            }) %>% 
+                dplyr::mutate(x, norm_p_unity = norm_p / {dplyr::slice(x, which.min(abs(x$binned_distance - 100000))) |> dplyr::pull(norm_p)}) |> 
+                dplyr::mutate(slope = (log10(dplyr::lead(norm_p)) - log10(norm_p)) / (log10(dplyr::lead(binned_distance)) - log10(binned_distance))) |> 
+                dplyr::mutate(slope = c(0, predict(loess(slope ~ binned_distance, span = 0.5, data = dplyr::cur_data()))))
+            }) |> 
             dplyr::bind_rows()
         if (by_chr) {
-            ps <- dplyr::select(ps, chr, binned_distance, p, norm_p, norm_p_unity, slope) %>% 
+            ps <- dplyr::select(ps, chr, binned_distance, p, norm_p, norm_p_unity, slope) |> 
                 dplyr::arrange(binned_distance)
         } 
         else {
-            ps <- dplyr::select(ps, binned_distance, p, norm_p, norm_p_unity, slope) %>% 
+            ps <- dplyr::select(ps, binned_distance, p, norm_p, norm_p_unity, slope) |> 
                 dplyr::arrange(binned_distance)
         }
         return(ps)
     }
 }
 
-#' plotPs
-#'
+#' @rdname Ps
+#' 
 #' @param ... ...
 #' @param xlim xlim
 #' @param ylim ylim
@@ -143,21 +151,17 @@ getPs <- function(
 #' @import ggplot2
 #' @importFrom scales trans_breaks
 #' @importFrom scales trans_format
-#' @rdname Ps
 #' @export
 #' @examples 
 #' ## Single P(s)
 #' 
-#' library(HiContacts)
-#' data(contacts_yeast)
 #' ps <- getPs(contacts_yeast)
 #' plotPs(ps, ggplot2::aes(x = binned_distance, y = norm_p))
 #' 
 #' ## Comparing several P(s)
 #' 
-#' library(HiContacts)
-#' data(contacts_yeast)
-#' data(contacts_yeast_eco1)
+#' contacts_yeast <- contacts_yeast()
+#' contacts_yeast_eco1 <- contacts_yeast_eco1()
 #' ps_wt <- getPs(contacts_yeast)
 #' ps_wt$sample <- 'WT'
 #' ps_eco1 <- getPs(contacts_yeast_eco1)
@@ -188,17 +192,13 @@ plotPs <- function(..., xlim = c(5000, 4.99e5), ylim = c(1e-8, 1e-4)) {
     gg
 }
 
-#' plotPsSlope
-#'
+#' @rdname Ps
+#' 
 #' @return ggplot
 #' 
 #' @import ggplot2
-#' @rdname Ps
 #' @export
 #' @examples 
-#' library(HiContacts)
-#' data(contacts_yeast)
-#' ps <- getPs(contacts_yeast)
 #' plotPsSlope(ps, ggplot2::aes(x = binned_distance, y = slope))
 
 plotPsSlope <- function(..., xlim = c(5000, 4.99e5), ylim = c(-3, 0)) {
@@ -222,7 +222,7 @@ plotPsSlope <- function(..., xlim = c(5000, 4.99e5), ylim = c(-3, 0)) {
     gg
 }
 
-#' PsBreaks
+#' @rdname Ps
 #'
 #' @return tbl
 

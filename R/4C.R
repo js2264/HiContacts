@@ -1,7 +1,10 @@
-#' virtual4C
+#' Computing virtual 4C profiles
+#' 
+#' From a (m)cool pre-imported in memory, computes a 4C profile 
+#' using a user-specified `viewpoint`. 
 #'
 #' @param x a `contacts` object
-#' @param viewpoint viewpoint defined as a GRanges
+#' @param viewpoint viewpoint, defined as a GRanges
 #' @param use.scores use.scores
 #' @return A tibble with the contact frequency of the viewpoint, per bin 
 #'   along the imported genomic range.
@@ -18,11 +21,13 @@
 #' @export
 #' @examples 
 #' library(HiContacts)
-#' data(contacts_yeast)
-#' virtual4C(contacts_yeast, GenomicRanges::GRanges('II:490000-510000'))
+#' contacts_yeast <- contacts_yeast()
+#' v4C <- virtual4C(contacts_yeast, GenomicRanges::GRanges('II:490000-510000'))
+#' v4C
 
 virtual4C <- function(x, viewpoint, use.scores = 'balanced') {
-    gis <- scores(x, use.scores)
+    gis <- interactions(x)
+    gis$score <- scores(x, use.scores)
     cm <- cm2matrix(gi2cm(gis))
     regions <- regions(gis)
     regions_in_viewpoint <- seq_along(regions) %in% S4Vectors::queryHits(
@@ -43,20 +48,17 @@ virtual4C <- function(x, viewpoint, use.scores = 'balanced') {
     )
 }
 
-#' plot4C
-#'
 #' @param x GRanges, generally the output of `virtual4C()`
 #' @param mapping aes to pass on to ggplot2
 #' @return ggplot
+#' 
+#' @rdname virtual4C
 #'
 #' @import ggplot2
 #' @import tibble
 #' @importFrom scales unit_format
 #' @export
 #' @examples 
-#' library(HiContacts)
-#' data(contacts_yeast)
-#' v4C <- virtual4C(contacts_yeast, GenomicRanges::GRanges('II:490000-510000'))
 #' plot4C(v4C, ggplot2::aes(x = center, y = score))
 
 plot4C <- function(x, mapping) {

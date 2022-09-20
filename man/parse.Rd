@@ -13,7 +13,7 @@
 \alias{gi2cm}
 \alias{cm2matrix}
 \alias{pairs2gi}
-\title{getAnchors}
+\title{Parsing (m)cool files}
 \usage{
 getAnchors(file, resolution = NULL, balanced = "cooler")
 
@@ -116,10 +116,7 @@ a dense matrix
 a GenomicInteractions object
 }
 \description{
-Function to extract counts for a uncentered matrix (@ a pair of coordinates).
-
-This was adapted from \code{dovetail-genomics/coolR}
-}
-\details{
-This was adapted from \code{dovetail-genomics/coolR}
+These functions are the workhorse internal functions used to import
+a \verb{.(m)cool} file as GenomicInteractions (wrapped into a \code{contacts} object
+by \code{contacts()} function).
 }

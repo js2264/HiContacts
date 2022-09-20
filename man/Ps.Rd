@@ -4,7 +4,8 @@
 \alias{getPs}
 \alias{plotPs}
 \alias{plotPsSlope}
-\title{getPs}
+\alias{PsBreaks}
+\title{Compute a distance-dependent contact frequency, a.k.a. P(s)}
 \usage{
 getPs(
   x,
@@ -15,6 +16,8 @@ getPs(
 plotPs(..., xlim = c(5000, 499000), ylim = c(1e-08, 1e-04))
 
 plotPsSlope(..., xlim = c(5000, 499000), ylim = c(-3, 0))
+
+PsBreaks()
 }
 \arguments{
 \item{x}{A \code{contacts} object}
@@ -35,38 +38,33 @@ a tibble
 ggplot
 
 ggplot
+
+tbl
 }
 \description{
-getPs
-
-plotPs
-
-plotPsSlope
+P(s) will be approximated if no pairs are provided, or the exact P(s)
+will be computed if a \code{.pairs} file is added to the \code{contacts} object
+using \code{pairsFile(x) <- "..."}.
 }
 \examples{
 library(HiContacts)
-data(contacts_yeast)
-getPs(contacts_yeast)
+contacts_yeast <- contacts_yeast()
+ps <- getPs(contacts_yeast)
+ps
 ## Single P(s)
 
-library(HiContacts)
-data(contacts_yeast)
 ps <- getPs(contacts_yeast)
 plotPs(ps, ggplot2::aes(x = binned_distance, y = norm_p))
 
 ## Comparing several P(s)
 
-library(HiContacts)
-data(contacts_yeast)
-data(contacts_yeast_eco1)
+contacts_yeast <- contacts_yeast()
+contacts_yeast_eco1 <- contacts_yeast_eco1()
 ps_wt <- getPs(contacts_yeast)
 ps_wt$sample <- 'WT'
 ps_eco1 <- getPs(contacts_yeast_eco1)
 ps_eco1$sample <- 'eco1'
 ps <- rbind(ps_wt, ps_eco1)
 plotPs(ps, ggplot2::aes(x = binned_distance, y = norm_p, group = sample, color = sample))
-library(HiContacts)
-data(contacts_yeast)
-ps <- getPs(contacts_yeast)
 plotPsSlope(ps, ggplot2::aes(x = binned_distance, y = slope))
 }

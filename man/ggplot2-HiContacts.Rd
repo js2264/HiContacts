@@ -2,21 +2,16 @@
 % Please edit documentation in R/ggthemes.R
 \name{ggthemeHiContacts}
 \alias{ggthemeHiContacts}
-\alias{ggthemeHiContactsTracks}
-\title{ggthemeHiContacts}
+\title{ggplot2-related functions}
 \usage{
 ggthemeHiContacts(ticks = TRUE)
-
-ggthemeHiContactsTracks()
 }
 \arguments{
 \item{ticks}{ticks}
 }
 \value{
 a custom ggplot2 theme
-
-a custom ggplot2 theme
 }
 \description{
-ggthemeHiContacts
+ggplot2-related functions
 }

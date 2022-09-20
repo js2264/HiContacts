@@ -1,4 +1,4 @@
-#' plotMatrix
+#' Plotting a contact matrix
 #'
 #' @param x x
 #' @param use.scores use.scores
@@ -32,7 +32,7 @@
 #' @export
 #' @examples 
 #' library(HiContacts)
-#' data(contacts_yeast)
+#' contacts_yeast <- contacts_yeast()
 #' plotMatrix(
 #'     contacts_yeast, 
 #'     use.scores = 'balanced', 
@@ -53,19 +53,21 @@ plotMatrix <- function(
     chrom_lines = TRUE, 
     cmap = NULL
 ) {
-    `%>%` <- tidyr::`%>%`
     `%over%` <- IRanges::`%over%`
     
-    ## -- Extrac scores
+    ## -- Extract scores
     if (!is.null(use.scores)) {
-        gis <- scores(x, use.scores)
+        gis <- interactions(x)
+        gis$score <- scores(x, use.scores)
     }
     else {
         if ("balanced" %in% names(scores(x))) {
-            gis <- scores(x, "balanced")
+            gis <- interactions(x)
+            gis$score <- scores(x, "balanced")
         } 
         else {
-            gis <- scores(x, 1)
+            gis <- interactions(x)
+            gis$score <- scores(x, 1)
         }
     }
 
@@ -93,7 +95,7 @@ plotMatrix <- function(
     }
     else {
         an <- anchors(x)
-        diff_an <- an[[1]] != an[[2]]
+        diff_an <- an[['first']] != an[['second']]
         .scores <- gis$score[diff_an]
         .scores <- .scores[!is.na(.scores)]
         .scores <- .scores[!is.infinite(.scores)]
@@ -125,7 +127,7 @@ plotMatrix <- function(
     ## -- If loops are provided, filter them and add
     if (!is.null(loops)) {
         filtered_loops <- tibble::as_tibble(
-            loops[anchors(loops)[[1]] %over% regions(gis) & anchors(loops)[[2]] %over% regions(gis)]
+            loops[anchors(loops)[['first']] %over% gis & anchors(loops)[['second']] %over% gis]
         )
         p_loops <- ggplot2::geom_point(
             data = filtered_loops, 
@@ -146,7 +148,7 @@ plotMatrix <- function(
     ## -- If borders are provided, filter them and add
     if (!is.null(borders)) {
         filtered_borders <- tibble::as_tibble(
-            borders[borders %over% regions(gis)]
+            borders[borders %over% gis]
         )
         p_borders <- ggplot2::geom_point(
             data = filtered_borders, 
@@ -164,18 +166,18 @@ plotMatrix <- function(
 
     # -- Check number of chromosomes that were extracted
     nseqnames <- length(unique(as.vector(
-        GenomicRanges::seqnames(InteractionSet::anchors(gis)[[1]])
+        GenomicRanges::seqnames(InteractionSet::anchors(gis)[['first']])
     )))
 
     if (nseqnames == 1) { ## Single chromosome coordinates to plot
 
         ## -- Convert gis to table and extract x/y
-        mat <- gis %>%
-            tibble::as_tibble() %>%
+        mat <- gis |>
+            tibble::as_tibble() |>
             dplyr::mutate(
                 x = floor(end1 - (end1 - start1) / 2),
                 y = floor(end2 - (end2 - start2) / 2)
-            ) %>% 
+            ) |> 
             drop_na(score)
 
         ## -- Clamp scores to limits
@@ -185,15 +187,15 @@ plotMatrix <- function(
         if (symmetrical) {
             mat <- rbind(
                 mat, 
-                mat %>% 
-                    dplyr::mutate(x2 = y, y = x, x = x2) %>% 
+                mat |> 
+                    dplyr::mutate(x2 = y, y = x, x = x2) |> 
                     dplyr::select(-x2)
             )
             if (!is_symmetrical(x)) {
                 coords <- unlist(S4Vectors::zipup(char2pair(focus(x))))
-                mat <- mat %>% 
+                mat <- mat |> 
                     filter(x >= GenomicRanges::start(coords[1]) & 
-                        x <= GenomicRanges::end(coords[1])) %>% 
+                        x <= GenomicRanges::end(coords[1])) |> 
                     filter(y >= GenomicRanges::start(coords[2]) & 
                         y <= GenomicRanges::end(coords[2]))
             }
@@ -209,27 +211,27 @@ plotMatrix <- function(
                 y = "Genome coordinates", 
                 caption = paste(
                     sep = '\n',
-                    paste0('file: ', coolPath(x)), 
+                    paste0('file: ', fileName(x)), 
                     paste0('res: ', resolution(x))
                 )
             )
     }
 
     else {
-        chroms <- gis %>%
-            tidyr::as_tibble() %>%
-            dplyr::group_by(seqnames2) %>%
-            dplyr::slice_max(order_by = end2, n = 1) %>%
-            dplyr::select(seqnames2, end2) %>%
+        chroms <- gis |>
+            tidyr::as_tibble() |>
+            dplyr::group_by(seqnames2) |>
+            dplyr::slice_max(order_by = end2, n = 1) |>
+            dplyr::select(seqnames2, end2) |>
             dplyr::distinct()
         chroms$cumlength <- cumsum(c(0, chroms$end2)[seq_len(nrow(chroms))])
         chroms$end2 <- NULL
-        mat <- gis %>%
-            tibble::as_tibble() %>%
-            dplyr::left_join(chroms, by = c(seqnames1 = "seqnames2")) %>%
-            dplyr::rename(cumlength_x = cumlength) %>%
-            dplyr::left_join(chroms, by = c(seqnames2 = "seqnames2")) %>%
-            dplyr::rename(cumlength_y = cumlength) %>%
+        mat <- gis |>
+            tibble::as_tibble() |>
+            dplyr::left_join(chroms, by = c(seqnames1 = "seqnames2")) |>
+            dplyr::rename(cumlength_x = cumlength) |>
+            dplyr::left_join(chroms, by = c(seqnames2 = "seqnames2")) |>
+            dplyr::rename(cumlength_y = cumlength) |>
             dplyr::mutate(
                 x = floor(end1 - (end1 - start1) / 2) + cumlength_x,
                 y = floor(end2 - (end2 - start2) / 2) + cumlength_y
@@ -240,8 +242,8 @@ plotMatrix <- function(
         )
         mat <- rbind(
             mat, 
-            mat %>% 
-                dplyr::mutate(x2 = y, y = x, x = x2) %>% 
+            mat |> 
+                dplyr::mutate(x2 = y, y = x, x = x2) |> 
                 dplyr::select(-x2)
         )
 
@@ -253,7 +255,7 @@ plotMatrix <- function(
                 y = "Genome coordinates", 
                 caption = paste(
                     sep = '\n',
-                    paste0('file: ', coolPath(x)), 
+                    paste0('file: ', fileName(x)), 
                     paste0('res: ', resolution(x))
                 )
             )
@@ -281,6 +283,8 @@ plotMatrix <- function(
 #' @param limits limits
 #' @return ggplot
 #'
+#' @rdname plotMatrix
+#' 
 #' @import ggplot2
 #' @importFrom scales unit_format
 

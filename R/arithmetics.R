@@ -1,10 +1,22 @@
-#' detrend
+#' Arithmetics with (m)cool file(s)
+#' 
+#' Different operations can be performed:  
+#'  - Detrending a contact matrix, i.e. removing the distance-dependent 
+#' contact trend;
+#'  - Autocorrelate a contact matrix: this is is typically done to highlight 
+#' large-scale compartments;
+#'  - Divide one contact matrix by another; 
+#'  - Merge multiple contact matrices;
+#'  - Serpentinify, or smooth a contact matrix out. This requires `serpentine` 
+#' python package to be installed.
+#' 
+#' @rdname arithmetics
 #'
 #' @param x a `contacts` object
 #' @param use.scores use.scores
 #' @return a `contacts` object with two additional scoress: `expected` and
 #'   `detrended`
-#'
+#' 
 #' @importFrom scales rescale
 #' @importFrom tibble as_tibble
 #' @importFrom tibble tibble
@@ -17,20 +29,25 @@
 #' @import GenomicRanges
 #' @export
 #' @examples 
+#' #### -----
+#' #### Detrending a contact matrix
+#' #### -----
+#' 
 #' library(HiContacts)
-#' data(contacts_yeast)
+#' contacts_yeast <- contacts_yeast()
 #' contacts_yeast <- detrend(contacts_yeast)
 #' scores(contacts_yeast)
 
 detrend <- function(x, use.scores = 'balanced') {
-    gis <- scores(x, use.scores)
+    gis <- interactions(x)
+    gis$score <- scores(x, use.scores)
     gis$diag <- InteractionSet::pairdist(gis) / resolution(x)
-    expected <- tibble::as_tibble(gis) %>% 
-        dplyr::group_by(diag) %>% 
-        dplyr::summarize(average_interaction_per_diag = mean(score, na.rm = TRUE)) %>% 
+    expected <- tibble::as_tibble(gis) |> 
+        dplyr::group_by(diag) |> 
+        dplyr::summarize(average_interaction_per_diag = mean(score, na.rm = TRUE)) |> 
         dplyr::mutate(average_interaction_per_diag = average_interaction_per_diag / 2)
-    gis$expected <- tibble::as_tibble(gis) %>% 
-        dplyr::left_join(expected, by = 'diag') %>% 
+    gis$expected <- tibble::as_tibble(gis) |> 
+        dplyr::left_join(expected, by = 'diag') |> 
         dplyr::pull(average_interaction_per_diag)
     gis$score_over_expected <- log2(gis$score / gis$expected)
     scores(x, "expected") <- gis$expected
@@ -38,100 +55,7 @@ detrend <- function(x, use.scores = 'balanced') {
     return(x)
 }
 
-#' serpentinify
-#'
-#' @param x a `contacts` object
-#' @param use.scores use.scores
-#' @param use_serpentine_trend whether to use the trend estimated with 
-#'   serpentine (this requires `reticulate` and the python package `serpentine`)
-#' @param serpentine_niter number of iterations to use for serpentine
-#' @param serpentine_ncores number of CPUs to use for serpentine
-#' @return a `contacts` object with a single `smoothen` scores
-#' 
-#' @import reticulate
-#' @import GenomicRanges
-#' @importFrom dplyr mutate
-#' @importFrom tidyr pivot_longer
-#' @importFrom tibble as_tibble
-#' @importFrom InteractionSet anchors
-#' @importFrom InteractionSet GInteractions
-#' @importFrom S4Vectors SimpleList
-
-serpentinify <- function(x, use.scores = 'balanced', 
-    use_serpentine_trend = TRUE, serpentine_niter = 10L, serpentine_ncores = 16L
-) {
-
-    sp <- reticulate::import('serpentine')
-    gis <- scores(x, use.scores)
-
-    ## Check that only 1 chromosome is present in the gis object
-    seqnames <- unique(as.vector(GenomicRanges::seqnames(InteractionSet::anchors(gis)[[1]])))
-    if (length(seqnames) > 1) {
-        stop('Smoothing maps across multiple chromosomes is not supported. Aborting now.')
-    }
-    binsize <- resolution(x)
-
-    ## Run Serpentine
-    B <- cm2matrix(gi2cm(gis), replace_NA = 0)
-    A <- matrix(data = 1, nrow = nrow(B), ncol = ncol(B))
-    .v <- sp$serpentin_binning(A, B, verbose = FALSE, iterations = serpentine_niter, parallel = serpentine_ncores)
-    sm1 <- .v[[1]]
-    sm2 <- .v[[2]]
-    sK <- .v[[3]]
-    
-    ## Re-center smoothened matrix 
-    if (use_serpentine_trend) {
-        .v <- sp$MDbefore(B, A, show = FALSE)
-        trend <- .v[[1]]
-        threshold <- .v[[2]]
-        if (is.na(trend)) trend <- mean(sK, na.rm = TRUE)
-        sK <- sK - trend
-    }
-    else {
-        sK <- sK - mean(sK, na.rm = TRUE)
-    }
-
-    ## Make a full-featured interactions (storing smoothed scores in `score`)
-    gis_smoothened <- sK %>%
-        tibble::as_tibble() %>% 
-        stats::setNames(GenomicRanges::start(anchors(gi2cm(gis))$row)) %>%
-        dplyr::mutate(start1 = GenomicRanges::start(anchors(gi2cm(gis))$row)) %>% 
-        tidyr::pivot_longer(-start1, names_to = 'start2', values_to = 'score') %>% 
-        dplyr::mutate(start2 = as.numeric(start2))
-    an1 <- GenomicRanges::GRanges(
-        seqnames = seqnames, 
-        IRanges::IRanges(gis_smoothened$start1, width = binsize)
-    )
-    an2 <- GenomicRanges::GRanges(
-        seqnames = seqnames, 
-        IRanges::IRanges(gis_smoothened$start2, width = binsize)
-    )
-    reg <- unique(c(an1, an2))
-    gi <- InteractionSet::GInteractions(
-        anchor1 = an1, 
-        anchor2 = an2, 
-        regions = reg
-    )
-
-    res <- methods::new("contacts", 
-        focus = focus(x), 
-        metadata = metadata(x),
-        seqinfo = seqinfo(x), 
-        resolutions = resolutions(x), 
-        current_resolution = resolution(x), 
-        bins = bins(x), 
-        interactions = gi, 
-        scores = S4Vectors::SimpleList(smoothen = gis_smoothened$score),
-        features = features(x), 
-        pairsFile = pairsFile(x), 
-        matrixType = 'smoothed', 
-        coolPath = coolPath(x)
-    )
-
-    return(res)
-}
-
-#' autocorrelate
+#' @rdname arithmetics
 #'
 #' @param x a `contacts` object
 #' @param use.scores use.scores
@@ -144,17 +68,21 @@ serpentinify <- function(x, use.scores = 'balanced',
 #' @importFrom tibble as_tibble
 #' @importFrom dplyr rename
 #' @importFrom dplyr mutate
+#' @importFrom dplyr n
 #' @importFrom S4Vectors SimpleList
 #' @export
 #' @examples 
-#' library(HiContacts)
-#' data(contacts_yeast)
+#' #### -----
+#' #### Auto-correlate a contact matrix
+#' #### -----
+#' 
 #' contacts_yeast <- autocorrelate(contacts_yeast)
 #' scores(contacts_yeast)
 #' plotMatrix(contacts_yeast, scale = 'linear', limits = c(-1, 1), cmap = bwrColors())
 
 autocorrelate <- function(x, use.scores = 'balanced', ignore_ndiags = 3) {
-    gis <- scores(x, use.scores)
+    gis <- interactions(x)
+    gis$score <- scores(x, use.scores)
     reg <- regions(gis)
     mat <- cm2matrix(gi2cm(gis))
     sdiag(mat, 0) <- NA
@@ -163,39 +91,36 @@ autocorrelate <- function(x, use.scores = 'balanced', ignore_ndiags = 3) {
     }
     # co <- corrr::correlate(log10(mat), diagonal = 0, method = "pearson", quiet = TRUE)
     co <- stats::cor(log10(mat), use = 'pairwise.complete.obs', method = "pearson")
-    co <- tibble::as_tibble(co) %>% 
-        dplyr::mutate(term = paste0('V', 1:nrow(.))) %>% 
+    co <- tibble::as_tibble(co) |> 
+        dplyr::mutate(term = paste0('V', seq_len(dplyr::n()))) |> 
         dplyr::relocate(term)
     colnames(co) <- c('term', names(reg))
     co$term <- names(reg)
-    mat2 <- co %>%
-        tidyr::pivot_longer(-term, names_to = "y", values_to = "corr") %>%
+    mat2 <- co |>
+        tidyr::pivot_longer(-term, names_to = "y", values_to = "corr") |>
         dplyr::rename("x" = "term")
     gis2 <- InteractionSet::GInteractions(
-        anchor1 = stringr::str_replace(mat2$x, '_', ':') %>% stringr::str_replace('_', '-') %>% as('GRanges'), 
-        anchor2 = stringr::str_replace(mat2$y, '_', ':') %>% stringr::str_replace('_', '-') %>% as('GRanges'), 
+        anchor1 = stringr::str_replace(mat2$x, '_', ':') |> stringr::str_replace('_', '-') |> as('GRanges'), 
+        anchor2 = stringr::str_replace(mat2$y, '_', ':') |> stringr::str_replace('_', '-') |> as('GRanges'), 
         score = as.array(mat2$corr)
     )
 
     res <- methods::new("contacts", 
         focus = focus(x), 
         metadata = metadata(x),
-        seqinfo = seqinfo(x), 
         resolutions = resolutions(x), 
-        current_resolution = resolution(x), 
-        bins = bins(x), 
+        resolution = resolution(x), 
         interactions = gis2, 
         scores = S4Vectors::SimpleList(autocorrelation = gis2$score),
-        features = features(x), 
+        topologicalFeatures = topologicalFeatures(x), 
         pairsFile = pairsFile(x), 
-        matrixType = 'autocorr.', 
-        coolPath = coolPath(x)
+        fileName = fileName(x)
     )
 
     return(res)
 }
 
-#' divide
+#' @rdname arithmetics
 #'
 #' @param x a `contacts` object
 #' @param by a `contacts` object
@@ -214,21 +139,25 @@ autocorrelate <- function(x, use.scores = 'balanced', ignore_ndiags = 3) {
 #' @importFrom S4Vectors SimpleList
 #' @export
 #' @examples 
-#' library(HiContacts)
-#' data(contacts_yeast)
-#' data(contacts_yeast_eco1)
+#' #### -----
+#' #### Divide 2 contact matrices
+#' #### -----
+#' 
+#' contacts_yeast <- contacts_yeast()
+#' contacts_yeast_eco1 <- contacts_yeast_eco1()
 #' div_contacts <- divide(contacts_yeast_eco1, by = contacts_yeast)
 #' div_contacts
 #' plotMatrix(div_contacts, scale = 'log2', limits = c(-2, 2), cmap = bwrColors())
 
 divide <- function(x, by, use.scores = 'balanced') {
-    `%>%` <- tidyr::`%>%`
     
     ## -- Check that all objects are comparable (bins, regions, resolution, seqinfo)
     is_comparable(x, by)
 
-    x_gis <- scores(x, use.scores)
-    by_gis <- scores(by, use.scores)
+    x_gis <- interactions(x)
+    x_gis$score <- scores(x, use.scores)
+    by_gis <- interactions(by)
+    by_gis$score <- scores(by, use.scores)
 
     ## -- If regions are different, manually merge them 
     InteractionSet::replaceRegions(x_gis) <- unique(
@@ -264,12 +193,12 @@ divide <- function(x, by, use.scores = 'balanced') {
 
     ## Make a full-featured interactions (storing divided scores in `score`)
     seqnames <- unique(GenomicRanges::seqnames(regions(x)))
-    mat <- sK %>%
-        tibble::as_tibble() %>% 
-        setNames(GenomicRanges::start(anchors(gi2cm(x_gis))$row)) %>%
-        dplyr::mutate(start2 = GenomicRanges::start(anchors(gi2cm(by_gis))$row)) %>% 
-        tidyr::pivot_longer(-start2, names_to = 'start1', values_to = 'score') %>% 
-        dplyr::mutate(start1 = as.numeric(start1)) %>%
+    mat <- sK |>
+        tibble::as_tibble() |> 
+        setNames(GenomicRanges::start(anchors(gi2cm(x_gis))$row)) |>
+        dplyr::mutate(start2 = GenomicRanges::start(anchors(gi2cm(by_gis))$row)) |> 
+        tidyr::pivot_longer(-start2, names_to = 'start1', values_to = 'score') |> 
+        dplyr::mutate(start1 = as.numeric(start1)) |>
         dplyr::mutate(
             end1 = start1 + binsize, 
             end2 = start2 + binsize
@@ -283,7 +212,7 @@ divide <- function(x, by, use.scores = 'balanced') {
         IRanges::IRanges(mat$start2, width = binsize)
     )
     reg <- unique(c(an1, an2))
-    bins <- c(bins(x), bins(by)) %>% 
+    bins <- c(bins(x), bins(by)) |> 
         unique() 
     gi <- InteractionSet::GInteractions(
         anchor1 = an1, 
@@ -302,24 +231,21 @@ divide <- function(x, by, use.scores = 'balanced') {
     res <- methods::new("contacts", 
         focus = focus(x), 
         metadata = list(),
-        seqinfo = seqinfo(x), 
         resolutions = binsize, 
-        current_resolution = binsize, 
-        bins = bins, 
+        resolution = binsize, 
         interactions = gi, 
         scores = S4Vectors::SimpleList(
             'ratio' = mat$score[!is.na(mat$score) & is.finite(mat$score)]
         ), 
-        features = S4Vectors::SimpleList(), 
+        topologicalFeatures = S4Vectors::SimpleList(), 
         pairsFile = NULL, 
-        matrixType = 'ratio', 
-        coolPath = paste0(basename(coolPath(x)), ' / ', basename(coolPath(by)))
+        fileName = paste0(basename(fileName(x)), ' / ', basename(fileName(by)))
     )
     return(res)
 
 }
 
-#' merge
+#' @rdname arithmetics
 #'
 #' @param ... `contacts` objects
 #' @param use.scores use.scores
@@ -338,24 +264,30 @@ divide <- function(x, by, use.scores = 'balanced') {
 #' @importFrom S4Vectors SimpleList
 #' @export
 #' @examples 
-#' library(HiContacts)
-#' data(contacts_yeast)
-#' data(contacts_yeast_eco1)
+#' #### -----
+#' #### Merge 2 contact matrices
+#' #### -----
+#' 
 #' merged_contacts <- merge(contacts_yeast_eco1, contacts_yeast)
 #' merged_contacts
 
 merge <- function(..., use.scores = 'balanced') {
-    `%>%` <- tidyr::`%>%`
     contacts_list <- list(...)
     
+    ## -- Check that at least 2 `contacts` objects are passed to `merge()`
+    are_contacts(...)
+    if (length(contacts_list) < 2) {
+        stop("Please provide at least 2 `contacts` objects.")
+    } 
+
     ## -- Check that all objects are comparable (bins, regions, resolution, seqinfo)
     is_comparable(...)
 
     # Unify all the interactions
     ints <- do.call(
         c, lapply(contacts_list, FUN = interactions) 
-    ) %>% 
-        unique() %>% 
+    ) |> 
+        unique() |> 
         sort()
     
     # Set all scores for each scores to 0
@@ -375,7 +307,7 @@ merge <- function(..., use.scores = 'balanced') {
         )
         sub <- seq_along(ints) %in% sub
         for (K in seq_along(asss)) {
-            vals <- scores(contacts_list[[idx]])[[K]]
+            vals <- scores(contacts_list[[idx]], K)
             vals[is.na(vals)] <- 0
             asss[[K]][sub] <- asss[[K]][sub] + 
                 vals
@@ -384,7 +316,7 @@ merge <- function(..., use.scores = 'balanced') {
 
     ## -- Create 'in silico' contacts
     files <- paste0(
-        basename(unlist(lapply(contacts_list, coolPath))), 
+        basename(unlist(lapply(contacts_list, fileName))), 
         collapse = ', '
     )
     res <- methods::new("contacts", 
@@ -396,17 +328,106 @@ merge <- function(..., use.scores = 'balanced') {
             merging = files, 
             operation = 'sum'
         ), 
-        seqinfo = seqinfo(contacts_list[[1]]), 
         resolutions = resolutions(contacts_list[[1]]), 
-        current_resolution = resolution(contacts_list[[1]]), 
-        bins = bins(contacts_list[[1]]), 
+        resolution = resolution(contacts_list[[1]]), 
         interactions = ints, 
         scores = asss, 
-        features = S4Vectors::SimpleList(), 
+        topologicalFeatures = S4Vectors::SimpleList(), 
         pairsFile = NULL, 
-        matrixType = 'merged', 
-        coolPath = ""
+        fileName = ""
     )
     return(res)
 
 }
+
+#' @rdname arithmetics
+#'
+#' @param x a `contacts` object
+#' @param use.scores use.scores
+#' @param use_serpentine_trend whether to use the trend estimated with 
+#'   serpentine (this requires `reticulate` and the python package `serpentine`)
+#' @param serpentine_niter number of iterations to use for serpentine
+#' @param serpentine_ncores number of CPUs to use for serpentine
+#' @return a `contacts` object with a single `smoothen` scores
+#' 
+#' @import reticulate
+#' @import GenomicRanges
+#' @importFrom dplyr mutate
+#' @importFrom tidyr pivot_longer
+#' @importFrom tibble as_tibble
+#' @importFrom InteractionSet anchors
+#' @importFrom InteractionSet GInteractions
+#' @importFrom S4Vectors SimpleList
+
+serpentinify <- function(x, use.scores = 'balanced', 
+    use_serpentine_trend = TRUE, serpentine_niter = 10L, serpentine_ncores = 16L
+) {
+
+    sp <- reticulate::import('serpentine')
+    gis <- interactions(x)
+    gis$score <- scores(x, use.scores)
+
+    ## Check that only 1 chromosome is present in the gis object
+    seqnames <- unique(as.vector(GenomicRanges::seqnames(InteractionSet::anchors(gis)[['first']])))
+    if (length(seqnames) > 1) {
+        stop('Smoothing maps across multiple chromosomes is not supported. Aborting now.')
+    }
+    binsize <- resolution(x)
+
+    ## Run Serpentine
+    B <- cm2matrix(gi2cm(gis), replace_NA = 0)
+    A <- matrix(data = 1, nrow = nrow(B), ncol = ncol(B))
+    .v <- sp$serpentin_binning(A, B, verbose = FALSE, iterations = serpentine_niter, parallel = serpentine_ncores)
+    sm1 <- .v[[1]]
+    sm2 <- .v[[2]]
+    sK <- .v[[3]]
+    
+    ## Re-center smoothened matrix 
+    if (use_serpentine_trend) {
+        .v <- sp$MDbefore(B, A, show = FALSE)
+        trend <- .v[[1]]
+        threshold <- .v[[2]]
+        if (is.na(trend)) trend <- mean(sK, na.rm = TRUE)
+        sK <- sK - trend
+    }
+    else {
+        sK <- sK - mean(sK, na.rm = TRUE)
+    }
+
+    ## Make a full-featured interactions (storing smoothed scores in `score`)
+    gis_smoothened <- sK |>
+        tibble::as_tibble() |> 
+        stats::setNames(GenomicRanges::start(anchors(gi2cm(gis))$row)) |>
+        dplyr::mutate(start1 = GenomicRanges::start(anchors(gi2cm(gis))$row)) |> 
+        tidyr::pivot_longer(-start1, names_to = 'start2', values_to = 'score') |> 
+        dplyr::mutate(start2 = as.numeric(start2))
+    an1 <- GenomicRanges::GRanges(
+        seqnames = seqnames, 
+        IRanges::IRanges(gis_smoothened$start1, width = binsize)
+    )
+    an2 <- GenomicRanges::GRanges(
+        seqnames = seqnames, 
+        IRanges::IRanges(gis_smoothened$start2, width = binsize)
+    )
+    reg <- unique(c(an1, an2))
+    gi <- InteractionSet::GInteractions(
+        anchor1 = an1, 
+        anchor2 = an2, 
+        regions = reg
+    )
+
+    res <- methods::new("contacts", 
+        focus = focus(x), 
+        metadata = metadata(x),
+        resolutions = resolutions(x), 
+        resolution = resolution(x), 
+        interactions = gi, 
+        scores = S4Vectors::SimpleList(smoothen = gis_smoothened$score),
+        topologicalFeatures = topologicalFeatures(x), 
+        pairsFile = pairsFile(x), 
+        fileName = fileName(x)
+    )
+
+    return(res)
+}
+
