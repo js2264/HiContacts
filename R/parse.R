@@ -378,6 +378,7 @@ cool2gi <- function(file, coords = NULL, resolution = NULL) {
     # Add extra info
     InteractionSet::regions(gi)$chr <- GenomicRanges::seqnames(InteractionSet::regions(gi))
     InteractionSet::regions(gi)$center <- GenomicRanges::start(GenomicRanges::resize(InteractionSet::regions(gi), fix = "center", width = 1))
+    InteractionSet::regions(gi)$bin_id <- anchors$bin_id[match(regions(gi), anchors)]
 
     return(gi)
 }
