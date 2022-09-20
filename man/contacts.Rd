@@ -178,7 +178,7 @@ loops, borders, etc...)}
 
 \examples{
 library(HiContacts)
-data(contacts_yeast)
+contacts_yeast <- contacts_yeast()
 contacts_yeast
 length(contacts_yeast)
 contacts_yeast[1:10]

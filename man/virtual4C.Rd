@@ -30,10 +30,8 @@ using a user-specified \code{viewpoint}.
 }
 \examples{
 library(HiContacts)
-data(contacts_yeast)
-virtual4C(contacts_yeast, GenomicRanges::GRanges('II:490000-510000'))
-library(HiContacts)
-data(contacts_yeast)
+contacts_yeast <- contacts_yeast()
 v4C <- virtual4C(contacts_yeast, GenomicRanges::GRanges('II:490000-510000'))
+v4C
 plot4C(v4C, ggplot2::aes(x = center, y = score))
 }

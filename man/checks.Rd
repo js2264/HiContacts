@@ -59,6 +59,6 @@ Useful functions to validate the nature/structure of (m)cool files or
 }
 \examples{
 library(HiContacts)
-data(contacts_yeast)
+contacts_yeast <- contacts_yeast()
 is_symmetrical(contacts_yeast)
 }

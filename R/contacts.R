@@ -69,7 +69,7 @@ methods::setClass("contacts",
 #' @export
 #' @examples 
 #' library(HiContacts)
-#' data(contacts_yeast)
+#' contacts_yeast <- contacts_yeast()
 #' contacts_yeast
 
 contacts <- function(

@@ -141,7 +141,7 @@ is_square <- function(pair) {
 #' @export
 #' @examples
 #' library(HiContacts)
-#' data(contacts_yeast)
+#' contacts_yeast <- contacts_yeast()
 #' is_symmetrical(contacts_yeast)
 
 is_symmetrical <- function(contacts) {

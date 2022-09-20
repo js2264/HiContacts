@@ -34,7 +34,7 @@
 #' #### -----
 #' 
 #' library(HiContacts)
-#' data(contacts_yeast)
+#' contacts_yeast <- contacts_yeast()
 #' contacts_yeast <- detrend(contacts_yeast)
 #' scores(contacts_yeast)
 
@@ -144,8 +144,8 @@ autocorrelate <- function(x, use.scores = 'balanced', ignore_ndiags = 3) {
 #' #### Divide 2 contact matrices
 #' #### -----
 #' 
-#' data(contacts_yeast)
-#' data(contacts_yeast_eco1)
+#' contacts_yeast <- contacts_yeast()
+#' contacts_yeast_eco1 <- contacts_yeast_eco1()
 #' div_contacts <- divide(contacts_yeast_eco1, by = contacts_yeast)
 #' div_contacts
 #' plotMatrix(div_contacts, scale = 'log2', limits = c(-2, 2), cmap = bwrColors())

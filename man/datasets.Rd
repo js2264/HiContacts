@@ -4,64 +4,27 @@
 \name{centros_yeast}
 \alias{centros_yeast}
 \alias{contacts_yeast}
-\alias{contacts_yeast_eco1}
-\alias{full_contacts_yeast}
-\title{Centromere position in S288c genome}
+\title{Example datasets provided in \code{HiContacts} & \code{HiContactsData}}
 \format{
 An object of class \code{"GRanges"}.
-
-An object of class \code{"contacts"}.
-
-An object of class \code{"contacts"}.
 
 An object of class \code{"contacts"}.
 }
 \source{
 HiContacts
-
-HiContactsData
-fpath <- HiContactsData::HiContactsData('yeast_wt', 'mcool')
-contacts_yeast <- contacts(fpath, 'II', resolution = 1000)
-usethis::use_data(contacts_yeast, overwrite = TRUE)
-
-HiContactsData
-fpath <- HiContactsData::HiContactsData('yeast_eco1', 'mcool')
-contacts_yeast_eco1 <- contacts(fpath, 'II', resolution = 1000)
-usethis::use_data(contacts_yeast_eco1, overwrite = TRUE)
-
-HiContactsData
-data(centros_yeast)
-fpath <- HiContactsData::HiContactsData('yeast_wt', 'mcool')
-full_contacts_yeast <- contacts(fpath, resolution = 16000)
-features(full_contacts_yeast, 'centromeres') <- centros_yeast
-usethis::use_data(full_contacts_yeast, overwrite = TRUE)
 }
 \usage{
 data(centros_yeast)
 
-data(contacts_yeast)
-
-data(contacts_yeast_eco1)
-
-data(full_contacts_yeast)
+contacts_yeast()
 }
 \description{
-Centromere position in S288c genome
-
-Example of a \code{contacts} object
-
-Example of a \code{contacts} object
-
-Example of a \code{contacts} object
+Example datasets provided in \code{HiContacts} & \code{HiContactsData}
 }
 \examples{
 data(centros_yeast)
 centros_yeast
-data(contacts_yeast)
-contacts_yeast
-data(contacts_yeast_eco1)
-contacts_yeast_eco1
-data(full_contacts_yeast)
-full_contacts_yeast
+contacts_yeast()
+contacts_yeast_eco1()
 }
 \keyword{datasets}

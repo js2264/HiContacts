@@ -38,8 +38,8 @@ and **visualization** tools to investigate contact maps directly in `R`.
 
 ```{r}
 showClass('contacts')
-data(contacts_yeast)
-contacts_yeast
+contacts <- contacts_yeast()
+contacts
 ```
 
 ```{r}
