@@ -4,21 +4,12 @@
 \name{contacts-class}
 \alias{contacts-class}
 \alias{contacts}
-\alias{length}
-\alias{length,contacts-method}
-\alias{[}
-\alias{[,contacts,numeric,ANY,ANY-method}
-\alias{[,contacts,logical,ANY,ANY-method}
-\alias{[,contacts,character,ANY,ANY-method}
 \alias{fileName}
 \alias{fileName,contacts-method}
-\alias{seqinfo,contacts-method}
 \alias{resolutions}
 \alias{resolutions,contacts-method}
 \alias{resolution}
 \alias{resolution,contacts-method}
-\alias{bins}
-\alias{bins,contacts-method}
 \alias{focus}
 \alias{focus,contacts-method}
 \alias{interactions}
@@ -43,6 +34,15 @@
 \alias{pairsFile<-,contacts,character-method}
 \alias{metadata<-}
 \alias{metadata<-,contacts,list-method}
+\alias{length}
+\alias{length,contacts-method}
+\alias{[}
+\alias{[,contacts,numeric,ANY,ANY-method}
+\alias{[,contacts,logical,ANY,ANY-method}
+\alias{[,contacts,character,ANY,ANY-method}
+\alias{seqinfo,contacts-method}
+\alias{bins}
+\alias{bins,contacts-method}
 \alias{anchors}
 \alias{anchors,contacts-method}
 \alias{regions}
@@ -67,19 +67,11 @@ contacts(
   pairsFile = NULL
 )
 
-\S4method{length}{contacts}(x)
-
-\S4method{[}{contacts,numeric,ANY,ANY}(x, i)
-
 \S4method{fileName}{contacts}(object)
-
-\S4method{seqinfo}{contacts}(x)
 
 resolutions(x)
 
 \S4method{resolution}{contacts}(x)
-
-bins(x)
 
 focus(x)
 
@@ -100,6 +92,14 @@ pairsFile(x, name)
 pairsFile(x) <- value
 
 metadata(x) <- value
+
+\S4method{length}{contacts}(x)
+
+\S4method{[}{contacts,numeric,ANY,ANY}(x, i)
+
+\S4method{seqinfo}{contacts}(x)
+
+bins(x)
 
 \S4method{anchors}{contacts}(x)
 
@@ -125,15 +125,15 @@ the entire (m)cool file will be imported.}
 
 \item{pairsFile}{Path to an associated .pairs file}
 
-\item{x}{A \code{contacts} object.}
-
-\item{i}{a range or boolean vector.}
-
 \item{object}{A \code{contacts} object.}
+
+\item{x}{A \code{contacts} object.}
 
 \item{value}{value}
 
 \item{name}{name}
+
+\item{i}{a range or boolean vector.}
 }
 \value{
 a new \code{contacts} object.
@@ -170,13 +170,9 @@ viewpoints (\<GRanges\>), etc...)}
 library(HiContacts)
 contacts_yeast <- contacts_yeast()
 contacts_yeast
-length(contacts_yeast)
-contacts_yeast[seq_len(10)]
 fileName(contacts_yeast)
-seqinfo(contacts_yeast)
 resolutions(contacts_yeast)
 resolution(contacts_yeast)
-bins(contacts_yeast)
 focus(contacts_yeast)
 interactions(contacts_yeast)
 scores(contacts_yeast)
@@ -192,6 +188,10 @@ data(centros_yeast)
 topologicalFeatures(contacts_yeast, 'centromeres') <- centros_yeast
 topologicalFeatures(contacts_yeast, 'centromeres')
 pairsFile(full_contacts_yeast)
+length(contacts_yeast)
+contacts_yeast[seq_len(10)]
+seqinfo(contacts_yeast)
+bins(contacts_yeast)
 anchors(contacts_yeast)
 regions(contacts_yeast)
 summary(contacts_yeast)

@@ -168,17 +168,6 @@ setMethod("fileName", "contacts", function(object) object@fileName)
 
 #' @rdname contacts
 #'
-#' @name seqinfo,contacts-method
-#' @docType methods
-#'
-#' @param x A \code{contacts} object.
-#'
-#' @export
-#' @examples 
-#' seqinfo(contacts_yeast)
-
-#' @rdname contacts
-#'
 #' @name resolutions
 #' @docType methods
 #' @aliases resolutions,contacts-method
@@ -476,6 +465,17 @@ setMethod("[", signature("contacts", "character"), function(x, i) {
     }
     return(x)
 })
+
+#' @rdname contacts
+#'
+#' @name seqinfo,contacts-method
+#' @docType methods
+#'
+#' @param x A \code{contacts} object.
+#'
+#' @export
+#' @examples 
+#' seqinfo(contacts_yeast)
 
 setMethod("seqinfo", "contacts", function(x) {
     if (is_mcool(fileName(x))) {
