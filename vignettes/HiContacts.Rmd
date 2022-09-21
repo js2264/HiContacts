@@ -225,14 +225,11 @@ mcool_file_2 <- HiContactsData('yeast_wt', format = 'mcool')
 contacts_1 <- contacts(mcool_file_1, focus = 'II', res = 2000)
 contacts_1 <- contacts_1['II:1-300000']
 contacts_2 <- contacts(mcool_file_2, focus = 'II', res = 2000)
-contacts_2 <- contacts_2['II:500001-800000']
+contacts_2 <- contacts_2['II:1-300000']
 merged_contacts <- merge(contacts_1, contacts_2) 
 contacts_1
 contacts_2
 merged_contacts
-InteractionSet::boundingBox(interactions(contacts_1))
-InteractionSet::boundingBox(interactions(contacts_2))
-InteractionSet::boundingBox(interactions(merged_contacts))
 ```
 
 ## Computing ratio between two maps
