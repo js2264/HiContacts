@@ -37,9 +37,10 @@ contacts_yeast_eco1 <- function() {
 #' @export
 
 full_contacts_yeast <- function() {
-    data(centros_yeast)
+    env_ <- new.env(parent = emptyenv())
+    data(centros_yeast, envir = env_)
     fpath <- HiContactsData::HiContactsData('yeast_wt', 'mcool')
     x <- contacts(fpath, resolution = 16000)
-    topologicalFeatures(x, 'centromeres') <- centros_yeast
+    topologicalFeatures(x, 'centromeres') <- env_$centros_yeast
     return(x)
 }

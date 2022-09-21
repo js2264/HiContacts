@@ -23,7 +23,6 @@ utils::globalVariables(c(
     "dists",
     "end1",
     "end2",
-    "full_contacts_yeast",
     "group",
     "ints",
     "loess",
