@@ -105,7 +105,7 @@ contacts <- function(
     ## -- Read interactions
     gis <- cool2gi(file, resolution = current_res, coords = focus)
     mcols <- GenomicRanges::mcols(gis)
-    GenomicRanges::mcols(gis) <- NULL
+    GenomicRanges::mcols(gis) <- mcols[, c('bin_id1', 'bin_id2')]
 
     ## -- Check pairs file
     if (!is.null(pairsFile)) {
@@ -436,32 +436,45 @@ setMethod("length", "contacts", function(x) length(interactions(x)))
 #' @param x A \code{contacts} object.
 #' @param i a range or boolean vector.
 #'
+#' @importFrom InteractionSet reduceRegions
 #' @export
 #' @examples 
 #' contacts_yeast[seq_len(10)]
 
 setMethod("[", signature("contacts", "numeric"), function(x, i) {
-    interactions(x) <- interactions(x)[i]
-    for (K in seq_along(scores(x))) {
-        x@scores[[K]] <- x@scores[[K]][i]
+    interactions(x) <- InteractionSet::reduceRegions(
+        interactions(x)[i]
+    )
+    for (n in names(scores(x))) {
+        scores(x, n) <- scores(x, n)[i]
     }
     return(x)
 })
 setMethod("[", signature("contacts", "logical"), function(x, i) {
-    interactions(x) <- interactions(x)[i]
-    for (K in seq_along(scores(x))) {
-        x@scores[[K]] <- x@scores[[K]][i]
+    interactions(x) <- InteractionSet::reduceRegions(
+        interactions(x)[i]
+    )
+    for (n in names(scores(x))) {
+        scores(x, n) <- scores(x, n)[i]
     }
     return(x)
 })
 setMethod("[", signature("contacts", "character"), function(x, i) {
-    `%over%` <- IRanges::`%over%`
     i_ <- char2pair(i)
-    sub <- anchors(x)[['first']] %over% S4Vectors::first(i_) & 
-        anchors(x)[['second']] %over% S4Vectors::second(i_)
-    interactions(x) <- interactions(x)[sub]
-    for (K in seq_along(scores(x))) {
-        x@scores[[K]] <- x@scores[[K]][sub]
+    bi_ <- bins(x)
+    ints_ <- interactions(x)
+    valid_bins_first <- subsetByOverlaps(
+        bi_, S4Vectors::first(i_), type = 'within'
+    )$bin_id
+    valid_bins_second <- subsetByOverlaps(
+        bi_, S4Vectors::second(i_), type = 'within'
+    )$bin_id
+    sub <- ints_$bin_id1 %in% valid_bins_first & ints_$bin_id2 %in% valid_bins_second
+    interactions(x) <- InteractionSet::reduceRegions(
+        ints_[sub]
+    )
+    for (n in names(scores(x))) {
+        scores(x, n) <- scores(x, n)[sub]
     }
     return(x)
 })

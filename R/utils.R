@@ -89,10 +89,10 @@ char2pair <- function(char) {
         return(char)
     }
     if (grepl(
-        '[A-Za-z0-9]*:[0-9]*-[0-9]* x [A-Za-z0-9]*:[0-9]*-[0-9]*$', 
+        '[A-Za-z0-9]*:[0-9]*-[0-9]* [xX/-;] [A-Za-z0-9]*:[0-9]*-[0-9]*$', 
         char
     )) {
-        splitst <- stringr::str_split(char, ' x ')[[1]]
+        splitst <- stringr::str_split(char, ' . ')[[1]]
         S4Vectors::Pairs(
             GenomicRanges::GRanges(splitst[[1]]), 
             GenomicRanges::GRanges(splitst[[2]])
