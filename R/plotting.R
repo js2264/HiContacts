@@ -1,5 +1,13 @@
+################################################################################
+#                                                                              #
+#                                 Matrix                                       #
+#                                                                              #
+################################################################################
+
 #' Plotting a contact matrix
 #'
+#' @rdname contacts-plot
+#' 
 #' @param x x
 #' @param use.scores use.scores
 #' @param scale scale
@@ -13,8 +21,8 @@
 #' @param cmap color map
 #' @return ggplot
 #'
-#' @importFrom ggrastr geom_tile_rast
 #' @import ggplot2
+#' @importFrom ggrastr geom_tile_rast
 #' @importFrom tibble as_tibble
 #' @importFrom dplyr mutate
 #' @importFrom dplyr select
@@ -275,16 +283,14 @@ plotMatrix <- function(
     p
 }
 
-#' ggmatrix
-#'
+#' @rdname contacts-plot
+#' 
 #' @param mat mat
 #' @param ticks ticks
 #' @param cols cols
 #' @param limits limits
 #' @return ggplot
 #'
-#' @rdname plotMatrix
-#' 
 #' @import ggplot2
 #' @importFrom scales unit_format
 
@@ -303,13 +309,169 @@ ggMatrix <- function(mat, ticks = TRUE, cols = afmhotrColors(), limits) {
     p
 }
 
+################################################################################
+#                                                                              #
+#                                 P(s)                                         #
+#                                                                              #
+################################################################################
+
+#' Plotting a P(s) distance law
+#' 
+#' @rdname Ps-plot
+#' 
+#' @param ... ...
+#' @param xlim xlim
+#' @param ylim ylim
+#' @return ggplot
+#'
+#' @import ggplot2
+#' @importFrom scales trans_breaks
+#' @importFrom scales trans_format
+#' @export
+#' @examples 
+#' ## Single P(s)
+#' 
+#' contacts_yeast <- contacts_yeast()
+#' ps <- getPs(contacts_yeast)
+#' plotPs(ps, ggplot2::aes(x = binned_distance, y = norm_p))
+#' 
+#' ## Comparing several P(s)
+#' 
+#' contacts_yeast <- contacts_yeast()
+#' contacts_yeast_eco1 <- contacts_yeast_eco1()
+#' ps_wt <- getPs(contacts_yeast)
+#' ps_wt$sample <- 'WT'
+#' ps_eco1 <- getPs(contacts_yeast_eco1)
+#' ps_eco1$sample <- 'eco1'
+#' ps <- rbind(ps_wt, ps_eco1)
+#' plotPs(ps, ggplot2::aes(x = binned_distance, y = norm_p, group = sample, color = sample))
+
+plotPs <- function(..., xlim = c(5000, 4.99e5), ylim = c(1e-8, 1e-4)) {
+    gg <- ggplot2::ggplot(...) + 
+        ggplot2::geom_line() + 
+        ggplot2::theme_minimal() + 
+        ggplot2::theme(panel.border = ggplot2::element_rect(fill = NA)) + 
+        ggplot2::theme(panel.grid.minor = ggplot2::element_blank()) +
+        ggplot2::scale_y_log10(
+            limits = ylim, 
+            expand = c(0, 0), 
+            breaks = scales::trans_breaks("log10", function(x) 10^x),
+            labels = scales::trans_format("log10", scales::math_format(10^.x))
+        ) +
+        ggplot2::scale_x_log10(
+            limits = xlim, 
+            expand = c(0, 0), 
+            breaks = c(1, 10, 100, 1000, 10000, 1e+05, 1e+06, 1e+07, 1e+08, 1e+09, 1e+10),
+            labels = c('1', '10', '100', '1kb', '10kb', '100kb', '1Mb', '10Mb', '100Mb', '1Gb', '10Gb')
+        ) + 
+        ggplot2::annotation_logticks() + 
+        ggplot2::labs(x = "Genomic distance", y = "Contact frequency")
+    gg
+}
+
+#' @rdname Ps-plot
+#' 
+#' @return ggplot
+#' 
+#' @import ggplot2
+#' @export
+#' @examples 
+#' plotPsSlope(ps, ggplot2::aes(x = binned_distance, y = slope))
+
+plotPsSlope <- function(..., xlim = c(5000, 4.99e5), ylim = c(-3, 0)) {
+    gg <- ggplot2::ggplot(...) + 
+        ggplot2::geom_line() + 
+        ggplot2::theme_minimal() + 
+        ggplot2::theme(panel.border = ggplot2::element_rect(fill = NA)) + 
+        ggplot2::theme(panel.grid.minor = ggplot2::element_blank()) +
+        ggplot2::scale_y_continuous(
+            limits = ylim, 
+            expand = c(0, 0)
+        ) +
+        ggplot2::scale_x_log10(
+            limits = xlim, 
+            expand = c(0, 0), 
+            breaks = c(1, 10, 100, 1000, 10000, 1e+05, 1e+06, 1e+07, 1e+08, 1e+09, 1e+10),
+            labels = c('1', '10', '100', '1kb', '10kb', '100kb', '1Mb', '10Mb', '100Mb', '1Gb', '10Gb')
+        ) + 
+        ggplot2::annotation_logticks(sides = "b") + 
+        ggplot2::labs(x = "Genomic distance", y = "Slope of P(s)")
+    gg
+}
+
+################################################################################
+#                                                                              #
+#                                 virtual 4C                                   #
+#                                                                              #
+################################################################################
+
+#' Plotting virtual 4C profiles
+#' 
+#' @rdname virtual4C-plot
+#' 
+#' @param x GRanges, generally the output of `virtual4C()`
+#' @param mapping aes to pass on to ggplot2
+#' @return ggplot
+#' 
+#' @import ggplot2
+#' @import tibble
+#' @importFrom scales unit_format
+#' @export
+#' @examples 
+#' library(HiContacts)
+#' contacts_yeast <- contacts_yeast()
+#' v4C <- virtual4C(contacts_yeast, GenomicRanges::GRanges('II:490000-510000'))
+#' plot4C(v4C, ggplot2::aes(x = center, y = score))
+
+plot4C <- function(x, mapping) {
+    x <- tibble::as_tibble(x)
+    p <- ggplot2::ggplot(x, mapping) + 
+        ggplot2::geom_line() + 
+        ggplot2::theme_minimal() + 
+        ggplot2::theme(panel.border = ggplot2::element_rect(fill = NA)) + 
+        ggplot2::theme(panel.grid.minor = ggplot2::element_blank()) +
+        ggplot2::labs(x = "Position", y = "Contacts with viewpoint") + 
+        ggplot2::scale_x_continuous(
+            expand = c(0, 0), 
+            labels = scales::unit_format(unit = "M", scale = 1e-6)
+        )
+    p
+}
+
+################################################################################
+#                                                                              #
+#                                 ggplot2 extra                                #
+#                                                                              #
+################################################################################
+
+#' ggplot2-related functions
+#' 
+#' @rdname ggplot2-extra
+#'
+#' @param ticks ticks
+#' @return a custom ggplot2 theme
+#' 
+#' @import ggplot2
+
+ggthemeHiContacts <- function(ticks = TRUE) {
+    t <- ggplot2::theme_bw() +
+        ggplot2::theme(
+            text = ggplot2::element_text(size = 8),
+            panel.grid.minor = ggplot2::element_line(size = 0.025, colour = "#00000052"),
+            panel.grid.major = ggplot2::element_line(size = 0.05, colour = "#00000052")
+        )
+    if (ticks) t <- t + ggplot2::theme(axis.ticks = ggplot2::element_line(colour = "black", size = 0.2))
+    t
+}
+
 #' Matrix palettes
 #'
 #' @return ggplot
 #'
+#' @rdname palettes
+#' 
 #' @import ggplot2
 #' @importFrom scales unit_format
-#' @rdname palettes
 #' @export
 #' @examples
 #' bwrColors()
@@ -318,8 +480,9 @@ bwrColors <- function() {
     c("#1659b1", "#4778c2", "#ffffff", "#b13636", "#6C150E")
 }
 
-#' @export
 #' @rdname palettes
+#' 
+#' @export
 #' @examples
 #' afmhotrColors()
 
@@ -329,8 +492,9 @@ afmhotrColors <- function() {
     )
 }
 
-#' @export
 #' @rdname palettes
+#' 
+#' @export
 #' @examples
 #' bbrColors()
 

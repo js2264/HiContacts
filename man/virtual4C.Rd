@@ -2,27 +2,20 @@
 % Please edit documentation in R/4C.R
 \name{virtual4C}
 \alias{virtual4C}
-\alias{plot4C}
 \title{Computing virtual 4C profiles}
 \usage{
 virtual4C(x, viewpoint, use.scores = "balanced")
-
-plot4C(x, mapping)
 }
 \arguments{
-\item{x}{GRanges, generally the output of \code{virtual4C()}}
+\item{x}{a \code{contacts} object}
 
 \item{viewpoint}{viewpoint, defined as a GRanges}
 
 \item{use.scores}{use.scores}
-
-\item{mapping}{aes to pass on to ggplot2}
 }
 \value{
 A tibble with the contact frequency of the viewpoint, per bin
 along the imported genomic range.
-
-ggplot
 }
 \description{
 From a (m)cool pre-imported in memory, computes a 4C profile
@@ -33,5 +26,4 @@ library(HiContacts)
 contacts_yeast <- contacts_yeast()
 v4C <- virtual4C(contacts_yeast, GenomicRanges::GRanges('II:490000-510000'))
 v4C
-plot4C(v4C, ggplot2::aes(x = center, y = score))
 }
