@@ -25,6 +25,9 @@
     <loc>/reference/HiContacts-package.html</loc>
   </url>
   <url>
+    <loc>/reference/Ps-plot.html</loc>
+  </url>
+  <url>
     <loc>/reference/Ps.html</loc>
   </url>
   <url>
@@ -37,13 +40,16 @@
     <loc>/reference/cisTransRatio.html</loc>
   </url>
   <url>
+    <loc>/reference/contacts-plot.html</loc>
+  </url>
+  <url>
     <loc>/reference/contacts.html</loc>
   </url>
   <url>
     <loc>/reference/datasets.html</loc>
   </url>
   <url>
-    <loc>/reference/ggplot2-HiContacts.html</loc>
+    <loc>/reference/ggplot2-extra.html</loc>
   </url>
   <url>
     <loc>/reference/index.html</loc>
@@ -55,10 +61,10 @@
     <loc>/reference/parse.html</loc>
   </url>
   <url>
-    <loc>/reference/plotMatrix.html</loc>
+    <loc>/reference/utils.html</loc>
   </url>
   <url>
-    <loc>/reference/utils.html</loc>
+    <loc>/reference/virtual4C-plot.html</loc>
   </url>
   <url>
     <loc>/reference/virtual4C.html</loc>
