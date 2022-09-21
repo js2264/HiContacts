@@ -460,7 +460,6 @@ setMethod("[", signature("contacts", "logical"), function(x, i) {
     return(x)
 })
 setMethod("[", signature("contacts", "character"), function(x, i) {
-    `%over%` <- IRanges::`%over%`
     i_ <- char2pair(i)
     bi_ <- bins(x)
     ints_ <- interactions(x)

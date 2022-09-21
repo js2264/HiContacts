@@ -48,30 +48,3 @@ virtual4C <- function(x, viewpoint, use.scores = 'balanced') {
     )
 }
 
-#' @param x GRanges, generally the output of `virtual4C()`
-#' @param mapping aes to pass on to ggplot2
-#' @return ggplot
-#' 
-#' @rdname virtual4C
-#'
-#' @import ggplot2
-#' @import tibble
-#' @importFrom scales unit_format
-#' @export
-#' @examples 
-#' plot4C(v4C, ggplot2::aes(x = center, y = score))
-
-plot4C <- function(x, mapping) {
-    x <- tibble::as_tibble(x)
-    p <- ggplot2::ggplot(x, mapping) + 
-        ggplot2::geom_line() + 
-        ggplot2::theme_minimal() + 
-        ggplot2::theme(panel.border = ggplot2::element_rect(fill = NA)) + 
-        ggplot2::theme(panel.grid.minor = ggplot2::element_blank()) +
-        ggplot2::labs(x = "Position", y = "Contacts with viewpoint") + 
-        ggplot2::scale_x_continuous(
-            expand = c(0, 0), 
-            labels = scales::unit_format(unit = "M", scale = 1e-6)
-        )
-    p
-}

@@ -2,8 +2,6 @@
 % Please edit documentation in R/Ps.R
 \name{getPs}
 \alias{getPs}
-\alias{plotPs}
-\alias{plotPsSlope}
 \alias{PsBreaks}
 \title{Compute a distance-dependent contact frequency, a.k.a. P(s)}
 \usage{
@@ -13,10 +11,6 @@ getPs(
   filtered_chr = c("XII", "chrXII", "chr12", "12", "Mito", "MT", "chrM")
 )
 
-plotPs(..., xlim = c(5000, 499000), ylim = c(1e-08, 1e-04))
-
-plotPsSlope(..., xlim = c(5000, 499000), ylim = c(-3, 0))
-
 PsBreaks()
 }
 \arguments{
@@ -25,19 +19,9 @@ PsBreaks()
 \item{by_chr}{by_chr}
 
 \item{filtered_chr}{filtered_chr}
-
-\item{...}{...}
-
-\item{xlim}{xlim}
-
-\item{ylim}{ylim}
 }
 \value{
 a tibble
-
-ggplot
-
-ggplot
 
 tbl
 }
@@ -51,20 +35,4 @@ library(HiContacts)
 contacts_yeast <- contacts_yeast()
 ps <- getPs(contacts_yeast)
 ps
-## Single P(s)
-
-ps <- getPs(contacts_yeast)
-plotPs(ps, ggplot2::aes(x = binned_distance, y = norm_p))
-
-## Comparing several P(s)
-
-contacts_yeast <- contacts_yeast()
-contacts_yeast_eco1 <- contacts_yeast_eco1()
-ps_wt <- getPs(contacts_yeast)
-ps_wt$sample <- 'WT'
-ps_eco1 <- getPs(contacts_yeast_eco1)
-ps_eco1$sample <- 'eco1'
-ps <- rbind(ps_wt, ps_eco1)
-plotPs(ps, ggplot2::aes(x = binned_distance, y = norm_p, group = sample, color = sample))
-plotPsSlope(ps, ggplot2::aes(x = binned_distance, y = slope))
 }
