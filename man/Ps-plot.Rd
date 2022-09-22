@@ -28,16 +28,16 @@ Plotting a P(s) distance law
 ## Single P(s)
 
 contacts_yeast <- contacts_yeast()
-ps <- getPs(contacts_yeast)
+ps <- distanceLaw(contacts_yeast)
 plotPs(ps, ggplot2::aes(x = binned_distance, y = norm_p))
 
 ## Comparing several P(s)
 
 contacts_yeast <- contacts_yeast()
 contacts_yeast_eco1 <- contacts_yeast_eco1()
-ps_wt <- getPs(contacts_yeast)
+ps_wt <- distanceLaw(contacts_yeast)
 ps_wt$sample <- 'WT'
-ps_eco1 <- getPs(contacts_yeast_eco1)
+ps_eco1 <- distanceLaw(contacts_yeast_eco1)
 ps_eco1$sample <- 'eco1'
 ps <- rbind(ps_wt, ps_eco1)
 plotPs(ps, ggplot2::aes(x = binned_distance, y = norm_p, group = sample, color = sample))

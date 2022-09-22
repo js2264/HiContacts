@@ -1,4 +1,4 @@
-#' Compute a distance-dependent contact frequency, a.k.a. P(s)
+#' Compute the law of distance-dependent contact frequency, a.k.a. P(s)
 #' 
 #' P(s) will be approximated if no pairs are provided, or the exact P(s) 
 #' will be computed if a `.pairs` file is added to the `contacts` object 
@@ -30,10 +30,10 @@
 #' @examples 
 #' library(HiContacts)
 #' contacts_yeast <- contacts_yeast()
-#' ps <- getPs(contacts_yeast)
+#' ps <- distanceLaw(contacts_yeast)
 #' ps
 
-getPs <- function(
+distanceLaw <- function(
     x, 
     by_chr = FALSE, 
     filtered_chr = c('XII', 'chrXII', 'chr12', '12', 'Mito', 'MT', 'chrM')

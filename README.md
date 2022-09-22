@@ -65,14 +65,14 @@ plotMatrix(contacts, use.scores = 'raw')
 plotMatrix(contacts, use.scores = 'balanced', limits = c(-4, -1))
 ```
 
-### P(s)
+### Distance law, a.k.a. P(s)
 
 ```r
 contacts <- contacts(
     mcool_file, 
     pairs = HiContactsData::HiContactsData('yeast_wt', format = 'pairs')
 )
-ps <- getPs(contacts)
+ps <- distanceLaw(contacts)
 plotPs(ps, aes(x = binned_distance, y = norm_p))
 ```
 

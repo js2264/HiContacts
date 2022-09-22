@@ -273,12 +273,12 @@ cisTransRatio(contacts)
 # Without a pairs file
 mcool_file <- HiContactsData('yeast_wt', format = 'mcool')
 contacts <- contacts(mcool_file, res = 1000)
-ps <- getPs(contacts)
+ps <- distanceLaw(contacts)
 plotPs(ps, aes(x = binned_distance, y = norm_p))
 
 # With a pairs file
 pairsFile(contacts) <- HiContactsData('yeast_wt', format = 'pairs.gz')
-ps <- getPs(contacts)
+ps <- distanceLaw(contacts)
 plotPs(ps, aes(x = binned_distance, y = norm_p))
 plotPsSlope(ps, aes(x = binned_distance, y = slope))
 
@@ -293,8 +293,8 @@ c2 <- contacts(
     res = 1000, 
     pairs = HiContactsData('yeast_eco1', format = 'pairs.gz')
 )
-ps_1 <- getPs(c1) |> mutate(sample = 'WT')
-ps_2 <- getPs(c2) |> mutate(sample = 'Eco1-AID')
+ps_1 <- distanceLaw(c1) |> mutate(sample = 'WT')
+ps_2 <- distanceLaw(c2) |> mutate(sample = 'Eco1-AID')
 ps <- rbind(ps_1, ps_2)
 plotPs(ps, aes(x = binned_distance, y = norm_p, group = sample, color = sample))
 plotPsSlope(ps, aes(x = binned_distance, y = slope, group = sample, color = sample))

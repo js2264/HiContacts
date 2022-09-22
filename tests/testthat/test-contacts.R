@@ -127,11 +127,11 @@ test_that("plotMatrix works", {
 
 test_that("Ps works", {
     contacts_yeast <- contacts_yeast()
-    x <- getPs(contacts_yeast)
+    x <- distanceLaw(contacts_yeast)
     pairsFile(contacts_yeast) <- HiContactsData::HiContactsData(
         'yeast_wt', format = 'pairs.gz'
     )
-    y <- getPs(contacts_yeast, by_chr = TRUE)
+    y <- distanceLaw(contacts_yeast, by_chr = TRUE)
     expect_s3_class(x, 'tbl')
     expect_s3_class(y, 'tbl')
     expect_s3_class(plotPs(x, aes(x = binned_distance, y = norm_p)), 'gg')
