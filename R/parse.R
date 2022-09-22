@@ -313,7 +313,7 @@ cool2gi <- function(file, coords = NULL, resolution = NULL) {
     # Mutate Pairs provided as characters to real Pairs
     if (!is.null(coords)) {
         if (grepl(' x ', coords)) {
-            coords <- char2pair(coords)
+            coords <- char2coords(coords)
         }
     }
 

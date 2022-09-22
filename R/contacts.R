@@ -639,7 +639,7 @@ setMethod("show", signature("contacts"), function(object) {
         focus_str <- "whole genome"
     } 
     else {
-        focus_str <- formatCoords(focus(object))
+        focus_str <- coords2char(focus(object))
     }
 
     cat(summary(object))

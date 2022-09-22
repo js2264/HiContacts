@@ -38,7 +38,7 @@ splitCoords <- function(coords) {
     }
 }
 
-#' formatCoords
+#' coords2char
 #'
 #' @param coords coords
 #' @return a character string
@@ -49,12 +49,12 @@ splitCoords <- function(coords) {
 #' @importFrom GenomicRanges end
 #' @rdname utils
 
-formatCoords <- function(coords) {
+coords2char <- function(coords, big.mark = ',') {
     if (is(coords, 'GRanges')) {
         chr <- as.vector(GenomicRanges::seqnames(coords))
         start <- GenomicRanges::start(coords)
         end <- GenomicRanges::end(coords)
-        paste0(chr, ':', format(start, big.mark=","), '-', format(end, big.mark=","))
+        paste0(chr, ':', format(start, big.mark = big.mark), '-', format(end, big.mark = big.mark))
     }
     else {
         if (grepl('x', coords)) {
@@ -67,12 +67,12 @@ formatCoords <- function(coords) {
             if (is.na(start)) {
                 return(chr)
             }
-            paste0(chr, ':', format(start, big.mark=",", scientific = FALSE), '-', format(end, big.mark=",", scientific = FALSE))
+            paste0(chr, ':', format(start, big.mark = big.mark, scientific = FALSE), '-', format(end, big.mark = big.mark, scientific = FALSE))
         }
     }
 }
 
-#' char2pair
+#' char2coords
 #'
 #' @param char char (e.g. "II:30000-50000" or "II:30000-50000 x II:60000-80000")
 #' @return a S4Vectors::Pairs object
@@ -84,10 +84,10 @@ formatCoords <- function(coords) {
 #' @importFrom GenomicRanges GRanges
 #' @rdname utils
 
-char2pair <- function(char) {
-    if (methods::is(char, 'Pairs')) {
-        return(char)
-    }
+char2coords <- function(char) {
+    # if (methods::is(char, 'Pairs')) {
+    #     return(char)
+    # }
     if (grepl(
         '[A-Za-z0-9]*:[0-9]*-[0-9]* [xX/-;] [A-Za-z0-9]*:[0-9]*-[0-9]*$', 
         char

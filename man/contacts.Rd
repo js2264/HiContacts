@@ -12,6 +12,8 @@
 \alias{resolution,contacts-method}
 \alias{focus}
 \alias{focus,contacts-method}
+\alias{focus<-}
+\alias{focus<-,contacts,character-method}
 \alias{interactions}
 \alias{interactions,contacts-method}
 \alias{interactions<-}
@@ -74,6 +76,8 @@ resolutions(x)
 \S4method{resolution}{contacts}(x)
 
 focus(x)
+
+focus(x) <- value
 
 \S4method{interactions}{contacts}(x)
 

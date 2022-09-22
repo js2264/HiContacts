@@ -2,8 +2,8 @@
 % Please edit documentation in R/utils.R
 \name{splitCoords}
 \alias{splitCoords}
-\alias{formatCoords}
-\alias{char2pair}
+\alias{coords2char}
+\alias{char2coords}
 \alias{getHicStats}
 \alias{fullContactInteractions}
 \alias{sdiag<-}
@@ -13,9 +13,9 @@
 \usage{
 splitCoords(coords)
 
-formatCoords(coords)
+coords2char(coords, big.mark = ",")
 
-char2pair(char)
+char2coords(char)
 
 getHicStats(hicstuff_log)
 

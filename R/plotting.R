@@ -200,7 +200,7 @@ plotMatrix <- function(
                     dplyr::select(-x2)
             )
             if (!is_symmetrical(x)) {
-                coords <- unlist(S4Vectors::zipup(char2pair(focus(x))))
+                coords <- unlist(S4Vectors::zipup(char2coords(focus(x))))
                 mat <- mat |> 
                     filter(x >= GenomicRanges::start(coords[1]) & 
                         x <= GenomicRanges::end(coords[1])) |> 

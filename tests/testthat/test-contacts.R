@@ -144,11 +144,11 @@ test_that("utils works", {
     expect_type(splitCoords(GRanges('II:30-40')), 'list')
     expect_type(splitCoords('II:30-40'), 'list')
 
-    expect_type(formatCoords('II:30-40'), 'character')
-    expect_type(formatCoords('II:30-40 x II:40-50'), 'character')
-    expect_type(formatCoords(GRanges('II:30-40')), 'character')
+    expect_type(coords2char('II:30-40'), 'character')
+    expect_type(coords2char('II:30-40 x II:40-50'), 'character')
+    expect_type(coords2char(GRanges('II:30-40')), 'character')
 
-    expect_s4_class(char2pair("II:30000-50000 x II:60000-80000"), 'Pairs')
+    expect_s4_class(char2coords("II:30000-50000 x II:60000-80000"), 'Pairs')
 
     expect_s4_class(fullContactInteractions("II", 30000, 50000, 1000), 'GInteractions')
 
@@ -159,12 +159,12 @@ test_that("utils works", {
     }, 'matrix')
 
     expect_equal(
-        sortPairs(char2pair("II:30000-50000 x II:60000-80000")), 
-        char2pair("II:30000-50000 x II:60000-80000")
+        sortPairs(char2coords("II:30000-50000 x II:60000-80000")), 
+        char2coords("II:30000-50000 x II:60000-80000")
     )
     expect_equal(
-        sortPairs(char2pair("II:90000-100000 x II:60000-80000")), 
-        char2pair("II:60000-80000 x II:90000-100000")
+        sortPairs(char2coords("II:90000-100000 x II:60000-80000")), 
+        char2coords("II:60000-80000 x II:90000-100000")
     )
 
     expect_s4_class(
