@@ -25,15 +25,15 @@ serpentinify(
 )
 }
 \arguments{
-\item{x}{a \code{contacts} object}
+\item{x}{a \code{Contacts} object}
 
 \item{use.scores}{use.scores}
 
 \item{ignore_ndiags}{ignore N diagonals when calculating correlations}
 
-\item{by}{a \code{contacts} object}
+\item{by}{a \code{Contacts} object}
 
-\item{...}{\code{contacts} objects}
+\item{...}{\code{Contacts} objects}
 
 \item{use_serpentine_trend}{whether to use the trend estimated with
 serpentine (this requires \code{reticulate} and the python package \code{serpentine})}
@@ -43,17 +43,17 @@ serpentine (this requires \code{reticulate} and the python package \code{serpent
 \item{serpentine_ncores}{number of CPUs to use for serpentine}
 }
 \value{
-a \code{contacts} object with two additional scoress: \code{expected} and
+a \code{Contacts} object with two additional scoress: \code{expected} and
 \code{detrended}
 
-a \code{contacts} object with a single \code{autocorrelation} scores
+a \code{Contacts} object with a single \code{autocorrelation} scores
 
-a \code{contacts} object with a single \code{ratio} scores
+a \code{Contacts} object with a single \code{ratio} scores
 
-a \code{contacts} object. Each returned scores is the sum of the
-corresponding scores from input \code{contacts}.
+a \code{Contacts} object. Each returned scores is the sum of the
+corresponding scores from input \code{Contacts}.
 
-a \code{contacts} object with a single \code{smoothen} scores
+a \code{Contacts} object with a single \code{smoothen} scores
 }
 \description{
 Different operations can be performed:

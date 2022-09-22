@@ -10,7 +10,7 @@
 \format{
 An object of class \code{"GRanges"}.
 
-An object of class \code{"contacts"}.
+An object of class \code{"Contacts"}.
 }
 \source{
 HiContacts

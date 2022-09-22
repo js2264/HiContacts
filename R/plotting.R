@@ -6,7 +6,7 @@
 
 #' Plotting a contact matrix
 #'
-#' @rdname contacts-plot
+#' @rdname Contacts-plot
 #' 
 #' @param x x
 #' @param use.scores use.scores
@@ -283,7 +283,7 @@ plotMatrix <- function(
     p
 }
 
-#' @rdname contacts-plot
+#' @rdname Contacts-plot
 #' 
 #' @param mat mat
 #' @param ticks ticks

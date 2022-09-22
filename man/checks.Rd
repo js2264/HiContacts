@@ -45,11 +45,11 @@ is_symmetrical(contacts)
 \arguments{
 \item{path}{Path of a (m)cool file}
 
-\item{contacts}{A \code{contacts} object}
+\item{contacts}{A \code{Contacts} object}
 
 \item{resolution}{Resolution}
 
-\item{...}{\code{contacts} object}
+\item{...}{\code{Contacts} object}
 
 \item{pair}{Pairs object with length of 1}
 }
@@ -58,7 +58,7 @@ Logical
 }
 \description{
 Useful functions to validate the nature/structure of (m)cool files or
-\code{contacts} objects.
+\code{Contacts} objects.
 }
 \examples{
 library(HiContacts)

@@ -1,8 +1,8 @@
 #' Parsing (m)cool files
 #' 
 #' These functions are the workhorse internal functions used to import 
-#' a `.(m)cool` file as GenomicInteractions (wrapped into a `contacts` object
-#' by `contacts()` function).
+#' a `.(m)cool` file as GenomicInteractions (wrapped into a `Contacts` object
+#' by `Contacts()` function).
 #'
 #' @param file file
 #' @param resolution resolution

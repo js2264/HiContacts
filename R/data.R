@@ -12,7 +12,7 @@
 
 #' @rdname datasets
 #' 
-#' @format An object of class \code{"contacts"}.
+#' @format An object of class \code{"Contacts"}.
 #' @importFrom HiContactsData HiContactsData
 #' @export
 #' @examples
@@ -22,7 +22,7 @@
 
 contacts_yeast <- function() {
     fpath <- HiContactsData::HiContactsData('yeast_wt', 'mcool')
-    contacts(fpath, 'II', resolution = 1000)
+    Contacts(fpath, 'II', resolution = 1000)
 }
 
 #' @rdname datasets
@@ -30,7 +30,7 @@ contacts_yeast <- function() {
 
 contacts_yeast_eco1 <- function() {
     fpath <- HiContactsData::HiContactsData('yeast_eco1', 'mcool')
-    contacts(fpath, 'II', resolution = 1000)
+    Contacts(fpath, 'II', resolution = 1000)
 }
 
 #' @rdname datasets
@@ -40,7 +40,7 @@ full_contacts_yeast <- function() {
     env_ <- new.env(parent = emptyenv())
     data(centros_yeast, envir = env_)
     fpath <- HiContactsData::HiContactsData('yeast_wt', 'mcool')
-    x <- contacts(fpath, resolution = 16000)
+    x <- Contacts(fpath, resolution = 16000)
     topologicalFeatures(x, 'centromeres') <- env_$centros_yeast
     return(x)
 }

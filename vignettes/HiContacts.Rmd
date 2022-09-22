@@ -27,9 +27,9 @@ suppressPackageStartupMessages({
 
 # Getting started
 
-## The `contacts` class
+## The `Contacts` class
 
-`HiContacts` package implements the new `contacts` S4 class. It is build 
+`HiContacts` package implements the new `Contacts` S4 class. It is build 
 on pre-existing Bioconductor classes, namely `InteractionSet`, 
 `GenomicInterations` and `ContactMatrix` 
 (`Lun, Perry & Ing-Simmons, F1000Research 2016`), and leverages them to 
@@ -37,7 +37,7 @@ import locally stored `.(m)cool` files. It further provides **analytical**
 and **visualization** tools to investigate contact maps directly in `R`. 
 
 ```{r}
-showClass('contacts')
+showClass("Contacts")
 contacts <- contacts_yeast()
 contacts
 ```
@@ -46,7 +46,7 @@ contacts
 citation('HiContacts')
 ```
 
-## Basics: importing `.(m)/cool` files as `contacts` objects
+## Basics: importing `.(m)/cool` files as `Contacts` objects
 
 The `HiContactsData` package gives access to a range of toy datasets stored 
 by Bioconductor in the `ExperimentHub`. 
@@ -58,25 +58,25 @@ cool_file <- HiContactsData('yeast_wt', format = 'cool')
 cool_file
 ```
 
-The `contacts()` function can be used to import a Hi-C matrix locally stored 
-as a `cool`/`mcool` file. It creates a `contacts` object. 
+The `Contacts()` function can be used to import a Hi-C matrix locally stored 
+as a `cool`/`mcool` file. It creates a `Contacts` object. 
 
 ```{r}
 range <- 'I:20000-80000' # range of interest
-contacts <- contacts(cool_file, focus = range)
+contacts <- Contacts(cool_file, focus = range)
 summary(contacts)
 contacts
 ```
 
-`contacts()` works with `.mcool` files as well: in this case, the user needs to 
+`Contacts()` works with `.mcool` files as well: in this case, the user needs to 
 specify the resolution at which count values are recovered. 
 
 ```{r}
 mcool_file <- HiContactsData('yeast_wt', format = 'mcool')
 range <- 'II:0-800000' # range of interest
 lsCoolResolutions(mcool_file, verbose = TRUE)
-# contacts <- contacts(mcool_file, focus = range) # This would throw an error!
-contacts <- contacts(mcool_file, focus = range, res = 1000)
+# contacts <- Contacts(mcool_file, focus = range) # This would throw an error!
+contacts <- Contacts(mcool_file, focus = range, res = 1000)
 contacts
 ```
 
@@ -85,16 +85,15 @@ centered at the diagonal. To do this, specify a couple of coordinates in the
 `focus` argument using a character string formatted as `"... x ..."`: 
 
 ```{r}
-contacts <- contacts(mcool_file, focus = 'II:0-500000 x II:100000-600000', res = 1000)
+contacts <- Contacts(mcool_file, focus = 'II:0-500000 x II:100000-600000', res = 1000)
 is_symmetrical(contacts)
 ```
 
 ## Slots
 
-Slots for a `contacts` object can be accessed using the following `getters`: 
+Slots for a `Contacts` object can be accessed using the following `getters`: 
 
 ```{r}
-slotNames(contacts)
 fileName(contacts)
 focus(contacts)
 resolutions(contacts)
@@ -139,9 +138,9 @@ topologicalFeatures(contacts)
 topologicalFeatures(contacts, 'viewpoints')
 ```
 
-## Coercing `contacts`
+## Coercing `Contacts`
 
-Using the `as()` function, contacts` can be coerced in `GInteractions`, 
+Using the `as()` function, `Contacts` can be coerced in `GInteractions`, 
 `ContactMatrix` and `matrix` seamlessly.
 
 ```{r}
@@ -154,7 +153,7 @@ as(contacts, "matrix")[1:10, 1:10]
 
 ## Plot matrix heatmaps
 
-The `plotMatrix` function takes a `contacts` object and plots it as a heatmap.  
+The `plotMatrix` function takes a `Contacts` object and plots it as a heatmap.  
 Use the `use.scores` argument to specify which type of interaction scores to use 
 in the contact maps (e.g. `raw`, `balanced`, ...). By default, `plotMatrix()` 
 looks for balanced scores. If they are not stored in the original `.(m)/cool` file, 
@@ -171,7 +170,7 @@ mcool_file <- HiContactsData('yeast_wt', format = 'mcool')
 loops <- system.file("extdata", 'S288C-loops.bedpe', package = 'HiContacts') |> 
     rtracklayer::import() |> 
     InteractionSet::makeGInteractionsFromGRangesPairs()
-p <- contacts(mcool_file, focus = 'IV', res = 1000) |> 
+p <- Contacts(mcool_file, focus = 'IV', res = 1000) |> 
     plotMatrix(loops = loops, limits = c(-4, -1), dpi = 120)
 ```
 
@@ -180,7 +179,7 @@ p <- contacts(mcool_file, focus = 'IV', res = 1000) |>
 ```{r}
 borders <- system.file("extdata", 'S288C-borders.bed', package = 'HiContacts') |> 
     rtracklayer::import()
-p <- contacts(mcool_file, focus = 'IV', res = 1000) |> 
+p <- Contacts(mcool_file, focus = 'IV', res = 1000) |> 
     plotMatrix(loops = loops, borders = borders, limits = c(-4, -1), dpi = 120)
 ```
 
@@ -189,7 +188,7 @@ p <- contacts(mcool_file, focus = 'IV', res = 1000) |>
 ## Subsetting a contact map 
 
 ```{r}
-contacts <- contacts(mcool_file, focus = range, res = 2000)
+contacts <- Contacts(mcool_file, focus = range, res = 2000)
 contacts_subset <- contacts['II:20000-50000']
 InteractionSet::boundingBox(interactions(contacts))
 InteractionSet::boundingBox(interactions(contacts_subset))
@@ -199,7 +198,7 @@ InteractionSet::boundingBox(interactions(contacts_subset))
 
 ```{r}
 mcool_file <- HiContactsData('mESCs', format = 'mcool')
-contacts <- contacts(mcool_file, focus = 'chr2', res = 160000)
+contacts <- Contacts(mcool_file, focus = 'chr2', res = 160000)
 autocorrelated <- autocorrelate(contacts, ignore_ndiags = 20)
 scores(autocorrelated)
 summary(scores(autocorrelated, 1))
@@ -209,7 +208,7 @@ summary(scores(autocorrelated, 1))
 
 ```{r}
 mcool_file <- HiContactsData('mESCs', format = 'mcool')
-contacts <- contacts(mcool_file, focus = 'chr18:20000000-35000000', res = 40000)
+contacts <- Contacts(mcool_file, focus = 'chr18:20000000-35000000', res = 40000)
 detrended_contacts <- detrend(contacts)
 cowplot::plot_grid(
     plotMatrix(detrended_contacts, use.scores = 'expected', dpi = 120),
@@ -222,9 +221,9 @@ cowplot::plot_grid(
 ```{r}
 mcool_file_1 <- HiContactsData('yeast_eco1', format = 'mcool')
 mcool_file_2 <- HiContactsData('yeast_wt', format = 'mcool')
-contacts_1 <- contacts(mcool_file_1, focus = 'II', res = 2000)
+contacts_1 <- Contacts(mcool_file_1, focus = 'II', res = 2000)
 contacts_1 <- contacts_1['II:1-300000']
-contacts_2 <- contacts(mcool_file_2, focus = 'II', res = 2000)
+contacts_2 <- Contacts(mcool_file_2, focus = 'II', res = 2000)
 contacts_2 <- contacts_2['II:1-300000']
 merged_contacts <- merge(contacts_1, contacts_2) 
 contacts_1
@@ -237,8 +236,8 @@ merged_contacts
 ```{r}
 mcool_file_1 <- HiContactsData('yeast_eco1', format = 'mcool')
 mcool_file_2 <- HiContactsData('yeast_wt', format = 'mcool')
-contacts_1 <- contacts(mcool_file_1, focus = 'II', res = 2000)
-contacts_2 <- contacts(mcool_file_2, focus = 'II', res = 2000)
+contacts_1 <- Contacts(mcool_file_1, focus = 'II', res = 2000)
+contacts_2 <- Contacts(mcool_file_2, focus = 'II', res = 2000)
 div_contacts <- divide(contacts_1, by = contacts_2) 
 div_contacts
 p <- cowplot::plot_grid(
@@ -254,7 +253,7 @@ p <- cowplot::plot_grid(
 
 ```{r}
 mcool_file <- HiContactsData('mESCs', format = 'mcool')
-contacts <- contacts(mcool_file, focus = 'chr18:20000000-35000000', res = 40000)
+contacts <- Contacts(mcool_file, focus = 'chr18:20000000-35000000', res = 40000)
 v4C <- virtual4C(contacts, viewpoint = GRanges('chr18:31000000-31050000'))
 plot4C(v4C, aes(x = center, y = score))
 ```
@@ -263,7 +262,7 @@ plot4C(v4C, aes(x = center, y = score))
 
 ```{r}
 mcool_file <- HiContactsData('yeast_wt', format = 'mcool')
-contacts <- contacts(mcool_file, res = 1000)
+contacts <- Contacts(mcool_file, res = 1000)
 cisTransRatio(contacts)
 ```
 
@@ -272,7 +271,7 @@ cisTransRatio(contacts)
 ```{r}
 # Without a pairs file
 mcool_file <- HiContactsData('yeast_wt', format = 'mcool')
-contacts <- contacts(mcool_file, res = 1000)
+contacts <- Contacts(mcool_file, res = 1000)
 ps <- distanceLaw(contacts)
 plotPs(ps, aes(x = binned_distance, y = norm_p))
 
@@ -283,12 +282,12 @@ plotPs(ps, aes(x = binned_distance, y = norm_p))
 plotPsSlope(ps, aes(x = binned_distance, y = slope))
 
 # Comparing P(s) curves
-c1 <- contacts(
+c1 <- Contacts(
     HiContactsData('yeast_wt', format = 'mcool'), 
     res = 1000, 
     pairs = HiContactsData('yeast_wt', format = 'pairs.gz')
 )
-c2 <- contacts(
+c2 <- Contacts(
     HiContactsData('yeast_eco1', format = 'mcool'), 
     res = 1000, 
     pairs = HiContactsData('yeast_eco1', format = 'pairs.gz')

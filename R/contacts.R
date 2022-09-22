@@ -9,7 +9,7 @@ setClassUnion("GRangesOrPairsOrcharacterOrNULL", members = c("GRanges", "Pairs",
 setClassUnion("numericOrcharacter", members = c("numeric", "character"))
 setClassUnion("characterOrNULL", members = c("character", "NULL"))
 
-#' @title `contacts` S4 class and methods
+#' @title `Contacts` S4 class and methods
 #'
 #' @slot fileName Path of (m)cool file
 #' @slot focus Chr. coordinates for which interaction counts are extracted 
@@ -29,9 +29,9 @@ setClassUnion("characterOrNULL", members = c("character", "NULL"))
 #' @importClassesFrom S4Vectors Annotated
 #' @importFrom methods setClass
 #' @export
-#' @rdname contacts 
+#' @rdname Contacts 
 
-methods::setClass("contacts", 
+methods::setClass("Contacts", 
     contains = c("Annotated"), 
     slots = c(
         fileName = "character",
@@ -46,7 +46,7 @@ methods::setClass("contacts",
     )
 )
 
-#' @rdname contacts
+#' @rdname Contacts
 #' 
 #' @param file Path to a (m)cool file
 #' @param resolution Resolution to use with mcool file
@@ -57,7 +57,7 @@ methods::setClass("contacts",
 #' @param metadata list of metadata
 #' @param topologicalFeatures topologicalFeatures provided as a named SimpleList
 #' @param pairsFile Path to an associated .pairs file
-#' @return a new `contacts` object.
+#' @return a new `Contacts` object.
 #' 
 #' @export
 #' @examples 
@@ -65,7 +65,7 @@ methods::setClass("contacts",
 #' contacts_yeast <- contacts_yeast()
 #' contacts_yeast
 
-contacts <- function(
+Contacts <- function(
     file, 
     resolution = NULL, 
     focus = NULL, 
@@ -115,7 +115,7 @@ contacts <- function(
     }
 
     ## -- Create contact object
-    x <- methods::new("contacts", 
+    x <- methods::new("Contacts", 
         fileName = as.character(file),
         focus = focus, 
         resolutions = resolutions, 
@@ -133,7 +133,7 @@ contacts <- function(
     return(x)
 } 
 
-setValidity("contacts",
+setValidity("Contacts",
     function(object) {
         if (!is(focus(object), "characterOrNULL"))
             return("'focus' slot must be a characterOrNULL")
@@ -151,123 +151,123 @@ setValidity("contacts",
 #                                                                              #
 ################################################################################
 
-#' @rdname contacts
+#' @rdname Contacts
 #'
 #' @name fileName
 #' @docType methods
-#' @aliases fileName,contacts-method
+#' @aliases fileName,Contacts-method
 #'
-#' @param x A \code{contacts} object.
+#' @param x A \code{Contacts} object.
 #'
 #' @importMethodsFrom BiocGenerics fileName
 #' @export
 #' @examples 
 #' fileName(contacts_yeast)
 
-setMethod("fileName", "contacts", function(object) object@fileName)
+setMethod("fileName", "Contacts", function(object) object@fileName)
 
-#' @rdname contacts
+#' @rdname Contacts
 #'
 #' @name resolutions
 #' @docType methods
-#' @aliases resolutions,contacts-method
+#' @aliases resolutions,Contacts-method
 #'
-#' @param x A \code{contacts} object.
+#' @param x A \code{Contacts} object.
 #'
 #' @export
 #' @examples 
 #' resolutions(contacts_yeast)
 
 setGeneric("resolutions", function(x) {standardGeneric("resolutions")})
-setMethod("resolutions", "contacts", function(x) x@resolutions)
+setMethod("resolutions", "Contacts", function(x) x@resolutions)
 
-#' @rdname contacts
+#' @rdname Contacts
 #'
 #' @name resolution
 #' @docType methods
-#' @aliases resolution,contacts-method
+#' @aliases resolution,Contacts-method
 #'
-#' @param x A \code{contacts} object.
+#' @param x A \code{Contacts} object.
 #'
 #' @export
 #' @examples 
 #' resolution(contacts_yeast)
 
-setMethod("resolution", "contacts", function(x) x@resolution)
+setMethod("resolution", "Contacts", function(x) x@resolution)
 
-#' @rdname contacts
+#' @rdname Contacts
 #'
 #' @name focus
 #' @docType methods
-#' @aliases focus,contacts-method
+#' @aliases focus,Contacts-method
 #'
-#' @param x A \code{contacts} object.
+#' @param x A \code{Contacts} object.
 #'
 #' @export
 #' @examples 
 #' focus(contacts_yeast)
 
 setGeneric("focus", function(x) {standardGeneric("focus")})
-setMethod("focus", "contacts", function(x) x@focus)
+setMethod("focus", "Contacts", function(x) x@focus)
 
-#' @rdname contacts
+#' @rdname Contacts
 #'
 #' @name focus<-
 #' @docType methods
-#' @aliases focus<-,contacts,character-method
+#' @aliases focus<-,Contacts,character-method
 #'
-#' @param x A \code{contacts} object.
+#' @param x A \code{Contacts} object.
 #' @param name name
 #' @param value value
 #'
 #' @export
 
 setGeneric("focus<-", function(x, value) {standardGeneric("focus<-")})
-setMethod("focus<-", signature(x = "contacts", value = "character"), function(x, value) {
+setMethod("focus<-", signature(x = "Contacts", value = "character"), function(x, value) {
     x@focus <- value
     x
 })
 
-#' @rdname contacts
+#' @rdname Contacts
 #'
 #' @name interactions
 #' @docType methods
-#' @aliases interactions,contacts-method
+#' @aliases interactions,Contacts-method
 #'
-#' @param x A \code{contacts} object.
+#' @param x A \code{Contacts} object.
 #'
 #' @export
 #' @examples 
 #' interactions(contacts_yeast)
 
-setMethod("interactions", "contacts", function(x) x@interactions)
+setMethod("interactions", "Contacts", function(x) x@interactions)
 
-#' @rdname contacts
+#' @rdname Contacts
 #'
 #' @name interactions<-
 #' @docType methods
-#' @aliases interactions<-,contacts,GInteractions-method
+#' @aliases interactions<-,Contacts,GInteractions-method
 #'
-#' @param x A \code{contacts} object.
+#' @param x A \code{Contacts} object.
 #' @param name name
 #' @param value value
 #'
 #' @export
 
-setMethod("interactions<-", signature(x = "contacts", value = "GInteractions"), function(x, value) {
+setMethod("interactions<-", signature(x = "Contacts", value = "GInteractions"), function(x, value) {
     x@interactions <- value
     x
 })
 
-#' @rdname contacts
+#' @rdname Contacts
 #'
 #' @name scores
 #' @docType methods
-#' @aliases scores,contacts,missing-method
-#' @aliases scores,contacts,character-method
-#' @aliases scores,contacts,numeric-method
+#' @aliases scores,Contacts,missing-method
+#' @aliases scores,Contacts,character-method
+#' @aliases scores,Contacts,numeric-method
 #'
-#' @param x A \code{contacts} object.
+#' @param x A \code{Contacts} object.
 #'
 #' @export
 #' @examples 
@@ -276,27 +276,27 @@ setMethod("interactions<-", signature(x = "contacts", value = "GInteractions"), 
 #' tail(scores(contacts_yeast, 'balanced'))
 
 setGeneric("scores", function(x, name) {standardGeneric("scores")})
-setMethod("scores", signature(x = "contacts", name = "missing"), function(x) x@scores)
-setMethod("scores", signature(x = "contacts", name = "character"), function(x, name) {
+setMethod("scores", signature(x = "Contacts", name = "missing"), function(x) x@scores)
+setMethod("scores", signature(x = "Contacts", name = "character"), function(x, name) {
     if (!name %in% names(scores(x))) {
         stop(paste0(name, ' not in scores.'))
     }
     return(x@scores[[name]])
 })
-setMethod("scores", signature(x = "contacts", name = "numeric"), function(x, name) {
+setMethod("scores", signature(x = "Contacts", name = "numeric"), function(x, name) {
     if (name > length(scores(x))) {
         stop(paste0('Only ', length(scores(x)), ' scores in x.'))
     }
     return(x@scores[[name]])
 })
 
-#' @rdname contacts
+#' @rdname Contacts
 #'
 #' @name scores<-
 #' @docType methods
-#' @aliases scores<-,contacts,character,numeric-method
+#' @aliases scores<-,Contacts,character,numeric-method
 #'
-#' @param x A \code{contacts} object.
+#' @param x A \code{Contacts} object.
 #' @param name name
 #' @param value value
 #'
@@ -306,20 +306,20 @@ setMethod("scores", signature(x = "contacts", name = "numeric"), function(x, nam
 #' tail(scores(contacts_yeast, 'test'))
 
 setGeneric("scores<-", function(x, name, value) {standardGeneric("scores<-")})
-setMethod("scores<-", c(x = "contacts", name = "character", value = "numeric"), function(x, name, value) {
+setMethod("scores<-", c(x = "Contacts", name = "character", value = "numeric"), function(x, name, value) {
     x@scores[[name]] <- value
     return(x)
 })
 
-#' @rdname contacts
+#' @rdname Contacts
 #' 
 #' @name topologicalFeatures
 #' @docType methods
-#' @aliases topologicalFeatures,contacts,missing-method
-#' @aliases topologicalFeatures,contacts,character-method
-#' @aliases topologicalFeatures,contacts,numeric-method
+#' @aliases topologicalFeatures,Contacts,missing-method
+#' @aliases topologicalFeatures,Contacts,character-method
+#' @aliases topologicalFeatures,Contacts,numeric-method
 #'
-#' @param x A \code{contacts} object.
+#' @param x A \code{Contacts} object.
 #'
 #' @export
 #' @examples 
@@ -329,29 +329,29 @@ setMethod("scores<-", c(x = "contacts", name = "character", value = "numeric"), 
 #' topologicalFeatures(full_contacts_yeast, 'centromeres')
 
 setGeneric("topologicalFeatures", function(x, name) {standardGeneric("topologicalFeatures")})
-setMethod("topologicalFeatures", signature(x = "contacts", name = "missing"), function(x) {
+setMethod("topologicalFeatures", signature(x = "Contacts", name = "missing"), function(x) {
     S4Vectors::SimpleList(as.list(x@topologicalFeatures))
 })
-setMethod("topologicalFeatures", signature(x = "contacts", name = "character"), function(x, name) {
+setMethod("topologicalFeatures", signature(x = "Contacts", name = "character"), function(x, name) {
     if (!name %in% names(topologicalFeatures(x))) {
         stop(paste0(name, ' not in topologicalFeatures.'))
     }
     x@topologicalFeatures[[name]]
 })
-setMethod("topologicalFeatures", signature(x = "contacts", name = "numeric"), function(x, name) {
+setMethod("topologicalFeatures", signature(x = "Contacts", name = "numeric"), function(x, name) {
     if (name > length(topologicalFeatures(x))) {
         stop(paste0('Only ', length(topologicalFeatures(x)), ' topologicalFeatures in x.'))
     }
     x@topologicalFeatures[[name]]
 })
 
-#' @rdname contacts
+#' @rdname Contacts
 #' 
 #' @name topologicalFeatures<-
 #' @docType methods
-#' @aliases topologicalFeatures<-,contacts,character,GRangesOrGInteractions-method
+#' @aliases topologicalFeatures<-,Contacts,character,GRangesOrGInteractions-method
 #'
-#' @param x A \code{contacts} object.
+#' @param x A \code{Contacts} object.
 #' @param name name
 #' @param value value
 #'
@@ -362,42 +362,42 @@ setMethod("topologicalFeatures", signature(x = "contacts", name = "numeric"), fu
 #' topologicalFeatures(contacts_yeast, 'centromeres')
 
 setGeneric("topologicalFeatures<-", function(x, name, value) {standardGeneric("topologicalFeatures<-")})
-setMethod("topologicalFeatures<-", signature(x = "contacts", name = "character", value = "GRangesOrGInteractions"), function(x, name, value) {
+setMethod("topologicalFeatures<-", signature(x = "Contacts", name = "character", value = "GRangesOrGInteractions"), function(x, name, value) {
     x@topologicalFeatures[[name]] <- value
     return(x)
 })
 
-#' @rdname contacts
+#' @rdname Contacts
 #' 
 #' @name pairsFile
 #' @docType methods
-#' @aliases pairsFile,contacts-method
+#' @aliases pairsFile,Contacts-method
 #'
-#' @param x A \code{contacts} object.
+#' @param x A \code{Contacts} object.
 #'
 #' @export
 #' @examples 
 #' pairsFile(full_contacts_yeast)
 
 setGeneric("pairsFile", function(x, name) {standardGeneric("pairsFile")})
-setMethod("pairsFile", "contacts", function(x) {
+setMethod("pairsFile", "Contacts", function(x) {
     x@pairsFile
 })
 
-#' @rdname contacts
+#' @rdname Contacts
 #' 
 #' @name pairsFile<-
 #' @docType methods
-#' @aliases pairsFile<-,contacts,character-method
+#' @aliases pairsFile<-,Contacts,character-method
 #'
-#' @param x A \code{contacts} object.
+#' @param x A \code{Contacts} object.
 #' @param name name
 #' @param value value
 #'
 #' @export
 
 setGeneric("pairsFile<-", function(x, value) {standardGeneric("pairsFile<-")})
-setMethod("pairsFile<-", signature(x = "contacts", value = "character"), function(x, value) {
+setMethod("pairsFile<-", signature(x = "Contacts", value = "character"), function(x, value) {
     if (!file.exists(value)) {
         stop("Provided pairsFile does not exist. Aborting now.")
     }
@@ -405,20 +405,20 @@ setMethod("pairsFile<-", signature(x = "contacts", value = "character"), functio
     x
 })
 
-#' @rdname contacts
+#' @rdname Contacts
 #' 
 #' @name metadata<-
 #' @docType methods
-#' @aliases metadata<-,contacts,list-method
+#' @aliases metadata<-,Contacts,list-method
 #'
-#' @param x A \code{contacts} object.
+#' @param x A \code{Contacts} object.
 #' @param name name
 #' @param value value
 #'
 #' @export
 
 setGeneric("metadata<-", function(x, value) {standardGeneric("metadata<-")})
-setMethod("metadata<-", signature(x = "contacts", value = "list"), function(x, value) {
+setMethod("metadata<-", signature(x = "Contacts", value = "list"), function(x, value) {
     x@metadata <- value
     x
 })
@@ -429,29 +429,29 @@ setMethod("metadata<-", signature(x = "contacts", value = "list"), function(x, v
 #                                                                              #
 ################################################################################
 
-#' @rdname contacts
+#' @rdname Contacts
 #'
 #' @name length
 #' @docType methods
-#' @aliases length,contacts-method
+#' @aliases length,Contacts-method
 #'
-#' @param x A \code{contacts} object.
+#' @param x A \code{Contacts} object.
 #'
 #' @export
 #' @examples 
 #' length(contacts_yeast)
 
-setMethod("length", "contacts", function(x) length(interactions(x)))
+setMethod("length", "Contacts", function(x) length(interactions(x)))
 
-#' @rdname contacts
+#' @rdname Contacts
 #'
 #' @name [
 #' @docType methods
-#' @aliases [,contacts,numeric,ANY,ANY-method
-#' @aliases [,contacts,logical,ANY,ANY-method
-#' @aliases [,contacts,character,ANY,ANY-method
+#' @aliases [,Contacts,numeric,ANY,ANY-method
+#' @aliases [,Contacts,logical,ANY,ANY-method
+#' @aliases [,Contacts,character,ANY,ANY-method
 #'
-#' @param x A \code{contacts} object.
+#' @param x A \code{Contacts} object.
 #' @param i a range or boolean vector.
 #'
 #' @importFrom InteractionSet reduceRegions
@@ -459,7 +459,7 @@ setMethod("length", "contacts", function(x) length(interactions(x)))
 #' @examples 
 #' contacts_yeast[seq_len(10)]
 
-setMethod("[", signature("contacts", "numeric"), function(x, i) {
+setMethod("[", signature("Contacts", "numeric"), function(x, i) {
     interactions(x) <- InteractionSet::reduceRegions(
         interactions(x)[i]
     )
@@ -468,7 +468,7 @@ setMethod("[", signature("contacts", "numeric"), function(x, i) {
     }
     return(x)
 })
-setMethod("[", signature("contacts", "logical"), function(x, i) {
+setMethod("[", signature("Contacts", "logical"), function(x, i) {
     interactions(x) <- InteractionSet::reduceRegions(
         interactions(x)[i]
     )
@@ -477,7 +477,7 @@ setMethod("[", signature("contacts", "logical"), function(x, i) {
     }
     return(x)
 })
-setMethod("[", signature("contacts", "character"), function(x, i) {
+setMethod("[", signature("Contacts", "character"), function(x, i) {
     re_ <- regions(x)
     ints_ <- interactions(x)
     if (length(i) == 1) {
@@ -533,18 +533,18 @@ setMethod("[", signature("contacts", "character"), function(x, i) {
     return(x)
 })
 
-#' @rdname contacts
+#' @rdname Contacts
 #'
-#' @name seqinfo,contacts-method
+#' @name seqinfo,Contacts-method
 #' @docType methods
 #'
-#' @param x A \code{contacts} object.
+#' @param x A \code{Contacts} object.
 #'
 #' @export
 #' @examples 
 #' seqinfo(contacts_yeast)
 
-setMethod("seqinfo", "contacts", function(x) {
+setMethod("seqinfo", "Contacts", function(x) {
     if (is_mcool(fileName(x))) {
         si <- cool2seqinfo(fileName(x), resolution(x))
     }
@@ -554,20 +554,20 @@ setMethod("seqinfo", "contacts", function(x) {
     return(si)
 })
 
-#' @rdname contacts
+#' @rdname Contacts
 #'
 #' @name bins
 #' @docType methods
-#' @aliases bins,contacts-method
+#' @aliases bins,Contacts-method
 #'
-#' @param x A \code{contacts} object.
+#' @param x A \code{Contacts} object.
 #'
 #' @export
 #' @examples 
 #' bins(contacts_yeast)
 
 setGeneric("bins", function(x) {standardGeneric("bins")})
-setMethod("bins", "contacts", function(x) {
+setMethod("bins", "Contacts", function(x) {
     bins <- getAnchors(
         fileName(x), resolution = resolution(x), balanced = FALSE
     )
@@ -575,65 +575,65 @@ setMethod("bins", "contacts", function(x) {
     return(bins)
 })
 
-#' @rdname contacts
+#' @rdname Contacts
 #' 
 #' @name anchors
 #' @docType methods
-#' @aliases anchors,contacts-method
+#' @aliases anchors,Contacts-method
 #'
-#' @param x A \code{contacts} object.
+#' @param x A \code{Contacts} object.
 #'
 #' @export
 #' @examples 
 #' anchors(contacts_yeast)
 
-setMethod("anchors", "contacts", function(x) anchors(interactions(x)))
+setMethod("anchors", "Contacts", function(x) anchors(interactions(x)))
 
-#' @rdname contacts
+#' @rdname Contacts
 #' 
 #' @name regions
 #' @docType methods
-#' @aliases regions,contacts-method
+#' @aliases regions,Contacts-method
 #'
-#' @param x A \code{contacts} object.
+#' @param x A \code{Contacts} object.
 #'
 #' @export
 #' @examples 
 #' regions(contacts_yeast)
 
-setMethod("regions", "contacts", function(x) regions(interactions(x)))
+setMethod("regions", "Contacts", function(x) regions(interactions(x)))
 
-#' @rdname contacts
+#' @rdname Contacts
 #' 
 #' @name summary
 #' @docType methods
-#' @aliases summary,contacts-method
+#' @aliases summary,Contacts-method
 #'
-#' @param x A \code{contacts} object.
+#' @param x A \code{Contacts} object.
 #'
 #' @export
 #' @examples 
 #' summary(contacts_yeast)
 
-setMethod("summary", "contacts", function(object) {
+setMethod("summary", "Contacts", function(object) {
     cat(glue::glue(
-        '`contacts` object with {format(length(interactions(object)), big.mark = ",")} interactions over {format(length(regions(object)), big.mark = ",")} regions'
+        '`Contacts` object with {format(length(interactions(object)), big.mark = ",")} interactions over {format(length(regions(object)), big.mark = ",")} regions'
     ), '\n')
 })
 
-#' @rdname contacts
+#' @rdname Contacts
 #' 
 #' @name show
 #' @docType methods
-#' @aliases show,contacts-method
+#' @aliases show,Contacts-method
 #'
-#' @param object A \code{contacts} object.
+#' @param object A \code{Contacts} object.
 #'
 #' @export
 #' @examples 
 #' show(contacts_yeast)
 
-setMethod("show", signature("contacts"), function(object) {
+setMethod("show", signature("Contacts"), function(object) {
 
     if (is.null(focus(object))) {
         focus_str <- "whole genome"
@@ -674,13 +674,13 @@ setMethod("show", signature("contacts"), function(object) {
 #                                                                              #
 ################################################################################
 
-#' @rdname contacts
+#' @rdname Contacts
 #' 
 #' @name setAs
 #' @docType methods
-#' @aliases setAs,contacts-method
+#' @aliases setAs,Contacts-method
 #'
-#' @param x A \code{contacts} object.
+#' @param x A \code{Contacts} object.
 #'
 #' @export
 #' @examples 
@@ -688,8 +688,8 @@ setMethod("show", signature("contacts"), function(object) {
 #' as(contacts_yeast, 'ContactMatrix')
 #' as(contacts_yeast, 'matrix')[seq_len(10), seq_len(10)]
 
-setAs("contacts", "GInteractions", function(from) interactions(from))
-setAs("contacts", "ContactMatrix", function(from) {
+setAs("Contacts", "GInteractions", function(from) interactions(from))
+setAs("Contacts", "ContactMatrix", function(from) {
     if ('balanced' %in% names(scores(from))) {
         x <- interactions(from)
         x$score <- scores(from, 'balanced')
@@ -701,6 +701,6 @@ setAs("contacts", "ContactMatrix", function(from) {
         gi2cm(x)
     }
 })
-setAs("contacts", "matrix", function(from) {
+setAs("Contacts", "matrix", function(from) {
     as(from, "ContactMatrix") |> cm2matrix()
 })

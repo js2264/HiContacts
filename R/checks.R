@@ -1,13 +1,13 @@
 #' Checks functions
 #' 
 #' Useful functions to validate the nature/structure of (m)cool files or 
-#' `contacts` objects.
+#' `Contacts` objects.
 #' 
 #' @param path Path of a (m)cool file
-#' @param contacts A `contacts` object
+#' @param contacts A `Contacts` object
 #' @param resolution Resolution
 #' @param pair Pairs object with length of 1
-#' @param ... `contacts` object
+#' @param ... `Contacts` object
 #' @return Logical
 #' 
 #' @rdname checks
@@ -121,7 +121,7 @@ is_comparable <- function(...) {
         err <- c(err, "regions")
     }
     if (length(err) > 0) {
-        mess <- paste0("Provided contacts have different ", paste(err, collapse = ' & '), '.')
+        mess <- paste0("Provided `Contacts` have different ", paste(err, collapse = ' & '), '.')
         stop(mess)
     }
     TRUE
@@ -142,9 +142,9 @@ is_square <- function(pair) {
 
 are_contacts <- function(...) {
     args <- list(...)
-    if (!all(unlist(lapply(args, is, 'contacts')))) {
-        stop("Provided arguments are not all `contacts` objects. 
-        Please only use `contacts` objects with this function.")
+    if (!all(unlist(lapply(args, is, 'Contacts')))) {
+        stop("Provided arguments are not all `Contacts` objects. 
+        Please only use `Contacts` objects with this function.")
     }
     TRUE
 }

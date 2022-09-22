@@ -1,21 +1,21 @@
-test_that("contacts works", {
+test_that("Contacts works", {
     contacts_yeast <- contacts_yeast()
-    expect_s4_class(contacts_yeast, 'contacts')
+    expect_s4_class(contacts_yeast, 'Contacts')
     expect_identical(length(contacts_yeast), 74360L)
-    expect_s4_class(contacts_yeast[seq_len(10)], 'contacts')
+    expect_s4_class(contacts_yeast[seq_len(10)], 'Contacts')
     expect_s4_class({
         sub <- c(
             rep(TRUE, length(contacts_yeast)/2), 
             rep(FALSE, length(contacts_yeast)/2)
         )
         contacts_yeast[sub]
-    }, 'contacts')
+    }, 'Contacts')
     expect_s4_class({
         contacts_yeast['II:1-10000']
-    }, 'contacts')
+    }, 'Contacts')
     expect_s4_class({
         contacts_yeast['II:1-10000 x II:20000-40000']
-    }, 'contacts')
+    }, 'Contacts')
     expect_type(fileName(contacts_yeast), 'character')
     expect_s4_class(seqinfo(contacts_yeast), 'Seqinfo')
     expect_type(resolutions(contacts_yeast), 'integer')
@@ -190,22 +190,22 @@ test_that("parse works", {
         'yeast_wt', format = 'mcool'
     )
     expect_s4_class({
-        contacts(cool, focus = 'II:1-10000')
-    }, 'contacts')
+        Contacts(cool, focus = 'II:1-10000')
+    }, 'Contacts')
     expect_s4_class({
-        contacts(cool)
-    }, 'contacts')
+        Contacts(cool)
+    }, 'Contacts')
     expect_s4_class({
-        contacts(mcool, focus = 'II:1-10000', resolution = 2000)
-    }, 'contacts')
+        Contacts(mcool, focus = 'II:1-10000', resolution = 2000)
+    }, 'Contacts')
     expect_s4_class({
-        contacts(mcool, resolution = 16000)
-    }, 'contacts')
+        Contacts(mcool, resolution = 16000)
+    }, 'Contacts')
     expect_error({
-        contacts(cool, resolution = 16000)
+        Contacts(cool, resolution = 16000)
     })
     expect_error({
-        contacts(mcool)
+        Contacts(mcool)
     })
 })
 

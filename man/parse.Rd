@@ -117,6 +117,6 @@ a GenomicInteractions object
 }
 \description{
 These functions are the workhorse internal functions used to import
-a \verb{.(m)cool} file as GenomicInteractions (wrapped into a \code{contacts} object
-by \code{contacts()} function).
+a \verb{.(m)cool} file as GenomicInteractions (wrapped into a \code{Contacts} object
+by \code{Contacts()} function).
 }

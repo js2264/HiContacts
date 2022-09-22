@@ -14,7 +14,7 @@ distanceLaw(
 PsBreaks()
 }
 \arguments{
-\item{x}{A \code{contacts} object}
+\item{x}{A \code{Contacts} object}
 
 \item{by_chr}{by_chr}
 
@@ -27,7 +27,7 @@ tbl
 }
 \description{
 P(s) will be approximated if no pairs are provided, or the exact P(s)
-will be computed if a \code{.pairs} file is added to the \code{contacts} object
+will be computed if a \code{.pairs} file is added to the \code{Contacts} object
 using \code{pairsFile(x) <- "..."}.
 }
 \examples{

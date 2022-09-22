@@ -8,7 +8,7 @@
 
 HiContacts provides tools to import `(m)cool` matrices in R and work with them there. 
 
-It creates a new `contacts` class of objects, built on pre-existing Bioconductor objects, namely `InteractionSet`, `GenomicInterations` and `ContactMatrix` (`Lun, Perry & Ing-Simmons, F1000Research 2016`), and provides **analytical** and **visualization** tools to investigate contact maps. 
+It creates a new `Contacts` class of objects, built on pre-existing Bioconductor objects, namely `InteractionSet`, `GenomicInterations` and `ContactMatrix` (`Lun, Perry & Ing-Simmons, F1000Research 2016`), and provides **analytical** and **visualization** tools to investigate contact maps. 
 
 ## Installation
 
@@ -48,13 +48,13 @@ vignette('HiContacts')
 
 ## Overview
 
-### Import a .(m)cool file as `contacts`
+### Import a .(m)cool file as `Contacts`
 
 ```r
 mcool_file <- HiContactsData::HiContactsData('yeast_wt', format = 'mcool')
 range <- 'I:20000-80000' # range of interest
 lsCoolResolutions(mcool_file, verbose = TRUE)
-contacts <- contacts(mcool_file, focus = range, res = 1000)
+contacts <- Contacts(mcool_file, focus = range, res = 1000)
 contacts
 ```
 
@@ -68,7 +68,7 @@ plotMatrix(contacts, use.scores = 'balanced', limits = c(-4, -1))
 ### Distance law, a.k.a. P(s)
 
 ```r
-contacts <- contacts(
+contacts <- Contacts(
     mcool_file, 
     pairs = HiContactsData::HiContactsData('yeast_wt', format = 'pairs')
 )
@@ -79,7 +79,7 @@ plotPs(ps, aes(x = binned_distance, y = norm_p))
 ### Virtual 4C
 
 ```r
-contacts <- contacts(mcool_file, res = 1000)
+contacts <- Contacts(mcool_file, res = 1000)
 v4C <- virtual4C(contacts, viewpoint = GRanges('V:150000-170000'))
 gg4C(v4C, aes(x = center, y = score, col = chr)) + 
     facet_wrap(~chr, scales = 'free_x')
@@ -88,6 +88,6 @@ gg4C(v4C, aes(x = center, y = score, col = chr)) +
 ### Cis-trans ratios
 
 ```r
-contacts <- contacts(mcool_file, res = 1000)
+contacts <- Contacts(mcool_file, res = 1000)
 cisTransRatio(contacts)
 ```
