@@ -212,6 +212,24 @@ setMethod("focus", "contacts", function(x) x@focus)
 
 #' @rdname contacts
 #'
+#' @name focus<-
+#' @docType methods
+#' @aliases focus<-,contacts,character-method
+#'
+#' @param x A \code{contacts} object.
+#' @param name name
+#' @param value value
+#'
+#' @export
+
+setGeneric("focus<-", function(x, value) {standardGeneric("focus<-")})
+setMethod("focus<-", signature(x = "contacts", value = "character"), function(x, value) {
+    x@focus <- value
+    x
+})
+
+#' @rdname contacts
+#'
 #' @name interactions
 #' @docType methods
 #' @aliases interactions,contacts-method
@@ -460,22 +478,58 @@ setMethod("[", signature("contacts", "logical"), function(x, i) {
     return(x)
 })
 setMethod("[", signature("contacts", "character"), function(x, i) {
-    i_ <- char2pair(i)
-    bi_ <- bins(x)
+    re_ <- regions(x)
     ints_ <- interactions(x)
-    valid_bins_first <- subsetByOverlaps(
-        bi_, S4Vectors::first(i_), type = 'within'
-    )$bin_id
-    valid_bins_second <- subsetByOverlaps(
-        bi_, S4Vectors::second(i_), type = 'within'
-    )$bin_id
-    sub <- ints_$bin_id1 %in% valid_bins_first & ints_$bin_id2 %in% valid_bins_second
+    if (length(i) == 1) {
+        if (grepl(
+            '[A-Za-z0-9]*:[0-9]*-[0-9]* [xX/-;] [A-Za-z0-9]*:[0-9]*-[0-9]*$', i
+        )) {
+            i_ <- char2coords(i)
+            valid_regions_first <- subsetByOverlaps(
+                re_, S4Vectors::first(i_), type = 'within'
+            )$bin_id
+            valid_regions_second <- subsetByOverlaps(
+                re_, S4Vectors::second(i_), type = 'within'
+            )$bin_id
+        }
+        else if (grepl(
+            '[A-Za-z0-9]*:[0-9]*-[0-9]*$', i
+        )) {
+            i_ <- char2coords(i)
+            valid_regions_first <- subsetByOverlaps(
+                re_, S4Vectors::first(i_), type = 'within'
+            )$bin_id
+            valid_regions_second <- valid_regions_first
+        }
+        else if (
+            i %in% seqnames(seqinfo(x))
+        ){
+            valid_regions_first <- re_$bin_id[as.vector(seqnames(re_)) %in% i]
+            valid_regions_second <- valid_regions_first
+        }
+        else {
+            stop("Failed to coerce i into a Pairs/GRanges/chr.")
+        }
+    }
+    else {
+        if (
+            all(i %in% seqnames(seqinfo(x)))
+        ){
+            valid_regions_first <- re_$bin_id[as.vector(seqnames(re_)) %in% i]
+            valid_regions_second <- valid_regions_first
+        }
+        else {
+            stop("Failed to coerce i into a valid Pairs/GRanges/chr.")
+        }
+    }
+    sub <- ints_$bin_id1 %in% valid_regions_first & ints_$bin_id2 %in% valid_regions_second
     interactions(x) <- InteractionSet::reduceRegions(
         ints_[sub]
     )
     for (n in names(scores(x))) {
         scores(x, n) <- scores(x, n)[sub]
     }
+    focus(x) <- i
     return(x)
 })
 
@@ -514,14 +568,10 @@ setMethod("seqinfo", "contacts", function(x) {
 
 setGeneric("bins", function(x) {standardGeneric("bins")})
 setMethod("bins", "contacts", function(x) {
-    bins <- GenomicRanges::tileGenome(
-        seqlengths = GenomeInfoDb::seqlengths(seqinfo(x)), 
-        tilewidth = resolution(x), 
-        cut.last.tile.in.chrom = TRUE
+    bins <- getAnchors(
+        fileName(x), resolution = resolution(x), balanced = FALSE
     )
     seqinfo(bins) <- seqinfo(x)
-    bins$bin_id <- seq_along(bins)
-    # bins <- bins[GenomicRanges::width(bins) == resolution(x)]
     return(bins)
 })
 

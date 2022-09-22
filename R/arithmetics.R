@@ -100,8 +100,8 @@ autocorrelate <- function(x, use.scores = 'balanced', ignore_ndiags = 3) {
         tidyr::pivot_longer(-term, names_to = "y", values_to = "corr") |>
         dplyr::rename("x" = "term")
     gis2 <- InteractionSet::GInteractions(
-        anchor1 = stringr::str_replace(mat2$x, '_', ':') |> stringr::str_replace('_', '-') |> as('GRanges'), 
-        anchor2 = stringr::str_replace(mat2$y, '_', ':') |> stringr::str_replace('_', '-') |> as('GRanges'), 
+        anchor1 = stringr::str_replace(mat2$x, '_([0-9])', ':\\1') |> stringr::str_replace('_([0-9])', '-\\1') |> stringr::str_replace_all('[-_]([A-Za-z])', '^\\1') |> as('GRanges'), 
+        anchor2 = stringr::str_replace(mat2$y, '_([0-9])', ':\\1') |> stringr::str_replace('_([0-9])', '-\\1') |> stringr::str_replace_all('[-_]([A-Za-z])', '^\\1') |> as('GRanges'), 
         score = as.array(mat2$corr)
     )
 
@@ -212,8 +212,6 @@ divide <- function(x, by, use.scores = 'balanced') {
         IRanges::IRanges(mat$start2, width = binsize)
     )
     reg <- unique(c(an1, an2))
-    bins <- c(bins(x), bins(by)) |> 
-        unique() 
     gi <- InteractionSet::GInteractions(
         anchor1 = an1, 
         anchor2 = an2, 
