@@ -127,16 +127,19 @@ test_that("plotMatrix works", {
 
 test_that("Ps works", {
     contacts_yeast <- contacts_yeast()
-    x <- distanceLaw(contacts_yeast)
+    x1 <- distanceLaw(contacts_yeast)
+    x2 <- localDistanceLaw(contacts_yeast, GRanges("II:1-100000"))
     pairsFile(contacts_yeast) <- HiContactsData::HiContactsData(
         'yeast_wt', format = 'pairs.gz'
     )
-    y <- distanceLaw(contacts_yeast, by_chr = TRUE)
-    expect_s3_class(x, 'tbl')
-    expect_s3_class(y, 'tbl')
-    expect_s3_class(plotPs(x, aes(x = binned_distance, y = norm_p)), 'gg')
-    expect_s3_class(plotPs(x, aes(x = binned_distance, y = norm_p)), 'gg')
-    expect_s3_class(plotPsSlope(x, aes(x = binned_distance, y = norm_p)), 'gg')
+    y1 <- distanceLaw(contacts_yeast, by_chr = TRUE)
+    y2 <- localDistanceLaw(contacts_yeast, GRanges("II:1-100000"))
+    expect_s3_class(x1, 'tbl')
+    expect_s3_class(y1, 'tbl')
+    expect_s3_class(x2, 'tbl')
+    expect_s3_class(y2, 'tbl')
+    expect_s3_class(plotPs(x1, aes(x = binned_distance, y = norm_p)), 'gg')
+    expect_s3_class(plotPsSlope(x1, aes(x = binned_distance, y = norm_p)), 'gg')
 })
 
 test_that("utils works", {

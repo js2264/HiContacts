@@ -2,6 +2,7 @@
 % Please edit documentation in R/Ps.R
 \name{distanceLaw}
 \alias{distanceLaw}
+\alias{localDistanceLaw}
 \alias{PsBreaks}
 \title{Compute the law of distance-dependent contact frequency, a.k.a. P(s)}
 \usage{
@@ -11,6 +12,8 @@ distanceLaw(
   filtered_chr = c("XII", "chrXII", "chr12", "12", "Mito", "MT", "chrM")
 )
 
+localDistanceLaw(x, coords = coords)
+
 PsBreaks()
 }
 \arguments{
@@ -19,8 +22,12 @@ PsBreaks()
 \item{by_chr}{by_chr}
 
 \item{filtered_chr}{filtered_chr}
+
+\item{coords}{GRanges}
 }
 \value{
+a tibble
+
 a tibble
 
 tbl
@@ -35,4 +42,11 @@ library(HiContacts)
 contacts_yeast <- contacts_yeast()
 ps <- distanceLaw(contacts_yeast)
 ps
+local_ps <- localDistanceLaw(
+    contacts_yeast,
+    GenomicRanges::GRanges(
+        c("telomere" = "II:1-20000", "arm" = "II:300000-700000")
+    )
+)
+local_ps
 }

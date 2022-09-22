@@ -41,6 +41,7 @@ splitCoords <- function(coords) {
 #' coords2char
 #'
 #' @param coords coords
+#' @param big.mark big.mark
 #' @return a character string
 #'
 #' @import stringr
