@@ -63,6 +63,8 @@ using <code>pairsFile(x) &lt;- "..."</code>.</p>
 <span>  filtered_chr <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"XII"</span>, <span class="st">"chrXII"</span>, <span class="st">"chr12"</span>, <span class="st">"12"</span>, <span class="st">"Mito"</span>, <span class="st">"MT"</span>, <span class="st">"chrM"</span><span class="op">)</span></span>
 <span><span class="op">)</span></span>
 <span></span>
+<span><span class="fu">localDistanceLaw</span><span class="op">(</span><span class="va">x</span>, coords <span class="op">=</span> <span class="va">coords</span><span class="op">)</span></span>
+<span></span>
 <span><span class="fu">PsBreaks</span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -79,10 +81,17 @@ using <code>pairsFile(x) &lt;- "..."</code>.</p>
 <dt>filtered_chr</dt>
 <dd><p>filtered_chr</p></dd>
 
+
+<dt>coords</dt>
+<dd><p>GRanges</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
     
+
+<p>a tibble</p>
+
 
 <p>a tibble</p>
 
@@ -114,6 +123,28 @@ using <code>pairsFile(x) &lt;- "..."</code>.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 9</span>            <span style="text-decoration: underline;">7</span>779 0.026<span style="text-decoration: underline;">3</span> 0.000<span style="text-decoration: underline;">033</span>9         68.1 -<span style="color: #BB0000;">1.37</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">10</span>            <span style="text-decoration: underline;">8</span>557 0.024<span style="text-decoration: underline;">0</span> 0.000<span style="text-decoration: underline;">028</span>1         56.5 -<span style="color: #BB0000;">1.32</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># … with 47 more rows</span></span>
+<span class="r-in"><span><span class="va">local_ps</span> <span class="op">&lt;-</span> <span class="fu">localDistanceLaw</span><span class="op">(</span></span></span>
+<span class="r-in"><span>    <span class="va">contacts_yeast</span>,</span></span>
+<span class="r-in"><span>    <span class="fu">GenomicRanges</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/GenomicRanges/man/GRanges-class.html" class="external-link">GRanges</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>        <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"telomere"</span> <span class="op">=</span> <span class="st">"II:1-20000"</span>, <span class="st">"arm"</span> <span class="op">=</span> <span class="st">"II:300000-700000"</span><span class="op">)</span></span></span>
+<span class="r-in"><span>    <span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> pairsFile not specified. The P(s) curve will be an approximation.</span>
+<span class="r-in"><span><span class="va">local_ps</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 113 × 6</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    coords   binned_distance      p   norm_p norm_p_unity slope</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>              <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>        <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 1</span> arm                    1 0.109  0.109         <span style="text-decoration: underline;">156</span>939.  0   </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 2</span> telomere               1 0.096<span style="text-decoration: underline;">9</span> 0.096<span style="text-decoration: underline;">9</span>        <span style="text-decoration: underline;">155</span>566.  0   </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 3</span> arm                  956 0.066<span style="text-decoration: underline;">6</span> 0.000<span style="text-decoration: underline;">701</span>        <span style="text-decoration: underline;">1</span>012. -<span style="color: #BB0000;">1.60</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 4</span> telomere             956 0.072<span style="text-decoration: underline;">4</span> 0.000<span style="text-decoration: underline;">762</span>        <span style="text-decoration: underline;">1</span>224. -<span style="color: #BB0000;">2.17</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 5</span> arm                 <span style="text-decoration: underline;">1</span>862 0.063<span style="text-decoration: underline;">8</span> 0.000<span style="text-decoration: underline;">343</span>         495. -<span style="color: #BB0000;">1.56</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 6</span> telomere            <span style="text-decoration: underline;">1</span>862 0.066<span style="text-decoration: underline;">5</span> 0.000<span style="text-decoration: underline;">358</span>         574. -<span style="color: #BB0000;">2.11</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 7</span> arm                 <span style="text-decoration: underline;">2</span>999 0.052<span style="text-decoration: underline;">4</span> 0.000<span style="text-decoration: underline;">175</span>         252. -<span style="color: #BB0000;">1.53</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 8</span> telomere            <span style="text-decoration: underline;">2</span>999 0.057<span style="text-decoration: underline;">2</span> 0.000<span style="text-decoration: underline;">191</span>         306. -<span style="color: #BB0000;">2.04</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 9</span> arm                 <span style="text-decoration: underline;">3</span>992 0.043<span style="text-decoration: underline;">3</span> 0.000<span style="text-decoration: underline;">109</span>         157. -<span style="color: #BB0000;">1.48</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">10</span> telomere            <span style="text-decoration: underline;">3</span>992 0.045<span style="text-decoration: underline;">2</span> 0.000<span style="text-decoration: underline;">113</span>         182. -<span style="color: #BB0000;">1.93</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># … with 103 more rows</span></span>
 </code></pre></div>
     </div>
   </div>
