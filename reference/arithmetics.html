@@ -90,7 +90,7 @@ python package to be installed.</p></li>
     <div id="arguments">
     <h2>Arguments</h2>
     <dl><dt>x</dt>
-<dd><p>a <code>contacts</code> object</p></dd>
+<dd><p>a <code>Contacts</code> object</p></dd>
 
 
 <dt>use.scores</dt>
@@ -102,11 +102,11 @@ python package to be installed.</p></li>
 
 
 <dt>by</dt>
-<dd><p>a <code>contacts</code> object</p></dd>
+<dd><p>a <code>Contacts</code> object</p></dd>
 
 
 <dt>...</dt>
-<dd><p><code>contacts</code> objects</p></dd>
+<dd><p><code>Contacts</code> objects</p></dd>
 
 
 <dt>use_serpentine_trend</dt>
@@ -126,22 +126,22 @@ serpentine (this requires <code>reticulate</code> and the python package <code>s
     <h2>Value</h2>
     
 
-<p>a <code>contacts</code> object with two additional scoress: <code>expected</code> and
+<p>a <code>Contacts</code> object with two additional scoress: <code>expected</code> and
 <code>detrended</code></p>
 
 
 
-<p>a <code>contacts</code> object with a single <code>autocorrelation</code> scores</p>
+<p>a <code>Contacts</code> object with a single <code>autocorrelation</code> scores</p>
 
 
-<p>a <code>contacts</code> object with a single <code>ratio</code> scores</p>
+<p>a <code>Contacts</code> object with a single <code>ratio</code> scores</p>
 
 
-<p>a <code>contacts</code> object. Each returned scores is the sum of the
-corresponding scores from input <code>contacts</code>.</p>
+<p>a <code>Contacts</code> object. Each returned scores is the sum of the
+corresponding scores from input <code>Contacts</code>.</p>
 
 
-<p>a <code>contacts</code> object with a single <code>smoothen</code> scores</p>
+<p>a <code>Contacts</code> object with a single <code>smoothen</code> scores</p>
     </div>
 
     <div id="ref-examples">
@@ -156,7 +156,7 @@ corresponding scores from input <code>contacts</code>.</p>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> see ?HiContactsData and browseVignettes('HiContactsData') for documentation</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> loading from cache</span>
 <span class="r-in"><span><span class="va">contacts_yeast</span> <span class="op">&lt;-</span> <span class="fu">detrend</span><span class="op">(</span><span class="va">contacts_yeast</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="fu"><a href="contacts.html">scores</a></span><span class="op">(</span><span class="va">contacts_yeast</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="Contacts.html">scores</a></span><span class="op">(</span><span class="va">contacts_yeast</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> List of length 4</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> names(4): raw balanced expected detrended</span>
 <span class="r-in"><span><span class="co">#### -----</span></span></span>
@@ -166,10 +166,10 @@ corresponding scores from input <code>contacts</code>.</p>
 <span class="r-in"><span><span class="va">contacts_yeast</span> <span class="op">&lt;-</span> <span class="fu">autocorrelate</span><span class="op">(</span><span class="va">contacts_yeast</span><span class="op">)</span></span></span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>The `x` argument of `as_tibble.matrix()` must have unique column names if `.name_repair` is omitted as of tibble 2.0.0.</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> Using compatibility `.name_repair`.</span>
-<span class="r-in"><span><span class="fu"><a href="contacts.html">scores</a></span><span class="op">(</span><span class="va">contacts_yeast</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="Contacts.html">scores</a></span><span class="op">(</span><span class="va">contacts_yeast</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> List of length 1</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> names(1): autocorrelation</span>
-<span class="r-in"><span><span class="fu"><a href="contacts-plot.html">plotMatrix</a></span><span class="op">(</span><span class="va">contacts_yeast</span>, scale <span class="op">=</span> <span class="st">'linear'</span>, limits <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">1</span>, <span class="fl">1</span><span class="op">)</span>, cmap <span class="op">=</span> <span class="fu"><a href="palettes.html">bwrColors</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="Contacts-plot.html">plotMatrix</a></span><span class="op">(</span><span class="va">contacts_yeast</span>, scale <span class="op">=</span> <span class="st">'linear'</span>, limits <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">1</span>, <span class="fl">1</span><span class="op">)</span>, cmap <span class="op">=</span> <span class="fu"><a href="palettes.html">bwrColors</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="arithmetics-1.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span><span class="co">#### -----</span></span></span>
 <span class="r-in"><span><span class="co">#### Divide 2 contact matrices</span></span></span>
@@ -185,9 +185,9 @@ corresponding scores from input <code>contacts</code>.</p>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> loading from cache</span>
 <span class="r-in"><span><span class="va">div_contacts</span> <span class="op">&lt;-</span> <span class="fu">divide</span><span class="op">(</span><span class="va">contacts_yeast_eco1</span>, by <span class="op">=</span> <span class="va">contacts_yeast</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">div_contacts</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `contacts` object with 146,082 interactions over 802 regions </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `Contacts` object with 146,082 interactions over 802 regions </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> -------</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> fileName: "41e5fd5ee3a_7754 / 41e126d34ae_7752" </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> fileName: "4544128547f_7754 / 4548315b3a_7752" </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> focus: "II" </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> resolutions(1): 1000</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> current resolution: 1000 </span>
@@ -196,7 +196,7 @@ corresponding scores from input <code>contacts</code>.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> topologicalFeatures: () </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> pairsFile: N/A </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> metadata(0):</span>
-<span class="r-in"><span><span class="fu"><a href="contacts-plot.html">plotMatrix</a></span><span class="op">(</span><span class="va">div_contacts</span>, scale <span class="op">=</span> <span class="st">'log2'</span>, limits <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">2</span>, <span class="fl">2</span><span class="op">)</span>, cmap <span class="op">=</span> <span class="fu"><a href="palettes.html">bwrColors</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="Contacts-plot.html">plotMatrix</a></span><span class="op">(</span><span class="va">div_contacts</span>, scale <span class="op">=</span> <span class="st">'log2'</span>, limits <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">2</span>, <span class="fl">2</span><span class="op">)</span>, cmap <span class="op">=</span> <span class="fu"><a href="palettes.html">bwrColors</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="arithmetics-2.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span><span class="co">#### -----</span></span></span>
 <span class="r-in"><span><span class="co">#### Merge 2 contact matrices</span></span></span>
@@ -204,7 +204,7 @@ corresponding scores from input <code>contacts</code>.</p>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="va">merged_contacts</span> <span class="op">&lt;-</span> <span class="fu">merge</span><span class="op">(</span><span class="va">contacts_yeast_eco1</span>, <span class="va">contacts_yeast</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">merged_contacts</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `contacts` object with 158,048 interactions over 802 regions </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `Contacts` object with 158,048 interactions over 802 regions </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> -------</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> fileName: "" </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> focus: "II, II" </span>

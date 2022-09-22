@@ -90,7 +90,7 @@
 <span class="r-msg co"><span class="r-pr">#&gt;</span> snapshotDate(): 2022-08-23</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> see ?HiContactsData and browseVignettes('HiContactsData') for documentation</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> loading from cache</span>
-<span class="r-in"><span><span class="va">ps</span> <span class="op">&lt;-</span> <span class="fu"><a href="Ps.html">getPs</a></span><span class="op">(</span><span class="va">contacts_yeast</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">ps</span> <span class="op">&lt;-</span> <span class="fu"><a href="Ps.html">distanceLaw</a></span><span class="op">(</span><span class="va">contacts_yeast</span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> pairsFile not specified. The P(s) curve will be an approximation.</span>
 <span class="r-in"><span><span class="fu">plotPs</span><span class="op">(</span><span class="va">ps</span>, <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">binned_distance</span>, y <span class="op">=</span> <span class="va">norm_p</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Removed 11 row(s) containing missing values (geom_path).</span>
@@ -106,10 +106,10 @@
 <span class="r-msg co"><span class="r-pr">#&gt;</span> snapshotDate(): 2022-08-23</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> see ?HiContactsData and browseVignettes('HiContactsData') for documentation</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> loading from cache</span>
-<span class="r-in"><span><span class="va">ps_wt</span> <span class="op">&lt;-</span> <span class="fu"><a href="Ps.html">getPs</a></span><span class="op">(</span><span class="va">contacts_yeast</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">ps_wt</span> <span class="op">&lt;-</span> <span class="fu"><a href="Ps.html">distanceLaw</a></span><span class="op">(</span><span class="va">contacts_yeast</span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> pairsFile not specified. The P(s) curve will be an approximation.</span>
 <span class="r-in"><span><span class="va">ps_wt</span><span class="op">$</span><span class="va">sample</span> <span class="op">&lt;-</span> <span class="st">'WT'</span></span></span>
-<span class="r-in"><span><span class="va">ps_eco1</span> <span class="op">&lt;-</span> <span class="fu"><a href="Ps.html">getPs</a></span><span class="op">(</span><span class="va">contacts_yeast_eco1</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">ps_eco1</span> <span class="op">&lt;-</span> <span class="fu"><a href="Ps.html">distanceLaw</a></span><span class="op">(</span><span class="va">contacts_yeast_eco1</span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> pairsFile not specified. The P(s) curve will be an approximation.</span>
 <span class="r-in"><span><span class="va">ps_eco1</span><span class="op">$</span><span class="va">sample</span> <span class="op">&lt;-</span> <span class="st">'eco1'</span></span></span>
 <span class="r-in"><span><span class="va">ps</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">rbind</a></span><span class="op">(</span><span class="va">ps_wt</span>, <span class="va">ps_eco1</span><span class="op">)</span></span></span>

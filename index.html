@@ -74,7 +74,7 @@
 <!-- badges: start -->
 
 <p>HiContacts provides tools to import <code>(m)cool</code> matrices in R and work with them there.</p>
-<p>It creates a new <code>contacts</code> class of objects, built on pre-existing Bioconductor objects, namely <code>InteractionSet</code>, <code>GenomicInterations</code> and <code>ContactMatrix</code> (<code>Lun, Perry &amp; Ing-Simmons, F1000Research 2016</code>), and provides <strong>analytical</strong> and <strong>visualization</strong> tools to investigate contact maps.</p>
+<p>It creates a new <code>Contacts</code> class of objects, built on pre-existing Bioconductor objects, namely <code>InteractionSet</code>, <code>GenomicInterations</code> and <code>ContactMatrix</code> (<code>Lun, Perry &amp; Ing-Simmons, F1000Research 2016</code>), and provides <strong>analytical</strong> and <strong>visualization</strong> tools to investigate contact maps.</p>
 <div class="section level2">
 <h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
 </h2>
@@ -109,39 +109,39 @@
 <h2 id="overview">Overview<a class="anchor" aria-label="anchor" href="#overview"></a>
 </h2>
 <div class="section level3">
-<h3 id="import-a-mcool-file-as-contacts">Import a .(m)cool file as <code>contacts</code>
+<h3 id="import-a-mcool-file-as-contacts">Import a .(m)cool file as <code>Contacts</code>
 <a class="anchor" aria-label="anchor" href="#import-a-mcool-file-as-contacts"></a>
 </h3>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">mcool_file</span> <span class="op">&lt;-</span> <span class="fu">HiContactsData</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/HiContactsData/man/HiContactsData.html" class="external-link">HiContactsData</a></span><span class="op">(</span><span class="st">'yeast_wt'</span>, format <span class="op">=</span> <span class="st">'mcool'</span><span class="op">)</span></span>
 <span><span class="va">range</span> <span class="op">&lt;-</span> <span class="st">'I:20000-80000'</span> <span class="co"># range of interest</span></span>
 <span><span class="fu"><a href="reference/parse.html">lsCoolResolutions</a></span><span class="op">(</span><span class="va">mcool_file</span>, verbose <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
-<span><span class="va">contacts</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/contacts.html">contacts</a></span><span class="op">(</span><span class="va">mcool_file</span>, focus <span class="op">=</span> <span class="va">range</span>, res <span class="op">=</span> <span class="fl">1000</span><span class="op">)</span></span>
+<span><span class="va">contacts</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/Contacts.html">Contacts</a></span><span class="op">(</span><span class="va">mcool_file</span>, focus <span class="op">=</span> <span class="va">range</span>, res <span class="op">=</span> <span class="fl">1000</span><span class="op">)</span></span>
 <span><span class="va">contacts</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="plotting-matrices">Plotting matrices<a class="anchor" aria-label="anchor" href="#plotting-matrices"></a>
 </h3>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="reference/contacts-plot.html">plotMatrix</a></span><span class="op">(</span><span class="va">contacts</span>, use.scores <span class="op">=</span> <span class="st">'raw'</span><span class="op">)</span></span>
-<span><span class="fu"><a href="reference/contacts-plot.html">plotMatrix</a></span><span class="op">(</span><span class="va">contacts</span>, use.scores <span class="op">=</span> <span class="st">'balanced'</span>, limits <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">4</span>, <span class="op">-</span><span class="fl">1</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="reference/Contacts-plot.html">plotMatrix</a></span><span class="op">(</span><span class="va">contacts</span>, use.scores <span class="op">=</span> <span class="st">'raw'</span><span class="op">)</span></span>
+<span><span class="fu"><a href="reference/Contacts-plot.html">plotMatrix</a></span><span class="op">(</span><span class="va">contacts</span>, use.scores <span class="op">=</span> <span class="st">'balanced'</span>, limits <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">4</span>, <span class="op">-</span><span class="fl">1</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level3">
-<h3 id="ps">P(s)<a class="anchor" aria-label="anchor" href="#ps"></a>
+<h3 id="distance-law-aka-ps">Distance law, a.k.a. P(s)<a class="anchor" aria-label="anchor" href="#distance-law-aka-ps"></a>
 </h3>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">contacts</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/contacts.html">contacts</a></span><span class="op">(</span></span>
+<code class="sourceCode R"><span><span class="va">contacts</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/Contacts.html">Contacts</a></span><span class="op">(</span></span>
 <span>    <span class="va">mcool_file</span>, </span>
 <span>    pairs <span class="op">=</span> <span class="fu">HiContactsData</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/HiContactsData/man/HiContactsData.html" class="external-link">HiContactsData</a></span><span class="op">(</span><span class="st">'yeast_wt'</span>, format <span class="op">=</span> <span class="st">'pairs'</span><span class="op">)</span></span>
 <span><span class="op">)</span></span>
-<span><span class="va">ps</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/Ps.html">getPs</a></span><span class="op">(</span><span class="va">contacts</span><span class="op">)</span></span>
+<span><span class="va">ps</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/Ps.html">distanceLaw</a></span><span class="op">(</span><span class="va">contacts</span><span class="op">)</span></span>
 <span><span class="fu"><a href="reference/Ps-plot.html">plotPs</a></span><span class="op">(</span><span class="va">ps</span>, <span class="fu">aes</span><span class="op">(</span>x <span class="op">=</span> <span class="va">binned_distance</span>, y <span class="op">=</span> <span class="va">norm_p</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="virtual-4c">Virtual 4C<a class="anchor" aria-label="anchor" href="#virtual-4c"></a>
 </h3>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">contacts</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/contacts.html">contacts</a></span><span class="op">(</span><span class="va">mcool_file</span>, res <span class="op">=</span> <span class="fl">1000</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="va">contacts</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/Contacts.html">Contacts</a></span><span class="op">(</span><span class="va">mcool_file</span>, res <span class="op">=</span> <span class="fl">1000</span><span class="op">)</span></span>
 <span><span class="va">v4C</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/virtual4C.html">virtual4C</a></span><span class="op">(</span><span class="va">contacts</span>, viewpoint <span class="op">=</span> <span class="fu">GRanges</span><span class="op">(</span><span class="st">'V:150000-170000'</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu">gg4C</span><span class="op">(</span><span class="va">v4C</span>, <span class="fu">aes</span><span class="op">(</span>x <span class="op">=</span> <span class="va">center</span>, y <span class="op">=</span> <span class="va">score</span>, col <span class="op">=</span> <span class="va">chr</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span> </span>
 <span>    <span class="fu">facet_wrap</span><span class="op">(</span><span class="op">~</span><span class="va">chr</span>, scales <span class="op">=</span> <span class="st">'free_x'</span><span class="op">)</span></span></code></pre></div>
@@ -150,7 +150,7 @@
 <h3 id="cis-trans-ratios">Cis-trans ratios<a class="anchor" aria-label="anchor" href="#cis-trans-ratios"></a>
 </h3>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">contacts</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/contacts.html">contacts</a></span><span class="op">(</span><span class="va">mcool_file</span>, res <span class="op">=</span> <span class="fl">1000</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="va">contacts</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/Contacts.html">Contacts</a></span><span class="op">(</span><span class="va">mcool_file</span>, res <span class="op">=</span> <span class="fl">1000</span><span class="op">)</span></span>
 <span><span class="fu"><a href="reference/cisTransRatio.html">cisTransRatio</a></span><span class="op">(</span><span class="va">contacts</span><span class="op">)</span></span></code></pre></div>
 </div>
 </div>
