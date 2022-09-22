@@ -71,31 +71,31 @@ Contacts(
 
 \S4method{fileName}{Contacts}(object)
 
-resolutions(x)
+\S4method{resolutions}{Contacts}(x)
 
 \S4method{resolution}{Contacts}(x)
 
-focus(x)
+\S4method{focus}{Contacts}(x)
 
-focus(x) <- value
+\S4method{focus}{Contacts,character}(x) <- value
 
 \S4method{interactions}{Contacts}(x)
 
 \S4method{interactions}{Contacts,GInteractions}(x) <- value
 
-scores(x, name)
+\S4method{scores}{Contacts,missing}(x)
 
-scores(x, name) <- value
+\S4method{scores}{Contacts,character,numeric}(x, name) <- value
 
-topologicalFeatures(x, name)
+\S4method{topologicalFeatures}{Contacts,missing}(x)
 
-topologicalFeatures(x, name) <- value
+\S4method{topologicalFeatures}{Contacts,character,GRangesOrGInteractions}(x, name) <- value
 
-pairsFile(x, name)
+\S4method{pairsFile}{Contacts}(x)
 
-pairsFile(x) <- value
+\S4method{pairsFile}{Contacts,character}(x) <- value
 
-metadata(x) <- value
+\S4method{metadata}{Contacts,list}(x) <- value
 
 \S4method{length}{Contacts}(x)
 
@@ -103,7 +103,7 @@ metadata(x) <- value
 
 \S4method{seqinfo}{Contacts}(x)
 
-bins(x)
+\S4method{bins}{Contacts}(x)
 
 \S4method{anchors}{Contacts}(x)
 
@@ -203,4 +203,5 @@ show(contacts_yeast)
 as(contacts_yeast, 'GInteractions')
 as(contacts_yeast, 'ContactMatrix')
 as(contacts_yeast, 'matrix')[seq_len(10), seq_len(10)]
+as(contacts_yeast, 'data.frame')
 }

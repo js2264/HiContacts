@@ -223,4 +223,7 @@ test_that("coerce works", {
     expect_is({
         as(contacts_yeast, 'matrix')
     }, 'matrix')
+    expect_s3_class({
+        as(contacts_yeast, 'data.frame')
+    }, 'data.frame')
 })

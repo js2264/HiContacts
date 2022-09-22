@@ -147,6 +147,25 @@ setValidity("Contacts",
 
 ################################################################################
 #                                                                              #
+#                                 GENERICS                                     #
+#                                                                              #
+################################################################################
+
+setGeneric("resolutions", function(x) {standardGeneric("resolutions")})
+setGeneric("resolution", function(x) {standardGeneric("resolution")})
+setGeneric("focus", function(x) {standardGeneric("focus")})
+setGeneric("focus<-", function(x, value) {standardGeneric("focus<-")})
+setGeneric("scores", function(x, name) {standardGeneric("scores")})
+setGeneric("scores<-", function(x, name, value) {standardGeneric("scores<-")})
+setGeneric("topologicalFeatures", function(x, name) {standardGeneric("topologicalFeatures")})
+setGeneric("topologicalFeatures<-", function(x, name, value) {standardGeneric("topologicalFeatures<-")})
+setGeneric("pairsFile", function(x, name) {standardGeneric("pairsFile")})
+setGeneric("pairsFile<-", function(x, value) {standardGeneric("pairsFile<-")})
+setGeneric("metadata<-", function(x, value) {standardGeneric("metadata<-")})
+setGeneric("bins", function(x) {standardGeneric("bins")})
+
+################################################################################
+#                                                                              #
 #                                 ACCESSORS                                    #
 #                                                                              #
 ################################################################################
@@ -178,7 +197,6 @@ setMethod("fileName", "Contacts", function(object) object@fileName)
 #' @examples 
 #' resolutions(contacts_yeast)
 
-setGeneric("resolutions", function(x) {standardGeneric("resolutions")})
 setMethod("resolutions", "Contacts", function(x) x@resolutions)
 
 #' @rdname Contacts
@@ -207,7 +225,6 @@ setMethod("resolution", "Contacts", function(x) x@resolution)
 #' @examples 
 #' focus(contacts_yeast)
 
-setGeneric("focus", function(x) {standardGeneric("focus")})
 setMethod("focus", "Contacts", function(x) x@focus)
 
 #' @rdname Contacts
@@ -222,7 +239,6 @@ setMethod("focus", "Contacts", function(x) x@focus)
 #'
 #' @export
 
-setGeneric("focus<-", function(x, value) {standardGeneric("focus<-")})
 setMethod("focus<-", signature(x = "Contacts", value = "character"), function(x, value) {
     x@focus <- value
     x
@@ -275,7 +291,6 @@ setMethod("interactions<-", signature(x = "Contacts", value = "GInteractions"), 
 #' tail(scores(contacts_yeast, 1))
 #' tail(scores(contacts_yeast, 'balanced'))
 
-setGeneric("scores", function(x, name) {standardGeneric("scores")})
 setMethod("scores", signature(x = "Contacts", name = "missing"), function(x) x@scores)
 setMethod("scores", signature(x = "Contacts", name = "character"), function(x, name) {
     if (!name %in% names(scores(x))) {
@@ -305,7 +320,6 @@ setMethod("scores", signature(x = "Contacts", name = "numeric"), function(x, nam
 #' scores(contacts_yeast, 'test') <- runif(length(contacts_yeast))
 #' tail(scores(contacts_yeast, 'test'))
 
-setGeneric("scores<-", function(x, name, value) {standardGeneric("scores<-")})
 setMethod("scores<-", c(x = "Contacts", name = "character", value = "numeric"), function(x, name, value) {
     x@scores[[name]] <- value
     return(x)
@@ -328,7 +342,6 @@ setMethod("scores<-", c(x = "Contacts", name = "character", value = "numeric"), 
 #' topologicalFeatures(full_contacts_yeast, 1)
 #' topologicalFeatures(full_contacts_yeast, 'centromeres')
 
-setGeneric("topologicalFeatures", function(x, name) {standardGeneric("topologicalFeatures")})
 setMethod("topologicalFeatures", signature(x = "Contacts", name = "missing"), function(x) {
     S4Vectors::SimpleList(as.list(x@topologicalFeatures))
 })
@@ -361,7 +374,6 @@ setMethod("topologicalFeatures", signature(x = "Contacts", name = "numeric"), fu
 #' topologicalFeatures(contacts_yeast, 'centromeres') <- centros_yeast
 #' topologicalFeatures(contacts_yeast, 'centromeres')
 
-setGeneric("topologicalFeatures<-", function(x, name, value) {standardGeneric("topologicalFeatures<-")})
 setMethod("topologicalFeatures<-", signature(x = "Contacts", name = "character", value = "GRangesOrGInteractions"), function(x, name, value) {
     x@topologicalFeatures[[name]] <- value
     return(x)
@@ -379,7 +391,6 @@ setMethod("topologicalFeatures<-", signature(x = "Contacts", name = "character",
 #' @examples 
 #' pairsFile(full_contacts_yeast)
 
-setGeneric("pairsFile", function(x, name) {standardGeneric("pairsFile")})
 setMethod("pairsFile", "Contacts", function(x) {
     x@pairsFile
 })
@@ -396,7 +407,6 @@ setMethod("pairsFile", "Contacts", function(x) {
 #'
 #' @export
 
-setGeneric("pairsFile<-", function(x, value) {standardGeneric("pairsFile<-")})
 setMethod("pairsFile<-", signature(x = "Contacts", value = "character"), function(x, value) {
     if (!file.exists(value)) {
         stop("Provided pairsFile does not exist. Aborting now.")
@@ -417,7 +427,6 @@ setMethod("pairsFile<-", signature(x = "Contacts", value = "character"), functio
 #'
 #' @export
 
-setGeneric("metadata<-", function(x, value) {standardGeneric("metadata<-")})
 setMethod("metadata<-", signature(x = "Contacts", value = "list"), function(x, value) {
     x@metadata <- value
     x
@@ -566,7 +575,6 @@ setMethod("seqinfo", "Contacts", function(x) {
 #' @examples 
 #' bins(contacts_yeast)
 
-setGeneric("bins", function(x) {standardGeneric("bins")})
 setMethod("bins", "Contacts", function(x) {
     bins <- getAnchors(
         fileName(x), resolution = resolution(x), balanced = FALSE
@@ -680,13 +688,12 @@ setMethod("show", signature("Contacts"), function(object) {
 #' @docType methods
 #' @aliases setAs,Contacts-method
 #'
-#' @param x A \code{Contacts} object.
-#'
 #' @export
 #' @examples 
 #' as(contacts_yeast, 'GInteractions')
 #' as(contacts_yeast, 'ContactMatrix')
 #' as(contacts_yeast, 'matrix')[seq_len(10), seq_len(10)]
+#' as(contacts_yeast, 'data.frame')
 
 setAs("Contacts", "GInteractions", function(from) interactions(from))
 setAs("Contacts", "ContactMatrix", function(from) {
@@ -703,4 +710,13 @@ setAs("Contacts", "ContactMatrix", function(from) {
 })
 setAs("Contacts", "matrix", function(from) {
     as(from, "ContactMatrix") |> cm2matrix()
+})
+setAs("Contacts", "data.frame", function(from) {
+    x <- interactions(from)
+    x <- as.data.frame(x)
+    x <- x[, !colnames(x) %in% c("chr1", "chr2", "bin_id1.1", "bin_id2.1")]
+    for (n in names(scores(from))) {
+        x[[n]] <- scores(from, n)
+    }
+    return(x)
 })
