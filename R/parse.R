@@ -421,7 +421,7 @@ cm2matrix <- function(cm, replace_NA = NA) {
 #' @param nrows Number of pairs to import
 #' @return a GenomicInteractions object
 #'
-#' @importFrom data.table fread
+#' @importFrom vroom vroom
 #' @importFrom glue glue
 #' @importFrom GenomicRanges GRanges
 #' @importFrom GenomicInteractions GenomicInteractions
@@ -440,37 +440,29 @@ pairs2gi <- function(
     nThread = 16, 
     nrows = Inf
 ) {
-    ## Use zgrep if pairs file is zipped (.gz)
-    if (grepl('.gz$', file) | grepl('ExperimentHub', file)) {
-        grep_cmd <- "zgrep"
-    }
-    else {
-        grep_cmd <- "grep"
-    }
-    headers <- data.table::fread(glue::glue("{grep_cmd} -v '^#' {file}"), nrows = 1)
-    anchors1 <- data.table::fread(
-        glue::glue("{grep_cmd} -v '^#' {file}"), 
-        header = FALSE, 
-        drop = {seq_len(ncol(headers))}[!{seq_len(ncol(headers)) %in% c(chr1.field, start1.field)}], 
-        nThread = nThread, 
-        col.names = c('chr', 'start'), 
-        nrows = nrows
-    ) 
-    anchors2 <- data.table::fread(
-        glue::glue("{grep_cmd} -v '^#' {file}"), 
-        header = FALSE, 
-        drop = {seq_len(ncol(headers))}[!{seq_len(ncol(headers)) %in% c(chr2.field, start2.field)}], 
-        nThread = nThread, 
-        col.names = c('chr', 'start'), 
-        nrows = nrows
-    ) 
+    anchors1 <- vroom::vroom(
+        file,
+        n_max = nrows,
+        col_select = c(chr1.field, start1.field),
+        comment = '#',
+        col_names = FALSE,
+        show_col_types = FALSE
+    )
+    anchors2 <- vroom::vroom(
+        file,
+        n_max = nrows,
+        col_select = c(chr2.field, start2.field),
+        comment = '#',
+        col_names = FALSE,
+        show_col_types = FALSE
+    )    
     anchor_one <- GenomicRanges::GRanges(
-        anchors1[['chr']],
-        IRanges::IRanges(anchors1[['start']], width = 1)
+        anchors1[[1]],
+        IRanges::IRanges(anchors1[[2]], width = 1)
     )
     anchor_two <- GenomicRanges::GRanges(
-        anchors2[['chr']],
-        IRanges::IRanges(anchors2[['start']], width = 1)
+        anchors2[[1]],
+        IRanges::IRanges(anchors2[[2]], width = 1)
     )
     gi <- GenomicInteractions::GenomicInteractions(anchor_one, anchor_two)
     gi$distance <- GenomicInteractions::calculateDistances(gi) 
