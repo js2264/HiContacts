@@ -70,7 +70,7 @@
                         <h4 data-toc-skip class="author">Jacques
 Serizay</h4>
             
-            <h4 data-toc-skip class="date">2022-09-22</h4>
+            <h4 data-toc-skip class="date">2022-10-12</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/js2264/HiContacts/blob/HEAD/vignettes/HiContacts.Rmd" class="external-link"><code>vignettes/HiContacts.Rmd</code></a></small>
       <div class="hidden name"><code>HiContacts.Rmd</code></div>
@@ -111,13 +111,13 @@ directly in <code>R</code>.</p>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Extends: "Annotated"</span></span>
 <span><span class="va">contacts</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/datasets.html">contacts_yeast</a></span><span class="op">(</span><span class="op">)</span></span>
-<span><span class="co">#&gt; snapshotDate(): 2022-08-23</span></span>
+<span><span class="co">#&gt; snapshotDate(): 2022-10-03</span></span>
 <span><span class="co">#&gt; see ?HiContactsData and browseVignettes('HiContactsData') for documentation</span></span>
 <span><span class="co">#&gt; loading from cache</span></span>
 <span><span class="va">contacts</span></span>
 <span><span class="co">#&gt; `Contacts` object with 74,360 interactions over 802 regions </span></span>
 <span><span class="co">#&gt; -------</span></span>
-<span><span class="co">#&gt; fileName: "/github/home/.cache/R/ExperimentHub/3af4e79ac4b_7752" </span></span>
+<span><span class="co">#&gt; fileName: "/github/home/.cache/R/ExperimentHub/14b0762e7a37_7752" </span></span>
 <span><span class="co">#&gt; focus: "II" </span></span>
 <span><span class="co">#&gt; resolutions(5): 1000 2000 4000 8000 16000</span></span>
 <span><span class="co">#&gt; current resolution: 1000 </span></span>
@@ -156,12 +156,12 @@ toy datasets stored by Bioconductor in the
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/js2264/HiContacts" class="external-link">HiContacts</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/js2264/HiContactsData" class="external-link">HiContactsData</a></span><span class="op">)</span></span>
 <span><span class="va">cool_file</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/HiContactsData/man/HiContactsData.html" class="external-link">HiContactsData</a></span><span class="op">(</span><span class="st">'yeast_wt'</span>, format <span class="op">=</span> <span class="st">'cool'</span><span class="op">)</span></span>
-<span><span class="co">#&gt; snapshotDate(): 2022-08-23</span></span>
+<span><span class="co">#&gt; snapshotDate(): 2022-10-03</span></span>
 <span><span class="co">#&gt; see ?HiContactsData and browseVignettes('HiContactsData') for documentation</span></span>
 <span><span class="co">#&gt; loading from cache</span></span>
 <span><span class="va">cool_file</span></span>
-<span><span class="co">#&gt;                                                 EH7701 </span></span>
-<span><span class="co">#&gt; "/github/home/.cache/R/ExperimentHub/3af31ab76f8_7751"</span></span></code></pre></div>
+<span><span class="co">#&gt;                                                  EH7701 </span></span>
+<span><span class="co">#&gt; "/github/home/.cache/R/ExperimentHub/14b033178545_7751"</span></span></code></pre></div>
 <p>The <code><a href="../reference/Contacts.html">Contacts()</a></code> function can be used to import a Hi-C
 matrix locally stored as a <code>cool</code>/<code>mcool</code> file. It
 creates a <code>Contacts</code> object.</p>
@@ -173,7 +173,7 @@ creates a <code>Contacts</code> object.</p>
 <span><span class="va">contacts</span></span>
 <span><span class="co">#&gt; `Contacts` object with 1,653 interactions over 59 regions </span></span>
 <span><span class="co">#&gt; -------</span></span>
-<span><span class="co">#&gt; fileName: "/github/home/.cache/R/ExperimentHub/3af31ab76f8_7751" </span></span>
+<span><span class="co">#&gt; fileName: "/github/home/.cache/R/ExperimentHub/14b033178545_7751" </span></span>
 <span><span class="co">#&gt; focus: "I:20,000-80,000" </span></span>
 <span><span class="co">#&gt; resolutions(1): 1000</span></span>
 <span><span class="co">#&gt; current resolution: 1000 </span></span>
@@ -187,7 +187,7 @@ in this case, the user needs to specify the resolution at which count
 values are recovered.</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">mcool_file</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/HiContactsData/man/HiContactsData.html" class="external-link">HiContactsData</a></span><span class="op">(</span><span class="st">'yeast_wt'</span>, format <span class="op">=</span> <span class="st">'mcool'</span><span class="op">)</span></span>
-<span><span class="co">#&gt; snapshotDate(): 2022-08-23</span></span>
+<span><span class="co">#&gt; snapshotDate(): 2022-10-03</span></span>
 <span><span class="co">#&gt; see ?HiContactsData and browseVignettes('HiContactsData') for documentation</span></span>
 <span><span class="co">#&gt; loading from cache</span></span>
 <span><span class="va">range</span> <span class="op">&lt;-</span> <span class="st">'II:0-800000'</span> <span class="co"># range of interest</span></span>
@@ -199,7 +199,7 @@ values are recovered.</p>
 <span><span class="va">contacts</span></span>
 <span><span class="co">#&gt; `Contacts` object with 73,257 interactions over 790 regions </span></span>
 <span><span class="co">#&gt; -------</span></span>
-<span><span class="co">#&gt; fileName: "/github/home/.cache/R/ExperimentHub/3af4e79ac4b_7752" </span></span>
+<span><span class="co">#&gt; fileName: "/github/home/.cache/R/ExperimentHub/14b0762e7a37_7752" </span></span>
 <span><span class="co">#&gt; focus: "II:0-800,000" </span></span>
 <span><span class="co">#&gt; resolutions(5): 1000 2000 4000 8000 16000</span></span>
 <span><span class="co">#&gt; current resolution: 1000 </span></span>
@@ -224,7 +224,7 @@ character string formatted as <code>"... x ..."</code>:</p>
 following <code>getters</code>:</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/Contacts.html">fileName</a></span><span class="op">(</span><span class="va">contacts</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] "/github/home/.cache/R/ExperimentHub/3af4e79ac4b_7752"</span></span>
+<span><span class="co">#&gt; [1] "/github/home/.cache/R/ExperimentHub/14b0762e7a37_7752"</span></span>
 <span><span class="fu"><a href="../reference/Contacts.html">focus</a></span><span class="op">(</span><span class="va">contacts</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] "II:0-500000 x II:100000-600000"</span></span>
 <span><span class="fu"><a href="../reference/Contacts.html">resolutions</a></span><span class="op">(</span><span class="va">contacts</span><span class="op">)</span></span>
@@ -377,7 +377,7 @@ following <code>getters</code>:</p>
 <span><span class="co">#&gt; List of length 3</span></span>
 <span><span class="co">#&gt; names(3): raw balanced random</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">tail</a></span><span class="op">(</span><span class="fu"><a href="../reference/Contacts.html">scores</a></span><span class="op">(</span><span class="va">contacts</span>, <span class="st">'random'</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] 0.2306031 0.7303098 0.5784324 0.7161490 0.9778616 0.1201529</span></span></code></pre></div>
+<span><span class="co">#&gt; [1] 0.30366033 0.43356354 0.18713585 0.61640687 0.36483412 0.04480472</span></span></code></pre></div>
 </div>
 <div class="section level4">
 <h4 id="features">Features<a class="anchor" aria-label="anchor" href="#features"></a>
@@ -481,7 +481,7 @@ first scores available.</p>
 </h3>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">mcool_file</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/HiContactsData/man/HiContactsData.html" class="external-link">HiContactsData</a></span><span class="op">(</span><span class="st">'yeast_wt'</span>, format <span class="op">=</span> <span class="st">'mcool'</span><span class="op">)</span></span>
-<span><span class="co">#&gt; snapshotDate(): 2022-08-23</span></span>
+<span><span class="co">#&gt; snapshotDate(): 2022-10-03</span></span>
 <span><span class="co">#&gt; see ?HiContactsData and browseVignettes('HiContactsData') for documentation</span></span>
 <span><span class="co">#&gt; loading from cache</span></span>
 <span><span class="va">loops</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">'S288C-loops.bedpe'</span>, package <span class="op">=</span> <span class="st">'HiContacts'</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
@@ -531,13 +531,16 @@ first scores available.</p>
 </h3>
 <div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">mcool_file</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/HiContactsData/man/HiContactsData.html" class="external-link">HiContactsData</a></span><span class="op">(</span><span class="st">'mESCs'</span>, format <span class="op">=</span> <span class="st">'mcool'</span><span class="op">)</span></span>
-<span><span class="co">#&gt; snapshotDate(): 2022-08-23</span></span>
+<span><span class="co">#&gt; snapshotDate(): 2022-10-03</span></span>
 <span><span class="co">#&gt; see ?HiContactsData and browseVignettes('HiContactsData') for documentation</span></span>
 <span><span class="co">#&gt; loading from cache</span></span>
 <span><span class="va">contacts</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/Contacts.html">Contacts</a></span><span class="op">(</span><span class="va">mcool_file</span>, focus <span class="op">=</span> <span class="st">'chr2'</span>, res <span class="op">=</span> <span class="fl">160000</span><span class="op">)</span></span>
 <span><span class="va">autocorrelated</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/arithmetics.html">autocorrelate</a></span><span class="op">(</span><span class="va">contacts</span>, ignore_ndiags <span class="op">=</span> <span class="fl">20</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Warning: The `x` argument of `as_tibble.matrix()` must have unique column names if `.name_repair` is omitted as of tibble 2.0.0.</span></span>
-<span><span class="co">#&gt; Using compatibility `.name_repair`.</span></span>
+<span><span class="co">#&gt; Warning: The `x` argument of `as_tibble.matrix()` must have unique column names if</span></span>
+<span><span class="co">#&gt; `.name_repair` is omitted as of tibble 2.0.0.</span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Using compatibility `.name_repair`.</span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> The deprecated feature was likely used in the <span style="color: #0000BB;">HiContacts</span> package.</span></span>
+<span><span class="co">#&gt;   Please report the issue at <span style="color: #0000BB; font-style: italic;">&lt;https://github.com/js2264/HiContacts/issues&gt;</span>.</span></span>
 <span><span class="fu"><a href="../reference/Contacts.html">scores</a></span><span class="op">(</span><span class="va">autocorrelated</span><span class="op">)</span></span>
 <span><span class="co">#&gt; List of length 1</span></span>
 <span><span class="co">#&gt; names(1): autocorrelation</span></span>
@@ -550,7 +553,7 @@ first scores available.</p>
 </h3>
 <div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">mcool_file</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/HiContactsData/man/HiContactsData.html" class="external-link">HiContactsData</a></span><span class="op">(</span><span class="st">'mESCs'</span>, format <span class="op">=</span> <span class="st">'mcool'</span><span class="op">)</span></span>
-<span><span class="co">#&gt; snapshotDate(): 2022-08-23</span></span>
+<span><span class="co">#&gt; snapshotDate(): 2022-10-03</span></span>
 <span><span class="co">#&gt; see ?HiContactsData and browseVignettes('HiContactsData') for documentation</span></span>
 <span><span class="co">#&gt; loading from cache</span></span>
 <span><span class="va">contacts</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/Contacts.html">Contacts</a></span><span class="op">(</span><span class="va">mcool_file</span>, focus <span class="op">=</span> <span class="st">'chr18:20000000-35000000'</span>, res <span class="op">=</span> <span class="fl">40000</span><span class="op">)</span></span>
@@ -566,11 +569,11 @@ first scores available.</p>
 </h3>
 <div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">mcool_file_1</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/HiContactsData/man/HiContactsData.html" class="external-link">HiContactsData</a></span><span class="op">(</span><span class="st">'yeast_eco1'</span>, format <span class="op">=</span> <span class="st">'mcool'</span><span class="op">)</span></span>
-<span><span class="co">#&gt; snapshotDate(): 2022-08-23</span></span>
+<span><span class="co">#&gt; snapshotDate(): 2022-10-03</span></span>
 <span><span class="co">#&gt; see ?HiContactsData and browseVignettes('HiContactsData') for documentation</span></span>
 <span><span class="co">#&gt; loading from cache</span></span>
 <span><span class="va">mcool_file_2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/HiContactsData/man/HiContactsData.html" class="external-link">HiContactsData</a></span><span class="op">(</span><span class="st">'yeast_wt'</span>, format <span class="op">=</span> <span class="st">'mcool'</span><span class="op">)</span></span>
-<span><span class="co">#&gt; snapshotDate(): 2022-08-23</span></span>
+<span><span class="co">#&gt; snapshotDate(): 2022-10-03</span></span>
 <span><span class="co">#&gt; see ?HiContactsData and browseVignettes('HiContactsData') for documentation</span></span>
 <span><span class="co">#&gt; loading from cache</span></span>
 <span><span class="va">contacts_1</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/Contacts.html">Contacts</a></span><span class="op">(</span><span class="va">mcool_file_1</span>, focus <span class="op">=</span> <span class="st">'II'</span>, res <span class="op">=</span> <span class="fl">2000</span><span class="op">)</span></span>
@@ -581,7 +584,7 @@ first scores available.</p>
 <span><span class="va">contacts_1</span></span>
 <span><span class="co">#&gt; `Contacts` object with 9,607 interactions over 147 regions </span></span>
 <span><span class="co">#&gt; -------</span></span>
-<span><span class="co">#&gt; fileName: "/github/home/.cache/R/ExperimentHub/3af30f271bb_7754" </span></span>
+<span><span class="co">#&gt; fileName: "/github/home/.cache/R/ExperimentHub/14b01fb517d9_7754" </span></span>
 <span><span class="co">#&gt; focus: "II:1-300,000" </span></span>
 <span><span class="co">#&gt; resolutions(5): 1000 2000 4000 8000 16000</span></span>
 <span><span class="co">#&gt; current resolution: 2000 </span></span>
@@ -593,7 +596,7 @@ first scores available.</p>
 <span><span class="va">contacts_2</span></span>
 <span><span class="co">#&gt; `Contacts` object with 6,933 interactions over 147 regions </span></span>
 <span><span class="co">#&gt; -------</span></span>
-<span><span class="co">#&gt; fileName: "/github/home/.cache/R/ExperimentHub/3af4e79ac4b_7752" </span></span>
+<span><span class="co">#&gt; fileName: "/github/home/.cache/R/ExperimentHub/14b0762e7a37_7752" </span></span>
 <span><span class="co">#&gt; focus: "II:1-300,000" </span></span>
 <span><span class="co">#&gt; resolutions(5): 1000 2000 4000 8000 16000</span></span>
 <span><span class="co">#&gt; current resolution: 2000 </span></span>
@@ -620,11 +623,11 @@ first scores available.</p>
 </h3>
 <div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">mcool_file_1</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/HiContactsData/man/HiContactsData.html" class="external-link">HiContactsData</a></span><span class="op">(</span><span class="st">'yeast_eco1'</span>, format <span class="op">=</span> <span class="st">'mcool'</span><span class="op">)</span></span>
-<span><span class="co">#&gt; snapshotDate(): 2022-08-23</span></span>
+<span><span class="co">#&gt; snapshotDate(): 2022-10-03</span></span>
 <span><span class="co">#&gt; see ?HiContactsData and browseVignettes('HiContactsData') for documentation</span></span>
 <span><span class="co">#&gt; loading from cache</span></span>
 <span><span class="va">mcool_file_2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/HiContactsData/man/HiContactsData.html" class="external-link">HiContactsData</a></span><span class="op">(</span><span class="st">'yeast_wt'</span>, format <span class="op">=</span> <span class="st">'mcool'</span><span class="op">)</span></span>
-<span><span class="co">#&gt; snapshotDate(): 2022-08-23</span></span>
+<span><span class="co">#&gt; snapshotDate(): 2022-10-03</span></span>
 <span><span class="co">#&gt; see ?HiContactsData and browseVignettes('HiContactsData') for documentation</span></span>
 <span><span class="co">#&gt; loading from cache</span></span>
 <span><span class="va">contacts_1</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/Contacts.html">Contacts</a></span><span class="op">(</span><span class="va">mcool_file_1</span>, focus <span class="op">=</span> <span class="st">'II'</span>, res <span class="op">=</span> <span class="fl">2000</span><span class="op">)</span></span>
@@ -633,7 +636,7 @@ first scores available.</p>
 <span><span class="va">div_contacts</span></span>
 <span><span class="co">#&gt; `Contacts` object with 66,607 interactions over 404 regions </span></span>
 <span><span class="co">#&gt; -------</span></span>
-<span><span class="co">#&gt; fileName: "3af30f271bb_7754 / 3af4e79ac4b_7752" </span></span>
+<span><span class="co">#&gt; fileName: "14b01fb517d9_7754 / 14b0762e7a37_7752" </span></span>
 <span><span class="co">#&gt; focus: "II" </span></span>
 <span><span class="co">#&gt; resolutions(1): 2000</span></span>
 <span><span class="co">#&gt; current resolution: 2000 </span></span>
@@ -657,7 +660,7 @@ first scores available.</p>
 </h3>
 <div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">mcool_file</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/HiContactsData/man/HiContactsData.html" class="external-link">HiContactsData</a></span><span class="op">(</span><span class="st">'mESCs'</span>, format <span class="op">=</span> <span class="st">'mcool'</span><span class="op">)</span></span>
-<span><span class="co">#&gt; snapshotDate(): 2022-08-23</span></span>
+<span><span class="co">#&gt; snapshotDate(): 2022-10-03</span></span>
 <span><span class="co">#&gt; see ?HiContactsData and browseVignettes('HiContactsData') for documentation</span></span>
 <span><span class="co">#&gt; loading from cache</span></span>
 <span><span class="va">contacts</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/Contacts.html">Contacts</a></span><span class="op">(</span><span class="va">mcool_file</span>, focus <span class="op">=</span> <span class="st">'chr18:20000000-35000000'</span>, res <span class="op">=</span> <span class="fl">40000</span><span class="op">)</span></span>
@@ -670,7 +673,7 @@ first scores available.</p>
 </h3>
 <div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">mcool_file</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/HiContactsData/man/HiContactsData.html" class="external-link">HiContactsData</a></span><span class="op">(</span><span class="st">'yeast_wt'</span>, format <span class="op">=</span> <span class="st">'mcool'</span><span class="op">)</span></span>
-<span><span class="co">#&gt; snapshotDate(): 2022-08-23</span></span>
+<span><span class="co">#&gt; snapshotDate(): 2022-10-03</span></span>
 <span><span class="co">#&gt; see ?HiContactsData and browseVignettes('HiContactsData') for documentation</span></span>
 <span><span class="co">#&gt; loading from cache</span></span>
 <span><span class="va">contacts</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/Contacts.html">Contacts</a></span><span class="op">(</span><span class="va">mcool_file</span>, res <span class="op">=</span> <span class="fl">1000</span><span class="op">)</span></span>
@@ -702,7 +705,7 @@ first scores available.</p>
 <div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Without a pairs file</span></span>
 <span><span class="va">mcool_file</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/HiContactsData/man/HiContactsData.html" class="external-link">HiContactsData</a></span><span class="op">(</span><span class="st">'yeast_wt'</span>, format <span class="op">=</span> <span class="st">'mcool'</span><span class="op">)</span></span>
-<span><span class="co">#&gt; snapshotDate(): 2022-08-23</span></span>
+<span><span class="co">#&gt; snapshotDate(): 2022-10-03</span></span>
 <span><span class="co">#&gt; see ?HiContactsData and browseVignettes('HiContactsData') for documentation</span></span>
 <span><span class="co">#&gt; loading from cache</span></span>
 <span><span class="va">contacts</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/Contacts.html">Contacts</a></span><span class="op">(</span><span class="va">mcool_file</span>, res <span class="op">=</span> <span class="fl">1000</span><span class="op">)</span></span>
@@ -715,11 +718,11 @@ first scores available.</p>
 <code class="sourceCode R"><span></span>
 <span><span class="co"># With a pairs file</span></span>
 <span><span class="fu"><a href="../reference/Contacts.html">pairsFile</a></span><span class="op">(</span><span class="va">contacts</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/HiContactsData/man/HiContactsData.html" class="external-link">HiContactsData</a></span><span class="op">(</span><span class="st">'yeast_wt'</span>, format <span class="op">=</span> <span class="st">'pairs.gz'</span><span class="op">)</span></span>
-<span><span class="co">#&gt; snapshotDate(): 2022-08-23</span></span>
+<span><span class="co">#&gt; snapshotDate(): 2022-10-03</span></span>
 <span><span class="co">#&gt; see ?HiContactsData and browseVignettes('HiContactsData') for documentation</span></span>
 <span><span class="co">#&gt; loading from cache</span></span>
 <span><span class="va">ps</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/Ps.html">distanceLaw</a></span><span class="op">(</span><span class="va">contacts</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Importing pairs file /github/home/.cache/R/ExperimentHub/3af2d609e06_7753 in memory. This may take a while...</span></span>
+<span><span class="co">#&gt; Importing pairs file /github/home/.cache/R/ExperimentHub/14b0501c5e2d_7753 in memory. This may take a while...</span></span>
 <span><span class="fu"><a href="../reference/Ps-plot.html">plotPs</a></span><span class="op">(</span><span class="va">ps</span>, <span class="fu">aes</span><span class="op">(</span>x <span class="op">=</span> <span class="va">binned_distance</span>, y <span class="op">=</span> <span class="va">norm_p</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Warning: Removed 67 row(s) containing missing values (geom_path).</span></span></code></pre></div>
 <p><img src="HiContacts_files/figure-html/unnamed-chunk-23-2.png" width="700"></p>
@@ -735,10 +738,10 @@ first scores available.</p>
 <span>    res <span class="op">=</span> <span class="fl">1000</span>, </span>
 <span>    pairs <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/HiContactsData/man/HiContactsData.html" class="external-link">HiContactsData</a></span><span class="op">(</span><span class="st">'yeast_wt'</span>, format <span class="op">=</span> <span class="st">'pairs.gz'</span><span class="op">)</span></span>
 <span><span class="op">)</span></span>
-<span><span class="co">#&gt; snapshotDate(): 2022-08-23</span></span>
+<span><span class="co">#&gt; snapshotDate(): 2022-10-03</span></span>
 <span><span class="co">#&gt; see ?HiContactsData and browseVignettes('HiContactsData') for documentation</span></span>
 <span><span class="co">#&gt; loading from cache</span></span>
-<span><span class="co">#&gt; snapshotDate(): 2022-08-23</span></span>
+<span><span class="co">#&gt; snapshotDate(): 2022-10-03</span></span>
 <span><span class="co">#&gt; see ?HiContactsData and browseVignettes('HiContactsData') for documentation</span></span>
 <span><span class="co">#&gt; loading from cache</span></span>
 <span><span class="va">c2</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/Contacts.html">Contacts</a></span><span class="op">(</span></span>
@@ -746,16 +749,16 @@ first scores available.</p>
 <span>    res <span class="op">=</span> <span class="fl">1000</span>, </span>
 <span>    pairs <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/HiContactsData/man/HiContactsData.html" class="external-link">HiContactsData</a></span><span class="op">(</span><span class="st">'yeast_eco1'</span>, format <span class="op">=</span> <span class="st">'pairs.gz'</span><span class="op">)</span></span>
 <span><span class="op">)</span></span>
-<span><span class="co">#&gt; snapshotDate(): 2022-08-23</span></span>
+<span><span class="co">#&gt; snapshotDate(): 2022-10-03</span></span>
 <span><span class="co">#&gt; see ?HiContactsData and browseVignettes('HiContactsData') for documentation</span></span>
 <span><span class="co">#&gt; loading from cache</span></span>
-<span><span class="co">#&gt; snapshotDate(): 2022-08-23</span></span>
+<span><span class="co">#&gt; snapshotDate(): 2022-10-03</span></span>
 <span><span class="co">#&gt; see ?HiContactsData and browseVignettes('HiContactsData') for documentation</span></span>
 <span><span class="co">#&gt; loading from cache</span></span>
 <span><span class="va">ps_1</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/Ps.html">distanceLaw</a></span><span class="op">(</span><span class="va">c1</span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu">mutate</span><span class="op">(</span>sample <span class="op">=</span> <span class="st">'WT'</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Importing pairs file /github/home/.cache/R/ExperimentHub/3af2d609e06_7753 in memory. This may take a while...</span></span>
+<span><span class="co">#&gt; Importing pairs file /github/home/.cache/R/ExperimentHub/14b0501c5e2d_7753 in memory. This may take a while...</span></span>
 <span><span class="va">ps_2</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/Ps.html">distanceLaw</a></span><span class="op">(</span><span class="va">c2</span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu">mutate</span><span class="op">(</span>sample <span class="op">=</span> <span class="st">'Eco1-AID'</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Importing pairs file /github/home/.cache/R/ExperimentHub/3afe947547_7755 in memory. This may take a while...</span></span>
+<span><span class="co">#&gt; Importing pairs file /github/home/.cache/R/ExperimentHub/14b04bebc3b8_7755 in memory. This may take a while...</span></span>
 <span><span class="va">ps</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">rbind</a></span><span class="op">(</span><span class="va">ps_1</span>, <span class="va">ps_2</span><span class="op">)</span></span>
 <span><span class="fu"><a href="../reference/Ps-plot.html">plotPs</a></span><span class="op">(</span><span class="va">ps</span>, <span class="fu">aes</span><span class="op">(</span>x <span class="op">=</span> <span class="va">binned_distance</span>, y <span class="op">=</span> <span class="va">norm_p</span>, group <span class="op">=</span> <span class="va">sample</span>, color <span class="op">=</span> <span class="va">sample</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Warning: Removed 134 row(s) containing missing values (geom_path).</span></span></code></pre></div>
@@ -793,86 +796,87 @@ first scores available.</p>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; other attached packages:</span></span>
 <span><span class="co">#&gt;  [1] HiContacts_0.99.10    HiContactsData_0.99.5 ExperimentHub_2.5.0  </span></span>
-<span><span class="co">#&gt;  [4] AnnotationHub_3.5.1   BiocFileCache_2.5.0   dbplyr_2.2.1         </span></span>
+<span><span class="co">#&gt;  [4] AnnotationHub_3.5.2   BiocFileCache_2.5.2   dbplyr_2.2.1         </span></span>
 <span><span class="co">#&gt;  [7] GenomicRanges_1.49.1  GenomeInfoDb_1.33.7   IRanges_2.31.2       </span></span>
 <span><span class="co">#&gt; [10] S4Vectors_0.35.4      BiocGenerics_0.43.4   dplyr_1.0.10         </span></span>
 <span><span class="co">#&gt; [13] ggplot2_3.3.6         BiocStyle_2.25.0     </span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; loaded via a namespace (and not attached):</span></span>
 <span><span class="co">#&gt;   [1] backports_1.4.1               Hmisc_4.7-1                  </span></span>
-<span><span class="co">#&gt;   [3] systemfonts_1.0.4             igraph_1.3.4                 </span></span>
+<span><span class="co">#&gt;   [3] systemfonts_1.0.4             igraph_1.3.5                 </span></span>
 <span><span class="co">#&gt;   [5] lazyeval_0.2.2                splines_4.2.1                </span></span>
-<span><span class="co">#&gt;   [7] BiocParallel_1.31.12          digest_0.6.29                </span></span>
+<span><span class="co">#&gt;   [7] BiocParallel_1.31.13          digest_0.6.29                </span></span>
 <span><span class="co">#&gt;   [9] ensembldb_2.21.5              htmltools_0.5.3              </span></span>
 <span><span class="co">#&gt;  [11] fansi_1.0.3                   magrittr_2.0.3               </span></span>
 <span><span class="co">#&gt;  [13] checkmate_2.1.0               memoise_2.0.1                </span></span>
 <span><span class="co">#&gt;  [15] BSgenome_1.65.2               cluster_2.1.4                </span></span>
-<span><span class="co">#&gt;  [17] InteractionSet_1.25.0         Biostrings_2.65.6            </span></span>
-<span><span class="co">#&gt;  [19] matrixStats_0.62.0            pkgdown_2.0.6.9000           </span></span>
-<span><span class="co">#&gt;  [21] prettyunits_1.1.1             jpeg_0.1-9                   </span></span>
-<span><span class="co">#&gt;  [23] colorspace_2.0-3              blob_1.2.3                   </span></span>
-<span><span class="co">#&gt;  [25] rappdirs_0.3.3                textshaping_0.3.6            </span></span>
-<span><span class="co">#&gt;  [27] xfun_0.33                     crayon_1.5.1                 </span></span>
-<span><span class="co">#&gt;  [29] RCurl_1.98-1.8                jsonlite_1.8.0               </span></span>
-<span><span class="co">#&gt;  [31] VariantAnnotation_1.43.3      survival_3.4-0               </span></span>
-<span><span class="co">#&gt;  [33] glue_1.6.2                    gtable_0.3.1                 </span></span>
-<span><span class="co">#&gt;  [35] zlibbioc_1.43.0               XVector_0.37.1               </span></span>
-<span><span class="co">#&gt;  [37] DelayedArray_0.23.2           Rhdf5lib_1.19.2              </span></span>
-<span><span class="co">#&gt;  [39] scales_1.2.1                  DBI_1.1.3                    </span></span>
-<span><span class="co">#&gt;  [41] Rcpp_1.0.9                    xtable_1.8-4                 </span></span>
-<span><span class="co">#&gt;  [43] progress_1.2.2                htmlTable_2.4.1              </span></span>
-<span><span class="co">#&gt;  [45] reticulate_1.26               foreign_0.8-82               </span></span>
-<span><span class="co">#&gt;  [47] bit_4.0.4                     Formula_1.2-4                </span></span>
-<span><span class="co">#&gt;  [49] htmlwidgets_1.5.4             httr_1.4.4                   </span></span>
-<span><span class="co">#&gt;  [51] RColorBrewer_1.1-3            ellipsis_0.3.2               </span></span>
-<span><span class="co">#&gt;  [53] farver_2.1.1                  pkgconfig_2.0.3              </span></span>
-<span><span class="co">#&gt;  [55] XML_3.99-0.10                 Gviz_1.41.1                  </span></span>
-<span><span class="co">#&gt;  [57] nnet_7.3-17                   sass_0.4.2                   </span></span>
-<span><span class="co">#&gt;  [59] deldir_1.0-6                  utf8_1.2.2                   </span></span>
-<span><span class="co">#&gt;  [61] labeling_0.4.2                tidyselect_1.1.2             </span></span>
-<span><span class="co">#&gt;  [63] rlang_1.0.5                   later_1.3.0                  </span></span>
-<span><span class="co">#&gt;  [65] AnnotationDbi_1.59.1          munsell_0.5.0                </span></span>
-<span><span class="co">#&gt;  [67] BiocVersion_3.16.0            tools_4.2.1                  </span></span>
-<span><span class="co">#&gt;  [69] cachem_1.0.6                  cli_3.4.0                    </span></span>
-<span><span class="co">#&gt;  [71] generics_0.1.3                RSQLite_2.2.17               </span></span>
-<span><span class="co">#&gt;  [73] evaluate_0.16                 stringr_1.4.1                </span></span>
-<span><span class="co">#&gt;  [75] fastmap_1.1.0                 yaml_2.3.5                   </span></span>
-<span><span class="co">#&gt;  [77] ragg_1.2.2                    knitr_1.40                   </span></span>
-<span><span class="co">#&gt;  [79] bit64_4.0.5                   fs_1.5.2                     </span></span>
-<span><span class="co">#&gt;  [81] purrr_0.3.4                   AnnotationFilter_1.21.0      </span></span>
-<span><span class="co">#&gt;  [83] KEGGREST_1.37.3               mime_0.12                    </span></span>
-<span><span class="co">#&gt;  [85] ggrastr_1.0.1                 xml2_1.3.3                   </span></span>
-<span><span class="co">#&gt;  [87] biomaRt_2.53.2                rstudioapi_0.14              </span></span>
-<span><span class="co">#&gt;  [89] compiler_4.2.1                beeswarm_0.4.0               </span></span>
-<span><span class="co">#&gt;  [91] filelock_1.0.2                curl_4.3.2                   </span></span>
-<span><span class="co">#&gt;  [93] png_0.1-7                     interactiveDisplayBase_1.35.0</span></span>
-<span><span class="co">#&gt;  [95] tibble_3.1.8                  bslib_0.4.0                  </span></span>
-<span><span class="co">#&gt;  [97] stringi_1.7.8                 highr_0.9                    </span></span>
-<span><span class="co">#&gt;  [99] GenomicFeatures_1.49.7        desc_1.4.2                   </span></span>
-<span><span class="co">#&gt; [101] lattice_0.20-45               ProtGenerics_1.29.0          </span></span>
-<span><span class="co">#&gt; [103] Matrix_1.5-1                  vctrs_0.4.1                  </span></span>
-<span><span class="co">#&gt; [105] rhdf5filters_1.9.0            pillar_1.8.1                 </span></span>
-<span><span class="co">#&gt; [107] GenomicInteractions_1.31.0    lifecycle_1.0.2              </span></span>
-<span><span class="co">#&gt; [109] BiocManager_1.30.18           jquerylib_0.1.4              </span></span>
-<span><span class="co">#&gt; [111] cowplot_1.1.1                 data.table_1.14.2            </span></span>
-<span><span class="co">#&gt; [113] bitops_1.0-7                  httpuv_1.6.6                 </span></span>
-<span><span class="co">#&gt; [115] rtracklayer_1.57.0            R6_2.5.1                     </span></span>
-<span><span class="co">#&gt; [117] BiocIO_1.7.1                  latticeExtra_0.6-30          </span></span>
-<span><span class="co">#&gt; [119] bookdown_0.29                 promises_1.2.0.1             </span></span>
-<span><span class="co">#&gt; [121] gridExtra_2.3                 vipor_0.4.5                  </span></span>
-<span><span class="co">#&gt; [123] codetools_0.2-18              dichromat_2.0-0.1            </span></span>
-<span><span class="co">#&gt; [125] assertthat_0.2.1              rhdf5_2.41.1                 </span></span>
-<span><span class="co">#&gt; [127] SummarizedExperiment_1.27.3   rprojroot_2.0.3              </span></span>
-<span><span class="co">#&gt; [129] rjson_0.2.21                  withr_2.5.0                  </span></span>
-<span><span class="co">#&gt; [131] GenomicAlignments_1.33.1      Rsamtools_2.13.4             </span></span>
-<span><span class="co">#&gt; [133] GenomeInfoDbData_1.2.8        parallel_4.2.1               </span></span>
-<span><span class="co">#&gt; [135] hms_1.1.2                     grid_4.2.1                   </span></span>
-<span><span class="co">#&gt; [137] rpart_4.1.16                  tidyr_1.2.1                  </span></span>
-<span><span class="co">#&gt; [139] rmarkdown_2.16                MatrixGenerics_1.9.1         </span></span>
-<span><span class="co">#&gt; [141] Cairo_1.6-0                   biovizBase_1.45.0            </span></span>
-<span><span class="co">#&gt; [143] Biobase_2.57.1                shiny_1.7.2                  </span></span>
-<span><span class="co">#&gt; [145] base64enc_0.1-3               ggbeeswarm_0.6.0             </span></span>
-<span><span class="co">#&gt; [147] interp_1.1-3                  restfulr_0.0.15</span></span></code></pre></div>
+<span><span class="co">#&gt;  [17] tzdb_0.3.0                    InteractionSet_1.25.0        </span></span>
+<span><span class="co">#&gt;  [19] Biostrings_2.65.6             matrixStats_0.62.0           </span></span>
+<span><span class="co">#&gt;  [21] vroom_1.6.0                   pkgdown_2.0.6.9000           </span></span>
+<span><span class="co">#&gt;  [23] prettyunits_1.1.1             jpeg_0.1-9                   </span></span>
+<span><span class="co">#&gt;  [25] colorspace_2.0-3              blob_1.2.3                   </span></span>
+<span><span class="co">#&gt;  [27] rappdirs_0.3.3                textshaping_0.3.6            </span></span>
+<span><span class="co">#&gt;  [29] xfun_0.33                     crayon_1.5.2                 </span></span>
+<span><span class="co">#&gt;  [31] RCurl_1.98-1.9                jsonlite_1.8.2               </span></span>
+<span><span class="co">#&gt;  [33] VariantAnnotation_1.43.3      survival_3.4-0               </span></span>
+<span><span class="co">#&gt;  [35] glue_1.6.2                    gtable_0.3.1                 </span></span>
+<span><span class="co">#&gt;  [37] zlibbioc_1.43.0               XVector_0.37.1               </span></span>
+<span><span class="co">#&gt;  [39] DelayedArray_0.23.2           Rhdf5lib_1.19.2              </span></span>
+<span><span class="co">#&gt;  [41] scales_1.2.1                  DBI_1.1.3                    </span></span>
+<span><span class="co">#&gt;  [43] Rcpp_1.0.9                    xtable_1.8-4                 </span></span>
+<span><span class="co">#&gt;  [45] progress_1.2.2                htmlTable_2.4.1              </span></span>
+<span><span class="co">#&gt;  [47] reticulate_1.26               foreign_0.8-83               </span></span>
+<span><span class="co">#&gt;  [49] bit_4.0.4                     Formula_1.2-4                </span></span>
+<span><span class="co">#&gt;  [51] htmlwidgets_1.5.4             httr_1.4.4                   </span></span>
+<span><span class="co">#&gt;  [53] RColorBrewer_1.1-3            ellipsis_0.3.2               </span></span>
+<span><span class="co">#&gt;  [55] farver_2.1.1                  pkgconfig_2.0.3              </span></span>
+<span><span class="co">#&gt;  [57] XML_3.99-0.11                 Gviz_1.41.1                  </span></span>
+<span><span class="co">#&gt;  [59] nnet_7.3-18                   sass_0.4.2                   </span></span>
+<span><span class="co">#&gt;  [61] deldir_1.0-6                  utf8_1.2.2                   </span></span>
+<span><span class="co">#&gt;  [63] labeling_0.4.2                tidyselect_1.2.0             </span></span>
+<span><span class="co">#&gt;  [65] rlang_1.0.6                   later_1.3.0                  </span></span>
+<span><span class="co">#&gt;  [67] AnnotationDbi_1.59.1          munsell_0.5.0                </span></span>
+<span><span class="co">#&gt;  [69] BiocVersion_3.16.0            tools_4.2.1                  </span></span>
+<span><span class="co">#&gt;  [71] cachem_1.0.6                  cli_3.4.1                    </span></span>
+<span><span class="co">#&gt;  [73] generics_0.1.3                RSQLite_2.2.18               </span></span>
+<span><span class="co">#&gt;  [75] evaluate_0.17                 stringr_1.4.1                </span></span>
+<span><span class="co">#&gt;  [77] fastmap_1.1.0                 yaml_2.3.5                   </span></span>
+<span><span class="co">#&gt;  [79] ragg_1.2.3                    knitr_1.40                   </span></span>
+<span><span class="co">#&gt;  [81] bit64_4.0.5                   fs_1.5.2                     </span></span>
+<span><span class="co">#&gt;  [83] purrr_0.3.5                   AnnotationFilter_1.21.0      </span></span>
+<span><span class="co">#&gt;  [85] KEGGREST_1.37.3               mime_0.12                    </span></span>
+<span><span class="co">#&gt;  [87] ggrastr_1.0.1                 xml2_1.3.3                   </span></span>
+<span><span class="co">#&gt;  [89] biomaRt_2.53.3                rstudioapi_0.14              </span></span>
+<span><span class="co">#&gt;  [91] compiler_4.2.1                beeswarm_0.4.0               </span></span>
+<span><span class="co">#&gt;  [93] filelock_1.0.2                curl_4.3.3                   </span></span>
+<span><span class="co">#&gt;  [95] png_0.1-7                     interactiveDisplayBase_1.35.1</span></span>
+<span><span class="co">#&gt;  [97] tibble_3.1.8                  bslib_0.4.0                  </span></span>
+<span><span class="co">#&gt;  [99] stringi_1.7.8                 highr_0.9                    </span></span>
+<span><span class="co">#&gt; [101] GenomicFeatures_1.49.7        desc_1.4.2                   </span></span>
+<span><span class="co">#&gt; [103] lattice_0.20-45               ProtGenerics_1.29.1          </span></span>
+<span><span class="co">#&gt; [105] Matrix_1.5-1                  vctrs_0.4.2                  </span></span>
+<span><span class="co">#&gt; [107] rhdf5filters_1.9.0            pillar_1.8.1                 </span></span>
+<span><span class="co">#&gt; [109] GenomicInteractions_1.31.0    lifecycle_1.0.3              </span></span>
+<span><span class="co">#&gt; [111] BiocManager_1.30.18           jquerylib_0.1.4              </span></span>
+<span><span class="co">#&gt; [113] cowplot_1.1.1                 data.table_1.14.2            </span></span>
+<span><span class="co">#&gt; [115] bitops_1.0-7                  httpuv_1.6.6                 </span></span>
+<span><span class="co">#&gt; [117] rtracklayer_1.57.0            R6_2.5.1                     </span></span>
+<span><span class="co">#&gt; [119] BiocIO_1.7.1                  latticeExtra_0.6-30          </span></span>
+<span><span class="co">#&gt; [121] bookdown_0.29                 promises_1.2.0.1             </span></span>
+<span><span class="co">#&gt; [123] gridExtra_2.3                 vipor_0.4.5                  </span></span>
+<span><span class="co">#&gt; [125] codetools_0.2-18              dichromat_2.0-0.1            </span></span>
+<span><span class="co">#&gt; [127] assertthat_0.2.1              rhdf5_2.41.1                 </span></span>
+<span><span class="co">#&gt; [129] SummarizedExperiment_1.27.3   rprojroot_2.0.3              </span></span>
+<span><span class="co">#&gt; [131] rjson_0.2.21                  withr_2.5.0                  </span></span>
+<span><span class="co">#&gt; [133] GenomicAlignments_1.33.1      Rsamtools_2.13.4             </span></span>
+<span><span class="co">#&gt; [135] GenomeInfoDbData_1.2.9        parallel_4.2.1               </span></span>
+<span><span class="co">#&gt; [137] hms_1.1.2                     grid_4.2.1                   </span></span>
+<span><span class="co">#&gt; [139] rpart_4.1.16                  tidyr_1.2.1                  </span></span>
+<span><span class="co">#&gt; [141] rmarkdown_2.17                MatrixGenerics_1.9.1         </span></span>
+<span><span class="co">#&gt; [143] Cairo_1.6-0                   biovizBase_1.45.0            </span></span>
+<span><span class="co">#&gt; [145] Biobase_2.57.1                shiny_1.7.2                  </span></span>
+<span><span class="co">#&gt; [147] base64enc_0.1-3               ggbeeswarm_0.6.0             </span></span>
+<span><span class="co">#&gt; [149] interp_1.1-3                  restfulr_0.0.15</span></span></code></pre></div>
 </div>
   </div>
 
