@@ -1,6 +1,6 @@
 Package: HiContacts
 Title: HiContacts: R interface to cool files
-Version: 0.99.11
+Version: 1.0.0
 Date: 2022-08-16
 Authors@R:
     c(person(given = "Jacques",
