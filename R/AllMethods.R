@@ -404,6 +404,26 @@ setMethod("seqinfo", "Contacts", function(x) {
 })
 
 #' @rdname Contacts
+#'
+#' @name bins
+#' @docType methods
+#' @aliases bins,Contacts-method
+#'
+#' @param x A \code{Contacts} object.
+#'
+#' @export
+#' @examples 
+#' bins(contacts_yeast)
+
+setMethod("bins", "Contacts", function(x) {
+    bins <- getAnchors(
+        fileName(x), resolution = resolution(x), balanced = FALSE
+    )
+    seqinfo(bins) <- seqinfo(x)
+    return(bins)
+})
+
+#' @rdname Contacts
 #' 
 #' @name anchors
 #' @docType methods
