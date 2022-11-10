@@ -30,7 +30,7 @@ check_cool_file <- function(path) {
 check_resolution <- function(contacts, resolution) {
     available_res <- resolutions(contacts)
     if (!resolution %in% available_res) 
-        stop("Resolution not stored in the cool file. Aborting now.")
+        stop("Resolution not stored in the cool file.\n", paste0('  Available resolutions: ', paste0(res, collapse = ', '), '.'))
     TRUE
 }
 
@@ -38,11 +38,12 @@ check_resolution <- function(contacts, resolution) {
 
 check_cool_format <- function(path, resolution) {
     if (is_mcool(path)) {
+        res <- lsCoolResolutions(path)
         if (is.null(resolution)) {
-            stop("File is in .mcool format, a resolution must be provided. Aborting now.")
+            stop("File is in .mcool format, a resolution must be provided.\n", paste0('  Available resolutions: ', paste0(res, collapse = ', '), '.'))
         }
-        if (!resolution %in% lsCoolResolutions(path)) {
-            stop("Resolution not stored in cool file. Aborting now.")
+        if (!resolution %in% res) {
+            stop("Resolution not stored in cool file.\n", paste0('  Available resolutions: ', paste0(res, collapse = ', '), '.'))
         }
     }
     if (is_cool(path)) {
