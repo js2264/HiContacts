@@ -21,26 +21,31 @@
 #' full_contacts_yeast()
 
 contacts_yeast <- function() {
-    fpath <- HiContactsData::HiContactsData('yeast_wt', 'mcool')
-    Contacts(fpath, 'II', resolution = 1000)
+    .Deprecated(
+        "HiCExperiment::contacts_yeast", 
+        msg = "`contacts_yeast` is deprecated; see '?HiCExperiment::contacts_yeast' instead."
+    )
+    HiCExperiment::contacts_yeast()
 }
 
 #' @rdname datasets
 #' @export
 
 contacts_yeast_eco1 <- function() {
-    fpath <- HiContactsData::HiContactsData('yeast_eco1', 'mcool')
-    Contacts(fpath, 'II', resolution = 1000)
+    .Deprecated(
+        "HiCExperiment::contacts_yeast_eco1", 
+        msg = "`contacts_yeast_eco1` is deprecated; see '?HiCExperiment::contacts_yeast_eco1' instead."
+    )
+    HiCExperiment::contacts_yeast_eco1()
 }
 
 #' @rdname datasets
 #' @export
 
 full_contacts_yeast <- function() {
-    env_ <- new.env(parent = emptyenv())
-    data(centros_yeast, envir = env_)
-    fpath <- HiContactsData::HiContactsData('yeast_wt', 'mcool')
-    x <- Contacts(fpath, resolution = 16000)
-    topologicalFeatures(x, 'centromeres') <- env_$centros_yeast
-    return(x)
+    .Deprecated(
+        "HiCExperiment::full_contacts_yeast", 
+        msg = "`full_contacts_yeast` is deprecated; see '?HiCExperiment::full_contacts_yeast' instead."
+    )
+    HiCExperiment::full_contacts_yeast()
 }

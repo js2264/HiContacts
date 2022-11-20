@@ -51,7 +51,7 @@ ggMatrix(mat, ticks = TRUE, cols = afmhotrColors(), limits)
 \item{cols}{cols}
 }
 \value{
-ggplot
+ggplot object
 
 ggplot
 }

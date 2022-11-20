@@ -19,9 +19,8 @@
 #' @param symmetrical symmetrical
 #' @param chrom_lines chrom_lines
 #' @param cmap color map
-#' @return ggplot
+#' @return ggplot object
 #'
-#' @import ggplot2
 #' @importFrom ggrastr geom_tile_rast
 #' @importFrom tibble as_tibble
 #' @importFrom dplyr mutate
@@ -65,17 +64,17 @@ plotMatrix <- function(
     
     ## -- Extract scores
     if (!is.null(use.scores)) {
-        gis <- interactions(x)
-        gis$score <- scores(x, use.scores)
+        gis <- InteractionSet::interactions(x)
+        gis$score <- HiCExperiment::scores(x, use.scores)
     }
     else {
         if ("balanced" %in% names(scores(x))) {
-            gis <- interactions(x)
-            gis$score <- scores(x, "balanced")
+            gis <- InteractionSet::interactions(x)
+            gis$score <- HiCExperiment::scores(x, "balanced")
         } 
         else {
-            gis <- interactions(x)
-            gis$score <- scores(x, 1)
+            gis <- InteractionSet::interactions(x)
+            gis$score <- HiCExperiment::scores(x, 1)
         }
     }
 
@@ -102,7 +101,7 @@ plotMatrix <- function(
         M <- limits[2]
     }
     else {
-        an <- anchors(x)
+        an <- InteractionSet::anchors(x)
         diff_an <- an[['first']] != an[['second']]
         .scores <- gis$score[diff_an]
         .scores <- .scores[!is.na(.scores)]
@@ -186,7 +185,7 @@ plotMatrix <- function(
                 x = floor(end1 - (end1 - start1) / 2),
                 y = floor(end2 - (end2 - start2) / 2)
             ) |> 
-            drop_na(score)
+            tidyr::drop_na(score)
 
         ## -- Clamp scores to limits
         mat <- dplyr::mutate(mat, score = scales::oob_squish(score, c(m, M)))
@@ -202,9 +201,9 @@ plotMatrix <- function(
             if (!is_symmetrical(x)) {
                 coords <- unlist(S4Vectors::zipup(char2coords(focus(x))))
                 mat <- mat |> 
-                    filter(x >= GenomicRanges::start(coords[1]) & 
+                    dplyr::filter(x >= GenomicRanges::start(coords[1]) & 
                         x <= GenomicRanges::end(coords[1])) |> 
-                    filter(y >= GenomicRanges::start(coords[2]) & 
+                    dplyr::filter(y >= GenomicRanges::start(coords[2]) & 
                         y <= GenomicRanges::end(coords[2]))
             }
         } 
@@ -271,11 +270,11 @@ plotMatrix <- function(
             p <- p +
                 ggplot2::geom_hline(
                     yintercept = chroms$cumlength[-1], 
-                    colour = "black", alpha = 0.75, size = 0.15
+                    colour = "black", alpha = 0.75, linewidth = 0.15
                 ) +
                 ggplot2::geom_vline(
                     xintercept = chroms$cumlength[-1], 
-                    colour = "black", alpha = 0.75, size = 0.15
+                    colour = "black", alpha = 0.75, linewidth = 0.15
                 )
         }
     }
@@ -291,7 +290,6 @@ plotMatrix <- function(
 #' @param limits limits
 #' @return ggplot
 #'
-#' @import ggplot2
 #' @importFrom scales unit_format
 
 ggMatrix <- function(mat, ticks = TRUE, cols = afmhotrColors(), limits) {
@@ -304,7 +302,7 @@ ggMatrix <- function(mat, ticks = TRUE, cols = afmhotrColors(), limits) {
         ggplot2::scale_x_continuous(expand = c(0, 0), labels = scales::unit_format(unit = "M", scale = 1e-6), position = 'top') +
         ggplot2::scale_y_reverse(expand = c(0, 0), labels = scales::unit_format(unit = "M", scale = 1e-6)) +
         ggplot2::guides(fill = ggplot2::guide_colorbar(barheight = ggplot2::unit(5, "cm"), barwidth = 0.5, frame.colour = "black")) + 
-        coord_fixed() +
+        ggplot2::coord_fixed() +
         ggthemeHiContacts()
     p
 }
@@ -324,7 +322,6 @@ ggMatrix <- function(mat, ticks = TRUE, cols = afmhotrColors(), limits) {
 #' @param ylim ylim
 #' @return ggplot
 #'
-#' @import ggplot2
 #' @importFrom scales trans_breaks
 #' @importFrom scales trans_format
 #' @export
@@ -373,7 +370,6 @@ plotPs <- function(..., xlim = c(5000, 4.99e5), ylim = c(1e-8, 1e-4)) {
 #' 
 #' @return ggplot
 #' 
-#' @import ggplot2
 #' @export
 #' @examples 
 #' plotPsSlope(ps, ggplot2::aes(x = binned_distance, y = slope))
@@ -413,7 +409,6 @@ plotPsSlope <- function(..., xlim = c(5000, 4.99e5), ylim = c(-3, 0)) {
 #' @param mapping aes to pass on to ggplot2
 #' @return ggplot
 #' 
-#' @import ggplot2
 #' @import tibble
 #' @importFrom scales unit_format
 #' @export
@@ -451,16 +446,17 @@ plot4C <- function(x, mapping) {
 #' @param ticks ticks
 #' @return a custom ggplot2 theme
 #' 
-#' @import ggplot2
 
 ggthemeHiContacts <- function(ticks = TRUE) {
     t <- ggplot2::theme_bw() +
         ggplot2::theme(
             text = ggplot2::element_text(size = 8),
-            panel.grid.minor = ggplot2::element_line(size = 0.025, colour = "#00000052"),
-            panel.grid.major = ggplot2::element_line(size = 0.05, colour = "#00000052")
+            # panel.grid.minor = ggplot2::element_line(size = 0.025, colour = "#00000052"),
+            # panel.grid.major = ggplot2::element_line(size = 0.05, colour = "#00000052")
+            panel.grid.minor = ggplot2::element_blank(),
+            panel.grid.major = ggplot2::element_blank()
         )
-    if (ticks) t <- t + ggplot2::theme(axis.ticks = ggplot2::element_line(colour = "black", size = 0.2))
+    if (ticks) t <- t + ggplot2::theme(axis.ticks = ggplot2::element_line(colour = "black", linewidth = 0.2))
     t
 }
 
@@ -470,7 +466,6 @@ ggthemeHiContacts <- function(ticks = TRUE) {
 #'
 #' @rdname palettes
 #' 
-#' @import ggplot2
 #' @importFrom scales unit_format
 #' @export
 #' @examples

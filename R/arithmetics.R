@@ -12,9 +12,9 @@
 #' 
 #' @rdname arithmetics
 #'
-#' @param x a `Contacts` object
+#' @param x a `HiCExperiment` object
 #' @param use.scores use.scores
-#' @return a `Contacts` object with two additional scoress: `expected` and
+#' @return a `HiCExperiment` object with two additional scoress: `expected` and
 #'   `detrended`
 #' 
 #' @importFrom scales rescale
@@ -57,10 +57,10 @@ detrend <- function(x, use.scores = 'balanced') {
 
 #' @rdname arithmetics
 #'
-#' @param x a `Contacts` object
+#' @param x a `HiCExperiment` object
 #' @param use.scores use.scores
 #' @param ignore_ndiags ignore N diagonals when calculating correlations
-#' @return a `Contacts` object with a single `autocorrelation` scores
+#' @return a `HiCExperiment` object with a single `autocorrelation` scores
 #' 
 #' @import InteractionSet
 #' @import stringr
@@ -91,7 +91,7 @@ autocorrelate <- function(x, use.scores = 'balanced', ignore_ndiags = 3) {
     }
     # co <- corrr::correlate(log10(mat), diagonal = 0, method = "pearson", quiet = TRUE)
     co <- stats::cor(log10(mat), use = 'pairwise.complete.obs', method = "pearson")
-    co <- tibble::as_tibble(co) |> 
+    co <- tibble::as_tibble(co, .name_repair = "universal") |> 
         dplyr::mutate(term = paste0('V', seq_len(dplyr::n()))) |> 
         dplyr::relocate(term)
     colnames(co) <- c('term', names(reg))
@@ -105,7 +105,7 @@ autocorrelate <- function(x, use.scores = 'balanced', ignore_ndiags = 3) {
         score = as.array(mat2$corr)
     )
 
-    res <- methods::new("Contacts", 
+    res <- methods::new("HiCExperiment", 
         focus = focus(x), 
         metadata = metadata(x),
         resolutions = resolutions(x), 
@@ -122,13 +122,12 @@ autocorrelate <- function(x, use.scores = 'balanced', ignore_ndiags = 3) {
 
 #' @rdname arithmetics
 #'
-#' @param x a `Contacts` object
-#' @param by a `Contacts` object
+#' @param x a `HiCExperiment` object
+#' @param by a `HiCExperiment` object
 #' @param use.scores use.scores
-#' @return a `Contacts` object with a single `ratio` scores
+#' @return a `HiCExperiment` object with a single `ratio` scores
 #'
 #' @import tidyr
-#' @import reticulate
 #' @importFrom tibble as_tibble
 #' @importFrom dplyr mutate
 #' @importFrom tidyr pivot_longer
@@ -194,7 +193,7 @@ divide <- function(x, by, use.scores = 'balanced') {
     ## Make a full-featured interactions (storing divided scores in `score`)
     seqnames <- unique(GenomicRanges::seqnames(regions(x)))
     mat <- sK |>
-        tibble::as_tibble() |> 
+        tibble::as_tibble(.name_repair = "universal") |> 
         setNames(GenomicRanges::start(anchors(gi2cm(x_gis))$row)) |>
         dplyr::mutate(start2 = GenomicRanges::start(anchors(gi2cm(by_gis))$row)) |> 
         tidyr::pivot_longer(-start2, names_to = 'start1', values_to = 'score') |> 
@@ -226,7 +225,7 @@ divide <- function(x, by, use.scores = 'balanced') {
     gi <- gi[!is.na(mat$score) & is.finite(mat$score)]
 
     ## -- Create 'in silico' Contacts
-    res <- methods::new("Contacts", 
+    res <- methods::new("HiCExperiment", 
         focus = focus(x), 
         metadata = list(),
         resolutions = binsize, 
@@ -245,13 +244,12 @@ divide <- function(x, by, use.scores = 'balanced') {
 
 #' @rdname arithmetics
 #'
-#' @param ... `Contacts` objects
+#' @param ... `HiCExperiment` objects
 #' @param use.scores use.scores
-#' @return a `Contacts` object. Each returned scores is the sum of the
-#'   corresponding scores from input `Contacts`.
+#' @return a `HiCExperiment` object. Each returned scores is the sum of the
+#'   corresponding scores from input `HiCExperiment`.
 #'
 #' @import tidyr
-#' @import reticulate
 #' @importFrom tibble as_tibble
 #' @importFrom dplyr mutate
 #' @importFrom tidyr pivot_longer
@@ -272,10 +270,10 @@ divide <- function(x, by, use.scores = 'balanced') {
 merge <- function(..., use.scores = 'balanced') {
     contacts_list <- list(...)
     
-    ## -- Check that at least 2 `Contacts` objects are passed to `merge()`
-    are_contacts(...)
+    ## -- Check that at least 2 `HiCExperiment` objects are passed to `merge()`
+    are_HiCExperiment(...)
     if (length(contacts_list) < 2) {
-        stop("Please provide at least 2 `Contacts` objects.")
+        stop("Please provide at least 2 `HiCExperiment` objects.")
     } 
 
     ## -- Check that all objects are comparable (bins, regions, resolution, seqinfo)
@@ -317,7 +315,7 @@ merge <- function(..., use.scores = 'balanced') {
         basename(unlist(lapply(contacts_list, fileName))), 
         collapse = ', '
     )
-    res <- methods::new("Contacts", 
+    res <- methods::new("HiCExperiment", 
         focus = paste0(
             basename(unlist(lapply(contacts_list, focus))), 
             collapse = ', '
@@ -340,15 +338,14 @@ merge <- function(..., use.scores = 'balanced') {
 
 #' @rdname arithmetics
 #'
-#' @param x a `Contacts` object
+#' @param x a `HiCExperiment` object
 #' @param use.scores use.scores
 #' @param use_serpentine_trend whether to use the trend estimated with 
 #'   serpentine (this requires `reticulate` and the python package `serpentine`)
 #' @param serpentine_niter number of iterations to use for serpentine
 #' @param serpentine_ncores number of CPUs to use for serpentine
-#' @return a `Contacts` object with a single `smoothen` scores
+#' @return a `HiCExperiment` object with a single `smoothen` scores
 #' 
-#' @import reticulate
 #' @import GenomicRanges
 #' @importFrom dplyr mutate
 #' @importFrom tidyr pivot_longer
@@ -414,7 +411,7 @@ serpentinify <- function(x, use.scores = 'balanced',
         regions = reg
     )
 
-    res <- methods::new("Contacts", 
+    res <- methods::new("HiCExperiment", 
         focus = focus(x), 
         metadata = metadata(x),
         resolutions = resolutions(x), 

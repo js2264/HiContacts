@@ -38,12 +38,12 @@ distanceLaw <- function(
     by_chr = FALSE, 
     filtered_chr = c('XII', 'chrXII', 'chr12', '12', 'Mito', 'MT', 'chrM')
 ) {
-    pairsFile <- pairsFile(x)
+    pairsFile <- HiCExperiment::pairsFile(x)
     if (is.null(pairsFile)) {
         # stop("Please provide a pairsFile for `x`. Aborting now.")
         message("pairsFile not specified. The P(s) curve will be an approximation.")
-        pairs <- interactions(x)
-        pairs$score <- scores(x, 'raw')
+        pairs <- InteractionSet::interactions(x)
+        pairs$score <- HiCExperiment::scores(x, 'raw')
         df <- tibble::tibble(
             chr = as.vector(GenomeInfoDb::seqnames(InteractionSet::anchors(pairs)[['first']])),
             distance = InteractionSet::pairdist(pairs, type = 'gap'),
@@ -71,7 +71,7 @@ distanceLaw <- function(
     }
     else {
         message("Importing pairs file ", pairsFile, " in memory. This may take a while...")
-        pairs <- pairs2gi(pairsFile)
+        pairs <- BiocIO::import(pairsFile, format = 'pairs')
         df <- tibble::tibble(
             chr = as.vector(GenomeInfoDb::seqnames(InteractionSet::anchors(pairs)[['first']])),
             distance = pairs$distance
@@ -135,7 +135,7 @@ localDistanceLaw <- function(
 ) {
     `%over%` <- IRanges::`%over%`
     if(is.null(names(coords))) names(coords) <- as(coords, 'character')
-    pairsFile <- pairsFile(x)
+    pairsFile <- HiCExperiment::pairsFile(x)
     if (is.null(pairsFile)) {
         message("pairsFile not specified. The P(s) curve will be an approximation.")
         an_ <- anchors(x)
@@ -144,7 +144,7 @@ localDistanceLaw <- function(
             sub <- an_[['first']] %over% gr | an_[['second']] %over% gr
             x <- x[sub]
             pairs <- interactions(x)
-            pairs$score <- scores(x, 'raw')
+            pairs$score <- HiCExperiment::scores(x, 'raw')
             df <- tibble::tibble(
                 chr = as.vector(GenomeInfoDb::seqnames(an_[['first']][sub])),
                 distance = InteractionSet::pairdist(pairs, type = 'gap'),
@@ -162,7 +162,7 @@ localDistanceLaw <- function(
     }
     else {
         message("Importing pairs file ", pairsFile, " in memory. This may take a while...")
-        pairs <- pairs2gi(pairsFile)
+        pairs <- BiocIO::import(pairsFile, format = 'pairs')
         an_ <- anchors(pairs)
         d <- lapply(seq_along(coords), function(K) {
             gr <- coords[K]

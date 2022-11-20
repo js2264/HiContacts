@@ -22,8 +22,8 @@ cisTransRatio <- function(x) {
     if (!is.null(focus(x))) {
         stop('Please provide a contact matrix over the entire genome. Aborting now.')
     }
-    gis <- interactions(x)
-    gis$score <- scores(x, 'raw')
+    gis <- InteractionSet::interactions(x)
+    gis$score <- HiCExperiment::scores(x, 'raw')
     cnts <- gis |> 
         tibble::as_tibble() |> 
         dplyr::relocate(c(seqnames1, seqnames2))

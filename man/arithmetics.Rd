@@ -25,15 +25,15 @@ serpentinify(
 )
 }
 \arguments{
-\item{x}{a \code{Contacts} object}
+\item{x}{a \code{HiCExperiment} object}
 
 \item{use.scores}{use.scores}
 
 \item{ignore_ndiags}{ignore N diagonals when calculating correlations}
 
-\item{by}{a \code{Contacts} object}
+\item{by}{a \code{HiCExperiment} object}
 
-\item{...}{\code{Contacts} objects}
+\item{...}{\code{HiCExperiment} objects}
 
 \item{use_serpentine_trend}{whether to use the trend estimated with
 serpentine (this requires \code{reticulate} and the python package \code{serpentine})}
@@ -43,17 +43,17 @@ serpentine (this requires \code{reticulate} and the python package \code{serpent
 \item{serpentine_ncores}{number of CPUs to use for serpentine}
 }
 \value{
-a \code{Contacts} object with two additional scoress: \code{expected} and
+a \code{HiCExperiment} object with two additional scoress: \code{expected} and
 \code{detrended}
 
-a \code{Contacts} object with a single \code{autocorrelation} scores
+a \code{HiCExperiment} object with a single \code{autocorrelation} scores
 
-a \code{Contacts} object with a single \code{ratio} scores
+a \code{HiCExperiment} object with a single \code{ratio} scores
 
-a \code{Contacts} object. Each returned scores is the sum of the
-corresponding scores from input \code{Contacts}.
+a \code{HiCExperiment} object. Each returned scores is the sum of the
+corresponding scores from input \code{HiCExperiment}.
 
-a \code{Contacts} object with a single \code{smoothen} scores
+a \code{HiCExperiment} object with a single \code{smoothen} scores
 }
 \description{
 Different operations can be performed:

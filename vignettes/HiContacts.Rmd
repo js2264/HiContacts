@@ -86,7 +86,7 @@ centered at the diagonal. To do this, specify a couple of coordinates in the
 
 ```{r}
 contacts <- Contacts(mcool_file, focus = 'II:0-500000 x II:100000-600000', res = 1000)
-is_symmetrical(contacts)
+focus(contacts)
 ```
 
 ## Slots

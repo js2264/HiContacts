@@ -9,7 +9,6 @@
 #' @return A tibble with the contact frequency of the viewpoint, per bin 
 #'   along the imported genomic range.
 #' 
-#' @import ggplot2
 #' @import tibble
 #' @importFrom scales unit_format
 #' @importFrom S4Vectors queryHits
@@ -26,10 +25,10 @@
 #' v4C
 
 virtual4C <- function(x, viewpoint, use.scores = 'balanced') {
-    gis <- interactions(x)
-    gis$score <- scores(x, use.scores)
-    cm <- cm2matrix(gi2cm(gis))
-    regions <- regions(gis)
+    gis <- InteractionSet::interactions(x)
+    gis$score <- HiCExperiment::scores(x, use.scores)
+    cm <- as(x, 'matrix')
+    regions <- InteractionSet::regions(gis)
     regions_in_viewpoint <- seq_along(regions) %in% S4Vectors::queryHits(
         GenomicRanges::findOverlaps(regions, viewpoint)
     )

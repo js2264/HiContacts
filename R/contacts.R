@@ -4,7 +4,14 @@
 #                                                                              #
 ################################################################################
 
+#' @title Contacts
+#' 
 #' @rdname Contacts
+#' 
+#' @description 
+#' 
+#' This function has been deprecated in favor of the generic `HiCExperiment()`
+#' constructor (from HiCExperiment package).
 #' 
 #' @param file Path to a (m)cool file
 #' @param resolution Resolution to use with mcool file
@@ -15,13 +22,15 @@
 #' @param metadata list of metadata
 #' @param topologicalFeatures topologicalFeatures provided as a named SimpleList
 #' @param pairsFile Path to an associated .pairs file
-#' @return a new `Contacts` object.
+#' @return a new `HiCExperiment` object.
 #' 
+#' @import HiCExperiment
 #' @export
 #' @examples 
 #' library(HiContacts)
-#' contacts_yeast <- contacts_yeast()
-#' contacts_yeast
+#' library(HiContactsData)
+#' mcool_path <- HiContactsData::HiContactsData('yeast_wt', 'mcool')
+#' Contacts(mcool_path)
 
 Contacts <- function(
     file, 
@@ -39,67 +48,19 @@ Contacts <- function(
     ), 
     pairsFile = NULL
 ) {
-    
-    ## -- Check that provided file is valid 
-    check_cool_file(file)
-    check_cool_format(file, resolution)
-
-    ## -- Read resolutions
-    resolutions <- lsCoolResolutions(file)
-    if (is_mcool(file)) {
-        res <- resolutions[length(resolutions)]
-        if (!is.null(resolution)) {
-            current_res <- resolution
-        }
-        else {
-            current_res <- res
-        }
-    } 
-    else {
-        res <- resolutions[length(resolutions)]
-        current_res <- NULL
-    }
-
-    ## -- Read interactions
-    gis <- cool2gi(file, resolution = current_res, coords = focus)
-    mcols <- GenomicRanges::mcols(gis)
-    GenomicRanges::mcols(gis) <- mcols[, c('bin_id1', 'bin_id2')]
-
-    ## -- Check pairs file
-    if (!is.null(pairsFile)) {
-        if (!file.exists(pairsFile)) {
-            stop("Provided pairsFile does not exist. Aborting now.")
-        }
-    }
-
-    ## -- Create contact object
-    x <- methods::new("Contacts", 
-        fileName = as.character(file),
-        focus = focus, 
-        resolutions = resolutions, 
-        resolution = ifelse(is_mcool(file), current_res, res), 
-        interactions = gis, 
-        scores = S4Vectors::SimpleList(
-            'raw' = as.numeric(mcols$count),
-            'balanced' = as.numeric(mcols$score)
-        ), 
-        topologicalFeatures = topologicalFeatures, 
-        pairsFile = pairsFile, 
-        metadata = metadata
+    .Deprecated(
+            "HiCExperiment::HiCExperiment", 
+            msg = paste(
+                "`HiContacts::Contacts` is deprecated;", 
+                "see '?HiCExperiment::HiCExperiment' constructor instead."
+            )
     )
-    methods::validObject(x)
-    return(x)
+    HiCExperiment::HiCExperiment(
+        file = file, 
+        resolution = resolution, 
+        focus = focus, 
+        metadata = metadata, 
+        topologicalFeatures = topologicalFeatures, 
+        pairsFile = pairsFile
+    )
 } 
-
-setValidity("Contacts",
-    function(object) {
-        if (!is(focus(object), "characterOrNULL"))
-            return("'focus' slot must be a characterOrNULL")
-        if (!is(resolutions(object), "numeric"))
-            return("'resolutions' slot must be an numeric vector")
-        if (!is(scores(object), "SimpleList"))
-            return("'scores' slot must be a SimpleList")
-        TRUE
-    }
-)
-
