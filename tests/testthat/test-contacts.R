@@ -90,3 +90,13 @@ test_that("Ps works", {
     expect_s3_class(plotPs(x1, ggplot2::aes(x = binned_distance, y = norm_p)), 'gg')
     expect_s3_class(plotPsSlope(x1, ggplot2::aes(x = binned_distance, y = norm_p)), 'gg')
 })
+
+test_that("utils work", {
+
+    expect_true(is.matrix({
+        m <- matrix(data = 0, nrow = 100, ncol = 100)
+        sdiag(m, k = 0) <- 3
+        m
+    }))
+
+})
