@@ -1,5 +1,5 @@
 Package: HiContacts
-Title: HiContacts: R interface to cool files
+Title: Analysing cool files in R with HiContacts
 Version: 1.1.1
 Date: 2022-08-16
 Authors@R:
@@ -19,20 +19,14 @@ Depends:
 Imports:
     HiContactsData,
     InteractionSet,
-    GenomicInteractions,
     GenomicRanges,
     IRanges,
     GenomeInfoDb,
     S4Vectors,
-    BiocGenerics,
     methods,
-    rhdf5,
-    Matrix,
-    vroom,
     tibble,
     tidyr,
     dplyr,
-    glue,
     stringr,
     reticulate,
     ggplot2,

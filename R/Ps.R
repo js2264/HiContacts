@@ -26,6 +26,7 @@
 #' @importFrom dplyr arrange
 #' @importFrom dplyr lead
 #' @importFrom dplyr cur_data
+#' @importFrom BiocIO import
 #' @export
 #' @examples 
 #' library(HiContacts)

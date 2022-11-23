@@ -10,6 +10,7 @@
 #'  All these check functions should return a logical.
 #' 
 #' @param x A `HiCExperiment` object
+#' @param ... `HiCExperiment` objects
 #' @return Logical
 NULL
 

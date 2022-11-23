@@ -5,6 +5,7 @@
 #' @usage data(centros_yeast)
 #' @source HiContacts
 #' @rdname datasets
+#' @importClassFrom GenomicRanges GRanges
 #' @examples
 #' data(centros_yeast)
 #' centros_yeast

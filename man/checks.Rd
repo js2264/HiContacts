@@ -27,6 +27,8 @@ is_same_regions(...)
 }
 \arguments{
 \item{x}{A \code{HiCExperiment} object}
+
+\item{...}{\code{HiCExperiment} objects}
 }
 \value{
 Logical
