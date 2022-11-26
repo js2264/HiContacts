@@ -18,6 +18,7 @@
 #' @param rasterize rasterize
 #' @param symmetrical symmetrical
 #' @param chrom_lines chrom_lines
+#' @param show_grid show_grid
 #' @param cmap color map
 #' @return ggplot object
 #'
@@ -58,6 +59,7 @@ plotMatrix <- function(
     rasterize = TRUE, 
     symmetrical = TRUE, 
     chrom_lines = TRUE, 
+    show_grid = FALSE,
     cmap = NULL
 ) {
     `%over%` <- IRanges::`%over%`
@@ -209,7 +211,7 @@ plotMatrix <- function(
         } 
 
         ## -- Plot matrix
-        p <- ggMatrix(mat, cols = cmap, limits = limits) +
+        p <- ggMatrix(mat, cols = cmap, limits = limits, grid = show_grid) +
             plotFun +
             p_loops + 
             p_borders + 
@@ -255,7 +257,7 @@ plotMatrix <- function(
         )
 
         ## -- Plot matrix
-        p <- ggMatrix(mat, cols = cmap, limits = limits) +
+        p <- ggMatrix(mat, cols = cmap, limits = limits, grid = show_grid) +
             plotFun +
             ggplot2::labs(
                 x = "Genome coordinates",
@@ -286,13 +288,14 @@ plotMatrix <- function(
 #' 
 #' @param mat mat
 #' @param ticks ticks
+#' @param grid grid
 #' @param cols cols
 #' @param limits limits
 #' @return ggplot
 #'
 #' @importFrom scales unit_format
 
-ggMatrix <- function(mat, ticks = TRUE, cols = afmhotrColors(), limits) {
+ggMatrix <- function(mat, ticks = TRUE, grid = FALSE, cols = afmhotrColors(), limits) {
     p <- ggplot2::ggplot(mat, ggplot2::aes(x, y, fill = score))
     p <- p + ggplot2::scale_fill_gradientn(
         colors = cols,
@@ -303,7 +306,7 @@ ggMatrix <- function(mat, ticks = TRUE, cols = afmhotrColors(), limits) {
         ggplot2::scale_y_reverse(expand = c(0, 0), labels = scales::unit_format(unit = "M", scale = 1e-6)) +
         ggplot2::guides(fill = ggplot2::guide_colorbar(barheight = ggplot2::unit(5, "cm"), barwidth = 0.5, frame.colour = "black")) + 
         ggplot2::coord_fixed() +
-        ggthemeHiContacts()
+        ggthemeHiContacts(ticks, grid)
     p
 }
 
@@ -447,17 +450,25 @@ plot4C <- function(x, mapping) {
 #' @return a custom ggplot2 theme
 #' 
 
-ggthemeHiContacts <- function(ticks = TRUE) {
+ggthemeHiContacts <- function(ticks = TRUE, grid = FALSE) {
     t <- ggplot2::theme_bw() +
-        ggplot2::theme(
-            text = ggplot2::element_text(size = 8),
-            # panel.grid.minor = ggplot2::element_line(size = 0.025, colour = "#00000052"),
-            # panel.grid.major = ggplot2::element_line(size = 0.05, colour = "#00000052")
-            panel.grid.minor = ggplot2::element_blank(),
-            panel.grid.major = ggplot2::element_blank()
-        )
+        ggplot2::theme(text = ggplot2::element_text(size = 8))
     if (ticks) t <- t + ggplot2::theme(axis.ticks = ggplot2::element_line(colour = "black", linewidth = 0.2))
-    t
+    if (grid) {
+        t <- t + 
+                ggplot2::theme(
+                    panel.grid.minor = ggplot2::element_line(size = 0.025, colour = "#00000052"), 
+                    panel.grid.minor = ggplot2::element_line(size = 0.025, colour = "#00000052")
+                )
+            t
+    } else {
+        t <- t + 
+                ggplot2::theme(
+                    panel.grid.minor = ggplot2::element_blank(), 
+                    panel.grid.major = ggplot2::element_blank()
+                )
+            t
+    }
 }
 
 #' Matrix palettes

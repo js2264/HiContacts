@@ -68,7 +68,8 @@ test_that("plotMatrix works", {
             borders = topologicalFeatures(full_contacts_yeast, 'centromeres'),
             scale = 'exp0.2', 
             limits = c(-1, 1), 
-            cmap = bbrColors()
+            cmap = bbrColors(), 
+            show_grid = TRUE
         ),
         'gg'
     )
