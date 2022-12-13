@@ -59,8 +59,8 @@ plotMatrix <- function(
     rasterize = TRUE, 
     symmetrical = TRUE, 
     chrom_lines = TRUE, 
-    show_grid = FALSE,
-    cmap = NULL
+    show_grid = FALSE, 
+    cmap = NULL  
 ) {
     `%over%` <- IRanges::`%over%`
     
@@ -201,7 +201,16 @@ plotMatrix <- function(
                     dplyr::select(-x2)
             )
             if (!is_symmetrical(x)) {
-                coords <- unlist(S4Vectors::zipup(char2coords(focus(x))))
+                coords <- unlist(S4Vectors::zipup(
+                    S4Vectors::Pairs(
+                        GenomicRanges::GRanges(
+                            stringr::str_split(char, '\\|')[[1]][[1]]
+                            ), 
+                        GenomicRanges::GRanges(
+                            stringr::str_split(char, '\\|')[[1]][[2]]
+                            )
+                    )
+                ))
                 mat <- mat |> 
                     dplyr::filter(x >= GenomicRanges::start(coords[1]) & 
                         x <= GenomicRanges::end(coords[1])) |> 
@@ -447,6 +456,7 @@ plot4C <- function(x, mapping) {
 #' @rdname ggplot2-extra
 #'
 #' @param ticks ticks
+#' @param grid grid
 #' @return a custom ggplot2 theme
 #' 
 
@@ -457,8 +467,8 @@ ggthemeHiContacts <- function(ticks = TRUE, grid = FALSE) {
     if (grid) {
         t <- t + 
                 ggplot2::theme(
-                    panel.grid.minor = ggplot2::element_line(size = 0.025, colour = "#00000052"), 
-                    panel.grid.minor = ggplot2::element_line(size = 0.025, colour = "#00000052")
+                    panel.grid.minor = ggplot2::element_line(linewidth = 0.025, colour = "#00000052"), 
+                    panel.grid.major = ggplot2::element_line(linewidth = 0.025, colour = "#00000052")
                 )
             t
     } else {

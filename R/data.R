@@ -5,7 +5,7 @@
 #' @usage data(centros_yeast)
 #' @source HiContacts
 #' @rdname datasets
-#' @importClassFrom GenomicRanges GRanges
+#' @importClassesFrom GenomicRanges GRanges
 #' @examples
 #' data(centros_yeast)
 #' centros_yeast
@@ -14,7 +14,6 @@
 #' @rdname datasets
 #' 
 #' @format An object of class \code{"Contacts"}.
-#' @importFrom HiContactsData HiContactsData
 #' @export
 #' @examples
 #' contacts_yeast()

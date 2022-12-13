@@ -16,10 +16,11 @@ plotMatrix(
   rasterize = TRUE,
   symmetrical = TRUE,
   chrom_lines = TRUE,
+  show_grid = FALSE,
   cmap = NULL
 )
 
-ggMatrix(mat, ticks = TRUE, cols = afmhotrColors(), limits)
+ggMatrix(mat, ticks = TRUE, grid = FALSE, cols = afmhotrColors(), limits)
 }
 \arguments{
 \item{x}{x}
@@ -42,11 +43,15 @@ ggMatrix(mat, ticks = TRUE, cols = afmhotrColors(), limits)
 
 \item{chrom_lines}{chrom_lines}
 
+\item{show_grid}{show_grid}
+
 \item{cmap}{color map}
 
 \item{mat}{mat}
 
 \item{ticks}{ticks}
+
+\item{grid}{grid}
 
 \item{cols}{cols}
 }

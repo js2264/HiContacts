@@ -4,10 +4,12 @@
 \alias{ggthemeHiContacts}
 \title{ggplot2-related functions}
 \usage{
-ggthemeHiContacts(ticks = TRUE)
+ggthemeHiContacts(ticks = TRUE, grid = FALSE)
 }
 \arguments{
 \item{ticks}{ticks}
+
+\item{grid}{grid}
 }
 \value{
 a custom ggplot2 theme

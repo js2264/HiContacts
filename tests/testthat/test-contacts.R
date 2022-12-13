@@ -1,5 +1,5 @@
 test_that("v4C works", {
-    contacts_yeast <- contacts_yeast()
+    contacts_yeast <- HiCExperiment::contacts_yeast()
     expect_s4_class(
         virtual4C(contacts_yeast, GRanges('II:490000-510000')),
         'GRanges'
@@ -11,8 +11,8 @@ test_that("v4C works", {
 })
 
 test_that("arithmetics works", {
-    contacts_yeast <- contacts_yeast()
-    contacts_yeast_eco1 <- contacts_yeast_eco1()
+    contacts_yeast <- HiCExperiment::contacts_yeast()
+    contacts_yeast_eco1 <- HiCExperiment::contacts_yeast_eco1()
     expect_true({
         x <- detrend(contacts_yeast)
         validObject(x)
@@ -32,15 +32,15 @@ test_that("arithmetics works", {
 })
 
 test_that("cistrans works", {
-    full_contacts_yeast <- full_contacts_yeast()
+    full_contacts_yeast <- HiCExperiment::full_contacts_yeast()
     expect_s3_class({
         cisTransRatio(full_contacts_yeast)
     }, 'tbl')
 })
 
 test_that("plotMatrix works", {
-    contacts_yeast <- contacts_yeast()
-    full_contacts_yeast <- full_contacts_yeast()
+    contacts_yeast <- HiCExperiment::contacts_yeast()
+    full_contacts_yeast <- HiCExperiment::full_contacts_yeast()
     expect_s3_class(plotMatrix(contacts_yeast), 'gg')
     expect_s3_class(plotMatrix(contacts_yeast, scale = 'linear'), 'gg')
     expect_s3_class(plotMatrix(contacts_yeast, scale = 'log2'), 'gg')
@@ -76,7 +76,7 @@ test_that("plotMatrix works", {
 })
 
 test_that("Ps works", {
-    contacts_yeast <- contacts_yeast()
+    contacts_yeast <- HiCExperiment::contacts_yeast()
     x1 <- distanceLaw(contacts_yeast)
     x2 <- localDistanceLaw(contacts_yeast, GRanges("II:1-100000"))
     pairsFile(contacts_yeast) <- HiContactsData::HiContactsData(

@@ -20,7 +20,7 @@ is_symmetrical <- function(x) {
     if (is.null(focus(x))) {
         return(TRUE)
     }
-    if (grepl(' x ', focus(x))) {
+    if (grepl('\\|', focus(x))) {
         return(FALSE)
     }
     else {

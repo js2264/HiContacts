@@ -26,7 +26,6 @@
 #' @importFrom dplyr pull
 #' @importFrom dplyr mutate
 #' @importFrom dplyr left_join
-#' @import GenomicRanges
 #' @export
 #' @examples 
 #' #### -----
@@ -132,6 +131,8 @@ autocorrelate <- function(x, use.scores = 'balanced', ignore_ndiags = 3) {
 #' @importFrom dplyr mutate
 #' @importFrom tidyr pivot_longer
 #' @importFrom GenomicRanges seqnames
+#' @importFrom GenomicRanges start
+#' @importFrom GenomicRanges GRanges
 #' @importFrom InteractionSet regions
 #' @importFrom InteractionSet GInteractions
 #' @importFrom S4Vectors metadata
@@ -254,6 +255,7 @@ divide <- function(x, by, use.scores = 'balanced') {
 #' @importFrom dplyr mutate
 #' @importFrom tidyr pivot_longer
 #' @importFrom GenomicRanges seqnames
+#' @importFrom GenomicRanges findOverlaps
 #' @importFrom InteractionSet regions
 #' @importFrom InteractionSet GInteractions
 #' @importFrom S4Vectors metadata
@@ -346,7 +348,6 @@ merge <- function(..., use.scores = 'balanced') {
 #' @param serpentine_ncores number of CPUs to use for serpentine
 #' @return a `HiCExperiment` object with a single `smoothen` scores
 #' 
-#' @import GenomicRanges
 #' @importFrom dplyr mutate
 #' @importFrom tidyr pivot_longer
 #' @importFrom tibble as_tibble

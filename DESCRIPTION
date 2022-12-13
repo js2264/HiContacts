@@ -17,9 +17,9 @@ Depends:
     R (>= 4.2),
     HiCExperiment
 Imports:
-    HiContactsData,
     InteractionSet,
     GenomicRanges,
+    BiocIO,
     IRanges,
     GenomeInfoDb,
     S4Vectors,
@@ -33,6 +33,7 @@ Imports:
     ggrastr,
     scales
 Suggests:
+    HiContactsData,
     cowplot,
     testthat (>= 3.0.0),
     BiocStyle,
@@ -45,4 +46,4 @@ Encoding: UTF-8
 VignetteBuilder: knitr
 LazyData: false
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.2.2
+RoxygenNote: 7.2.3

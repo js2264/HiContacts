@@ -62,8 +62,16 @@ plotMatrix(hic, use.scores = 'balanced', limits = c(-4, -1), dpi = 120)
 
 ## Plot loops
 
+Loops can be plotted on top of Hi-C matrices by providing a `GInteractions` 
+object to the `loops` argument. 
+
+*Note:* 
+Loops in `.bedpe` format can be imported in R using the `import()` function, and 
+converted into `GInteractions` with the 
+`InteractionSet::makeGInteractionsFromGRangesPairs()` function. 
+
 ```{r}
-mcool_file <- HiContactsData('yeast_wt', format = 'mcool')
+mcool_file <- HiContactsData::HiContactsData('yeast_wt', format = 'mcool')
 loops <- system.file("extdata", 'S288C-loops.bedpe', package = 'HiContacts') |> 
     BiocIO::import() |> 
     InteractionSet::makeGInteractionsFromGRangesPairs()
