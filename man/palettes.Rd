@@ -4,6 +4,7 @@
 \alias{bwrColors}
 \alias{afmhotrColors}
 \alias{bbrColors}
+\alias{bgrColors}
 \title{Matrix palettes}
 \usage{
 bwrColors()
@@ -11,6 +12,8 @@ bwrColors()
 afmhotrColors()
 
 bbrColors()
+
+bgrColors()
 }
 \value{
 ggplot
@@ -22,4 +25,5 @@ Matrix palettes
 bwrColors()
 afmhotrColors()
 bbrColors()
+bgrColors()
 }

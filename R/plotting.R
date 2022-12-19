@@ -519,3 +519,24 @@ bbrColors <- function() {
         "#e2adad", "#b13636", "#6C150E"
     )
 }
+
+#' @rdname palettes
+#' 
+#' @export
+#' @examples
+#' bgrColors()
+
+bgrColors <- function() {
+    rev(c(
+        "#BD202D",
+        "#DE614D",
+        "#F19374",
+        "#F6BA9E",
+        "#EAD5CB",
+        "#CEDBEB",
+        "#AFC5E6",
+        "#8FA7D6",
+        "#677CBD",
+        "#495BA9"
+    ))
+}

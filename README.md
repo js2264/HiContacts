@@ -90,3 +90,30 @@ gg4C(v4C, aes(x = center, y = score, col = chr)) +
 hic <- Contacts(mcool_file, res = 1000)
 cisTransRatio(hic)
 ```
+
+### Mapping topological features 
+
+#### Compartments 
+
+```r
+mcool_file <- '/home/rsg/Projects/20221214_HiContacts_compartments-TADs-loops/HFFc6.mcool'
+hic <- import(mcool_file, format = 'mcool', resolution = 100000)
+genome <- Biostrings::readDNAStringSet('~/genomes/hg38/hg38.fa')
+
+# - Get compartments
+hic <- getCompartments(hic, genome)
+
+# - Export compartments as bigwig and bed files
+rtracklayer::export(IRanges::coverage(metadata(hic)$eigens, weight = 'eigen'), 'HFFc6_compartments.bw')
+rtracklayer::export(
+    topologicalFeatures(hic, 'compartments')[topologicalFeatures(hic, 'compartments')$compartment == 'A'], 
+    'HFFc6_A-compartments.bed'
+)
+rtracklayer::export(
+    topologicalFeatures(hic, 'compartments')[topologicalFeatures(hic, 'compartments')$compartment == 'B'], 
+    'HFFc6_B-compartments.bed'
+)
+
+# - Generate saddle plot
+p <- plotSaddle(hic)
+```
