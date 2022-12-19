@@ -10,7 +10,7 @@
 \usage{
 detrend(x, use.scores = "balanced")
 
-autocorrelate(x, use.scores = "balanced", ignore_ndiags = 3)
+autocorrelate(x, use.scores = "balanced", detrend = TRUE, ignore_ndiags = 3)
 
 divide(x, by, use.scores = "balanced")
 

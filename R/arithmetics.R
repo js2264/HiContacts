@@ -40,7 +40,7 @@
 detrend <- function(x, use.scores = 'balanced') {
     gis <- interactions(x)
     gis$score <- scores(x, use.scores)
-    gis$diag <- InteractionSet::pairdist(gis) / resolution(x)
+    gis$diag <- gis$bin_id2 - gis$bin_id1
     expected <- tibble::as_tibble(gis) |> 
         dplyr::group_by(diag) |> 
         dplyr::summarize(average_interaction_per_diag = mean(score, na.rm = TRUE)) |> 
@@ -79,44 +79,38 @@ detrend <- function(x, use.scores = 'balanced') {
 #' scores(contacts_yeast)
 #' plotMatrix(contacts_yeast, scale = 'linear', limits = c(-1, 1), cmap = bwrColors())
 
-autocorrelate <- function(x, use.scores = 'balanced', ignore_ndiags = 3) {
+autocorrelate <- function(x, use.scores = 'balanced', detrend = TRUE, ignore_ndiags = 3) {
+    if (detrend) {
+        x <- detrend(x, use.scores = use.scores)
+        use.scores <- 'detrended'
+    }
     gis <- interactions(x)
     gis$score <- scores(x, use.scores)
     reg <- regions(gis)
     mat <- cm2matrix(gi2cm(gis))
-    sdiag(mat, 0) <- NA
     for (K in seq(-ignore_ndiags, ignore_ndiags, by = 1)) {
         sdiag(mat, K) <- NA
     }
-    # co <- corrr::correlate(log10(mat), diagonal = 0, method = "pearson", quiet = TRUE)
-    co <- stats::cor(log10(mat), use = 'pairwise.complete.obs', method = "pearson")
-    co <- tibble::as_tibble(co, .name_repair = "universal") |> 
-        dplyr::mutate(term = paste0('V', seq_len(dplyr::n()))) |> 
-        dplyr::relocate(term)
-    colnames(co) <- c('term', names(reg))
-    co$term <- names(reg)
-    mat2 <- co |>
-        tidyr::pivot_longer(-term, names_to = "y", values_to = "corr") |>
-        dplyr::rename("x" = "term")
-    gis2 <- InteractionSet::GInteractions(
-        anchor1 = stringr::str_replace(mat2$x, '_([0-9])', ':\\1') |> stringr::str_replace('_([0-9])', '-\\1') |> stringr::str_replace_all('[-_]([A-Za-z])', '^\\1') |> as('GRanges'), 
-        anchor2 = stringr::str_replace(mat2$y, '_([0-9])', ':\\1') |> stringr::str_replace('_([0-9])', '-\\1') |> stringr::str_replace_all('[-_]([A-Za-z])', '^\\1') |> as('GRanges'), 
-        score = as.array(mat2$corr)
-    )
-
-    res <- methods::new("HiCExperiment", 
-        focus = focus(x), 
-        metadata = metadata(x),
-        resolutions = resolutions(x), 
-        resolution = resolution(x), 
-        interactions = gis2, 
-        scores = S4Vectors::SimpleList(autocorrelation = gis2$score),
-        topologicalFeatures = topologicalFeatures(x), 
-        pairsFile = pairsFile(x), 
-        fileName = fileName(x)
-    )
-
-    return(res)
+    co <- WGCNA::cor(mat, use = 'pairwise.complete.obs', method = "pearson")
+    colnames(co) <- names(regions(gis))
+    rownames(co) <- names(regions(gis))
+    mat2 <- tibble::as_tibble(co, rownames = 'region', .name_repair = "universal") |> 
+        tidyr::pivot_longer(-region, names_to = "y", values_to = "corr") |>
+        dplyr::rename("x" = "region")
+    mat2$bin_id1 <- dplyr::left_join(
+        mat2, 
+        data.frame(region = names(regions(gis)), id = regions(gis)$bin_id), 
+        by = c(x = 'region')
+    ) |> pull(id)
+    mat2$bin_id2 <- dplyr::left_join(
+        mat2, 
+        data.frame(region = names(regions(gis)), id = regions(gis)$bin_id), 
+        by = c(y = 'region')
+    ) |> pull(id)
+    scores(x, 'autocorrelated') <- left_join(
+        as_tibble(gis), mat2, by = c("bin_id1", "bin_id2")
+    ) |> pull(corr)
+    return(x)
 }
 
 #' @rdname arithmetics

@@ -104,9 +104,9 @@ InteractionSet::boundingBox(interactions(hic_subset))
 ```{r}
 mcool_file <- HiContactsData('mESCs', format = 'mcool')
 hic <- import(mcool_file, format = 'mcool', focus = 'chr2', resolution = 160000)
-autocorrelated <- autocorrelate(hic, ignore_ndiags = 20)
-scores(autocorrelated)
-summary(scores(autocorrelated, 1))
+hic <- autocorrelate(hic)
+scores(hic)
+summary(scores(hic, 'autocorrelated'))
 ```
 
 ## Detrending contact map (map over expected)
