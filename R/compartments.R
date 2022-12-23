@@ -1,7 +1,5 @@
 getCompartments <- function(x, genome, neigens = 3, autocorrelation = FALSE, BPPARAM = BiocParallel::bpparam()) {
     
-    BPPARAM <- BiocParallel::SerialParam()
-    
     ## -- Compute eigens on each chr. separately
     compts <- BiocParallel::bplapply(
         BPPARAM = BPPARAM, 

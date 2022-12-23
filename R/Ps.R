@@ -44,7 +44,7 @@ distanceLaw <- function(
         # stop("Please provide a pairsFile for `x`. Aborting now.")
         message("pairsFile not specified. The P(s) curve will be an approximation.")
         pairs <- InteractionSet::interactions(x)
-        pairs$score <- HiCExperiment::scores(x, 'raw')
+        pairs$score <- HiCExperiment::scores(x, 'count')
         df <- tibble::tibble(
             chr = as.vector(GenomeInfoDb::seqnames(InteractionSet::anchors(pairs)[['first']])),
             distance = InteractionSet::pairdist(pairs, type = 'gap'),
@@ -145,7 +145,7 @@ localDistanceLaw <- function(
             sub <- an_[['first']] %over% gr | an_[['second']] %over% gr
             x <- x[sub]
             pairs <- interactions(x)
-            pairs$score <- HiCExperiment::scores(x, 'raw')
+            pairs$score <- HiCExperiment::scores(x, 'count')
             df <- tibble::tibble(
                 chr = as.vector(GenomeInfoDb::seqnames(an_[['first']][sub])),
                 distance = InteractionSet::pairdist(pairs, type = 'gap'),

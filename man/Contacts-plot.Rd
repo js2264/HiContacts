@@ -20,7 +20,7 @@ plotMatrix(
   cmap = NULL
 )
 
-ggMatrix(mat, ticks = TRUE, grid = FALSE, cols = afmhotrColors(), limits)
+ggMatrix(mat, ticks = TRUE, grid = FALSE, cols = coolerColors(), limits)
 }
 \arguments{
 \item{x}{x}

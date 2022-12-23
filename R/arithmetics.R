@@ -48,7 +48,7 @@ detrend <- function(x, use.scores = 'balanced') {
     gis$expected <- tibble::as_tibble(gis) |> 
         dplyr::left_join(expected, by = 'diag') |> 
         dplyr::pull(average_interaction_per_diag)
-    gis$score_over_expected <- log2(gis$score / gis$expected)
+    gis$score_over_expected <- log2( {gis$score/sum(gis$score, na.rm = TRUE)} / {gis$expected/sum(gis$expected, na.rm = TRUE)} )
     scores(x, "expected") <- gis$expected
     scores(x, "detrended") <- gis$score_over_expected
     return(x)

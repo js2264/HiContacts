@@ -9,7 +9,6 @@ plotSaddle <- function(x, nbins = 51, limits = c(-1, 1), BPPARAM = BiocParallel:
         "No eigen vector found in metadata. Run getCompartments(x) first."
     )
     eigens <- metadata(x)$eigens
-    BPPARAM <- BiocParallel::SerialParam()
 
     ## -- Filter and bin regions by their eigenvector score
     filtered_eigens <- eigens[eigens$eigen != 0]

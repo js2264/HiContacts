@@ -60,7 +60,7 @@ hic
 ### Plotting matrices 
 
 ```r
-plotMatrix(hic, use.scores = 'raw')
+plotMatrix(hic, use.scores = 'count')
 plotMatrix(hic, use.scores = 'balanced', limits = c(-4, -1))
 ```
 
@@ -101,7 +101,7 @@ hic <- import(mcool_file, format = 'mcool', resolution = 100000)
 genome <- Biostrings::readDNAStringSet('~/genomes/hg38/hg38.fa')
 
 # - Get compartments
-hic <- getCompartments(hic, genome)
+hic <- getCompartments(hic, genome, autocorrelation = TRUE, BPPARAM = BiocParallel::SerialParam(progressbar = TRUE))
 
 # - Export compartments as bigwig and bed files
 rtracklayer::export(IRanges::coverage(metadata(hic)$eigens, weight = 'eigen'), 'HFFc6_compartments.bw')
@@ -117,3 +117,23 @@ rtracklayer::export(
 # - Generate saddle plot
 p <- plotSaddle(hic)
 ```
+
+#### Insulation and chromatin domains 
+
+```r
+mcool_file <- '/home/rsg/Projects/20221214_HiContacts_compartments-TADs-loops/HFFc6.mcool'
+hic <- import(mcool_file, format = 'mcool', resolution = 100000)
+
+# - Compute insulation score
+hic <- getDiamondInsulation(
+    hic,
+    resolution = 10000, 
+    window_size = 100000,
+    BPPARAM = BiocParallel::SerialParam(progressbar = TRUE)
+) |> getBorders()
+
+# - Export insulation as bigwig track and borders as bed file
+rtracklayer::export(IRanges::coverage(metadata(hic)$insulation, weight = 'insulation'), 'HFFc6_insulation.bw')
+rtracklayer::export(topologicalFeatures(hic, 'borders'), 'HFFc6_borders.bed')
+```
+

@@ -116,10 +116,10 @@ plotMatrix <- function(
     ## -- Choose color map 
     if (is.null(cmap)) {
         if (has_negative_scores) {
-            cmap <- bwrColors()
+            cmap <- bgrColors()
         }
         else {
-            cmap <- afmhotrColors()
+            cmap <- coolerColors()
         }
     }
     
@@ -201,6 +201,7 @@ plotMatrix <- function(
                     dplyr::select(-x2)
             )
             if (!is_symmetrical(x)) {
+                char <- focus(x)
                 coords <- unlist(S4Vectors::zipup(
                     S4Vectors::Pairs(
                         GenomicRanges::GRanges(
@@ -212,10 +213,10 @@ plotMatrix <- function(
                     )
                 ))
                 mat <- mat |> 
-                    dplyr::filter(x >= GenomicRanges::start(coords[1]) & 
-                        x <= GenomicRanges::end(coords[1])) |> 
-                    dplyr::filter(y >= GenomicRanges::start(coords[2]) & 
-                        y <= GenomicRanges::end(coords[2]))
+                    dplyr::filter(x >= GenomicRanges::start(coords[2]) & 
+                        x <= GenomicRanges::end(coords[2])) |> 
+                    dplyr::filter(y >= GenomicRanges::start(coords[1]) & 
+                        y <= GenomicRanges::end(coords[1]))
             }
         } 
 
@@ -304,7 +305,7 @@ plotMatrix <- function(
 #'
 #' @importFrom scales unit_format
 
-ggMatrix <- function(mat, ticks = TRUE, grid = FALSE, cols = afmhotrColors(), limits) {
+ggMatrix <- function(mat, ticks = TRUE, grid = FALSE, cols = coolerColors(), limits) {
     p <- ggplot2::ggplot(mat, ggplot2::aes(x, y, fill = score))
     p <- p + ggplot2::scale_fill_gradientn(
         colors = cols,
@@ -506,6 +507,30 @@ afmhotrColors <- function() {
     c("#ffffff", "#f8f5c3", "#f4ee8d", "#f6be35", "#ee7d32",
         "#c44228", "#821d19", "#381211", "#050606"
     )
+}
+
+#' @rdname palettes
+#' 
+#' @export
+#' @examples
+#' coolerColors()
+
+coolerColors <- function() {
+    rev(c(
+        "#1A0A10",
+        "#7A1128",
+        "#B01F29",
+        "#D42027",
+        "#ED3024",
+        "#F15C34",
+        "#F78E40",
+        "#FAAA4B",
+        "#FFCA67",
+        "#FDE188",
+        "#FFF2A9",
+        "#FCF9CE",
+        "#FFFEF9"
+    ))
 }
 
 #' @rdname palettes

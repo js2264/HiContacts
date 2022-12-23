@@ -52,7 +52,7 @@ hic
 
 The `plotMatrix` function takes a `HiCExperiment` object and plots it as a heatmap.  
 Use the `use.scores` argument to specify which type of interaction scores to use 
-in the contact maps (e.g. `raw`, `balanced`, ...). By default, `plotMatrix()` 
+in the contact maps (e.g. `count`, `balanced`, ...). By default, `plotMatrix()` 
 looks for balanced scores. If they are not stored in the original `.(m)/cool` file, 
 `plotMatrix()` simply takes the first scores available. 
 

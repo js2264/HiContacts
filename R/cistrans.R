@@ -23,7 +23,7 @@ cisTransRatio <- function(x) {
         stop('Please provide a contact matrix over the entire genome. Aborting now.')
     }
     gis <- InteractionSet::interactions(x)
-    gis$score <- HiCExperiment::scores(x, 'raw')
+    gis$score <- HiCExperiment::scores(x, 'count')
     cnts <- gis |> 
         tibble::as_tibble() |> 
         dplyr::relocate(c(seqnames1, seqnames2))

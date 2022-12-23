@@ -3,6 +3,7 @@
 \name{bwrColors}
 \alias{bwrColors}
 \alias{afmhotrColors}
+\alias{coolerColors}
 \alias{bbrColors}
 \alias{bgrColors}
 \title{Matrix palettes}
@@ -10,6 +11,8 @@
 bwrColors()
 
 afmhotrColors()
+
+coolerColors()
 
 bbrColors()
 
@@ -24,6 +27,7 @@ Matrix palettes
 \examples{
 bwrColors()
 afmhotrColors()
+coolerColors()
 bbrColors()
 bgrColors()
 }
