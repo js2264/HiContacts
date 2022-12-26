@@ -6,6 +6,7 @@
 \alias{divide}
 \alias{merge}
 \alias{serpentinify}
+\alias{aggregate,HiCExperiment-method}
 \title{Arithmetics with (m)cool file(s)}
 \usage{
 detrend(x, use.scores = "balanced")
@@ -23,6 +24,8 @@ serpentinify(
   serpentine_niter = 10L,
   serpentine_ncores = 16L
 )
+
+\S4method{aggregate}{HiCExperiment}(x, ...)
 }
 \arguments{
 \item{x}{a \code{HiCExperiment} object}
@@ -54,6 +57,8 @@ a \code{HiCExperiment} object. Each returned scores is the sum of the
 corresponding scores from input \code{HiCExperiment}.
 
 a \code{HiCExperiment} object with a single \code{smoothen} scores
+
+a \code{AggrHiCExperiment} object
 }
 \description{
 Different operations can be performed:

@@ -421,3 +421,25 @@ serpentinify <- function(x, use.scores = 'balanced',
     return(res)
 }
 
+#' @rdname arithmetics
+#' @importFrom S4Vectors aggregate
+#' @return a `AggrHiCExperiment` object
+#' @export
+
+setMethod("aggregate", signature(x = "HiCExperiment"), function(x, ...) {
+    params <- list(...)
+    snippets <- params[['snippets']]
+    if ('BPPARAM' %in% names(params)) {BPPARAM <- params[['BPPARAM']]} 
+    else {BPPARAM <- BiocParallel::bpparam()}
+    if ('bed' %in% names(params)) {bed <- params[['bed']]} else {bed <- NULL}
+    HiCExperiment::AggrHiCExperiment(
+        file = fileName(x), 
+        resolution = resolution(x), 
+        snippets = snippets,  
+        metadata = S4Vectors::metadata(x), 
+        topologicalFeatures = topologicalFeatures(x), 
+        pairsFile = pairsFile(x), 
+        BPPARAM = BPPARAM,
+        bed = bed
+    )
+})
