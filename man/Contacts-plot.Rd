@@ -3,12 +3,14 @@
 \name{plotMatrix}
 \alias{plotMatrix}
 \alias{ggMatrix}
+\alias{ggHorizontalMatrix}
 \title{Plotting a contact matrix}
 \usage{
 plotMatrix(
   x,
   use.scores = NULL,
   scale = "log10",
+  max.distance = NULL,
   loops = NULL,
   borders = NULL,
   limits = NULL,
@@ -21,6 +23,8 @@ plotMatrix(
 )
 
 ggMatrix(mat, ticks = TRUE, grid = FALSE, cols = coolerColors(), limits)
+
+ggHorizontalMatrix(df, cols = coolerColors(), limits)
 }
 \arguments{
 \item{x}{x}
@@ -28,6 +32,9 @@ ggMatrix(mat, ticks = TRUE, grid = FALSE, cols = coolerColors(), limits)
 \item{use.scores}{use.scores}
 
 \item{scale}{scale}
+
+\item{max.distance}{maximum distance. If provided, the heatmap is plotted
+horizontally.}
 
 \item{loops}{loops}
 
@@ -47,7 +54,7 @@ ggMatrix(mat, ticks = TRUE, grid = FALSE, cols = coolerColors(), limits)
 
 \item{cmap}{color map}
 
-\item{mat}{mat}
+\item{mat, df}{mat}
 
 \item{ticks}{ticks}
 

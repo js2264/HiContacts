@@ -12,6 +12,8 @@
 #' @param use.scores use.scores
 #' @param scale scale
 #' @param limits limits
+#' @param max.distance maximum distance. If provided, the heatmap is plotted 
+#'   horizontally. 
 #' @param loops loops
 #' @param borders borders
 #' @param dpi dpi
@@ -52,6 +54,7 @@ plotMatrix <- function(
     x, 
     use.scores = NULL, 
     scale = 'log10', 
+    max.distance = NULL, 
     loops = NULL, 
     borders = NULL, 
     limits = NULL, 
@@ -134,7 +137,7 @@ plotMatrix <- function(
     }
 
     ## -- If loops are provided, filter them and add
-    if (!is.null(loops)) {
+    if (!is.null(loops) & is.null(max.distance)) {
         filtered_loops <- tibble::as_tibble(
             loops[anchors(loops)[['first']] %over% gis & anchors(loops)[['second']] %over% gis]
         )
@@ -155,7 +158,7 @@ plotMatrix <- function(
     }
 
     ## -- If borders are provided, filter them and add
-    if (!is.null(borders)) {
+    if (!is.null(borders) & is.null(max.distance)) {
         filtered_borders <- tibble::as_tibble(
             borders[borders %over% gis]
         )
@@ -179,61 +182,86 @@ plotMatrix <- function(
     )))
 
     if (nseqnames == 1) { ## Single chromosome coordinates to plot
+        if (is.null(max.distance)) {
+            ## -- Convert gis to table and extract x/y
+            mat <- gis |>
+                tibble::as_tibble() |>
+                dplyr::mutate(
+                    x = floor(end1 - (end1 - start1) / 2),
+                    y = floor(end2 - (end2 - start2) / 2)
+                ) |> 
+                tidyr::drop_na(score)
 
-        ## -- Convert gis to table and extract x/y
-        mat <- gis |>
-            tibble::as_tibble() |>
-            dplyr::mutate(
-                x = floor(end1 - (end1 - start1) / 2),
-                y = floor(end2 - (end2 - start2) / 2)
-            ) |> 
-            tidyr::drop_na(score)
+            ## -- Clamp scores to limits
+            mat <- dplyr::mutate(mat, score = scales::oob_squish(score, c(m, M)))
 
-        ## -- Clamp scores to limits
-        mat <- dplyr::mutate(mat, score = scales::oob_squish(score, c(m, M)))
-
-        ## -- Add lower triangular matrix scores (if symetrical)
-        if (symmetrical) {
-            mat <- rbind(
-                mat, 
-                mat |> 
-                    dplyr::mutate(x2 = y, y = x, x = x2) |> 
-                    dplyr::select(-x2)
-            )
-            if (!is_symmetrical(x)) {
-                char <- focus(x)
-                coords <- unlist(S4Vectors::zipup(
-                    S4Vectors::Pairs(
-                        GenomicRanges::GRanges(
-                            stringr::str_split(char, '\\|')[[1]][[1]]
-                            ), 
-                        GenomicRanges::GRanges(
-                            stringr::str_split(char, '\\|')[[1]][[2]]
-                            )
-                    )
-                ))
-                mat <- mat |> 
-                    dplyr::filter(x >= GenomicRanges::start(coords[2]) & 
-                        x <= GenomicRanges::end(coords[2])) |> 
-                    dplyr::filter(y >= GenomicRanges::start(coords[1]) & 
-                        y <= GenomicRanges::end(coords[1]))
-            }
-        } 
-
-        ## -- Plot matrix
-        p <- ggMatrix(mat, cols = cmap, limits = limits, grid = show_grid) +
-            plotFun +
-            p_loops + 
-            p_borders + 
-            ggplot2::labs(
-                x = unique(mat$seqnames1),
-                y = "Genome coordinates", 
-                caption = paste(
-                    sep = '\n',
-                    paste0('file: ', fileName(x)), 
-                    paste0('res: ', resolution(x))
+            ## -- Add lower triangular matrix scores (if symetrical)
+            if (symmetrical) {
+                mat <- rbind(
+                    mat, 
+                    mat |> 
+                        dplyr::mutate(x2 = y, y = x, x = x2) |> 
+                        dplyr::select(-x2)
                 )
-            )
+                if (!is_symmetrical(x)) {
+                    char <- focus(x)
+                    coords <- unlist(S4Vectors::zipup(
+                        S4Vectors::Pairs(
+                            GenomicRanges::GRanges(
+                                stringr::str_split(char, '\\|')[[1]][[1]]
+                                ), 
+                            GenomicRanges::GRanges(
+                                stringr::str_split(char, '\\|')[[1]][[2]]
+                                )
+                        )
+                    ))
+                    mat <- mat |> 
+                        dplyr::filter(x >= GenomicRanges::start(coords[2]) & 
+                            x <= GenomicRanges::end(coords[2])) |> 
+                        dplyr::filter(y >= GenomicRanges::start(coords[1]) & 
+                            y <= GenomicRanges::end(coords[1]))
+                }
+            } 
+
+            ## -- Plot matrix
+            p <- ggMatrix(mat, cols = cmap, limits = limits, grid = show_grid) +
+                plotFun +
+                p_loops + 
+                p_borders + 
+                ggplot2::labs(
+                    x = unique(mat$seqnames1),
+                    y = "Genome coordinates", 
+                    caption = paste(
+                        sep = '\n',
+                        paste0('file: ', fileName(x)), 
+                        paste0('res: ', resolution(x))
+                    )
+                )
+        }
+        else {
+            ## -- Convert gis to table and extract x/y
+            df <- gis |>
+                tibble::as_tibble() |>
+                dplyr::mutate(
+                    diag = center2 - center1, 
+                    x = center1 + (center2 - center1)/2
+                ) |> 
+                tidyr::drop_na(score) |> 
+                dplyr::filter(diag <= max.distance)
+
+            ## -- Clamp scores to limits
+            df <- dplyr::mutate(df, score = scales::oob_squish(score, c(m, M)))
+
+            ## -- Plot matrix
+            p <- ggHorizontalMatrix(df, cols = cmap, limits = limits) +
+                plotFun +
+                p_loops + 
+                p_borders + 
+                ggplot2::labs(
+                    x = "Genomic location",
+                    y = "Distance"
+                )
+        }
     }
 
     else {
@@ -296,7 +324,7 @@ plotMatrix <- function(
 
 #' @rdname Contacts-plot
 #' 
-#' @param mat mat
+#' @param mat,df mat
 #' @param ticks ticks
 #' @param grid grid
 #' @param cols cols
@@ -317,6 +345,24 @@ ggMatrix <- function(mat, ticks = TRUE, grid = FALSE, cols = coolerColors(), lim
         ggplot2::guides(fill = ggplot2::guide_colorbar(barheight = ggplot2::unit(5, "cm"), barwidth = 0.5, frame.colour = "black")) + 
         ggplot2::coord_fixed() +
         ggthemeHiContacts(ticks, grid)
+    p
+}
+
+#' @rdname Contacts-plot
+
+ggHorizontalMatrix <- function(df, cols = coolerColors(), limits) {
+    p <- ggplot2::ggplot(df, ggplot2::aes(x, diag, fill = score))
+    r <- 1/sqrt(2)/sqrt(2)
+    p <- p + ggplot2::scale_fill_gradientn(
+        colors = cols,
+        na.value = "#FFFFFF",
+        limits = limits
+    ) +
+        ggplot2::scale_x_continuous(expand = c(0, 0), labels = scales::unit_format(unit = "M", scale = 1e-6)) +
+        ggplot2::scale_y_continuous(expand = c(0, 0), labels = scales::unit_format(unit = "M", scale = 1e-6)) +
+        ggplot2::guides(fill = ggplot2::guide_colorbar(barheight = ggplot2::unit(5, "cm"), barwidth = 0.5, frame.colour = "black")) + 
+        ggplot2::coord_fixed(ratio = r) +
+        ggthemeHiContacts(ticks = TRUE, grid = FALSE)
     p
 }
 
