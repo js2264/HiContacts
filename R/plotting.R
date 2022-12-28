@@ -7,6 +7,7 @@
 #' Plotting a contact matrix
 #'
 #' @rdname Contacts-plot
+#' @aliases plotMatrix,HiCExperiment-method
 #' 
 #' @param x x
 #' @param use.scores use.scores
@@ -50,7 +51,42 @@
 #'     limits = c(-4, -1)
 #' )
 
-plotMatrix <- function(
+setMethod("plotMatrix", "HiCExperiment", function(
+    x, 
+    use.scores = NULL, 
+    scale = 'log10', 
+    max.distance = NULL, 
+    loops = NULL, 
+    borders = NULL, 
+    limits = NULL, 
+    dpi = 500, 
+    rasterize = TRUE, 
+    symmetrical = TRUE, 
+    chrom_lines = TRUE, 
+    show_grid = FALSE, 
+    cmap = NULL  
+ ) {
+    plotMatrix(
+        interactions(x), 
+        use.scores = use.scores, 
+        scale = scale, 
+        max.distance = max.distance, 
+        loops = loops, 
+        borders = borders, 
+        limits = limits, 
+        dpi = dpi, 
+        rasterize = rasterize, 
+        symmetrical = symmetrical, 
+        chrom_lines = chrom_lines, 
+        show_grid = show_grid, 
+        cmap = cmap  
+    )
+})
+
+#' @rdname Contacts-plot
+#' @export
+
+setMethod("plotMatrix", "GInteractions", function(
     x, 
     use.scores = NULL, 
     scale = 'log10', 
@@ -66,20 +102,18 @@ plotMatrix <- function(
     cmap = NULL  
 ) {
     `%over%` <- IRanges::`%over%`
-    
+
     ## -- Extract scores
+    gis <- x
     if (!is.null(use.scores)) {
-        gis <- InteractionSet::interactions(x)
-        gis$score <- HiCExperiment::scores(x, use.scores)
+        gis$score <- S4Vectors::mcols(gis)[, use.scores]
     }
     else {
-        if ("balanced" %in% names(scores(x))) {
-            gis <- InteractionSet::interactions(x)
-            gis$score <- HiCExperiment::scores(x, "balanced")
+        if ("balanced" %in% colnames(S4Vectors::mcols(gis))) {
+            gis$score <- S4Vectors::mcols(gis)[, 'balanced']
         } 
         else {
-            gis <- InteractionSet::interactions(x)
-            gis$score <- HiCExperiment::scores(x, 1)
+            gis$score <- S4Vectors::mcols(gis)[, 'count']
         }
     }
 
@@ -129,7 +163,9 @@ plotMatrix <- function(
     # -- Define plotting approach
     if (rasterize) {
         plotFun <- ggrastr::geom_tile_rast(
-            raster.dpi = dpi, width = resolution(x), height = resolution(x)
+            raster.dpi = dpi,
+            width = GenomicRanges::width(gis)[[1]][1], 
+            height = GenomicRanges::width(gis)[[1]][1]
         )
     }
     else {
@@ -203,18 +239,13 @@ plotMatrix <- function(
                         dplyr::mutate(x2 = y, y = x, x = x2) |> 
                         dplyr::select(-x2)
                 )
-                if (!is_symmetrical(x)) {
-                    char <- focus(x)
-                    coords <- unlist(S4Vectors::zipup(
-                        S4Vectors::Pairs(
-                            GenomicRanges::GRanges(
-                                stringr::str_split(char, '\\|')[[1]][[1]]
-                                ), 
-                            GenomicRanges::GRanges(
-                                stringr::str_split(char, '\\|')[[1]][[2]]
-                                )
-                        )
-                    ))
+                bb <- InteractionSet::boundingBox(x)
+                bbOne <- GenomicInteractions::anchorOne(bb)
+                bbTwo <- GenomicInteractions::anchorTwo(bb)
+                fraction_ov <- GenomicRanges::width(GenomicRanges::pintersect(bbOne, bbTwo)) /
+                    {{GenomicRanges::width(bbOne) + GenomicRanges::width(bbTwo)}/2}
+                if (fraction_ov > 0.9) {
+                    coords <- c(bbOne, bbTwo)
                     mat <- mat |> 
                         dplyr::filter(x >= GenomicRanges::start(coords[2]) & 
                             x <= GenomicRanges::end(coords[2])) |> 
@@ -230,12 +261,7 @@ plotMatrix <- function(
                 p_borders + 
                 ggplot2::labs(
                     x = unique(mat$seqnames1),
-                    y = "Genome coordinates", 
-                    caption = paste(
-                        sep = '\n',
-                        paste0('file: ', fileName(x)), 
-                        paste0('res: ', resolution(x))
-                    )
+                    y = "Genome coordinates"
                 )
         }
         else {
@@ -299,12 +325,7 @@ plotMatrix <- function(
             plotFun +
             ggplot2::labs(
                 x = "Genome coordinates",
-                y = "Genome coordinates", 
-                caption = paste(
-                    sep = '\n',
-                    paste0('file: ', fileName(x)), 
-                    paste0('res: ', resolution(x))
-                )
+                y = "Genome coordinates"
             )
         if (chrom_lines) {
             p <- p +
@@ -320,7 +341,97 @@ plotMatrix <- function(
     }
 
     p
-}
+})
+
+#' @rdname Contacts-plot
+#' @export
+
+setMethod("plotMatrix", "matrix", function(
+    x, 
+    scale = 'log10', 
+    limits = NULL, 
+    dpi = 500, 
+    rasterize = TRUE, 
+    cmap = NULL  
+) {    
+    ## -- Put metric to plot in `score` column
+    mat <- x
+    has_negative_scores <- any(mat < 0, na.rm = TRUE)
+
+    ## -- Scale score
+    if (scale == 'log10') {
+        mat <- log10(mat)
+    } 
+    else if (scale == 'log2') {
+        mat <- log2(mat)
+    }
+    else if (scale == 'exp0.2') {
+        mat <- mat^0.2
+    }
+    else if (scale == 'linear') {
+        mat <- mat
+    }
+
+    ## -- Set matrix limits
+    if (!is.null(limits)) {
+        m <- limits[1]
+        M <- limits[2]
+    }
+    else {
+        mat0 <- mat
+        sdiag(mat0, 0) <- NA
+        .scores <- mat0
+        .scores <- .scores[!is.na(.scores)]
+        .scores <- .scores[!is.infinite(.scores)]
+        M <- max(.scores)
+        m <- min(.scores)
+        limits <- c(m, M)
+    }
+
+    ## -- Choose color map 
+    if (is.null(cmap)) {
+        if (has_negative_scores) {
+            cmap <- bgrColors()
+        }
+        else {
+            cmap <- coolerColors()
+        }
+    }
+    
+    # -- Define plotting approach
+    if (rasterize) {
+        plotFun <- ggrastr::geom_tile_rast(
+            raster.dpi = dpi
+        )
+    }
+    else {
+        plotFun <- ggplot2::geom_tile()
+    }
+
+    ## -- Convert gis to table and extract x/y
+    colnames(mat) <- paste0("bin", seq_len(ncol(mat)))
+    mat <- tibble::as_tibble(mat) |>
+        dplyr::mutate(x = seq_len(ncol(mat))) |>
+        tidyr::pivot_longer(-x, names_to = 'y', values_to = 'score') |> 
+        dplyr::mutate(y = gsub('bin', '', y) |> as.numeric()) |>
+        tidyr::drop_na(score)
+
+    ## -- Clamp scores to limits
+    mat <- dplyr::mutate(mat, score = scales::oob_squish(score, c(m, M)))
+
+    ## -- Plot matrix
+    p <- ggMatrix(mat, cols = cmap, limits = limits) +
+        plotFun +
+        ggplot2::labs(
+            x = "Bin number",
+            y = "Bin number"
+        ) + 
+        ggplot2::scale_x_continuous(expand = c(0, 0), position = 'top') +
+        ggplot2::scale_y_reverse(expand = c(0, 0))
+
+    p
+})
+
 
 #' @rdname Contacts-plot
 #' 
