@@ -47,7 +47,7 @@ vignette('HiContacts')
 
 ## Visualising Hi-C contact maps and features 
 
-### Importing a .(m)cool file as `HiCExperiment`
+### Importing a Hi-C contact maps file with `HiCExperiment`
 
 ```r
 mcool_file <- HiContactsData::HiContactsData('yeast_wt', format = 'mcool')
@@ -62,70 +62,81 @@ hic
 ```r
 plotMatrix(hic, use.scores = 'count')
 plotMatrix(hic, use.scores = 'balanced', limits = c(-4, -1))
+plotMatrix(hic, use.scores = 'balanced', limits = c(-4, -1), max.distance = 100000)
 ```
 
 ### Plotting matrices with topological features
 
 ```r
-contacts <- HiCExperiment::full_contacts_yeast()
-contacts <- zoom(contacts, resolution = 2000)
-aggr_centros <- aggregate(contacts, snippets = topologicalFeatures(contacts, 'centromeres'))
+mcool_file <- HiContactsData::HiContactsData('yeast_wt', format = 'mcool')
+hic <- HiCExperiment::import(mcool_file, format = 'mcool', focus = 'IV')
+loops <- system.file("extdata", 'S288C-loops.bedpe', package = 'HiContacts') |> 
+    BiocIO::import() |> 
+    InteractionSet::makeGInteractionsFromGRangesPairs()
+borders <- system.file("extdata", 'S288C-borders.bed', package = 'HiContacts') |> 
+    BiocIO::import()
+p <- plotMatrix(
+    hic, loops = loops, borders = borders, 
+    limits = c(-4, -1), dpi = 120
+)
 ```
 
 ### Plotting aggregated matrices (a.k.a. APA plots) 
 
 ```r
-
+contacts <- HiCExperiment::full_contacts_yeast()
+contacts <- zoom(contacts, resolution = 2000)
+aggr_centros <- aggregate(contacts, targets = topologicalFeatures(contacts, 'centromeres'))
+plotMatrix(aggr_centros, use.scores = 'detrended', limits = c(-1, 1), scale = 'linear')
 ```
 
-### Saddle plots 
+### Scalograms 
 
 ```r
-# - Generate saddle plot
-p <- plotSaddle(hic)
+
 ```
 
 ## Mapping topological features 
 
-### Compartments 
+### Chromosome compartments 
 
 ```r
-mcool_file <- '/home/rsg/Projects/20221214_HiContacts_compartments-TADs-loops/HFFc6.mcool'
-hic <- import(mcool_file, format = 'mcool', resolution = 100000)
-genome <- Biostrings::readDNAStringSet('~/genomes/hg38/hg38.fa')
+microC_mcool <- fourDNData::fourDNDataFiles('4DNES14CNC1I', 'mcool')
+hic <- import(microC_mcool, format = 'mcool', resolution = 100900000)
+genome <- BSgenome.Mmusculus.UCSC.mm10::BSgenome.Mmusculus.UCSC.mm10
 
 # - Get compartments
-hic <- getCompartments(hic, genome, autocorrelation = TRUE, BPPARAM = BiocParallel::SerialParam(progressbar = TRUE))
+hic <- getCompartments(
+    hic, resolution = 100000, genome = genome, chromosomes = c('chr17', 'chr19')
+)
 
 # - Export compartments as bigwig and bed files
-rtracklayer::export(IRanges::coverage(metadata(hic)$eigens, weight = 'eigen'), 'HFFc6_compartments.bw')
+rtracklayer::export(IRanges::coverage(metadata(hic)$eigens, weight = 'eigen'), 'microC_compartments.bw')
 rtracklayer::export(
     topologicalFeatures(hic, 'compartments')[topologicalFeatures(hic, 'compartments')$compartment == 'A'], 
-    'HFFc6_A-compartments.bed'
+    'microC_A-compartments.bed'
 )
 rtracklayer::export(
     topologicalFeatures(hic, 'compartments')[topologicalFeatures(hic, 'compartments')$compartment == 'B'], 
-    'HFFc6_B-compartments.bed'
+    'microC_B-compartments.bed'
 )
+
+# - Generate saddle plot
+plotSaddle(hic)
 ```
 
-### Diamond insulation score and domains borders
+### Diamond insulation score and chromatin domains borders
 
 ```r
-mcool_file <- '/home/rsg/Projects/20221214_HiContacts_compartments-TADs-loops/HFFc6.mcool'
-hic <- import(mcool_file, format = 'mcool', resolution = 100000)
-
 # - Compute insulation score
-hic <- getDiamondInsulation(
-    hic,
-    resolution = 10000, 
-    window_size = 100000,
-    BPPARAM = BiocParallel::SerialParam(progressbar = TRUE)
-) |> getBorders()
+hic <- refocus(hic, 'chr19:1-30000000') |> 
+    zoom(resolution = 10000) |> 
+    getDiamondInsulation(window_size = 100000) |> 
+    getBorders()
 
 # - Export insulation as bigwig track and borders as bed file
-rtracklayer::export(IRanges::coverage(metadata(hic)$insulation, weight = 'insulation'), 'HFFc6_insulation.bw')
-rtracklayer::export(topologicalFeatures(hic, 'borders'), 'HFFc6_borders.bed')
+rtracklayer::export(IRanges::coverage(metadata(hic)$insulation, weight = 'insulation'), 'microC_insulation.bw')
+rtracklayer::export(topologicalFeatures(hic, 'borders'), 'microC_borders.bed')
 ```
 
 ## In-depth analysis of `HiCExperiment` objects

@@ -3,7 +3,7 @@
 #' From a (m)cool pre-imported in memory, computes a 4C profile 
 #' using a user-specified `viewpoint`. 
 #'
-#' @param x a `Contacts` object
+#' @param x a `HiCExperiment` object
 #' @param viewpoint viewpoint, defined as a GRanges
 #' @param use.scores use.scores
 #' @return A tibble with the contact frequency of the viewpoint, per bin 

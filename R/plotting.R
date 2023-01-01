@@ -240,8 +240,8 @@ setMethod("plotMatrix", "GInteractions", function(
                         dplyr::select(-x2)
                 )
                 bb <- InteractionSet::boundingBox(x)
-                bbOne <- GenomicInteractions::anchorOne(bb)
-                bbTwo <- GenomicInteractions::anchorTwo(bb)
+                bbOne <- InteractionSet::anchors(bb)[[1]]
+                bbTwo <- InteractionSet::anchors(bb)[[2]]
                 fraction_ov <- GenomicRanges::width(GenomicRanges::pintersect(bbOne, bbTwo)) /
                     {{GenomicRanges::width(bbOne) + GenomicRanges::width(bbTwo)}/2}
                 if (fraction_ov > 0.9) {

@@ -86,7 +86,11 @@ is_same_resolution <- function(...) {
 is_same_bins <- function(...) {
     contacts_list <- list(...)
     all(unlist(lapply(contacts_list, function(x) {
-        identical(bins(contacts_list[[1]]), bins(x))
+        b1 <- bins(contacts_list[[1]])
+        b1$weight <- NULL
+        b2 <- bins(x)
+        b2$weight <- NULL
+        identical(b1, b2)
     })))
 }
 

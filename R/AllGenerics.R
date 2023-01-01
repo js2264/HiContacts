@@ -22,6 +22,7 @@
 #' @param show_grid show_grid
 #' @param cmap color map
 NULL
+
 setGeneric("plotMatrix", function(
     x, 
     use.scores = NULL, 

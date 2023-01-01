@@ -11,8 +11,13 @@ test_that("v4C works", {
 })
 
 test_that("arithmetics works", {
-    contacts_yeast <- HiCExperiment::contacts_yeast()
-    contacts_yeast_eco1 <- HiCExperiment::contacts_yeast_eco1()
+    contacts_yeast <- HiCExperiment::contacts_yeast() |> 
+        HiCExperiment::refocus('II')
+    full_contacts_yeast <- HiCExperiment::full_contacts_yeast() |> 
+        HiCExperiment::refocus('II') |> 
+        HiCExperiment::zoom(resolution = 1000)
+    contacts_yeast_eco1 <- HiCExperiment::contacts_yeast_eco1() |> 
+        HiCExperiment::refocus('II')
     expect_true({
         x <- detrend(contacts_yeast)
         validObject(x)
@@ -27,6 +32,13 @@ test_that("arithmetics works", {
     })
     expect_true({
         merged_contacts <- merge(contacts_yeast_eco1, contacts_yeast)
+        validObject(merged_contacts)
+    })
+    expect_true({
+        aggr_contacts <- aggregate(
+            full_contacts_yeast, 
+            targets = topologicalFeatures(full_contacts_yeast, 'centromeres')
+        )
         validObject(merged_contacts)
     })
 })

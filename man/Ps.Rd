@@ -17,7 +17,7 @@ localDistanceLaw(x, coords = coords)
 PsBreaks()
 }
 \arguments{
-\item{x}{A \code{Contacts} object}
+\item{x}{A \code{HiCExperiment} object}
 
 \item{by_chr}{by_chr}
 
@@ -34,7 +34,7 @@ tbl
 }
 \description{
 P(s) will be approximated if no pairs are provided, or the exact P(s)
-will be computed if a \code{.pairs} file is added to the \code{Contacts} object
+will be computed if a \code{.pairs} file is added to the \code{HiCExperiment} object
 using \code{pairsFile(x) <- "..."}.
 }
 \examples{

@@ -32,11 +32,14 @@ serpentinify(
 
 \item{use.scores}{use.scores}
 
+\item{detrend}{Detrend matrix before performing autocorrelation}
+
 \item{ignore_ndiags}{ignore N diagonals when calculating correlations}
 
 \item{by}{a \code{HiCExperiment} object}
 
-\item{...}{\code{HiCExperiment} objects}
+\item{...}{\code{HiCExperiment} objects. For \code{aggregate}, \code{targets} (a set of
+GRanges or GInteractions).}
 
 \item{use_serpentine_trend}{whether to use the trend estimated with
 serpentine (this requires \code{reticulate} and the python package \code{serpentine})}
@@ -69,6 +72,8 @@ contact trend;
 large-scale compartments;
 \item Divide one contact matrix by another;
 \item Merge multiple contact matrices;
+\item Aggregate (average) a contact matrices over a set of genomic loci of
+interest;
 \item Serpentinify, or smooth a contact matrix out. This requires \code{serpentine}
 python package to be installed.
 }
@@ -82,6 +87,7 @@ library(HiContacts)
 contacts_yeast <- contacts_yeast()
 contacts_yeast <- detrend(contacts_yeast)
 scores(contacts_yeast)
+
 #### -----
 #### Auto-correlate a contact matrix
 #### -----
@@ -89,6 +95,7 @@ scores(contacts_yeast)
 contacts_yeast <- autocorrelate(contacts_yeast)
 scores(contacts_yeast)
 plotMatrix(contacts_yeast, scale = 'linear', limits = c(-1, 1), cmap = bwrColors())
+
 #### -----
 #### Divide 2 contact matrices
 #### -----
@@ -98,10 +105,25 @@ contacts_yeast_eco1 <- contacts_yeast_eco1()
 div_contacts <- divide(contacts_yeast_eco1, by = contacts_yeast)
 div_contacts
 plotMatrix(div_contacts, scale = 'log2', limits = c(-2, 2), cmap = bwrColors())
+
 #### -----
 #### Merge 2 contact matrices
 #### -----
 
 merged_contacts <- merge(contacts_yeast_eco1, contacts_yeast)
 merged_contacts
+
+#### -----
+#### Aggregate a contact matrix over centromeres, at different scales
+#### -----
+
+contacts <- full_contacts_yeast() |> zoom(resolution = 1000)
+centros <- topologicalFeatures(contacts, 'centromeres')
+aggr <- aggregate(contacts, targets = centros, flanking_bins = 50)
+plotMatrix(aggr, 'detrended', scale = 'linear', limits = c(-1, 1))
+
+contacts <- full_contacts_yeast() |> zoom(resolution = 8000)
+centros <- topologicalFeatures(contacts, 'centromeres')
+aggr <- aggregate(contacts, targets = centros, flanking_bins = 20)
+plotMatrix(aggr, 'detrended', scale = 'linear', limits = c(-1, 1))
 }

@@ -1,12 +1,12 @@
 #' Compute the law of distance-dependent contact frequency, a.k.a. P(s)
 #' 
 #' P(s) will be approximated if no pairs are provided, or the exact P(s) 
-#' will be computed if a `.pairs` file is added to the `Contacts` object 
+#' will be computed if a `.pairs` file is added to the `HiCExperiment` object 
 #' using `pairsFile(x) <- "..."`. 
 #' 
 #' @rdname Ps
 #' 
-#' @param x A `Contacts` object
+#' @param x A `HiCExperiment` object
 #' @param by_chr by_chr
 #' @param filtered_chr filtered_chr
 #' @return a tibble

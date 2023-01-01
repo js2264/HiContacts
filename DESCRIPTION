@@ -19,11 +19,15 @@ Depends:
 Imports:
     InteractionSet,
     GenomicRanges,
-    BiocIO,
     IRanges,
     GenomeInfoDb,
     S4Vectors,
     methods,
+    BiocIO,
+    BiocParallel, 
+    RSpectra, 
+    Matrix, 
+    WGCNA, 
     tibble,
     tidyr,
     dplyr,
@@ -34,7 +38,9 @@ Imports:
     scales
 Suggests:
     HiContactsData,
-    cowplot,
+    Biostrings, 
+    BSgenome.Scerevisiae.UCSC.sacCer3, 
+    patchwork,
     testthat (>= 3.0.0),
     BiocStyle,
     knitr,

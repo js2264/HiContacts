@@ -114,7 +114,7 @@ summary(scores(hic, 'autocorrelated'))
 ```{r}
 hic <- import(mcool_file, format = 'mcool', focus = 'chr18:20000000-35000000', resolution = 40000)
 detrended_hic <- detrend(hic)
-cowplot::plot_grid(
+patchwork::wrap_plots(
     plotMatrix(detrended_hic, use.scores = 'expected', dpi = 120),
     plotMatrix(detrended_hic, use.scores = 'detrended', scale = 'linear', limits = c(-3, 3), dpi = 120)
 )
@@ -144,7 +144,7 @@ hic_1 <- import(mcool_file_1, format = 'mcool', focus = 'II', resolution = 2000)
 hic_2 <- import(mcool_file_2, format = 'mcool', focus = 'II', resolution = 2000)
 div_hic <- divide(hic_1, by = hic_2) 
 div_hic
-p <- cowplot::plot_grid(
+p <- patchwork::wrap_plots(
     plotMatrix(hic_1, use.scores = 'balanced', scale = 'log10', limits = c(-4, -1)),
     plotMatrix(hic_2, use.scores = 'balanced', scale = 'log10', limits = c(-4, -1)),
     plotMatrix(div_hic, use.scores = 'ratio', scale = 'log2', limits = c(-2, 2), cmap = bwrColors())

@@ -43,5 +43,5 @@ constructor (from HiCExperiment package).
 library(HiContacts)
 library(HiContactsData)
 mcool_path <- HiContactsData::HiContactsData('yeast_wt', 'mcool')
-Contacts(mcool_path)
+Contacts(mcool_path, resolution = 1000)
 }

@@ -2,7 +2,7 @@
 #' 
 #' Quickly computes a cis-trans ratio of interactions. 
 #'
-#' @param x A `Contacts` object over the full genome
+#' @param x A `HiCExperiment` object over the full genome
 #' @return a tibble, listing for each chr. the % of cis/trans interactions
 #'
 #' @importFrom tibble as_tibble

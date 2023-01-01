@@ -7,7 +7,7 @@
 virtual4C(x, viewpoint, use.scores = "balanced")
 }
 \arguments{
-\item{x}{a \code{Contacts} object}
+\item{x}{a \code{HiCExperiment} object}
 
 \item{viewpoint}{viewpoint, defined as a GRanges}
 

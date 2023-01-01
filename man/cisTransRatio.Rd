@@ -7,7 +7,7 @@
 cisTransRatio(x)
 }
 \arguments{
-\item{x}{A \code{Contacts} object over the full genome}
+\item{x}{A \code{HiCExperiment} object over the full genome}
 }
 \value{
 a tibble, listing for each chr. the \% of cis/trans interactions

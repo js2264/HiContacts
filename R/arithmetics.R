@@ -7,6 +7,8 @@
 #' large-scale compartments;
 #'  - Divide one contact matrix by another; 
 #'  - Merge multiple contact matrices;
+#'  - Aggregate (average) a contact matrices over a set of genomic loci of 
+#' interest;
 #'  - Serpentinify, or smooth a contact matrix out. This requires `serpentine` 
 #' python package to be installed.
 #' 
@@ -36,6 +38,7 @@
 #' contacts_yeast <- contacts_yeast()
 #' contacts_yeast <- detrend(contacts_yeast)
 #' scores(contacts_yeast)
+#' 
 
 detrend <- function(x, use.scores = 'balanced') {
     gis <- interactions(x)
@@ -58,6 +61,7 @@ detrend <- function(x, use.scores = 'balanced') {
 #'
 #' @param x a `HiCExperiment` object
 #' @param use.scores use.scores
+#' @param detrend Detrend matrix before performing autocorrelation
 #' @param ignore_ndiags ignore N diagonals when calculating correlations
 #' @return a `HiCExperiment` object with a single `autocorrelation` scores
 #' 
@@ -69,6 +73,7 @@ detrend <- function(x, use.scores = 'balanced') {
 #' @importFrom dplyr mutate
 #' @importFrom dplyr n
 #' @importFrom S4Vectors SimpleList
+#' @importFrom WGCNA cor
 #' @export
 #' @examples 
 #' #### -----
@@ -78,6 +83,7 @@ detrend <- function(x, use.scores = 'balanced') {
 #' contacts_yeast <- autocorrelate(contacts_yeast)
 #' scores(contacts_yeast)
 #' plotMatrix(contacts_yeast, scale = 'linear', limits = c(-1, 1), cmap = bwrColors())
+#' 
 
 autocorrelate <- function(x, use.scores = 'balanced', detrend = TRUE, ignore_ndiags = 3) {
     if (detrend) {
@@ -142,6 +148,7 @@ autocorrelate <- function(x, use.scores = 'balanced', detrend = TRUE, ignore_ndi
 #' div_contacts <- divide(contacts_yeast_eco1, by = contacts_yeast)
 #' div_contacts
 #' plotMatrix(div_contacts, scale = 'log2', limits = c(-2, 2), cmap = bwrColors())
+#' 
 
 divide <- function(x, by, use.scores = 'balanced') {
     
@@ -184,15 +191,16 @@ divide <- function(x, by, use.scores = 'balanced') {
     else {
         sK <- m1/m2
     }
+    colnames(sK) <- paste0('x', GenomicRanges::start(anchors(gi2cm(x_gis))$row))
+    rownames(sK) <- paste0('x', GenomicRanges::start(anchors(gi2cm(x_gis))$row))
 
     ## Make a full-featured interactions (storing divided scores in `score`)
     seqnames <- unique(GenomicRanges::seqnames(regions(x)))
     mat <- sK |>
         tibble::as_tibble(.name_repair = "universal") |> 
-        setNames(GenomicRanges::start(anchors(gi2cm(x_gis))$row)) |>
         dplyr::mutate(start2 = GenomicRanges::start(anchors(gi2cm(by_gis))$row)) |> 
         tidyr::pivot_longer(-start2, names_to = 'start1', values_to = 'score') |> 
-        dplyr::mutate(start1 = as.numeric(start1)) |>
+        dplyr::mutate(start1 = gsub('x', '', start1) |> as.numeric()) |>
         dplyr::mutate(
             end1 = start1 + binsize, 
             end2 = start2 + binsize
@@ -239,7 +247,8 @@ divide <- function(x, by, use.scores = 'balanced') {
 
 #' @rdname arithmetics
 #'
-#' @param ... `HiCExperiment` objects
+#' @param ... `HiCExperiment` objects. For `aggregate`, `targets` (a set of 
+#' GRanges or GInteractions).
 #' @param use.scores use.scores
 #' @return a `HiCExperiment` object. Each returned scores is the sum of the
 #'   corresponding scores from input `HiCExperiment`.
@@ -262,6 +271,7 @@ divide <- function(x, by, use.scores = 'balanced') {
 #' 
 #' merged_contacts <- merge(contacts_yeast_eco1, contacts_yeast)
 #' merged_contacts
+#' 
 
 merge <- function(..., use.scores = 'balanced') {
     contacts_list <- list(...)
@@ -423,23 +433,41 @@ serpentinify <- function(x, use.scores = 'balanced',
 
 #' @rdname arithmetics
 #' @importFrom S4Vectors aggregate
+#' @importFrom BiocParallel bpparam
 #' @return a `AggrHiCExperiment` object
 #' @export
-
+#' @examples 
+#' #### -----
+#' #### Aggregate a contact matrix over centromeres, at different scales
+#' #### -----
+#' 
+#' contacts <- full_contacts_yeast() |> zoom(resolution = 1000)
+#' centros <- topologicalFeatures(contacts, 'centromeres')
+#' aggr <- aggregate(contacts, targets = centros, flanking_bins = 50)
+#' plotMatrix(aggr, 'detrended', scale = 'linear', limits = c(-1, 1))
+#' 
+#' contacts <- full_contacts_yeast() |> zoom(resolution = 8000)
+#' centros <- topologicalFeatures(contacts, 'centromeres')
+#' aggr <- aggregate(contacts, targets = centros, flanking_bins = 20)
+#' plotMatrix(aggr, 'detrended', scale = 'linear', limits = c(-1, 1))
 setMethod("aggregate", signature(x = "HiCExperiment"), function(x, ...) {
     params <- list(...)
-    snippets <- params[['snippets']]
+    if (!'targets' %in% names(params)) 
+        stop("Please provide a `targets` argument (`GRanges` or `GInteractions`)")
+    targets <- params[['targets']]
+    if ('flanking_bins' %in% names(params)) {flanking_bins <- params[['flanking_bins']]} 
+    else {flanking_bins <- 50}
     if ('BPPARAM' %in% names(params)) {BPPARAM <- params[['BPPARAM']]} 
     else {BPPARAM <- BiocParallel::bpparam()}
-    if ('bed' %in% names(params)) {bed <- params[['bed']]} else {bed <- NULL}
     HiCExperiment::AggrHiCExperiment(
         file = fileName(x), 
         resolution = resolution(x), 
-        snippets = snippets,  
+        targets = targets,  
+        flanking_bins = flanking_bins, 
         metadata = S4Vectors::metadata(x), 
         topologicalFeatures = topologicalFeatures(x), 
         pairsFile = pairsFile(x), 
         BPPARAM = BPPARAM,
-        bed = bed
+        bed = metadata(x)$bed
     )
 })

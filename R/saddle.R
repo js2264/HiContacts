@@ -66,7 +66,7 @@ plotSaddle <- function(x, nbins = 51, limits = c(-1, 1), BPPARAM = BiocParallel:
     p2 <- ggplot2::ggplot(dat2, ggplot2::aes(x = x, y = mean_eigen)) + 
         ggplot2::geom_col() + 
         ggplot2::scale_x_continuous(
-            labels = NULL
+            labels = NULL, expand = c(0, 0)
         ) + 
         ggplot2::labs(
             x = '', 
@@ -81,7 +81,7 @@ plotSaddle <- function(x, nbins = 51, limits = c(-1, 1), BPPARAM = BiocParallel:
         ggplot2::theme(axis.title.x = ggplot2::element_blank()) +
         ggplot2::theme(axis.line.x = ggplot2::element_blank()) 
     
-    p <- cowplot::plot_grid(p2, p1, ncol = 1, rel_heights = c(1, 4), axis = 'lr', align = 'h')
+    p <- patchwork::wrap_plots(p2, p1, ncol = 1)
 
 }
 
