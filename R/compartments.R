@@ -1,13 +1,70 @@
-getCompartments <- function(x, genome, neigens = 3, autocorrelation = FALSE, BPPARAM = BiocParallel::bpparam()) {
-    
+#' @title Contact map compartments
+#' @name compartments
+#' @rdname compartments
+#' @description
+#' 
+#' Computes eigen vectors for each chromosome using cis contacts and extract 
+#' chromosome compartments. 
+#'
+#' @param x A `HiCExperiment` object over a full genome
+#' @param resolution Which resolution to use to compute eigen vectors
+#' @param genome a BSgenome of DNAStringSet object associated with the Hi-C 
+#'   contact matrix. 
+#' @param chromosomes character or integer vector indicating which 
+#' @param neigens Numver of eigen vectors to extract
+#' @param autocorrelation Whether to perform matrix autocorrelation prior to 
+#' computing the eigenvectors
+#' @param BPPARAM BiocParallel parallelization settings
+#' @return A `HiCExperiment` object with additional `eigens` metadata containing the
+#' normalized eigenvectors and a new "compartments" topologicalFeatures 
+#' storing A and B compartments as a GRanges object. 
+#'
+#' @importFrom BiocParallel bplapply
+#' @export
+#' @examples 
+#' library(HiContacts)
+#' full_contacts_yeast <- full_contacts_yeast()
+#' comps <- getCompartments(full_contacts_yeast)
+#' metadata(comps)$eigens
+#' metadata(comps)$eigens
+
+getCompartments <- function(
+    x, 
+    resolution = NULL, 
+    genome = NULL, 
+    chromosomes = NULL, 
+    neigens = 3, 
+    autocorrelation = TRUE, 
+    BPPARAM = BiocParallel::bpparam()
+) {
+    message( "Going through preflight checklist..." )
+    # - Check resolutions and chromosome subset
+    if (is.null(resolution)) resolution <- resolution(x)
+    chrs <- GenomicRanges::seqnames(GenomeInfoDb::seqinfo(x))
+    names(chrs) <- chrs
+    if (!is.null(chromosomes)) chrs <- chrs[chromosomes]
+
     ## -- Compute eigens on each chr. separately
+    message( "Parsing intra-chromosomal contacts for each chromosome..." )
+    l_subs <- BiocParallel::bplapply(
+        BPPARAM = BiocParallel::SerialParam(progressbar = TRUE), 
+        chrs, 
+        function(chr) {
+            HiCExperiment::HiCExperiment(
+                fileName(x), resolution = resolution, focus = chr
+            )
+        }
+    )
+    names(l_subs) <- chrs
+
+    ## -- Compute eigens on each chr. separately
+    message( "Computing eigenvectors for each chromosome..." )
     compts <- BiocParallel::bplapply(
         BPPARAM = BPPARAM, 
-        seqnames(seqinfo(x)), 
-        function(chr) {
-            x_chr <- x[chr]
-            if (length(interactions(x_chr)) <= neigens) {
-                gr <- regions(x_chr)
+        l_subs, 
+        function(x_chr) {
+            if (length(HiCExperiment::interactions(x_chr)) <= neigens) {
+                gr <- HiCExperiment::regions(x_chr)
                 if (length(gr)) {
                     for (k in seq_len(neigens)) {
                         GenomicRanges::mcols(gr)[[paste0('E', k)]] <- 0
@@ -34,7 +91,7 @@ getCompartments <- function(x, genome, neigens = 3, autocorrelation = FALSE, BPP
                 )
             }
         }
-    ) |> GRangesList() |> unlist()
+    ) |> GenomicRanges::GRangesList() |> unlist()
 
     ## -- Return initial HiCExperiment object with eigens in metadata
     A <- GenomicRanges::reduce(compts[compts$eigen > 0])
@@ -42,7 +99,7 @@ getCompartments <- function(x, genome, neigens = 3, autocorrelation = FALSE, BPP
     B <- GenomicRanges::reduce(compts[compts$eigen < 0])
     B$compartment <- 'B'
     cpts <- sort(c(A, B))
-    topologicalFeatures(x, 'compartments') <- cpts
+    HiCExperiment::topologicalFeatures(x, 'compartments') <- cpts
     metadata(x)$eigens <- compts
     return(x)
 
@@ -57,25 +114,26 @@ getCompartments <- function(x, genome, neigens = 3, autocorrelation = FALSE, BPP
         dx <- detrend(x_chr)
         gis <- InteractionSet::interactions(dx)
         gis$score <- HiCExperiment::scores(dx, 'detrended')
-        gr <- regions(gis)
-        m <- cm2matrix(gi2cm(gis))
+        gr <- HiCExperiment::regions(gis)
+        m <- HiCExperiment::cm2matrix(HiCExperiment::gi2cm(gis))
         m <- m - colMeans(m, na.rm = TRUE)
     }
     else {
         dx <- autocorrelate(x_chr, ignore_ndiags = ignore_diags)
         gis <- InteractionSet::interactions(dx)
         gis$score <- HiCExperiment::scores(dx, 'autocorrelated')
-        gr <- regions(gis)
-        m <- cm2matrix(gi2cm(gis))
+        gr <- HiCExperiment::regions(gis)
+        m <- HiCExperiment::cm2matrix(HiCExperiment::gi2cm(gis))
     }
-
     ## -- Remove ignored diagonals and NAs
     for (K in seq(-ignore_diags, ignore_diags, by = 1)) {
         sdiag(m, K) <- 0
     }
     m[is.na(m)] <- 0
+    if (all(m == 0)) stop("Autocorrelation matrix is not complex enough. Try with a finer resolution.")
 
     ## -- Mask white lines from matrix
+    m <- as.matrix(m)
     unmasked_bins <- rowSums(m) != 0
     m_no0 <- m[unmasked_bins, unmasked_bins]
 
@@ -108,12 +166,20 @@ getCompartments <- function(x, genome, neigens = 3, autocorrelation = FALSE, BPP
         GenomicRanges::mcols(gr)[, paste0('E', k)] <- eigs_final[, k]
     }
 
-    ## -- Get GC content
-    gr$GC <- as.numeric(Biostrings::letterFrequency(
-        genome[gr], letters = 'GC') / GenomicRanges::width(gr))
+    if (!is.null(genome)) {
+        ## -- Get GC content
+        gr$GC <- as.numeric(Biostrings::letterFrequency(
+            Biostrings::getSeq(genome, gr), letters = 'GC') / 
+            GenomicRanges::width(gr))
 
-    ## -- Get matching eigenvector and phase it with GC
-    gr <- .eigGCPhasing(gr, neigens)
+        ## -- Get matching eigenvector and phase it with GC
+        gr <- .eigGCPhasing(gr, neigens)
+    }
+    else {
+        message("Caution! No genome is provided. The first eigenvector has ", 
+        "been selected and no phasing has been performed.")
+        gr$eigen <- gr$E1
+    }
 
     return(gr)
 
@@ -125,16 +191,22 @@ getCompartments <- function(x, genome, neigens = 3, autocorrelation = FALSE, BPP
     }) |> unlist()
     best_cor <- which.max(abs(cors))
     if (cors[best_cor] < 0) {
-        message(glue::glue(
-            "seqnames `{seqnames(gr)[1]}`: eigen #{best_cor} selected (flipped)"
+        message(paste0(
+            "seqnames `", 
+            GenomicRanges::seqnames(gr)[1], "`: eigen #", 
+            best_cor,
+            ", selected (flipped)"
         ))
-        gr$eigen <- -mcols(gr)[, paste0('E', best_cor)]
+        gr$eigen <- -GenomicRanges::mcols(gr)[, paste0('E', best_cor)]
     }
     else {
-        message(glue::glue(
-            "seqnames `{seqnames(gr)[1]}`: eigen #{best_cor} selected"
+        message(paste0(
+            "seqnames `", 
+            GenomicRanges::seqnames(gr)[1], "`: eigen #", 
+            best_cor,
+            ", selected"
         ))
-        gr$eigen <- mcols(gr)[, paste0('E', best_cor)]
+        gr$eigen <- GenomicRanges::mcols(gr)[, paste0('E', best_cor)]
     }
     return(gr)
 }
