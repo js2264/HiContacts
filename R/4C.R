@@ -27,7 +27,8 @@
 virtual4C <- function(x, viewpoint, use.scores = 'balanced') {
     gis <- InteractionSet::interactions(x)
     gis$score <- HiCExperiment::scores(x, use.scores)
-    cm <- cm2matrix(gi2cm(gis))
+    cm <- Matrix::as.matrix(gi2cm(gis))
+    cm <- base::as.matrix(cm)
     regions <- InteractionSet::regions(gis)
     regions_in_viewpoint <- seq_along(regions) %in% S4Vectors::queryHits(
         GenomicRanges::findOverlaps(regions, viewpoint)
@@ -46,4 +47,3 @@ virtual4C <- function(x, viewpoint, use.scores = 'balanced') {
         in_viewpoint = regions_in_viewpoint
     )
 }
-

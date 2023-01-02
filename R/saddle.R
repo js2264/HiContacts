@@ -12,9 +12,12 @@ plotSaddle <- function(x, nbins = 51, limits = c(-1, 1), BPPARAM = BiocParallel:
 
     ## -- Filter and bin regions by their eigenvector score
     filtered_eigens <- eigens[eigens$eigen != 0]
-    filtered_eigens <- filtered_eigens[filtered_eigens$eigen >= quantile(filtered_eigens$eigen, 0.025) & filtered_eigens$eigen <= quantile(filtered_eigens$eigen, 0.975)]
+    filtered_eigens <- filtered_eigens[
+        filtered_eigens$eigen >= stats::quantile(filtered_eigens$eigen, 0.025) & 
+        filtered_eigens$eigen <= stats::quantile(filtered_eigens$eigen, 0.975)
+    ]
     filtered_eigens$eigen_bin <- cut(
-        filtered_eigens$eigen, breaks = quantile(
+        filtered_eigens$eigen, breaks = stats::quantile(
             filtered_eigens$eigen, probs = seq(0, 1, length.out = nbins+1)
         )
     ) |> as.numeric()

@@ -3,19 +3,15 @@
 \name{diamond}
 \alias{diamond}
 \alias{getDiamondInsulation}
+\alias{getBorders}
 \title{Contact map insulation}
 \usage{
-getDiamondInsulation(
-  x,
-  resolution = NULL,
-  window_size = NULL,
-  BPPARAM = BiocParallel::bpparam()
-)
+getDiamondInsulation(x, window_size = NULL, BPPARAM = BiocParallel::bpparam())
+
+getBorders(x, weak_threshold = 0.2, strong_threshold = 0.5)
 }
 \arguments{
 \item{x}{A \code{HiCExperiment} object over a full genome}
-
-\item{resolution}{Which resolution to use to compute diamond insulation score}
 
 \item{window_size}{Which window size to use to compute diamond insulation
 score (default: 10 * resolution)}
@@ -27,6 +23,8 @@ diamond insulation score}
 
 \item{strong_threshold}{More stringent cutoff to call borders in the
 diamond insulation score}
+
+\item{resolution}{Which resolution to use to compute diamond insulation score}
 }
 \value{
 a \code{HiCExperiment} object with additional \code{insulation} metadata,
@@ -37,7 +35,9 @@ Computes diamond insulation score along the entire genome
 }
 \examples{
 library(HiContacts)
-full_contacts_yeast <- full_contacts_yeast()
-diams <- getDiamondInsulation(full_contacts_yeast, resolution = 1000)
+hic <- full_contacts_yeast() |> 
+  refocus('II:1-300000') |> 
+  zoom(1000)
+diams <- getDiamondInsulation(hic)
 getDiamondInsulation(diams)
 }

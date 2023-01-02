@@ -140,7 +140,7 @@ getCompartments <- function(
     ## -- Clamp values at extremes
     m_no0 <- scales::oob_squish(
         m_no0, 
-        quantile(m_no0, probs = c(
+        stats::quantile(m_no0, probs = c(
             1-clip_percentile, clip_percentile
         ), na.rm = TRUE)
     )

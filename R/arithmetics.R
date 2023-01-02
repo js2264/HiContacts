@@ -143,8 +143,8 @@ autocorrelate <- function(x, use.scores = 'balanced', detrend = TRUE, ignore_ndi
 #' #### Divide 2 contact matrices
 #' #### -----
 #' 
-#' contacts_yeast <- contacts_yeast()
-#' contacts_yeast_eco1 <- contacts_yeast_eco1()
+#' contacts_yeast <- contacts_yeast() |> refocus('II')
+#' contacts_yeast_eco1 <- contacts_yeast_eco1() |> refocus('II')
 #' div_contacts <- divide(contacts_yeast_eco1, by = contacts_yeast)
 #' div_contacts
 #' plotMatrix(div_contacts, scale = 'log2', limits = c(-2, 2), cmap = bwrColors())
@@ -197,6 +197,7 @@ divide <- function(x, by, use.scores = 'balanced') {
     ## Make a full-featured interactions (storing divided scores in `score`)
     seqnames <- unique(GenomicRanges::seqnames(regions(x)))
     mat <- sK |>
+        base::as.matrix() |> 
         tibble::as_tibble(.name_repair = "universal") |> 
         dplyr::mutate(start2 = GenomicRanges::start(anchors(gi2cm(by_gis))$row)) |> 
         tidyr::pivot_longer(-start2, names_to = 'start1', values_to = 'score') |> 
@@ -450,6 +451,7 @@ serpentinify <- function(x, use.scores = 'balanced',
 #' centros <- topologicalFeatures(contacts, 'centromeres')
 #' aggr <- aggregate(contacts, targets = centros, flanking_bins = 20)
 #' plotMatrix(aggr, 'detrended', scale = 'linear', limits = c(-1, 1))
+
 setMethod("aggregate", signature(x = "HiCExperiment"), function(x, ...) {
     params <- list(...)
     if (!'targets' %in% names(params)) 

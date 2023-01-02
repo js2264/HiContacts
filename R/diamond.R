@@ -21,23 +21,23 @@
 #' @export
 #' @examples 
 #' library(HiContacts)
-#' full_contacts_yeast <- full_contacts_yeast()
-#' diams <- getDiamondInsulation(full_contacts_yeast, resolution = 1000)
+#' hic <- full_contacts_yeast() |> 
+#'   refocus('II:1-300000') |> 
+#'   zoom(1000)
+#' diams <- getDiamondInsulation(hic)
 #' getDiamondInsulation(diams)
 
 getDiamondInsulation <- function(
     x, 
-    resolution = NULL, 
     window_size = NULL, 
     BPPARAM = BiocParallel::bpparam()
 ) {
 
     message( "Going through preflight checklist..." )
     # - Check resolutions 
-    if(is.null(resolution)) resolution <- resolution(x)
-    if(is.null(window_size)) window_size <- 8 * resolution
     si <- seqinfo(x)
-    if(is.null(ranges)) ranges <- GenomicRanges::GRanges(si)
+    resolution <- resolution(x)
+    if(is.null(window_size)) window_size <- 8 * resolution
     ress <- resolutions(x)
     if (!resolution %in% ress) stop("Chosen resolution not available")
     if (!window_size %in% ress) stop("Chosen window_size not available")
@@ -68,6 +68,7 @@ getDiamondInsulation <- function(
     mins <- which(diff(sign(diff(fbins$insulation)))==+2)+1
     maxs <- which(diff(sign(diff(fbins$insulation)))==-2)+1
     if (length(maxs) < length(mins)) maxs[[length(maxs)+1]] <- length(fbins)
+    if (length(maxs) > length(mins)) maxs <- utils::tail(maxs, -1)
     fbins$min <- seq_along(fbins) %in% mins
     fbins$prominence <- NA
     fbins$prominence[fbins$min] <- -{fbins$insulation[fbins$min] - fbins$insulation[seq_along(fbins) %in% maxs]}
@@ -77,6 +78,9 @@ getDiamondInsulation <- function(
     return(x)
 
 }
+
+#' @rdname diamond
+#' @export
 
 getBorders <- function(x, weak_threshold = 0.2, strong_threshold = 0.5) {
 

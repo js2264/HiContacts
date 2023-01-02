@@ -59,5 +59,19 @@ utils::globalVariables(c(
     "x",
     "x2",
     "y",
-    "y0"
+    "y0", 
+    "center1",
+    "center2",
+    "cm_mat",
+    "corr",
+    "detrended",
+    "eigen_bin",
+    "eigen_bin1",
+    "eigen_bin2",
+    "id",
+    "l",
+    "mean_eigen",
+    "quantile",
+    "region",
+    "squished_score"
 ))

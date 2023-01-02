@@ -90,19 +90,13 @@ aggr_centros <- aggregate(contacts, targets = topologicalFeatures(contacts, 'cen
 plotMatrix(aggr_centros, use.scores = 'detrended', limits = c(-1, 1), scale = 'linear')
 ```
 
-### Scalograms 
-
-```r
-
-```
-
 ## Mapping topological features 
 
 ### Chromosome compartments 
 
 ```r
 microC_mcool <- fourDNData::fourDNDataFiles('4DNES14CNC1I', 'mcool')
-hic <- import(microC_mcool, format = 'mcool', resolution = 100900000)
+hic <- import(microC_mcool, format = 'mcool', resolution = 10000000)
 genome <- BSgenome.Mmusculus.UCSC.mm10::BSgenome.Mmusculus.UCSC.mm10
 
 # - Get compartments
@@ -173,4 +167,10 @@ gg4C(v4C, aes(x = center, y = score, col = chr)) +
 ```r
 hic <- Contacts(mcool_file, res = 1000)
 cisTransRatio(hic)
+```
+
+### Scalograms 
+
+```r
+
 ```

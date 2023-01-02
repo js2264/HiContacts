@@ -1,16 +1,3 @@
-#' Example datasets provided in `HiContacts` & `HiContactsData`
-#' 
-#' @format An object of class \code{"GRanges"}.
-#' @docType data
-#' @usage data(centros_yeast)
-#' @source HiContacts
-#' @rdname datasets
-#' @importClassesFrom GenomicRanges GRanges
-#' @examples
-#' data(centros_yeast)
-#' centros_yeast
-"centros_yeast"
-
 #' @rdname datasets
 #' 
 #' @format An object of class \code{"Contacts"}.

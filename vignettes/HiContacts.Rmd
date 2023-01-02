@@ -41,7 +41,8 @@ datasets stored by Bioconductor in the `ExperimentHub`.
 ```{r}
 library(HiCExperiment)
 library(HiContacts)
-cool_file <- HiContactsData::HiContactsData('yeast_wt', format = 'cool')
+library(HiContactsData)
+cool_file <- HiContactsData('yeast_wt', format = 'cool')
 hic <- HiCExperiment::import(cool_file, format = 'cool')
 hic
 ```
@@ -57,7 +58,15 @@ looks for balanced scores. If they are not stored in the original `.(m)/cool` fi
 `plotMatrix()` simply takes the first scores available. 
 
 ```{r}
+## Square matrix
 plotMatrix(hic, use.scores = 'balanced', limits = c(-4, -1), dpi = 120)
+## Horizontal matrix
+hic |> 
+    refocus('II') |> 
+    plotMatrix(
+        use.scores = 'balanced', limits = c(-4, -1), dpi = 120, 
+        max.distance = 200000
+    )
 ```
 
 ## Plot loops
@@ -66,13 +75,13 @@ Loops can be plotted on top of Hi-C matrices by providing a `GInteractions`
 object to the `loops` argument. 
 
 *Note:* 
-Loops in `.bedpe` format can be imported in R using the `import()` function, and 
-converted into `GInteractions` with the 
+Loops in `.bedpe` format can be imported in R using the `import()` function, 
+and converted into `GInteractions` with the 
 `InteractionSet::makeGInteractionsFromGRangesPairs()` function. 
 
 ```{r}
-mcool_file <- HiContactsData::HiContactsData('yeast_wt', format = 'mcool')
-loops <- system.file("extdata", 'S288C-loops.bedpe', package = 'HiContacts') |> 
+mcool_file <- HiContactsData('yeast_wt', format = 'mcool')
+loops <- system.file("extdata", 'S288C-loops.bedpe', package = 'HiCExperiment') |> 
     BiocIO::import() |> 
     InteractionSet::makeGInteractionsFromGRangesPairs()
 p <- HiCExperiment::import(mcool_file, format = 'mcool', focus = 'IV') |> 
@@ -82,22 +91,20 @@ p <- HiCExperiment::import(mcool_file, format = 'mcool', focus = 'IV') |>
 ## Plot borders
 
 ```{r}
-borders <- system.file("extdata", 'S288C-borders.bed', package = 'HiContacts') |> 
+borders <- system.file("extdata", 'S288C-borders.bed', package = 'HiCExperiment') |> 
     BiocIO::import()
 p <- HiCExperiment::import(mcool_file, format = 'mcool', focus = 'IV') |> 
     plotMatrix(loops = loops, borders = borders, limits = c(-4, -1), dpi = 120)
 ```
 
-# Arithmetics
-
-## Subsetting a contact map 
+## Plot aggregated matrices over features
 
 ```{r}
-hic <- HiCExperiment::import(mcool_file, format = 'mcool', focus = "II", resolution = 2000)
-hic_subset <- hic['II:20000-50000']
-InteractionSet::boundingBox(interactions(hic))
-InteractionSet::boundingBox(interactions(hic_subset))
+aggr_centros <- aggregate(hic, targets = loops)
+plotMatrix(aggr_centros, use.scores = 'balanced', limits = c(-3, -1))
 ```
+
+# Arithmetics
 
 ## Computing autocorrelated contact map 
 
@@ -107,6 +114,7 @@ hic <- import(mcool_file, format = 'mcool', focus = 'chr2', resolution = 160000)
 hic <- autocorrelate(hic)
 scores(hic)
 summary(scores(hic, 'autocorrelated'))
+plotMatrix(hic, use.scores = 'autocorrelated', limits = c(-1, 1), scale = 'linear')
 ```
 
 ## Detrending contact map (map over expected)
@@ -115,8 +123,8 @@ summary(scores(hic, 'autocorrelated'))
 hic <- import(mcool_file, format = 'mcool', focus = 'chr18:20000000-35000000', resolution = 40000)
 detrended_hic <- detrend(hic)
 patchwork::wrap_plots(
-    plotMatrix(detrended_hic, use.scores = 'expected', dpi = 120),
-    plotMatrix(detrended_hic, use.scores = 'detrended', scale = 'linear', limits = c(-3, 3), dpi = 120)
+    plotMatrix(detrended_hic, use.scores = 'expected', scale = 'log10', limits = c(-3, -1), dpi = 120),
+    plotMatrix(detrended_hic, use.scores = 'detrended', scale = 'linear', limits = c(-1, 1), dpi = 120)
 )
 ```
 
@@ -125,10 +133,8 @@ patchwork::wrap_plots(
 ```{r}
 mcool_file_1 <- HiContactsData('yeast_eco1', format = 'mcool')
 mcool_file_2 <- HiContactsData('yeast_wt', format = 'mcool')
-hic_1 <- import(mcool_file_1, format = 'mcool', focus = 'II', resolution = 2000)
-hic_1 <- hic_1['II:1-300000']
-hic_2 <- import(mcool_file_2, format = 'mcool', focus = 'II', resolution = 2000)
-hic_2 <- hic_2['II:1-300000']
+hic_1 <- import(mcool_file_1, format = 'mcool', focus = 'II:1-300000', resolution = 2000)
+hic_2 <- import(mcool_file_2, format = 'mcool', focus = 'II:1-300000', resolution = 2000)
 merged_hic <- merge(hic_1, hic_2) 
 hic_1
 hic_2
@@ -149,6 +155,51 @@ p <- patchwork::wrap_plots(
     plotMatrix(hic_2, use.scores = 'balanced', scale = 'log10', limits = c(-4, -1)),
     plotMatrix(div_hic, use.scores = 'ratio', scale = 'log2', limits = c(-2, 2), cmap = bwrColors())
 )
+```
+
+# Mapping topological features 
+
+## Chromosome compartments 
+
+```{r}
+mcool_file <- HiContactsData('yeast_wt', format = 'mcool')
+hic <- import(mcool_file, format = 'mcool', resolution = 16000)
+library(BSgenome.Scerevisiae.UCSC.sacCer3)
+genome <- BSgenome.Scerevisiae.UCSC.sacCer3
+seqlevelsStyle(genome) <- "NCBI"
+
+# - Get compartments
+hic <- getCompartments(hic, genome = genome, chromosomes = c('XV', 'XVI'))
+hic
+
+# - Export compartments as bigwig and bed files
+rtracklayer::export(IRanges::coverage(metadata(hic)$eigens, weight = 'eigen'), 'compartments.bw')
+rtracklayer::export(
+    topologicalFeatures(hic, 'compartments')[topologicalFeatures(hic, 'compartments')$compartment == 'A'], 
+    'A-compartments.bed'
+)
+rtracklayer::export(
+    topologicalFeatures(hic, 'compartments')[topologicalFeatures(hic, 'compartments')$compartment == 'B'], 
+    'B-compartments.bed'
+)
+
+# - Generate saddle plot
+plotSaddle(hic)
+```
+
+## Diamond insulation score and chromatin domains borders
+
+```{r}
+# - Compute insulation score
+hic <- refocus(hic, 'II:1-300000') |> 
+    zoom(resolution = 1000) |> 
+    getDiamondInsulation(window_size = 8000) |> 
+    getBorders()
+hic
+
+# - Export insulation as bigwig track and borders as bed file
+rtracklayer::export(IRanges::coverage(metadata(hic)$insulation, weight = 'insulation'), 'insulation.bw')
+rtracklayer::export(topologicalFeatures(hic, 'borders'), 'borders.bed')
 ```
 
 # Contact map analysis
@@ -177,13 +228,13 @@ cisTransRatio(hic)
 mcool_file <- HiContactsData('yeast_wt', format = 'mcool')
 hic <- import(mcool_file, format = 'mcool', resolution = 1000)
 ps <- distanceLaw(hic)
-plotPs(ps, aes(x = binned_distance, y = norm_p))
+plotPs(ps, ggplot2::aes(x = binned_distance, y = norm_p))
 
 # With a pairs file
 pairsFile(hic) <- HiContactsData('yeast_wt', format = 'pairs.gz')
 ps <- distanceLaw(hic)
-plotPs(ps, aes(x = binned_distance, y = norm_p))
-plotPsSlope(ps, aes(x = binned_distance, y = slope))
+plotPs(ps, ggplot2::aes(x = binned_distance, y = norm_p))
+plotPsSlope(ps, ggplot2::aes(x = binned_distance, y = slope))
 
 # Comparing P(s) curves
 c1 <- import(
@@ -201,9 +252,16 @@ c2 <- import(
 ps_1 <- distanceLaw(c1) |> mutate(sample = 'WT')
 ps_2 <- distanceLaw(c2) |> mutate(sample = 'Eco1-AID')
 ps <- rbind(ps_1, ps_2)
-plotPs(ps, aes(x = binned_distance, y = norm_p, group = sample, color = sample))
-plotPsSlope(ps, aes(x = binned_distance, y = slope, group = sample, color = sample))
+plotPs(ps, ggplot2::aes(x = binned_distance, y = norm_p, group = sample, color = sample))
+plotPsSlope(ps, ggplot2::aes(x = binned_distance, y = slope, group = sample, color = sample))
 ```
+
+## Scalograms 
+
+```{r}
+
+```
+
 
 # Session info
 

@@ -1,11 +1,12 @@
 test_that("v4C works", {
-    contacts_yeast <- HiCExperiment::contacts_yeast()
+    contacts_yeast <- HiCExperiment::contacts_yeast() |> 
+        HiCExperiment::refocus("II")
     expect_s4_class(
-        virtual4C(contacts_yeast, GRanges('II:490000-510000')),
+        virtual4C(contacts_yeast, GRanges('II:495000-505000')),
         'GRanges'
     )
     expect_s3_class({
-        v4C <- virtual4C(contacts_yeast, GRanges('II:490000-510000'))
+        v4C <- virtual4C(contacts_yeast, GRanges('II:495000-505000'))
         plot4C(v4C, ggplot2::aes(x = center, y = score))
     }, 'gg')
 })
@@ -13,11 +14,11 @@ test_that("v4C works", {
 test_that("arithmetics works", {
     contacts_yeast <- HiCExperiment::contacts_yeast() |> 
         HiCExperiment::refocus('II')
+    contacts_yeast_eco1 <- HiCExperiment::contacts_yeast_eco1() |> 
+        HiCExperiment::refocus('II')
     full_contacts_yeast <- HiCExperiment::full_contacts_yeast() |> 
         HiCExperiment::refocus('II') |> 
         HiCExperiment::zoom(resolution = 1000)
-    contacts_yeast_eco1 <- HiCExperiment::contacts_yeast_eco1() |> 
-        HiCExperiment::refocus('II')
     expect_true({
         x <- detrend(contacts_yeast)
         validObject(x)
