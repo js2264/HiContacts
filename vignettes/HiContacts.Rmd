@@ -82,7 +82,7 @@ and converted into `GInteractions` with the
 ```{r}
 mcool_file <- HiContactsData('yeast_wt', format = 'mcool')
 loops <- system.file("extdata", 'S288C-loops.bedpe', package = 'HiCExperiment') |> 
-    BiocIO::import() |> 
+    rtracklayer::import() |> 
     InteractionSet::makeGInteractionsFromGRangesPairs()
 p <- HiCExperiment::import(mcool_file, format = 'mcool', focus = 'IV') |> 
     plotMatrix(loops = loops, limits = c(-4, -1), dpi = 120)
