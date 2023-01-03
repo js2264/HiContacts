@@ -605,6 +605,88 @@ plot4C <- function(x, mapping) {
 
 ################################################################################
 #                                                                              #
+#                                 Scalograms                                   #
+#                                                                              #
+################################################################################
+
+#' Plotting scalograms
+#' 
+#' @rdname scalogram-plot
+#' 
+#' @param x GRanges, the output of `scalogram()`
+#' @param ylim Range of distances to use for y-axis in scalograms
+#' @return ggplot
+#' 
+#' @import tibble
+#' @importFrom scales unit_format
+#' @export
+#' @examples 
+#' contacts_yeast <- HiCExperiment::contacts_yeast()
+#' pairsFile(contacts_yeast) <- HiContactsData::HiContactsData(
+#'   'yeast_wt', format = 'pairs.gz'
+#' )
+#' scalo <- scalogram(contacts_yeast['II'])
+#' plotScalogram(scalo)
+
+plotScalogram <- function(x, ylim = c(5e2, 1e5)) {
+    x_ <- x %>%
+        dplyr::mutate(dist_quantile = scales::oob_squish(dist_quantile, c(ylim[[1]], ylim[[2]]))) %>% 
+        dplyr::mutate(y0 = ylim[[1]])
+    p <- ggplot2::ggplot() + 
+        ggplot2::theme_minimal() + 
+        ggplot2::theme(panel.border = ggplot2::element_rect(fill = NA)) + 
+        ggplot2::theme(panel.grid.minor = ggplot2::element_blank()) +
+        ggplot2::scale_x_continuous(expand = c(0, 0)) + 
+        ggplot2::scale_y_log10(
+            expand = c(0, 0), 
+            limits = c(ylim[[1]], ylim[[2]])
+        ) + 
+        ggplot2::annotation_logticks(sides = 'l') + 
+        ggplot2::labs(x = 'Position along chr.', y = 'Distance of interactions')
+    if (length(unique(x_$prob)) == 3) {
+        x_$prob <- as.numeric(as.character(x_$prob))
+        low <- sort(unique(x_$prob))[1]
+        mid <- sort(unique(x_$prob))[2]
+        high <- sort(unique(x_$prob))[3]
+        x_$prob <- dplyr::case_when(
+            x_$prob == low ~ 'low', 
+            x_$prob == mid ~ 'mid', 
+            x_$prob == high ~ 'high'
+        )
+        diff <- {high - low} * 100
+        p <- p + 
+            ggplot2::geom_ribbon(
+                data = tidyr::pivot_wider(x_[x_$prob != 'mid',], names_from = prob, values_from = dist_quantile), 
+                mapping = ggplot2::aes(x = binned_pos, ymin = low, ymax = high, fill = y0), 
+                col = 'black', linewidth = 0.2, linetype = 'dashed'
+            ) + 
+            ggplot2::geom_line(
+                data = x_[x_$prob == 'mid',], 
+                ggplot2::aes(x = binned_pos, y = dist_quantile, col = prob)
+            ) + 
+            ggplot2::scale_fill_gradient(low = '#b5b5b54d', high = '#b5b5b54d') + 
+            ggplot2::scale_color_manual(values = '#000000') + 
+            ggplot2::labs(fill = paste0(diff, '% (', low, '% - ', high, '%)\nof interactions\nwithin this range')) + 
+            ggplot2::labs(col = paste0(mid*100, '% of interaction distance')) + 
+            ggplot2::theme(legend.text = ggplot2::element_blank(), legend.position = 'bottom')
+    } 
+    else {
+        p <- p + 
+            ggplot2::geom_ribbon(data = x_, ggplot2::aes(
+                x = binned_pos, ymax = dist_quantile,
+                group = prob, fill = prob
+            )) + 
+            ggplot2::aes(ymin = y0) + 
+            ggplot2::scale_fill_brewer(palette = 'Spectral') 
+    }
+    if (length(unique(x_$chr)) > 1) {
+        p <- p + ggplot2::facet_wrap(~chr)
+    }
+    p
+}
+
+################################################################################
+#                                                                              #
 #                                 ggplot2 extra                                #
 #                                                                              #
 ################################################################################
