@@ -6,7 +6,6 @@
 #' Computes diamond insulation score along the entire genome 
 #'
 #' @param x A `HiCExperiment` object over a full genome
-#' @param resolution Which resolution to use to compute diamond insulation score
 #' @param window_size Which window size to use to compute diamond insulation 
 #' score (default: 10 * resolution)
 #' @param weak_threshold Less stringent cutoff to call borders in the 

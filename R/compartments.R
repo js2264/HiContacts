@@ -25,8 +25,7 @@
 #' library(HiContacts)
 #' full_contacts_yeast <- full_contacts_yeast()
 #' comps <- getCompartments(full_contacts_yeast)
-#' metadata(comps)$eigens
-#' metadata(comps)$eigens
+#' S4Vectors::metadata(comps)$eigens
 
 getCompartments <- function(
     x, 

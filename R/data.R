@@ -1,6 +1,13 @@
-#' @rdname datasets
+#' Example datasets provided in `HiContacts` & `HiContactsData`
 #' 
-#' @format An object of class \code{"Contacts"}.
+#' @docType data
+#' @usage contacts_yeast()
+#' @usage contacts_yeast_eco1()
+#' @usage full_contacts_yeast()
+#' @source HiContacts
+#' @rdname datasets
+#' @importClassesFrom GenomicRanges GRanges
+#' 
 #' @export
 #' @examples
 #' contacts_yeast()

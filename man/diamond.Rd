@@ -23,8 +23,6 @@ diamond insulation score}
 
 \item{strong_threshold}{More stringent cutoff to call borders in the
 diamond insulation score}
-
-\item{resolution}{Which resolution to use to compute diamond insulation score}
 }
 \value{
 a \code{HiCExperiment} object with additional \code{insulation} metadata,

@@ -36,6 +36,7 @@ utils::globalVariables(c(
     "norm_p_unity",
     "p",
     "path",
+    "pos", 
     "pos_",
     "predict",
     "prob",
