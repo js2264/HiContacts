@@ -10,7 +10,7 @@
 \usage{
 \S4method{plotMatrix}{HiCExperiment}(
   x,
-  use.scores = NULL,
+  use.scores = "balanced",
   scale = "log10",
   max.distance = NULL,
   loops = NULL,

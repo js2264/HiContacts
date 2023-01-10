@@ -39,6 +39,7 @@ Imports:
     stats
 Suggests:
     HiContactsData,
+    terra, 
     Biostrings, 
     BSgenome.Scerevisiae.UCSC.sacCer3, 
     patchwork,

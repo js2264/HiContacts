@@ -100,7 +100,7 @@ autocorrelate <- function(x, use.scores = 'balanced', detrend = TRUE, ignore_ndi
     co <- WGCNA::cor(mat, use = 'pairwise.complete.obs', method = "pearson")
     colnames(co) <- names(regions(gis))
     rownames(co) <- names(regions(gis))
-    mat2 <- tibble::as_tibble(co, rownames = 'region', .name_repair = "universal") |> 
+    mat2 <- tibble::as_tibble(co, rownames = 'region', .name_repair = "minimal") |> 
         tidyr::pivot_longer(-region, names_to = "y", values_to = "corr") |>
         dplyr::rename("x" = "region")
     mat2$bin_id1 <- dplyr::left_join(
@@ -225,20 +225,17 @@ divide <- function(x, by, use.scores = 'balanced') {
     )
     gi$gis1_v_gis2 <- mat$score
 
-    ## -- Filter ratio
-    gi <- gi[!is.na(mat$score) & is.finite(mat$score)]
-
-    ## -- Create 'in silico' Contacts
+    ## -- Create HiCExperiment
     res <- methods::new("HiCExperiment", 
-        focus = focus(x), 
-        metadata = list(),
+        focus = HiCExperiment::focus(x), 
+        metadata = S4Vectors::metadata(x),
         resolutions = binsize, 
         resolution = binsize, 
-        interactions = gi, 
+        interactions = gi[!is.na(mat$score) & is.finite(mat$score)], 
         scores = S4Vectors::SimpleList(
             'ratio' = mat$score[!is.na(mat$score) & is.finite(mat$score)]
         ), 
-        topologicalFeatures = S4Vectors::SimpleList(), 
+        topologicalFeatures = HiCExperiment::topologicalFeatures(x), 
         pairsFile = NULL, 
         fileName = paste0(basename(fileName(x)), ' / ', basename(fileName(by)))
     )
@@ -451,6 +448,7 @@ serpentinify <- function(x, use.scores = 'balanced',
 #' centros <- topologicalFeatures(contacts, 'centromeres')
 #' aggr <- aggregate(contacts, targets = centros, flanking_bins = 20)
 #' plotMatrix(aggr, 'detrended', scale = 'linear', limits = c(-1, 1))
+#' 
 
 setMethod("aggregate", signature(x = "HiCExperiment"), function(x, ...) {
     params <- list(...)
@@ -473,3 +471,59 @@ setMethod("aggregate", signature(x = "HiCExperiment"), function(x, ...) {
         bed = metadata(x)$bed
     )
 })
+
+#' @rdname arithmetics
+#'
+#' @param x a `HiCExperiment` object
+#' @param use.scores use.scores
+#' @param focal.size Size of the smoothing rectangle
+#' @return a `HiCExperiment` object with a single `smoothen` scores
+#' 
+#' @export
+#' @examples 
+#' #### -----
+#' #### Despeckle (smoothen) a contact map
+#' #### -----
+#' 
+#' smoothed_contacts <- despeckle(contacts_yeast)
+#' smoothed_contacts
+#' 
+
+despeckle <- function(x, use.scores = 'balanced', focal.size = 1) {
+    gis <- HiCExperiment::interactions(x)
+    gis$score <- HiCExperiment::scores(x, use.scores)
+    cm <- HiCExperiment::gi2cm(gis)
+    an <- InteractionSet::anchors(cm)
+    mat <- HiCExperiment::cm2matrix(cm)
+    r <- terra::rast(mat)
+    gauss <- matrix(data = 1/{(focal.size*2+1)*(focal.size*2+1)-1}, ncol = focal.size*2+1, nrow = focal.size*2+1)
+    gauss[focal.size+1, focal.size+1] <- 0
+    mat_despeckled <- terra::focal(
+        x = r, 
+        w = gauss, 
+        fun = sum,
+        na.rm = TRUE
+    )#/{(focal.size*2+1)*(focal.size*2+1)-1}
+    mat_despeckled <- terra::as.array(mat_despeckled)[, , 1]
+    cm_despeckled <- InteractionSet::ContactMatrix(
+        mat_despeckled, 
+        anchor1 = an[[1]], 
+        anchor2 = an[[2]], 
+        regions = InteractionSet::regions(cm)
+    )
+    is_despeckled <- InteractionSet::deflate(cm_despeckled)
+    gis_despeckled <- InteractionSet::interactions(is_despeckled)
+    gis_despeckled$bin_id1 <- HiCExperiment::anchors(gis_despeckled)[[1]]$bin_id
+    gis_despeckled$bin_id2 <- HiCExperiment::anchors(gis_despeckled)[[2]]$bin_id
+    HiCExperiment::interactions(x) <- gis_despeckled
+    m <- dplyr::left_join(
+        as.data.frame(mcols(gis_despeckled)), 
+        as.data.frame(mcols(gis)), 
+        by = c('bin_id1', 'bin_id2')
+    ) |> dplyr::select(-bin_id1, -bin_id2, -score)
+    m$despeckled <- SummarizedExperiment::assay(is_despeckled, 1)[, 1]
+    l <- as.list(m) |> S4Vectors::SimpleList()
+    x@scores <- l
+    return(x)
+}
+

@@ -7,6 +7,7 @@
 \alias{merge}
 \alias{serpentinify}
 \alias{aggregate,HiCExperiment-method}
+\alias{despeckle}
 \title{Arithmetics with (m)cool file(s)}
 \usage{
 detrend(x, use.scores = "balanced")
@@ -26,6 +27,8 @@ serpentinify(
 )
 
 \S4method{aggregate}{HiCExperiment}(x, ...)
+
+despeckle(x, use.scores = "balanced", focal.size = 1)
 }
 \arguments{
 \item{x}{a \code{HiCExperiment} object}
@@ -47,6 +50,8 @@ serpentine (this requires \code{reticulate} and the python package \code{serpent
 \item{serpentine_niter}{number of iterations to use for serpentine}
 
 \item{serpentine_ncores}{number of CPUs to use for serpentine}
+
+\item{focal.size}{Size of the smoothing rectangle}
 }
 \value{
 a \code{HiCExperiment} object with two additional scoress: \code{expected} and
@@ -62,6 +67,8 @@ corresponding scores from input \code{HiCExperiment}.
 a \code{HiCExperiment} object with a single \code{smoothen} scores
 
 a \code{AggrHiCExperiment} object
+
+a \code{HiCExperiment} object with a single \code{smoothen} scores
 }
 \description{
 Different operations can be performed:
@@ -126,4 +133,12 @@ contacts <- full_contacts_yeast() |> zoom(resolution = 8000)
 centros <- topologicalFeatures(contacts, 'centromeres')
 aggr <- aggregate(contacts, targets = centros, flanking_bins = 20)
 plotMatrix(aggr, 'detrended', scale = 'linear', limits = c(-1, 1))
+
+#### -----
+#### Despeckle (smoothen) a contact map
+#### -----
+
+smoothed_contacts <- despeckle(contacts_yeast)
+smoothed_contacts
+
 }

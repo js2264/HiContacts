@@ -101,7 +101,7 @@ p <- HiCExperiment::import(mcool_file, format = 'mcool', focus = 'IV') |>
 
 ```{r}
 aggr_centros <- aggregate(hic, targets = loops)
-plotMatrix(aggr_centros, use.scores = 'balanced', limits = c(-3, -1))
+plotMatrix(aggr_centros, use.scores = 'detrended', limits = c(-1, 1), scale = 'linear', cmap = bgrColors())
 ```
 
 # Arithmetics
@@ -117,7 +117,7 @@ summary(scores(hic, 'autocorrelated'))
 plotMatrix(hic, use.scores = 'autocorrelated', limits = c(-1, 1), scale = 'linear')
 ```
 
-## Detrending contact map (map over expected)
+## Detrending contact map (map of scores over expected)
 
 ```{r}
 hic <- import(mcool_file, format = 'mcool', focus = 'chr18:20000000-35000000', resolution = 40000)
@@ -144,8 +144,6 @@ merged_hic
 ## Computing ratio between two maps
 
 ```{r}
-mcool_file_1 <- HiContactsData('yeast_eco1', format = 'mcool')
-mcool_file_2 <- HiContactsData('yeast_wt', format = 'mcool')
 hic_1 <- import(mcool_file_1, format = 'mcool', focus = 'II', resolution = 2000)
 hic_2 <- import(mcool_file_2, format = 'mcool', focus = 'II', resolution = 2000)
 div_hic <- divide(hic_1, by = hic_2) 
@@ -156,6 +154,19 @@ p <- patchwork::wrap_plots(
     plotMatrix(div_hic, use.scores = 'ratio', scale = 'log2', limits = c(-2, 2), cmap = bwrColors())
 )
 ```
+
+## Smoothing out a contact map
+
+```{r}
+hic_1_despeckled <- despeckle(hic_1)
+hic_1_despeckled5 <- despeckle(hic_1, focal.size = 5)
+p <- patchwork::wrap_plots(
+    plotMatrix(hic_1, use.scores = 'balanced', scale = 'log10', limits = c(-4, -1)),
+    plotMatrix(hic_1_despeckled, use.scores = 'despeckled', scale = 'log10', limits = c(-4, -1)),
+    plotMatrix(hic_1_despeckled5, use.scores = 'despeckled', scale = 'log10', limits = c(-4, -1))
+)
+```
+
 
 # Mapping topological features 
 

@@ -53,7 +53,7 @@
 
 setMethod("plotMatrix", "HiCExperiment", function(
     x, 
-    use.scores = NULL, 
+    use.scores = 'balanced', 
     scale = 'log10', 
     max.distance = NULL, 
     loops = NULL, 
@@ -66,7 +66,7 @@ setMethod("plotMatrix", "HiCExperiment", function(
     show_grid = FALSE, 
     cmap = NULL  
  ) {
-    plotMatrix(
+    p <- plotMatrix(
         interactions(x), 
         use.scores = use.scores, 
         scale = scale, 
@@ -80,6 +80,16 @@ setMethod("plotMatrix", "HiCExperiment", function(
         chrom_lines = chrom_lines, 
         show_grid = show_grid, 
         cmap = cmap  
+    )
+    p <- p + ggplot2::labs(
+        caption = paste(
+            sep = '\n',
+            paste0('file: ', fileName(x)), 
+            paste0('resolution: ', resolution(x)), 
+            paste0('focus: ', focus(x)),
+            paste0('scores: ', use.scores),
+            paste0('scale: ', scale)
+        )
     )
 })
 
