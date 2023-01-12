@@ -750,11 +750,52 @@ bwrColors <- function() {
 #' 
 #' @export
 #' @examples
+#' bbrColors()
+
+bbrColors <- function() {
+    c("#1659b1", "#4778c2", "#a9c3e7", "#ffffff", 
+        "#e2adad", "#b13636", "#6C150E"
+    )
+}
+
+#' @rdname palettes
+#' 
+#' @export
+#' @examples
+#' bgrColors()
+
+bgrColors <- function() {
+    rev(c(
+        "#BD202D",
+        "#DE614D",
+        "#F19374",
+        "#F6BA9E",
+        "#EAD5CB",
+        "#CEDBEB",
+        "#AFC5E6",
+        "#8FA7D6",
+        "#677CBD",
+        "#495BA9"
+    ))
+}
+
+#' @rdname palettes
+#' 
+#' @export
+#' @examples
 #' afmhotrColors()
 
 afmhotrColors <- function() {
-    c("#ffffff", "#f8f5c3", "#f4ee8d", "#f6be35", "#ee7d32",
-        "#c44228", "#821d19", "#381211", "#050606"
+    c(
+        "#ffffff", 
+        "#f8f5c3", 
+        "#f4ee8d", 
+        "#f6be35", 
+        "#ee7d32",
+        "#c44228", 
+        "#821d19", 
+        "#381211", 
+        "#050606"
     )
 }
 
@@ -786,31 +827,22 @@ coolerColors <- function() {
 #' 
 #' @export
 #' @examples
-#' bbrColors()
+#' rainbowColors()
 
-bbrColors <- function() {
-    c("#1659b1", "#4778c2", "#a9c3e7", "#ffffff", 
-        "#e2adad", "#b13636", "#6C150E"
-    )
-}
-
-#' @rdname palettes
-#' 
-#' @export
-#' @examples
-#' bgrColors()
-
-bgrColors <- function() {
+rainbowColors <- function() {
     rev(c(
-        "#BD202D",
-        "#DE614D",
-        "#F19374",
-        "#F6BA9E",
-        "#EAD5CB",
-        "#CEDBEB",
-        "#AFC5E6",
-        "#8FA7D6",
-        "#677CBD",
-        "#495BA9"
+        "#FDEE00",
+        "#FEC00F",
+        "#F37421",
+        "#ED1E24",
+        "#F26768",
+        "#F9B7B8",
+        "#FFFCFC",
+        "#C6E8ED",
+        "#8BD1EC",
+        "#56ABDF",
+        "#3864AF",
+        "#3A57A7",
+        "#8D509F"
     ))
 }

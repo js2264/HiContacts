@@ -84,7 +84,7 @@ p <- plotMatrix(
 ### Plotting aggregated matrices (a.k.a. APA plots) 
 
 ```r
-contacts <- HiCExperiment::full_contacts_yeast()
+contacts <- contacts_yeast()
 contacts <- zoom(contacts, resolution = 2000)
 aggr_centros <- aggregate(contacts, targets = topologicalFeatures(contacts, 'centromeres'))
 plotMatrix(aggr_centros, use.scores = 'detrended', limits = c(-1, 1), scale = 'linear')
@@ -174,3 +174,17 @@ cisTransRatio(hic)
 ```r
 
 ```
+
+## HiCExperiment ecosystem
+
+`HiCool` is integrated within the `HiCExperiment` ecosystem in Bioconductor. 
+Read more about the `HiCExperiment` class and handling Hi-C data in R 
+[here](https://github.com/js2264/HiCExperiment).
+
+![](https://raw.githubusercontent.com/js2264/HiCExperiment/master/man/figures/HiCExperiment_ecosystem.png)
+
+- [HiCExperiment](https://github.com/js2264/HiCExperiment): Parsing Hi-C files in R
+- [HiCool](https://github.com/js2264/HiCool): End-to-end integrated workflow to process fastq files into .cool and .pairs files
+- [HiContacts](https://github.com/js2264/HiContacts): Investigating Hi-C results in R
+- [HiContactsData](https://github.com/js2264/HiContactsData): Data companion package
+- [fourDNData](https://github.com/js2264/fourDNData): Gateway package to 4DN-hosted Hi-C experiments

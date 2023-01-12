@@ -18,6 +18,7 @@ Depends:
     HiCExperiment
 Imports:
     InteractionSet,
+    SummarizedExperiment, 
     GenomicRanges,
     IRanges,
     GenomeInfoDb,

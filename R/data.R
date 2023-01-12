@@ -41,5 +41,5 @@ full_contacts_yeast <- function() {
         "HiCExperiment::full_contacts_yeast", 
         msg = "`full_contacts_yeast` is deprecated; see '?HiCExperiment::full_contacts_yeast' instead."
     )
-    HiCExperiment::full_contacts_yeast()
+    HiCExperiment::contacts_yeast(full = TRUE)
 }

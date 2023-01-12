@@ -2,21 +2,24 @@
 % Please edit documentation in R/plotting.R
 \name{bwrColors}
 \alias{bwrColors}
-\alias{afmhotrColors}
-\alias{coolerColors}
 \alias{bbrColors}
 \alias{bgrColors}
+\alias{afmhotrColors}
+\alias{coolerColors}
+\alias{rainbowColors}
 \title{Matrix palettes}
 \usage{
 bwrColors()
+
+bbrColors()
+
+bgrColors()
 
 afmhotrColors()
 
 coolerColors()
 
-bbrColors()
-
-bgrColors()
+rainbowColors()
 }
 \value{
 ggplot
@@ -26,8 +29,9 @@ Matrix palettes
 }
 \examples{
 bwrColors()
-afmhotrColors()
-coolerColors()
 bbrColors()
 bgrColors()
+afmhotrColors()
+coolerColors()
+rainbowColors()
 }

@@ -7,10 +7,9 @@
 #' large-scale compartments;
 #'  - Divide one contact matrix by another; 
 #'  - Merge multiple contact matrices;
+#'  - Despeckle (i.e. smooth out) a contact matrix out. 
 #'  - Aggregate (average) a contact matrices over a set of genomic loci of 
 #' interest;
-#'  - Serpentinify, or smooth a contact matrix out. This requires `serpentine` 
-#' python package to be installed.
 #' 
 #' @rdname arithmetics
 #'
@@ -344,141 +343,10 @@ merge <- function(..., use.scores = 'balanced') {
 #'
 #' @param x a `HiCExperiment` object
 #' @param use.scores use.scores
-#' @param use_serpentine_trend whether to use the trend estimated with 
-#'   serpentine (this requires `reticulate` and the python package `serpentine`)
-#' @param serpentine_niter number of iterations to use for serpentine
-#' @param serpentine_ncores number of CPUs to use for serpentine
-#' @return a `HiCExperiment` object with a single `smoothen` scores
-#' 
-#' @importFrom dplyr mutate
-#' @importFrom tidyr pivot_longer
-#' @importFrom tibble as_tibble
-#' @importFrom InteractionSet anchors
-#' @importFrom InteractionSet GInteractions
-#' @importFrom S4Vectors SimpleList
-
-serpentinify <- function(x, use.scores = 'balanced', 
-    use_serpentine_trend = TRUE, serpentine_niter = 10L, serpentine_ncores = 16L
-) {
-
-    sp <- reticulate::import('serpentine')
-    gis <- interactions(x)
-    gis$score <- scores(x, use.scores)
-
-    ## Check that only 1 chromosome is present in the gis object
-    seqnames <- unique(as.vector(GenomicRanges::seqnames(InteractionSet::anchors(gis)[['first']])))
-    if (length(seqnames) > 1) {
-        stop('Smoothing maps across multiple chromosomes is not supported. Aborting now.')
-    }
-    binsize <- resolution(x)
-
-    ## Run Serpentine
-    B <- cm2matrix(gi2cm(gis), replace_NA = 0)
-    A <- matrix(data = 1, nrow = nrow(B), ncol = ncol(B))
-    .v <- sp$serpentin_binning(A, B, verbose = FALSE, iterations = serpentine_niter, parallel = serpentine_ncores)
-    sm1 <- .v[[1]]
-    sm2 <- .v[[2]]
-    sK <- .v[[3]]
-    
-    ## Re-center smoothened matrix 
-    if (use_serpentine_trend) {
-        .v <- sp$MDbefore(B, A, show = FALSE)
-        trend <- .v[[1]]
-        threshold <- .v[[2]]
-        if (is.na(trend)) trend <- mean(sK, na.rm = TRUE)
-        sK <- sK - trend
-    }
-    else {
-        sK <- sK - mean(sK, na.rm = TRUE)
-    }
-
-    ## Make a full-featured interactions (storing smoothed scores in `score`)
-    gis_smoothened <- sK |>
-        tibble::as_tibble() |> 
-        stats::setNames(GenomicRanges::start(anchors(gi2cm(gis))$row)) |>
-        dplyr::mutate(start1 = GenomicRanges::start(anchors(gi2cm(gis))$row)) |> 
-        tidyr::pivot_longer(-start1, names_to = 'start2', values_to = 'score') |> 
-        dplyr::mutate(start2 = as.numeric(start2))
-    an1 <- GenomicRanges::GRanges(
-        seqnames = seqnames, 
-        IRanges::IRanges(gis_smoothened$start1, width = binsize)
-    )
-    an2 <- GenomicRanges::GRanges(
-        seqnames = seqnames, 
-        IRanges::IRanges(gis_smoothened$start2, width = binsize)
-    )
-    reg <- unique(c(an1, an2))
-    gi <- InteractionSet::GInteractions(
-        anchor1 = an1, 
-        anchor2 = an2, 
-        regions = reg
-    )
-
-    res <- methods::new("HiCExperiment", 
-        focus = focus(x), 
-        metadata = metadata(x),
-        resolutions = resolutions(x), 
-        resolution = resolution(x), 
-        interactions = gi, 
-        scores = S4Vectors::SimpleList(smoothen = gis_smoothened$score),
-        topologicalFeatures = topologicalFeatures(x), 
-        pairsFile = pairsFile(x), 
-        fileName = fileName(x)
-    )
-
-    return(res)
-}
-
-#' @rdname arithmetics
-#' @importFrom S4Vectors aggregate
-#' @importFrom BiocParallel bpparam
-#' @return a `AggrHiCExperiment` object
-#' @export
-#' @examples 
-#' #### -----
-#' #### Aggregate a contact matrix over centromeres, at different scales
-#' #### -----
-#' 
-#' contacts <- full_contacts_yeast() |> zoom(resolution = 1000)
-#' centros <- topologicalFeatures(contacts, 'centromeres')
-#' aggr <- aggregate(contacts, targets = centros, flanking_bins = 50)
-#' plotMatrix(aggr, 'detrended', scale = 'linear', limits = c(-1, 1))
-#' 
-#' contacts <- full_contacts_yeast() |> zoom(resolution = 8000)
-#' centros <- topologicalFeatures(contacts, 'centromeres')
-#' aggr <- aggregate(contacts, targets = centros, flanking_bins = 20)
-#' plotMatrix(aggr, 'detrended', scale = 'linear', limits = c(-1, 1))
-#' 
-
-setMethod("aggregate", signature(x = "HiCExperiment"), function(x, ...) {
-    params <- list(...)
-    if (!'targets' %in% names(params)) 
-        stop("Please provide a `targets` argument (`GRanges` or `GInteractions`)")
-    targets <- params[['targets']]
-    if ('flanking_bins' %in% names(params)) {flanking_bins <- params[['flanking_bins']]} 
-    else {flanking_bins <- 50}
-    if ('BPPARAM' %in% names(params)) {BPPARAM <- params[['BPPARAM']]} 
-    else {BPPARAM <- BiocParallel::bpparam()}
-    HiCExperiment::AggrHiCExperiment(
-        file = fileName(x), 
-        resolution = resolution(x), 
-        targets = targets,  
-        flanking_bins = flanking_bins, 
-        metadata = S4Vectors::metadata(x), 
-        topologicalFeatures = topologicalFeatures(x), 
-        pairsFile = pairsFile(x), 
-        BPPARAM = BPPARAM,
-        bed = metadata(x)$bed
-    )
-})
-
-#' @rdname arithmetics
-#'
-#' @param x a `HiCExperiment` object
-#' @param use.scores use.scores
 #' @param focal.size Size of the smoothing rectangle
 #' @return a `HiCExperiment` object with a single `smoothen` scores
 #' 
+#' @importFrom SummarizedExperiment assay
 #' @export
 #' @examples 
 #' #### -----
