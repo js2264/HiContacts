@@ -1,33 +1,60 @@
-#' Arithmetics with (m)cool file(s)
+#' HiContacts arithmetics functionalities
 #' 
-#' Different operations can be performed:  
+#' @name arithmetics
+#' @aliases detrend
+#' @aliases autocorrelate
+#' @aliases divide
+#' @aliases merge
+#' @aliases despeckle
+#' @aliases aggregate,HiCExperiment-method
+#' 
+#' @description 
+#' Different arithmetic operations can be performed:  
 #'  - Detrending a contact matrix, i.e. removing the distance-dependent 
 #' contact trend;
 #'  - Autocorrelate a contact matrix: this is is typically done to highlight 
 #' large-scale compartments;
 #'  - Divide one contact matrix by another; 
 #'  - Merge multiple contact matrices;
-#'  - Despeckle (i.e. smooth out) a contact matrix out. 
+#'  - Despeckle (i.e. smooth out) a contact matrix out;
 #'  - Aggregate (average) a contact matrices over a set of genomic loci of 
-#' interest;
+#' interest.
 #' 
-#' @rdname arithmetics
-#'
 #' @param x a `HiCExperiment` object
-#' @param use.scores use.scores
-#' @return a `HiCExperiment` object with two additional scoress: `expected` and
-#'   `detrended`
+#' @param use.scores Which scores to use to perform operations
+#' @param ... `HiCExperiment` objects. For `aggregate`, `targets` (a set of 
+#' GRanges or GInteractions).
+#' @param detrend Detrend matrix before performing autocorrelation
+#' @param ignore_ndiags ignore N diagonals when calculating correlations
+#' @param by a `HiCExperiment` object
+#' @param focal.size Size of the smoothing rectangle
 #' 
+#' @return a `HiCExperiment` object with extra scores
+#' 
+#' @import InteractionSet
+#' @import stringr
+#' @import tidyr
 #' @importFrom scales rescale
 #' @importFrom tibble as_tibble
 #' @importFrom tibble tibble
-#' @importFrom InteractionSet pairdist
 #' @importFrom dplyr group_by
 #' @importFrom dplyr summarize
 #' @importFrom dplyr pull
 #' @importFrom dplyr mutate
 #' @importFrom dplyr left_join
-#' @export
+#' @importFrom dplyr rename
+#' @importFrom dplyr n
+#' @importFrom WGCNA cor
+#' @importFrom GenomicRanges seqnames
+#' @importFrom GenomicRanges findOverlaps
+#' @importFrom GenomicRanges start
+#' @importFrom GenomicRanges GRanges
+#' @importFrom S4Vectors metadata
+#' @importFrom S4Vectors SimpleList
+#' @importFrom S4Vectors aggregate
+#' @importFrom SummarizedExperiment assay
+#' @importFrom BiocParallel bpparam
+#' 
 #' @examples 
 #' #### -----
 #' #### Detrending a contact matrix
@@ -36,8 +63,46 @@
 #' library(HiContacts)
 #' contacts_yeast <- contacts_yeast()
 #' contacts_yeast <- detrend(contacts_yeast)
-#' scores(contacts_yeast)
+#' contacts_yeast
+#'
+#' #### -----
+#' #### Auto-correlate a contact matrix
+#' #### -----
 #' 
+#' autocorrelate(contacts_yeast)
+#' 
+#' #### -----
+#' #### Divide 2 contact matrices
+#' #### -----
+#' 
+#' contacts_yeast <- refocus(contacts_yeast, 'II')
+#' contacts_yeast_eco1 <- contacts_yeast_eco1() |> refocus('II')
+#' divide(contacts_yeast_eco1, by = contacts_yeast)
+#' 
+#' #### -----
+#' #### Merge 2 contact matrices
+#' #### -----
+#' 
+#' merge(contacts_yeast_eco1, contacts_yeast)
+#' 
+#' #### -----
+#' #### Despeckle (smoothen) a contact map
+#' #### -----
+#' 
+#' despeckle(contacts_yeast)
+#' 
+#' #### -----
+#' #### Aggregate a contact matrix over centromeres, at different scales
+#' #### -----
+#' 
+#' contacts <- contacts_yeast() |> zoom(resolution = 1000)
+#' centros <- topologicalFeatures(contacts, 'centromeres')
+#' aggregate(contacts, targets = centros, flanking_bins = 50)
+#' 
+NULL
+
+#' @rdname arithmetics
+#' @export
 
 detrend <- function(x, use.scores = 'balanced') {
     gis <- interactions(x)
@@ -57,36 +122,13 @@ detrend <- function(x, use.scores = 'balanced') {
 }
 
 #' @rdname arithmetics
-#'
-#' @param x a `HiCExperiment` object
-#' @param use.scores use.scores
-#' @param detrend Detrend matrix before performing autocorrelation
-#' @param ignore_ndiags ignore N diagonals when calculating correlations
-#' @return a `HiCExperiment` object with a single `autocorrelation` scores
-#' 
-#' @import InteractionSet
-#' @import stringr
-#' @importFrom tidyr pivot_longer
-#' @importFrom tibble as_tibble
-#' @importFrom dplyr rename
-#' @importFrom dplyr mutate
-#' @importFrom dplyr n
-#' @importFrom S4Vectors SimpleList
-#' @importFrom WGCNA cor
 #' @export
-#' @examples 
-#' #### -----
-#' #### Auto-correlate a contact matrix
-#' #### -----
-#' 
-#' contacts_yeast <- autocorrelate(contacts_yeast)
-#' scores(contacts_yeast)
-#' plotMatrix(contacts_yeast, scale = 'linear', limits = c(-1, 1), cmap = bwrColors())
-#' 
 
 autocorrelate <- function(x, use.scores = 'balanced', detrend = TRUE, ignore_ndiags = 3) {
     if (detrend) {
-        x <- detrend(x, use.scores = use.scores)
+        if (!{'detrend' %in% names(scores(x))}) {
+            x <- detrend(x, use.scores = use.scores)
+        }
         use.scores <- 'detrended'
     }
     gis <- interactions(x)
@@ -119,35 +161,7 @@ autocorrelate <- function(x, use.scores = 'balanced', detrend = TRUE, ignore_ndi
 }
 
 #' @rdname arithmetics
-#'
-#' @param x a `HiCExperiment` object
-#' @param by a `HiCExperiment` object
-#' @param use.scores use.scores
-#' @return a `HiCExperiment` object with a single `ratio` scores
-#'
-#' @import tidyr
-#' @importFrom tibble as_tibble
-#' @importFrom dplyr mutate
-#' @importFrom tidyr pivot_longer
-#' @importFrom GenomicRanges seqnames
-#' @importFrom GenomicRanges start
-#' @importFrom GenomicRanges GRanges
-#' @importFrom InteractionSet regions
-#' @importFrom InteractionSet GInteractions
-#' @importFrom S4Vectors metadata
-#' @importFrom S4Vectors SimpleList
 #' @export
-#' @examples 
-#' #### -----
-#' #### Divide 2 contact matrices
-#' #### -----
-#' 
-#' contacts_yeast <- contacts_yeast() |> refocus('II')
-#' contacts_yeast_eco1 <- contacts_yeast_eco1() |> refocus('II')
-#' div_contacts <- divide(contacts_yeast_eco1, by = contacts_yeast)
-#' div_contacts
-#' plotMatrix(div_contacts, scale = 'log2', limits = c(-2, 2), cmap = bwrColors())
-#' 
 
 divide <- function(x, by, use.scores = 'balanced') {
     
@@ -243,32 +257,7 @@ divide <- function(x, by, use.scores = 'balanced') {
 }
 
 #' @rdname arithmetics
-#'
-#' @param ... `HiCExperiment` objects. For `aggregate`, `targets` (a set of 
-#' GRanges or GInteractions).
-#' @param use.scores use.scores
-#' @return a `HiCExperiment` object. Each returned scores is the sum of the
-#'   corresponding scores from input `HiCExperiment`.
-#'
-#' @import tidyr
-#' @importFrom tibble as_tibble
-#' @importFrom dplyr mutate
-#' @importFrom tidyr pivot_longer
-#' @importFrom GenomicRanges seqnames
-#' @importFrom GenomicRanges findOverlaps
-#' @importFrom InteractionSet regions
-#' @importFrom InteractionSet GInteractions
-#' @importFrom S4Vectors metadata
-#' @importFrom S4Vectors SimpleList
 #' @export
-#' @examples 
-#' #### -----
-#' #### Merge 2 contact matrices
-#' #### -----
-#' 
-#' merged_contacts <- merge(contacts_yeast_eco1, contacts_yeast)
-#' merged_contacts
-#' 
 
 merge <- function(..., use.scores = 'balanced') {
     contacts_list <- list(...)
@@ -340,22 +329,7 @@ merge <- function(..., use.scores = 'balanced') {
 }
 
 #' @rdname arithmetics
-#'
-#' @param x a `HiCExperiment` object
-#' @param use.scores use.scores
-#' @param focal.size Size of the smoothing rectangle
-#' @return a `HiCExperiment` object with a single `smoothen` scores
-#' 
-#' @importFrom SummarizedExperiment assay
 #' @export
-#' @examples 
-#' #### -----
-#' #### Despeckle (smoothen) a contact map
-#' #### -----
-#' 
-#' smoothed_contacts <- despeckle(contacts_yeast)
-#' smoothed_contacts
-#' 
 
 despeckle <- function(x, use.scores = 'balanced', focal.size = 1) {
     gis <- HiCExperiment::interactions(x)

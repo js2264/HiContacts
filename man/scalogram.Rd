@@ -29,4 +29,5 @@ pairsFile(contacts_yeast) <- HiContactsData::HiContactsData(
   'yeast_wt', format = 'pairs.gz'
 )
 scalo <- scalogram(contacts_yeast['II'])
+scalo
 }

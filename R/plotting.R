@@ -1,3 +1,16 @@
+#' HiContacts plotting functionalities
+#' 
+#' @name HiContacts-plots
+#' 
+#' @description 
+#' Several plots can be generated in HiContacts: 
+#' - Hi-C contact matrices
+#' - Distance-dependant interaction frequency decay (a.k.a. "Distance law" or "P(s)")
+#' - Virtual 4C profiles
+#' - Scalograms
+#' - Saddle plots
+NULL 
+
 ################################################################################
 #                                                                              #
 #                                 Matrix                                       #
@@ -6,23 +19,29 @@
 
 #' Plotting a contact matrix
 #'
-#' @rdname Contacts-plot
+#' @name plotMatrix
 #' @aliases plotMatrix,HiCExperiment-method
+#' @aliases plotMatrix,HiCExperiment-method
+#' @aliases plotMatrix,GInteractions-method
+#' @aliases plotMatrix,matrix-method
 #' 
-#' @param x x
-#' @param use.scores use.scores
-#' @param scale scale
-#' @param limits limits
+#' @param x A HiCExperiment object
+#' @param use.scores Which scores to use in the heatmap
+#' @param scale Any of 'log10', 'log2', 'linear', 'exp0.2' (Default: 'log10')
+#' @param limits color map limits
 #' @param max.distance maximum distance. If provided, the heatmap is plotted 
-#'   horizontally. 
-#' @param loops loops
-#' @param borders borders
-#' @param dpi dpi
-#' @param rasterize rasterize
-#' @param symmetrical symmetrical
-#' @param chrom_lines chrom_lines
-#' @param show_grid show_grid
-#' @param cmap color map
+#'   horizontally
+#' @param loops Loops to plot on top of the heatmap, provided as `GInteractions`
+#' @param borders Borders to plot on top of the heatmap, provided as `GRanges`
+#' @param dpi DPI to create the plot (Default: 500)
+#' @param rasterize Whether the generated heatmap is rasterized or vectorized 
+#' (Default: TRUE)
+#' @param symmetrical Whether to enforce a symetrical heatmap (Default: TRUE)
+#' @param chrom_lines Whether to display separating lines between chromosomes, 
+#' should any be necessary (Default: TRUE)
+#' @param show_grid Whether to display an underlying grid (Default: FALSE)
+#' @param cmap Color scale to use. (Default: bgrColors() if limits are c(-1, 1)
+#' and coolerColors() otherwise)
 #' @return ggplot object
 #'
 #' @importFrom ggrastr geom_tile_rast
@@ -38,11 +57,9 @@
 #' @importFrom dplyr left_join
 #' @importFrom dplyr rename
 #' @importFrom GenomicRanges seqnames
-#' @importFrom InteractionSet anchors
 #' @importFrom scales oob_squish
-#' @export
+#' @importFrom scales unit_format
 #' @examples 
-#' library(HiContacts)
 #' contacts_yeast <- contacts_yeast()
 #' plotMatrix(
 #'     contacts_yeast, 
@@ -50,6 +67,10 @@
 #'     scale = 'log10', 
 #'     limits = c(-4, -1)
 #' )
+NULL 
+
+#' @rdname plotMatrix
+#' @export
 
 setMethod("plotMatrix", "HiCExperiment", function(
     x, 
@@ -93,7 +114,7 @@ setMethod("plotMatrix", "HiCExperiment", function(
     )
 })
 
-#' @rdname Contacts-plot
+#' @rdname plotMatrix
 #' @export
 
 setMethod("plotMatrix", "GInteractions", function(
@@ -162,7 +183,7 @@ setMethod("plotMatrix", "GInteractions", function(
 
     ## -- Choose color map 
     if (is.null(cmap)) {
-        if (has_negative_scores) {
+        if (has_negative_scores | {m == -1 & M == 1}) {
             cmap <- bgrColors()
         }
         else {
@@ -353,7 +374,7 @@ setMethod("plotMatrix", "GInteractions", function(
     p
 })
 
-#' @rdname Contacts-plot
+#' @rdname plotMatrix
 #' @export
 
 setMethod("plotMatrix", "matrix", function(
@@ -442,18 +463,6 @@ setMethod("plotMatrix", "matrix", function(
     p
 })
 
-
-#' @rdname Contacts-plot
-#' 
-#' @param mat,df mat
-#' @param ticks ticks
-#' @param grid grid
-#' @param cols cols
-#' @param limits limits
-#' @return ggplot
-#'
-#' @importFrom scales unit_format
-
 ggMatrix <- function(mat, ticks = TRUE, grid = FALSE, cols = coolerColors(), limits) {
     p <- ggplot2::ggplot(mat, ggplot2::aes(x, y, fill = score))
     p <- p + ggplot2::scale_fill_gradientn(
@@ -468,8 +477,6 @@ ggMatrix <- function(mat, ticks = TRUE, grid = FALSE, cols = coolerColors(), lim
         ggthemeHiContacts(ticks, grid)
     p
 }
-
-#' @rdname Contacts-plot
 
 ggHorizontalMatrix <- function(df, cols = coolerColors(), limits) {
     p <- ggplot2::ggplot(df, ggplot2::aes(x, diag, fill = score))
@@ -495,16 +502,18 @@ ggHorizontalMatrix <- function(df, cols = coolerColors(), limits) {
 
 #' Plotting a P(s) distance law
 #' 
-#' @rdname Ps-plot
+#' @name plotPs
+#' @aliases plotPs
+#' @aliases plotPsSlope
 #' 
-#' @param ... ...
+#' @param x the output data.frame of `distanceLaw` function
+#' @param mapping aes to pass on to ggplot2
 #' @param xlim xlim
 #' @param ylim ylim
 #' @return ggplot
 #'
 #' @importFrom scales trans_breaks
 #' @importFrom scales trans_format
-#' @export
 #' @examples 
 #' ## Single P(s)
 #' 
@@ -522,9 +531,14 @@ ggHorizontalMatrix <- function(df, cols = coolerColors(), limits) {
 #' ps_eco1$sample <- 'eco1'
 #' ps <- rbind(ps_wt, ps_eco1)
 #' plotPs(ps, ggplot2::aes(x = binned_distance, y = norm_p, group = sample, color = sample))
+#' plotPsSlope(ps, ggplot2::aes(x = binned_distance, y = slope, group = sample))
+NULL
 
-plotPs <- function(..., xlim = c(5000, 4.99e5), ylim = c(1e-8, 1e-4)) {
-    gg <- ggplot2::ggplot(...) + 
+#' @rdname plotPs
+#' @export
+
+plotPs <- function(x, mapping, xlim = c(5000, 4.99e5), ylim = c(1e-8, 1e-4)) {
+    gg <- ggplot2::ggplot(x, mapping = mapping) + 
         ggplot2::geom_line() + 
         ggplot2::theme_minimal() + 
         ggplot2::theme(panel.border = ggplot2::element_rect(fill = NA)) + 
@@ -546,16 +560,11 @@ plotPs <- function(..., xlim = c(5000, 4.99e5), ylim = c(1e-8, 1e-4)) {
     gg
 }
 
-#' @rdname Ps-plot
-#' 
-#' @return ggplot
-#' 
+#' @rdname plotPs
 #' @export
-#' @examples 
-#' plotPsSlope(ps, ggplot2::aes(x = binned_distance, y = slope))
 
-plotPsSlope <- function(..., xlim = c(5000, 4.99e5), ylim = c(-3, 0)) {
-    gg <- ggplot2::ggplot(...) + 
+plotPsSlope <- function(x, mapping, xlim = c(5000, 4.99e5), ylim = c(-3, 0)) {
+    gg <- ggplot2::ggplot(x, mapping = mapping) + 
         ggplot2::geom_line() + 
         ggplot2::theme_minimal() + 
         ggplot2::theme(panel.border = ggplot2::element_rect(fill = NA)) + 
@@ -583,24 +592,28 @@ plotPsSlope <- function(..., xlim = c(5000, 4.99e5), ylim = c(-3, 0)) {
 
 #' Plotting virtual 4C profiles
 #' 
-#' @rdname virtual4C-plot
+#' @name plot4C
+#' @aliases plot4C
 #' 
 #' @param x GRanges, generally the output of `virtual4C()`
-#' @param mapping aes to pass on to ggplot2
+#' @param mapping aes to pass on to ggplot2 (default: 
+#' `ggplot2::aes(x = center, y = score, col = seqnames)`)
 #' @return ggplot
 #' 
 #' @import tibble
 #' @importFrom scales unit_format
-#' @export
 #' @examples 
-#' library(HiContacts)
 #' contacts_yeast <- contacts_yeast()
 #' v4C <- virtual4C(contacts_yeast, GenomicRanges::GRanges('II:490000-510000'))
-#' plot4C(v4C, ggplot2::aes(x = center, y = score))
+#' plot4C(v4C)
+NULL
 
-plot4C <- function(x, mapping) {
+#' @rdname plot4C
+#' @export
+
+plot4C <- function(x, mapping = ggplot2::aes(x = center, y = score, col = seqnames)) {
     x <- tibble::as_tibble(x)
-    p <- ggplot2::ggplot(x, mapping) + 
+    p <- ggplot2::ggplot(x, mapping = mapping) + 
         ggplot2::geom_line() + 
         ggplot2::theme_minimal() + 
         ggplot2::theme(panel.border = ggplot2::element_rect(fill = NA)) + 
@@ -621,15 +634,14 @@ plot4C <- function(x, mapping) {
 
 #' Plotting scalograms
 #' 
-#' @rdname scalogram-plot
+#' @name plotScalogram
+#' @aliases plotScalogram
 #' 
 #' @param x GRanges, the output of `scalogram()`
 #' @param ylim Range of distances to use for y-axis in scalograms
 #' @return ggplot
 #' 
 #' @import tibble
-#' @importFrom scales unit_format
-#' @export
 #' @examples 
 #' contacts_yeast <- HiCExperiment::contacts_yeast()
 #' pairsFile(contacts_yeast) <- HiContactsData::HiContactsData(
@@ -637,6 +649,10 @@ plot4C <- function(x, mapping) {
 #' )
 #' scalo <- scalogram(contacts_yeast['II'])
 #' plotScalogram(scalo)
+NULL
+
+#' @rdname plotScalogram
+#' @export
 
 plotScalogram <- function(x, ylim = c(5e2, 1e5)) {
     x_ <- x %>%
@@ -697,18 +713,128 @@ plotScalogram <- function(x, ylim = c(5e2, 1e5)) {
 
 ################################################################################
 #                                                                              #
-#                                 ggplot2 extra                                #
+#                                 Saddle plots                                 #
 #                                                                              #
 ################################################################################
 
-#' ggplot2-related functions
+#' Plotting saddle plots
 #' 
-#' @rdname ggplot2-extra
-#'
-#' @param ticks ticks
-#' @param grid grid
-#' @return a custom ggplot2 theme
+#' @name plotSaddle
+#' @aliases plotSaddle
 #' 
+#' @param x a HiCExperiment object with a stored `eigens` metadata
+#' @param nbins Number of bins to use to discretize the eigenvectors
+#' @param limits limits for color map being used
+#' @param BPPARAM a BiocParallel registered method 
+#' @return ggplot
+NULL
+
+#' @rdname plotSaddle
+#' @export
+
+plotSaddle <- function(x, nbins = 51, limits = c(-1, 1), BPPARAM = BiocParallel::bpparam()) {
+    if (is.null(metadata(x)$eigens)) stop(
+        "No eigen vector found in metadata. Run getCompartments(x) first."
+    )
+    eigens <- metadata(x)$eigens
+
+    ## -- Filter and bin regions by their eigenvector score
+    filtered_eigens <- eigens[eigens$eigen != 0]
+    filtered_eigens <- filtered_eigens[
+        filtered_eigens$eigen >= stats::quantile(filtered_eigens$eigen, 0.025) & 
+        filtered_eigens$eigen <= stats::quantile(filtered_eigens$eigen, 0.975)
+    ]
+    filtered_eigens$eigen_bin <- cut(
+        filtered_eigens$eigen, breaks = stats::quantile(
+            filtered_eigens$eigen, probs = seq(0, 1, length.out = nbins+1)
+        )
+    ) |> as.numeric()
+
+    ## -- Compute over-expected score in each pair of eigen bins
+    df <- BiocParallel::bplapply(
+        BPPARAM = BPPARAM, 
+        seqnames(seqinfo(filtered_eigens)), 
+        function(chr) {.saddle(x[chr], filtered_eigens)}
+    ) |> dplyr::bind_rows()
+    dat <- df |> 
+        dplyr::group_by(eigen_bin1, eigen_bin2) |> 
+        dplyr::summarize(score = mean(detrended), .groups = 'drop') |> 
+        dplyr::mutate(
+            x = eigen_bin1 / nbins,
+            y = eigen_bin2 / nbins, 
+            squished_score = scales::oob_squish(score, limits)
+        )
+
+    ## -- Make saddle plot 
+    p1 <- ggplot2::ggplot(dat, ggplot2::aes(x = x, y = y)) + 
+        ggrastr::geom_tile_rast(ggplot2::aes(fill = squished_score)) + 
+        ggplot2::scale_y_reverse(labels = scales::percent, expand = c(0, 0)) + 
+        ggplot2::scale_x_continuous(
+            labels = scales::percent, expand = c(0, 0), 
+            position = 'top'
+        ) + 
+        ggplot2::coord_fixed() + 
+        ggplot2::scale_fill_gradientn(
+            colors = bgrColors(),
+            na.value = "#FFFFFF",
+            limits = limits
+        ) + 
+        ggplot2::labs(
+            x = '', 
+            y = 'Genomic bins ranked by eigenvector value', 
+            fill = "Interaction frequency\n(log2 over expected)"
+        ) + 
+        ggplot2::theme_minimal() + 
+        ggplot2::theme(legend.position = 'bottom') +
+        ggplot2::theme(panel.border = ggplot2::element_rect(fill = NA)) + 
+        ggplot2::theme(axis.title.x = ggplot2::element_blank()) 
+    
+    ## -- Make side barplot 
+    dat2 <- tibble::as_tibble(filtered_eigens) |> 
+        dplyr::group_by(eigen_bin) |> 
+        dplyr::summarize(mean_eigen = mean(eigen)) |> 
+        dplyr::mutate(x = eigen_bin / nbins)
+    p2 <- ggplot2::ggplot(dat2, ggplot2::aes(x = x, y = mean_eigen)) + 
+        ggplot2::geom_col() + 
+        ggplot2::scale_x_continuous(
+            labels = NULL, expand = c(0, 0)
+        ) + 
+        ggplot2::labs(
+            x = '', 
+            y = 'Eigen', 
+            fill = "Interaction frequency\n(log2 over expected)"
+        ) + 
+        ggplot2::theme_minimal() + 
+        ggplot2::theme(legend.position = 'bottom') +
+        ggplot2::theme(panel.border = ggplot2::element_blank()) + 
+        ggplot2::theme(panel.grid = ggplot2::element_blank()) + 
+        ggplot2::theme(axis.text.x = ggplot2::element_blank()) +
+        ggplot2::theme(axis.title.x = ggplot2::element_blank()) +
+        ggplot2::theme(axis.line.x = ggplot2::element_blank()) 
+    
+    p <- patchwork::wrap_plots(p2, p1, ncol = 1)
+
+}
+
+.saddle <- function(x_chr, filtered_eigens) {
+    dx <- detrend(x_chr)
+    df <- as(dx, 'data.frame')
+    df$eigen_bin1 <- df |>
+        dplyr::left_join(as.data.frame(filtered_eigens), by = c('bin_id1' = 'bin_id')) |> 
+        dplyr::pull(eigen_bin)
+    df$eigen_bin2 <- df |>
+        dplyr::left_join(as.data.frame(filtered_eigens), by = c('bin_id2' = 'bin_id')) |> 
+        dplyr::pull(eigen_bin)
+    df <- drop_na(df, eigen_bin1, eigen_bin2, detrended) |> 
+        dplyr::select(eigen_bin1, eigen_bin2, detrended)
+    return(df)
+}
+
+################################################################################
+#                                                                              #
+#                                 ggplot2 extra                                #
+#                                                                              #
+################################################################################
 
 ggthemeHiContacts <- function(ticks = TRUE, grid = FALSE) {
     t <- ggplot2::theme_bw() +
@@ -732,25 +858,30 @@ ggthemeHiContacts <- function(ticks = TRUE, grid = FALSE) {
 }
 
 #' Matrix palettes
-#'
-#' @return ggplot
-#'
-#' @rdname palettes
 #' 
-#' @importFrom scales unit_format
-#' @export
+#' @name palettes
+#' 
+#' @return A vector of colours carefully
+#' picked for Hi-C contact heatmaps
+#' 
 #' @examples
 #' bwrColors()
+#' bbrColors()
+#' bgrColors()
+#' afmhotrColors()
+#' coolerColors()
+#' rainbowColors()
+NULL
+
+#' @rdname palettes
+#' @export
 
 bwrColors <- function() {
     c("#1659b1", "#4778c2", "#ffffff", "#b13636", "#6C150E")
 }
 
 #' @rdname palettes
-#' 
 #' @export
-#' @examples
-#' bbrColors()
 
 bbrColors <- function() {
     c("#1659b1", "#4778c2", "#a9c3e7", "#ffffff", 
@@ -759,10 +890,7 @@ bbrColors <- function() {
 }
 
 #' @rdname palettes
-#' 
 #' @export
-#' @examples
-#' bgrColors()
 
 bgrColors <- function() {
     rev(c(
@@ -780,10 +908,7 @@ bgrColors <- function() {
 }
 
 #' @rdname palettes
-#' 
 #' @export
-#' @examples
-#' afmhotrColors()
 
 afmhotrColors <- function() {
     c(
@@ -800,10 +925,7 @@ afmhotrColors <- function() {
 }
 
 #' @rdname palettes
-#' 
 #' @export
-#' @examples
-#' coolerColors()
 
 coolerColors <- function() {
     rev(c(
@@ -824,10 +946,7 @@ coolerColors <- function() {
 }
 
 #' @rdname palettes
-#' 
 #' @export
-#' @examples
-#' rainbowColors()
 
 rainbowColors <- function() {
     rev(c(

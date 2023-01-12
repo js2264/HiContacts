@@ -1,10 +1,13 @@
 test_that("arithmetics works", {
     contacts_yeast <- HiCExperiment::contacts_yeast() |> 
-        HiCExperiment::refocus('II:1-30000')
+        HiCExperiment::zoom(4000) |>
+        HiCExperiment::refocus('II:1-100000')
     contacts_yeast_eco1 <- HiCExperiment::contacts_yeast_eco1() |> 
-        HiCExperiment::refocus('II:1-30000')
-    full_contacts_yeast <- HiCExperiment::full_contacts_yeast() |> 
-        HiCExperiment::refocus('II:1-30000') |> 
+        HiCExperiment::zoom(4000) |>
+        HiCExperiment::refocus('II:1-100000')
+    full_contacts_yeast <- HiCExperiment::contacts_yeast() |> 
+        HiCExperiment::zoom(4000) |>
+        HiCExperiment::refocus('II:1-100000') |> 
         HiCExperiment::zoom(resolution = 1000)
     
     expect_true({

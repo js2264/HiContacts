@@ -5,20 +5,20 @@
 \alias{plotPsSlope}
 \title{Plotting a P(s) distance law}
 \usage{
-plotPs(..., xlim = c(5000, 499000), ylim = c(1e-08, 1e-04))
+plotPs(x, mapping, xlim = c(5000, 499000), ylim = c(1e-08, 1e-04))
 
-plotPsSlope(..., xlim = c(5000, 499000), ylim = c(-3, 0))
+plotPsSlope(x, mapping, xlim = c(5000, 499000), ylim = c(-3, 0))
 }
 \arguments{
-\item{...}{...}
+\item{x}{the output data.frame of \code{distanceLaw} function}
+
+\item{mapping}{aes to pass on to ggplot2}
 
 \item{xlim}{xlim}
 
 \item{ylim}{ylim}
 }
 \value{
-ggplot
-
 ggplot
 }
 \description{
@@ -41,5 +41,5 @@ ps_eco1 <- distanceLaw(contacts_yeast_eco1)
 ps_eco1$sample <- 'eco1'
 ps <- rbind(ps_wt, ps_eco1)
 plotPs(ps, ggplot2::aes(x = binned_distance, y = norm_p, group = sample, color = sample))
-plotPsSlope(ps, ggplot2::aes(x = binned_distance, y = slope))
+plotPsSlope(ps, ggplot2::aes(x = binned_distance, y = slope, group = sample))
 }

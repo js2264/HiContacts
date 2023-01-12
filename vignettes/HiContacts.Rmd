@@ -60,13 +60,13 @@ looks for balanced scores. If they are not stored in the original `.(m)/cool` fi
 ```{r}
 ## Square matrix
 plotMatrix(hic, use.scores = 'balanced', limits = c(-4, -1), dpi = 120)
+
 ## Horizontal matrix
-hic |> 
-    refocus('II') |> 
-    plotMatrix(
-        use.scores = 'balanced', limits = c(-4, -1), dpi = 120, 
-        max.distance = 200000
-    )
+plotMatrix(
+    refocus(hic, 'II'),
+    use.scores = 'balanced', limits = c(-4, -1), dpi = 120, 
+    max.distance = 200000
+)
 ```
 
 ## Plot loops
@@ -166,7 +166,6 @@ p <- patchwork::wrap_plots(
     plotMatrix(hic_1_despeckled5, use.scores = 'despeckled', scale = 'log10', limits = c(-4, -1))
 )
 ```
-
 
 # Mapping topological features 
 

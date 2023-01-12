@@ -4,11 +4,14 @@
 #' will be computed if a `.pairs` file is added to the `HiCExperiment` object 
 #' using `pairsFile(x) <- "..."`. 
 #' 
-#' @rdname Ps
+#' @name Ps
+#' @aliases distanceLaw
+#' @aliases localDistanceLaw
 #' 
 #' @param x A `HiCExperiment` object
 #' @param by_chr by_chr
 #' @param filtered_chr filtered_chr
+#' @param coords GRanges
 #' @return a tibble
 #'
 #' @import tibble
@@ -27,12 +30,21 @@
 #' @importFrom dplyr lead
 #' @importFrom dplyr cur_data
 #' @importFrom BiocIO import
-#' @export
 #' @examples 
-#' library(HiContacts)
 #' contacts_yeast <- contacts_yeast()
 #' ps <- distanceLaw(contacts_yeast)
 #' ps
+#' local_ps <- localDistanceLaw(
+#'     contacts_yeast,
+#'     GenomicRanges::GRanges(
+#'         c("telomere" = "II:1-20000", "arm" = "II:300000-700000")
+#'     )
+#' )
+#' local_ps
+NULL
+
+#' @rdname Ps
+#' @export 
 
 distanceLaw <- function(
     x, 
@@ -116,19 +128,7 @@ distanceLaw <- function(
 }
 
 #' @rdname Ps
-#' 
-#' @param coords GRanges
-#' @return a tibble
-#'
-#' @export
-#' @examples 
-#' local_ps <- localDistanceLaw(
-#'     contacts_yeast,
-#'     GenomicRanges::GRanges(
-#'         c("telomere" = "II:1-20000", "arm" = "II:300000-700000")
-#'     )
-#' )
-#' local_ps
+#' @export 
 
 localDistanceLaw <- function(
     x, 
@@ -195,10 +195,6 @@ localDistanceLaw <- function(
         dplyr::arrange(binned_distance)
     return(ps)
 }
-
-#' @rdname Ps
-#'
-#' @return tbl
 
 PsBreaks <- function() {
     structure(list(break_pos = c(

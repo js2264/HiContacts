@@ -2,7 +2,7 @@ test_that("compartments works", {
     library(BSgenome.Scerevisiae.UCSC.sacCer3)
     genome <- BSgenome.Scerevisiae.UCSC.sacCer3
     GenomeInfoDb::seqlevelsStyle(genome) <- "NCBI"
-    full_contacts_yeast <- HiCExperiment::full_contacts_yeast()
+    full_contacts_yeast <- HiCExperiment::contacts_yeast(full = TRUE)
     comps <- getCompartments(full_contacts_yeast, genome = genome)
     comps_VI <- getCompartments(full_contacts_yeast, chromosomes = "VI")
     expect_no_error(getCompartments(full_contacts_yeast, 
@@ -28,7 +28,7 @@ test_that("compartments works", {
 })
 
 test_that("insulation works", {
-    hic <- HiCExperiment::full_contacts_yeast() |> 
+    hic <- HiCExperiment::contacts_yeast() |> 
         HiCExperiment::refocus('II:1-300000') |> 
         HiCExperiment::zoom(resolution = 1000)
     hic2 <- getDiamondInsulation(hic, window_size = 8000)

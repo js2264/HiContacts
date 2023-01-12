@@ -1,13 +1,3 @@
-#' `sdiag<-`
-#'
-#' @param A A
-#' @param k k
-#' @param value value
-#' @return a matrix
-#'
-#' @import stringr
-#' @rdname utils
-
 `sdiag<-` <- function(A, k = 0, value) {
     p <- ncol(A)
     n <- nrow(A)

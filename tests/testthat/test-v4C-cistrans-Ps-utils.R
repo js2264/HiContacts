@@ -21,9 +21,9 @@ test_that("v4C works", {
 })
 
 test_that("cistrans works", {
-    full_contacts_yeast <- HiCExperiment::full_contacts_yeast()
+    contacts_yeast <- HiCExperiment::contacts_yeast()
     expect_s3_class({
-        cisTransRatio(full_contacts_yeast)
+        cisTransRatio(contacts_yeast)
     }, 'tbl')
 })
 

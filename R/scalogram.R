@@ -1,6 +1,6 @@
 #' Compute a scalogram of contacts
 #' 
-#' @rdname scalogram
+#' @name scalogram
 #' 
 #' @param x A `HiCExperiment` object
 #' @param dist_min Minimum distance for interactions to be considered.
@@ -25,8 +25,16 @@
 #'   'yeast_wt', format = 'pairs.gz'
 #' )
 #' scalo <- scalogram(contacts_yeast['II'])
+#' scalo
+NULL
+
+#' @rdname scalogram
+#' @export
 
 scalogram <- function(x, dist_min = 0, nbins = 250, probs = c(0.25, 0.5, 0.75)) {
+    if (is.null(HiCExperiment::pairsFile(x))) {
+        stop("No PairsFile is associated with the provided HiCExperiment object.")
+    }
     pairs <- HiCExperiment::import(
         HiCExperiment::PairsFile(HiCExperiment::pairsFile(x))
     )

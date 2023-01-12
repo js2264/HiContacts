@@ -1,6 +1,6 @@
 test_that("plotMatrix works", {
     contacts_yeast <- HiCExperiment::contacts_yeast()
-    full_contacts_yeast <- HiCExperiment::full_contacts_yeast()
+    full_contacts_yeast <- HiCExperiment::contacts_yeast()
     cm <- Matrix::as.matrix(gi2cm(interactions(full_contacts_yeast), 'balanced'))
     y <- base::as.matrix(cm)
     expect_s3_class(plotMatrix(y), 'gg')

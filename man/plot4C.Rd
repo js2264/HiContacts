@@ -4,12 +4,13 @@
 \alias{plot4C}
 \title{Plotting virtual 4C profiles}
 \usage{
-plot4C(x, mapping)
+plot4C(x, mapping = ggplot2::aes(x = center, y = score, col = seqnames))
 }
 \arguments{
 \item{x}{GRanges, generally the output of \code{virtual4C()}}
 
-\item{mapping}{aes to pass on to ggplot2}
+\item{mapping}{aes to pass on to ggplot2 (default:
+\code{ggplot2::aes(x = center, y = score, col = seqnames)})}
 }
 \value{
 ggplot
@@ -18,8 +19,7 @@ ggplot
 Plotting virtual 4C profiles
 }
 \examples{
-library(HiContacts)
 contacts_yeast <- contacts_yeast()
 v4C <- virtual4C(contacts_yeast, GenomicRanges::GRanges('II:490000-510000'))
-plot4C(v4C, ggplot2::aes(x = center, y = score))
+plot4C(v4C)
 }

@@ -74,5 +74,9 @@ utils::globalVariables(c(
     "mean_eigen",
     "quantile",
     "region",
-    "squished_score"
+    "squished_score", 
+    "bin_id1", 
+    "bin_id2", 
+    "center", 
+    "mcols"  
 ))

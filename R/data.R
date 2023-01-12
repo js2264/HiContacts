@@ -38,8 +38,8 @@ contacts_yeast_eco1 <- function() {
 
 full_contacts_yeast <- function() {
     .Deprecated(
-        "HiCExperiment::full_contacts_yeast", 
-        msg = "`full_contacts_yeast` is deprecated; see '?HiCExperiment::full_contacts_yeast' instead."
+        "HiCExperiment::contacts_yeast(full = TRUE)", 
+        msg = "`full_contacts_yeast` is deprecated; see '?HiCExperiment::contacts_yeast(full = TRUE)' instead."
     )
     HiCExperiment::contacts_yeast(full = TRUE)
 }

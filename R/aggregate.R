@@ -1,24 +1,5 @@
-#' @name arithmetics
-#' @aliases aggregate,HiCExperiment-method
-#' @importFrom S4Vectors aggregate
-#' @importFrom BiocParallel bpparam
-#' @return a `AggrHiCExperiment` object
+#' @rdname arithmetics
 #' @export
-#' @examples 
-#' #### -----
-#' #### Aggregate a contact matrix over centromeres, at different scales
-#' #### -----
-#' 
-#' contacts <- full_contacts_yeast() |> zoom(resolution = 1000)
-#' centros <- topologicalFeatures(contacts, 'centromeres')
-#' aggr <- aggregate(contacts, targets = centros, flanking_bins = 50)
-#' plotMatrix(aggr, 'detrended', scale = 'linear', limits = c(-1, 1))
-#' 
-#' contacts <- full_contacts_yeast() |> zoom(resolution = 8000)
-#' centros <- topologicalFeatures(contacts, 'centromeres')
-#' aggr <- aggregate(contacts, targets = centros, flanking_bins = 20)
-#' plotMatrix(aggr, 'detrended', scale = 'linear', limits = c(-1, 1))
-#' 
 
 setMethod("aggregate", signature(x = "HiCExperiment"), function(x, ...) {
     params <- list(...)
