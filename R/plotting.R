@@ -40,6 +40,7 @@ NULL
 #' @param chrom_lines Whether to display separating lines between chromosomes, 
 #' should any be necessary (Default: TRUE)
 #' @param show_grid Whether to display an underlying grid (Default: FALSE)
+#' @param caption Whether to display a caption (Default: TRUE)
 #' @param cmap Color scale to use. (Default: bgrColors() if limits are c(-1, 1)
 #' and coolerColors() otherwise)
 #' @return ggplot object
@@ -85,7 +86,8 @@ setMethod("plotMatrix", "HiCExperiment", function(
     symmetrical = TRUE, 
     chrom_lines = TRUE, 
     show_grid = FALSE, 
-    cmap = NULL  
+    cmap = NULL, 
+    caption = TRUE  
  ) {
     p <- plotMatrix(
         interactions(x), 
@@ -102,16 +104,19 @@ setMethod("plotMatrix", "HiCExperiment", function(
         show_grid = show_grid, 
         cmap = cmap  
     )
-    p <- p + ggplot2::labs(
-        caption = paste(
-            sep = '\n',
-            paste0('file: ', fileName(x)), 
-            paste0('resolution: ', resolution(x)), 
-            paste0('focus: ', focus(x)),
-            paste0('scores: ', use.scores),
-            paste0('scale: ', scale)
+    if (caption) {
+        p <- p + ggplot2::labs(
+            caption = paste(
+                sep = '\n',
+                paste0('file: ', fileName(x)), 
+                paste0('resolution: ', resolution(x)), 
+                paste0('focus: ', focus(x)),
+                paste0('scores: ', use.scores),
+                paste0('scale: ', scale)
+            )
         )
-    )
+    }
+    return(p)
 })
 
 #' @rdname plotMatrix
@@ -249,7 +254,8 @@ setMethod("plotMatrix", "GInteractions", function(
     )))
 
     if (nseqnames == 1) { ## Single chromosome coordinates to plot
-        if (is.null(max.distance)) {
+        
+        if (is.null(max.distance)) { ##### REGULAR SQUARE MATRIX
             ## -- Convert gis to table and extract x/y
             mat <- gis |>
                 tibble::as_tibble() |>
@@ -295,7 +301,8 @@ setMethod("plotMatrix", "GInteractions", function(
                     y = "Genome coordinates"
                 )
         }
-        else {
+        
+        else { ##### HORIZONTAL TRIANGULAR MATRIX
             ## -- Convert gis to table and extract x/y
             df <- gis |>
                 tibble::as_tibble() |>
@@ -321,7 +328,7 @@ setMethod("plotMatrix", "GInteractions", function(
         }
     }
 
-    else {
+    else { ##### SQUARE MATRIX WITH SEVERAL CHROMOSOMES
         chroms <- gis |>
             tidyr::as_tibble() |>
             dplyr::group_by(seqnames2) |>
@@ -488,7 +495,7 @@ ggHorizontalMatrix <- function(df, cols = coolerColors(), limits) {
     ) +
         ggplot2::scale_x_continuous(expand = c(0, 0), labels = scales::unit_format(unit = "M", scale = 1e-6)) +
         ggplot2::scale_y_continuous(expand = c(0, 0), labels = scales::unit_format(unit = "M", scale = 1e-6)) +
-        ggplot2::guides(fill = ggplot2::guide_colorbar(barheight = ggplot2::unit(5, "cm"), barwidth = 0.5, frame.colour = "black")) + 
+        ggplot2::guides(fill = ggplot2::guide_colorbar(barheight = ggplot2::unit(.25, "npc"), barwidth = 0.5, frame.colour = "black")) + 
         ggplot2::coord_fixed(ratio = r) +
         ggthemeHiContacts(ticks = TRUE, grid = FALSE)
     p
@@ -614,7 +621,8 @@ NULL
 plot4C <- function(x, mapping = ggplot2::aes(x = center, y = score, col = seqnames)) {
     x <- tibble::as_tibble(x)
     p <- ggplot2::ggplot(x, mapping = mapping) + 
-        ggplot2::geom_line() + 
+        # ggplot2::geom_line() + 
+        ggplot2::geom_area(position = "identity", alpha = 0.2) + 
         ggplot2::theme_minimal() + 
         ggplot2::theme(panel.border = ggplot2::element_rect(fill = NA)) + 
         ggplot2::theme(panel.grid.minor = ggplot2::element_blank()) +
@@ -812,7 +820,7 @@ plotSaddle <- function(x, nbins = 51, limits = c(-1, 1), BPPARAM = BiocParallel:
         ggplot2::theme(axis.title.x = ggplot2::element_blank()) +
         ggplot2::theme(axis.line.x = ggplot2::element_blank()) 
     
-    p <- patchwork::wrap_plots(p2, p1, ncol = 1)
+    p <- patchwork::wrap_plots(p2, p1, ncol = 1, heights = c(1, 3))
 
 }
 
@@ -842,17 +850,17 @@ ggthemeHiContacts <- function(ticks = TRUE, grid = FALSE) {
     if (ticks) t <- t + ggplot2::theme(axis.ticks = ggplot2::element_line(colour = "black", linewidth = 0.2))
     if (grid) {
         t <- t + 
-                ggplot2::theme(
-                    panel.grid.minor = ggplot2::element_line(linewidth = 0.025, colour = "#00000052"), 
-                    panel.grid.major = ggplot2::element_line(linewidth = 0.025, colour = "#00000052")
-                )
+            ggplot2::theme(
+                panel.grid.minor = ggplot2::element_line(linewidth = 0.025, colour = "#00000052"), 
+                panel.grid.major = ggplot2::element_line(linewidth = 0.025, colour = "#00000052")
+            )
             t
     } else {
         t <- t + 
-                ggplot2::theme(
-                    panel.grid.minor = ggplot2::element_blank(), 
-                    panel.grid.major = ggplot2::element_blank()
-                )
+            ggplot2::theme(
+                panel.grid.minor = ggplot2::element_blank(), 
+                panel.grid.major = ggplot2::element_blank()
+            )
             t
     }
 }

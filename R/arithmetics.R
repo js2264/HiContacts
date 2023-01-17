@@ -7,6 +7,8 @@
 #' @aliases merge
 #' @aliases despeckle
 #' @aliases aggregate,HiCExperiment-method
+#' @aliases boost
+#' @aliases subsample
 #' 
 #' @description 
 #' Different arithmetic operations can be performed:  
@@ -18,7 +20,11 @@
 #'  - Merge multiple contact matrices;
 #'  - Despeckle (i.e. smooth out) a contact matrix out;
 #'  - Aggregate (average) a contact matrices over a set of genomic loci of 
-#' interest.
+#' interest;
+#'  - Boost signal by enhancing long-range interactions while preserving short-
+#' range interactions (this is adapted from Boost-HiC);
+#'  - Subsample interactions using a proportion or a fixed number of final 
+#' interactions.
 #' 
 #' @param x a `HiCExperiment` object
 #' @param use.scores Which scores to use to perform operations
@@ -28,6 +34,13 @@
 #' @param ignore_ndiags ignore N diagonals when calculating correlations
 #' @param by a `HiCExperiment` object
 #' @param focal.size Size of the smoothing rectangle
+#' @param alpha Power law scaling factor. As indicated in Boost-HiC documentation, 
+#' the alpha parameter influences the weighting of contacts: if alpha < 1 
+#' long-range interactions are prioritized; if alpha >> 1 short-range 
+#' interactions have more weight when computing the distance matrix.
+#' @param full.replace Whether to replace the entire set of contacts, 
+#' rather than only filling the missing interactions (count=0) (Default: FALSE)
+#' @param prop Float between 0 and 1, or integer corresponding to the # of 
 #' 
 #' @return a `HiCExperiment` object with extra scores
 #' 
@@ -99,6 +112,18 @@
 #' centros <- topologicalFeatures(contacts, 'centromeres')
 #' aggregate(contacts, targets = centros, flanking_bins = 50)
 #' 
+#' #### -----
+#' #### Enhance long-range interaction signal
+#' #### -----
+#' 
+#' contacts <- contacts_yeast() |> zoom(resolution = 1000) |> refocus('II')
+#' boost(contacts, alpha = 1)
+#' 
+#' #### -----
+#' #### Subsample interactions 
+#' #### -----
+#' 
+#' subsample(contacts, prop = 100000)
 NULL
 
 #' @rdname arithmetics

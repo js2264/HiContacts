@@ -1,6 +1,6 @@
 #' @title Contact map compartments
-#' @name compartments
-#' @rdname compartments
+#' @name getCompartments
+#' @rdname getCompartments
 #' @description
 #' 
 #' Computes eigen vectors for each chromosome using cis contacts and extract 

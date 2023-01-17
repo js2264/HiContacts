@@ -40,6 +40,7 @@ Imports:
     stats
 Suggests:
     HiContactsData,
+    Rfast,
     terra, 
     Biostrings, 
     BSgenome.Scerevisiae.UCSC.sacCer3, 

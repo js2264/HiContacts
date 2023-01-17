@@ -1,6 +1,6 @@
 #' @title Contact map insulation
-#' @name diamond
-#' @rdname diamond
+#' @name getDiamondInsulation
+#' @rdname getDiamondInsulation
 #' @description
 #' 
 #' Computes diamond insulation score along the entire genome 
@@ -78,7 +78,7 @@ getDiamondInsulation <- function(
 
 }
 
-#' @rdname diamond
+#' @rdname getDiamondInsulation
 #' @export
 
 getBorders <- function(x, weak_threshold = 0.2, strong_threshold = 0.5) {

@@ -7,7 +7,7 @@ setMethod("aggregate", signature(x = "HiCExperiment"), function(x, ...) {
         stop("Please provide a `targets` argument (`GRanges` or `GInteractions`)")
     targets <- params[['targets']]
     if ('flanking_bins' %in% names(params)) {flanking_bins <- params[['flanking_bins']]} 
-    else {flanking_bins <- 50}
+    else {flanking_bins <- 51}
     if ('BPPARAM' %in% names(params)) {BPPARAM <- params[['BPPARAM']]} 
     else {BPPARAM <- BiocParallel::bpparam()}
     HiCExperiment::AggrHiCExperiment(

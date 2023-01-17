@@ -32,12 +32,12 @@ NULL
 #' @export
 
 scalogram <- function(x, dist_min = 0, nbins = 250, probs = c(0.25, 0.5, 0.75)) {
-    if (is.null(HiCExperiment::pairsFile(x))) {
+    pairsFile <- HiCExperiment::pairsFile(x)
+    if (is.null(pairsFile)) {
         stop("No PairsFile is associated with the provided HiCExperiment object.")
     }
-    pairs <- HiCExperiment::import(
-        HiCExperiment::PairsFile(HiCExperiment::pairsFile(x))
-    )
+    message("Importing pairs file ", pairsFile, " in memory. This may take a while...")
+    pairs <- BiocIO::import(pairsFile, format = 'pairs')
     an_ <- HiCExperiment::anchors(pairs)
     scalo <- tibble::tibble(
         dist = pairs$distance, 
