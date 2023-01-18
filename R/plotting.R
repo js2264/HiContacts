@@ -392,7 +392,7 @@ setMethod("plotMatrix", "matrix", function(
     rasterize = TRUE, 
     cmap = NULL  
 ) {    
-    ## -- Put metric to plot in `score` column
+
     mat <- x
     has_negative_scores <- any(mat < 0, na.rm = TRUE)
 

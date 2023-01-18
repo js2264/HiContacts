@@ -9,24 +9,26 @@
 #' @aliases aggregate,HiCExperiment-method
 #' @aliases boost
 #' @aliases subsample
+#' @aliases normalize,HiCExperiment-method
 #' 
 #' @description 
 #' Different arithmetic operations can be performed:  
-#'  - Detrending a contact matrix, i.e. removing the distance-dependent 
+#'  - `normalize` a contact matrix using iterative correction;
+#'  - `detrend` a contact matrix, i.e. remove the distance-dependent 
 #' contact trend;
-#'  - Autocorrelate a contact matrix: this is is typically done to highlight 
+#'  - `autocorrelate` a contact matrix: this is is typically done to highlight 
 #' large-scale compartments;
-#'  - Divide one contact matrix by another; 
-#'  - Merge multiple contact matrices;
-#'  - Despeckle (i.e. smooth out) a contact matrix out;
-#'  - Aggregate (average) a contact matrices over a set of genomic loci of 
+#'  - `divide` one contact matrix by another; 
+#'  - `merge` multiple contact matrices;
+#'  - `despeckle` (i.e. smooth out) a contact matrix out;
+#'  - `aggregate` (average) a contact matrices over a set of genomic loci of 
 #' interest;
-#'  - Boost signal by enhancing long-range interactions while preserving short-
+#'  - `boost` Hi-C signal by enhancing long-range interactions while preserving short-
 #' range interactions (this is adapted from Boost-HiC);
-#'  - Subsample interactions using a proportion or a fixed number of final 
+#'  - `subsample` interactions using a proportion or a fixed number of final 
 #' interactions.
 #' 
-#' @param x a `HiCExperiment` object
+#' @param x,object a `HiCExperiment` object
 #' @param use.scores Which scores to use to perform operations
 #' @param ... `HiCExperiment` objects. For `aggregate`, `targets` (a set of 
 #' GRanges or GInteractions).
@@ -47,6 +49,7 @@
 #' @import InteractionSet
 #' @import stringr
 #' @import tidyr
+#' @importMethodsFrom BiocGenerics normalize
 #' @importFrom scales rescale
 #' @importFrom tibble as_tibble
 #' @importFrom tibble tibble
@@ -70,13 +73,18 @@
 #' 
 #' @examples 
 #' #### -----
-#' #### Detrending a contact matrix
+#' #### Normalize a contact matrix
 #' #### -----
 #' 
 #' library(HiContacts)
 #' contacts_yeast <- contacts_yeast()
-#' contacts_yeast <- detrend(contacts_yeast)
-#' contacts_yeast
+#' normalize(contacts_yeast)
+#'
+#' #### -----
+#' #### Detrending a contact matrix
+#' #### -----
+#' 
+#' detrend(contacts_yeast)
 #'
 #' #### -----
 #' #### Auto-correlate a contact matrix

@@ -22,7 +22,8 @@ plotMatrix(x, ...)
   symmetrical = TRUE,
   chrom_lines = TRUE,
   show_grid = FALSE,
-  cmap = NULL
+  cmap = NULL,
+  caption = TRUE
 )
 
 \S4method{plotMatrix}{GInteractions}(
@@ -82,6 +83,8 @@ should any be necessary (Default: TRUE)}
 
 \item{cmap}{Color scale to use. (Default: bgrColors() if limits are c(-1, 1)
 and coolerColors() otherwise)}
+
+\item{caption}{Whether to display a caption (Default: TRUE)}
 }
 \value{
 ggplot object

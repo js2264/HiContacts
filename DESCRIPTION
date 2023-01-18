@@ -24,6 +24,7 @@ Imports:
     GenomeInfoDb,
     S4Vectors,
     methods,
+    BiocGenerics,
     BiocIO,
     BiocParallel, 
     RSpectra, 
