@@ -180,19 +180,19 @@ autocorrelate <- function(x, use.scores = 'balanced', detrend = TRUE, ignore_ndi
         sdiag(mat, K) <- NA
     }
     co <- WGCNA::cor(mat, use = 'pairwise.complete.obs', method = "pearson")
-    colnames(co) <- names(regions(gis))
-    rownames(co) <- names(regions(gis))
+    colnames(co) <- names(reg)
+    rownames(co) <- names(reg)
     mat2 <- tibble::as_tibble(co, rownames = 'region', .name_repair = "minimal") |> 
         tidyr::pivot_longer(-region, names_to = "y", values_to = "corr") |>
         dplyr::rename("x" = "region")
     mat2$bin_id1 <- dplyr::left_join(
         mat2, 
-        data.frame(region = names(regions(gis)), id = regions(gis)$bin_id), 
+        data.frame(region = names(reg), id = reg$bin_id), 
         by = c(x = 'region')
     ) |> pull(id)
     mat2$bin_id2 <- dplyr::left_join(
         mat2, 
-        data.frame(region = names(regions(gis)), id = regions(gis)$bin_id), 
+        data.frame(region = names(reg), id = reg$bin_id), 
         by = c(y = 'region')
     ) |> pull(id)
     scores(x, 'autocorrelated') <- left_join(
@@ -205,79 +205,55 @@ autocorrelate <- function(x, use.scores = 'balanced', detrend = TRUE, ignore_ndi
 #' @export
 
 divide <- function(x, by, use.scores = 'balanced') {
-    
-    ## -- Check that all objects are comparable (bins, regions, resolution, seqinfo)
-    is_comparable(x, by)
 
     x_gis <- interactions(x)
-    x_gis$score <- scores(x, use.scores)
     by_gis <- interactions(by)
-    by_gis$score <- scores(by, use.scores)
 
     ## -- If regions are different, manually merge them 
-    InteractionSet::replaceRegions(x_gis) <- unique(
+    re <- unique(
         c(InteractionSet::regions(x_gis), InteractionSet::regions(by_gis))
     )
-    InteractionSet::replaceRegions(by_gis) <- unique(
-        c(InteractionSet::regions(x_gis), InteractionSet::regions(by_gis))
-    )
+    InteractionSet::replaceRegions(x_gis) <- re
+    InteractionSet::replaceRegions(by_gis) <- re
+    
+    ## -- Check that all objects are comparable (bins, resolution, seqinfo)
+    is_same_seqinfo(x, by)
+    is_same_resolution(x, by)
+    is_same_bins(x, by)
 
     ## -- Convert to matrices 
-    m1 <- cm2matrix(gi2cm(x_gis), replace_NA = 0)
-    m2 <- cm2matrix(gi2cm(by_gis), replace_NA = 0)
+    m1 <- cm2matrix(gi2cm(x_gis, use.scores), replace_NA = 0)
+    m2 <- cm2matrix(gi2cm(by_gis, use.scores), replace_NA = 0)
     binsize <- resolution(x)
 
-    serpentine <- FALSE
+    # - Compute ratio matrix
+    sK <- m1/m2
 
-    ## Compute ratio
-    if (serpentine) {
-        ## -- Run serpentine
-        sp <- reticulate::import('serpentine')
-        .v <- sp$serpentin_binning(m1, m2, threshold = threshold, minthreshold = threshold/5, verbose = FALSE, iterations = serpentine_niter, parallel = serpentine_ncores)
-        sm1 <- .v[[1]]
-        sm2 <- .v[[2]]
-        sK <- .v[[3]]
-        .v <- sp$MDbefore(m1, m2, show = FALSE)
-        trend <- .v[[1]]
-        threshold <- .v[[2]]
-        sK <- sK - trend
-    }
-    else {
-        sK <- m1/m2
-    }
-    colnames(sK) <- paste0('x', GenomicRanges::start(anchors(gi2cm(x_gis))$row))
-    rownames(sK) <- paste0('x', GenomicRanges::start(anchors(gi2cm(x_gis))$row))
-
-    ## Make a full-featured interactions (storing divided scores in `score`)
-    seqnames <- unique(GenomicRanges::seqnames(regions(x)))
-    mat <- sK |>
-        base::as.matrix() |> 
-        tibble::as_tibble(.name_repair = "universal") |> 
-        dplyr::mutate(start2 = GenomicRanges::start(anchors(gi2cm(by_gis))$row)) |> 
-        tidyr::pivot_longer(-start2, names_to = 'start1', values_to = 'score') |> 
-        dplyr::mutate(start1 = gsub('x', '', start1) |> as.numeric()) |>
-        dplyr::mutate(
-            end1 = start1 + binsize, 
-            end2 = start2 + binsize
-        )
-    an1 <- GenomicRanges::GRanges(
-        seqnames = seqnames, 
-        IRanges::IRanges(mat$start1, width = binsize)
+    # - Make a full-featured interactions (storing divided scores in `score`)
+    gis <- dplyr::full_join(as_tibble(x_gis), as_tibble(by_gis), 
+        by = c("seqnames1", "start1", "end1", "width1", "strand1", "chr1", 
+        "center1", "bin_id1", "seqnames2", "start2", "end2", "width2",
+        "strand2", "chr2", "center2", "bin_id2")
+    ) |> dplyr::select(!ends_with(c('1.1.x', '1.1.y', '2.1.x', '2.1.y')))
+    mat_ratio <- sK
+    cm_ratio <- InteractionSet::ContactMatrix(
+        mat_ratio, 
+        anchor1 = re, 
+        anchor2 = re, 
+        regions = re
     )
-    an2 <- GenomicRanges::GRanges(
-        seqnames = seqnames, 
-        IRanges::IRanges(mat$start2, width = binsize)
-    )
-    reg <- unique(c(an1, an2))
-    gi <- InteractionSet::GInteractions(
-        anchor1 = an1, 
-        anchor2 = an2, 
-        regions = reg, 
-        count = NA, 
-        anchor1.weight = NA, 
-        anchor2.weight = NA
-    )
-    gi$gis1_v_gis2 <- mat$score
+    is_ratio <- InteractionSet::deflate(cm_ratio)
+    gis_ratio <- InteractionSet::interactions(is_ratio)
+    gis_ratio$bin_id1 <- HiCExperiment::anchors(gis_ratio)[[1]]$bin_id
+    gis_ratio$bin_id2 <- HiCExperiment::anchors(gis_ratio)[[2]]$bin_id
+    m <- dplyr::left_join(
+        as.data.frame(mcols(gis_ratio)), 
+        gis, 
+        by = c('bin_id1', 'bin_id2')
+    ) |> dplyr::select(ends_with(c('.x', '.y', 'ratio')))
+    m <- dplyr::rename(m, count = 'count.x', balanced = 'balanced.x')
+    m$ratio <- SummarizedExperiment::assay(is_ratio, 1)[, 1]
+    scores <- as.list(m) |> S4Vectors::SimpleList()
 
     ## -- Create HiCExperiment
     res <- methods::new("HiCExperiment", 
@@ -285,10 +261,8 @@ divide <- function(x, by, use.scores = 'balanced') {
         metadata = S4Vectors::metadata(x),
         resolutions = binsize, 
         resolution = binsize, 
-        interactions = gi[!is.na(mat$score) & is.finite(mat$score)], 
-        scores = S4Vectors::SimpleList(
-            'ratio' = mat$score[!is.na(mat$score) & is.finite(mat$score)]
-        ), 
+        interactions = gis_ratio, 
+        scores = scores, 
         topologicalFeatures = HiCExperiment::topologicalFeatures(x), 
         pairsFile = NULL, 
         fileName = paste0(basename(fileName(x)), ' / ', basename(fileName(by)))
@@ -343,7 +317,7 @@ merge <- function(..., use.scores = 'balanced') {
         }
     }
 
-    ## -- Create 'in silico' Contacts
+    ## -- Create a new HiCExperiment object
     files <- paste0(
         basename(unlist(lapply(contacts_list, fileName))), 
         collapse = ', '

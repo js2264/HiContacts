@@ -761,7 +761,7 @@ plotSaddle <- function(x, nbins = 51, limits = c(-1, 1), BPPARAM = BiocParallel:
     ## -- Compute over-expected score in each pair of eigen bins
     df <- BiocParallel::bplapply(
         BPPARAM = BPPARAM, 
-        seqnames(seqinfo(filtered_eigens)), 
+        as.character(unique(seqnames(filtered_eigens))), 
         function(chr) {.saddle(x[chr], filtered_eigens)}
     ) |> dplyr::bind_rows()
     dat <- df |> 

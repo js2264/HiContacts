@@ -20,6 +20,7 @@
 #' storing A and B compartments as a GRanges object. 
 #'
 #' @importFrom BiocParallel bplapply
+#' @importFrom stats cor
 #' @export
 #' @examples 
 #' library(HiContacts)
@@ -186,7 +187,7 @@ getCompartments <- function(
 
 .eigGCPhasing <- function(gr, neigens) {
     cors <- lapply(seq_len(neigens), function(K) {
-        cor(gr$GC, GenomicRanges::mcols(gr)[, paste0('E', K)])
+        stats::cor(gr$GC, GenomicRanges::mcols(gr)[, paste0('E', K)])
     }) |> unlist()
     best_cor <- which.max(abs(cors))
     if (cors[best_cor] < 0) {

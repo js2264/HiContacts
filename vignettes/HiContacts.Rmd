@@ -155,7 +155,7 @@ p <- patchwork::wrap_plots(
 )
 ```
 
-## Smoothing out a contact map
+## Despeckling (smoothing out) a contact map
 
 ```{r}
 hic_1_despeckled <- despeckle(hic_1)

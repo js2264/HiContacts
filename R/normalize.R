@@ -1,3 +1,5 @@
+#' @importFrom utils txtProgressBar
+#' @importFrom utils setTxtProgressBar
 #' @importFrom stats median
 #' @rdname arithmetics
 #' @export
@@ -13,6 +15,7 @@ setMethod("normalize", signature(object = "HiCExperiment"), function(
     an <- InteractionSet::anchors(cm)
     re <- InteractionSet::regions(cm)
     mat0 <- HiCExperiment::cm2matrix(cm, sparse = TRUE)
+    mat0 <- Matrix::triu(mat0)
     mat <- mat0
 
     # - Filter bins 
@@ -29,7 +32,9 @@ setMethod("normalize", signature(object = "HiCExperiment"), function(
     # - Iterate over max_iter
     mat_iced <- mat[filtered_bins, filtered_bins]
     nonzeros <- data.frame(col = mat_iced@i+1, row = mat_iced@j+1) |> as.matrix()
+    pb <- utils::txtProgressBar(min = 0, max = niters, style = 3, width = 50, char = "-") 
     for (i in seq_len(niters)) {
+        utils::setTxtProgressBar(pb, i)
         bin_sums <- Matrix::colSums(mat_iced)
         bin_sums <- bin_sums / stats::median(bin_sums)
         mat_iced@x <- mat_iced@x / {bin_sums[nonzeros[, 'row']] * bin_sums[nonzeros[, 'col']]}
@@ -39,9 +44,8 @@ setMethod("normalize", signature(object = "HiCExperiment"), function(
     bin_sums <- Matrix::colSums(mat_iced)
     mat_iced@x <- mat_iced@x / stats::median(bin_sums)
 
-    # - Make symmetric
-    mat_iced <- as(mat_iced, 'matrix')
-    mat_iced[lower.tri(mat_iced)] <- t(mat_iced)[lower.tri(mat_iced)]
+    # - Make upper-tri
+    mat_iced <- Matrix::triu(mat_iced)
 
     # - Recover scores 
     cm_iced <- InteractionSet::ContactMatrix(

@@ -37,7 +37,8 @@ Imports:
     ggplot2,
     ggrastr,
     scales, 
-    stats
+    stats, 
+    utils
 Suggests:
     HiContactsData,
     WGCNA, 
