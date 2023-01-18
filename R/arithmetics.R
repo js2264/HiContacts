@@ -12,7 +12,7 @@
 #' @aliases normalize,HiCExperiment-method
 #' 
 #' @description 
-#' Different arithmetic operations can be performed:  
+#' Different arithmetic operations can be performed on Hi-C contact matrices:  
 #'  - `normalize` a contact matrix using iterative correction;
 #'  - `detrend` a contact matrix, i.e. remove the distance-dependent 
 #' contact trend;
@@ -43,6 +43,11 @@
 #' @param full.replace Whether to replace the entire set of contacts, 
 #' rather than only filling the missing interactions (count=0) (Default: FALSE)
 #' @param prop Float between 0 and 1, or integer corresponding to the # of 
+#' @param niters Number of iterations for ICE matrix balancing
+#' @param min.nnz Filter bins with less than `min.nnz` non-zero elements when 
+#' performing ICE matrix balancing
+#' @param mad.max Filter out bins whose log coverage is less than `mad.max` 
+#' median absolute deviations below the median bin log coverage.
 #' 
 #' @return a `HiCExperiment` object with extra scores
 #' 
@@ -60,7 +65,6 @@
 #' @importFrom dplyr left_join
 #' @importFrom dplyr rename
 #' @importFrom dplyr n
-#' @importFrom WGCNA cor
 #' @importFrom GenomicRanges seqnames
 #' @importFrom GenomicRanges findOverlaps
 #' @importFrom GenomicRanges start
@@ -158,6 +162,10 @@ detrend <- function(x, use.scores = 'balanced') {
 #' @export
 
 autocorrelate <- function(x, use.scores = 'balanced', detrend = TRUE, ignore_ndiags = 3) {
+    if (!requireNamespace("WGCNA", quietly = TRUE)) {
+        message("Install WGCNA package to perform Boost-HiC.")
+        message("install.packages('WGCNA')")
+    }
     if (detrend) {
         if (!{'detrend' %in% names(scores(x))}) {
             x <- detrend(x, use.scores = use.scores)
@@ -365,6 +373,11 @@ merge <- function(..., use.scores = 'balanced') {
 #' @export
 
 despeckle <- function(x, use.scores = 'balanced', focal.size = 1) {
+    if (!requireNamespace("terra", quietly = TRUE)) {
+        message("Install terra package to despeckle contact matrix.")
+        message("install.packages('terra')")
+    }
+
     gis <- HiCExperiment::interactions(x)
     gis$score <- HiCExperiment::scores(x, use.scores)
     cm <- HiCExperiment::gi2cm(gis)

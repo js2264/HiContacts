@@ -1,3 +1,5 @@
+#' HiContacts arithmetics functionalities
+#' @name arithmetics
 #' @rdname arithmetics
 #' @export
 

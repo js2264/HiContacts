@@ -1,8 +1,9 @@
+#' @importFrom stats median
 #' @rdname arithmetics
 #' @export
 
 setMethod("normalize", signature(object = "HiCExperiment"), function(
-    object, use.scores = 'count', max_iters = 200, min.nnz = 10, mad.max = 3
+    object, use.scores = 'count', niters = 200, min.nnz = 10, mad.max = 3
 ) {
 
     x <- object
@@ -18,10 +19,9 @@ setMethod("normalize", signature(object = "HiCExperiment"), function(
     bins <- Matrix::colSums(mat)
     bins[bins == 0] <- 1
     lbins <- log10(bins)
-    med <- median(lbins)
+    med <- stats::median(lbins)
     sig <- 1.4826 * stats::mad(lbins)
     s_min <- med - mad.max * sig
-    s_max <- med + mad.max * sig
     filtered_bins <- {lbins > s_min} & 
         {Matrix::colSums(mat > 0, na.rm = TRUE) > min.nnz}
     invalid_bins <- re[which(!filtered_bins)]$bin_id
@@ -29,15 +29,15 @@ setMethod("normalize", signature(object = "HiCExperiment"), function(
     # - Iterate over max_iter
     mat_iced <- mat[filtered_bins, filtered_bins]
     nonzeros <- data.frame(col = mat_iced@i+1, row = mat_iced@j+1) |> as.matrix()
-    for (i in seq_len(max_iters)) {
+    for (i in seq_len(niters)) {
         bin_sums <- Matrix::colSums(mat_iced)
-        bin_sums <- bin_sums / median(bin_sums)
+        bin_sums <- bin_sums / stats::median(bin_sums)
         mat_iced@x <- mat_iced@x / {bin_sums[nonzeros[, 'row']] * bin_sums[nonzeros[, 'col']]}
     }
 
     # - Rescale ice-d scores
     bin_sums <- Matrix::colSums(mat_iced)
-    mat_iced@x <- mat_iced@x / median(bin_sums)
+    mat_iced@x <- mat_iced@x / stats::median(bin_sums)
 
     # - Make symmetric
     mat_iced <- as(mat_iced, 'matrix')
