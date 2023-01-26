@@ -14,7 +14,13 @@
 \alias{normalize,HiCExperiment-method}
 \title{HiContacts arithmetics functionalities}
 \usage{
-\S4method{aggregate}{HiCExperiment}(x, ...)
+\S4method{aggregate}{HiCExperiment}(
+  x,
+  targets,
+  flankingBins = 51,
+  maxDistance = NULL,
+  BPPARAM = BiocParallel::bpparam()
+)
 
 detrend(x, use.scores = "balanced")
 
@@ -41,8 +47,17 @@ subsample(x, prop)
 \arguments{
 \item{x, object}{a \code{HiCExperiment} object}
 
-\item{...}{\code{HiCExperiment} objects. For \code{aggregate}, \code{targets} (a set of
-GRanges or GInteractions).}
+\item{targets}{Set of chromosome coordinates for which
+interaction counts are extracted from the Hi-C contact file, provided
+as a GRanges object (for diagnoal-centered loci) or as a GInteractions
+object (for off-diagonal coordinates).}
+
+\item{flankingBins}{Number of bins on each flank of the bins containing
+input targets.}
+
+\item{maxDistance}{Maximum distance to use when compiling distance decay}
+
+\item{BPPARAM}{BiocParallel parameters}
 
 \item{use.scores}{Which scores to use to perform operations}
 
@@ -51,6 +66,9 @@ GRanges or GInteractions).}
 \item{ignore_ndiags}{ignore N diagonals when calculating correlations}
 
 \item{by}{a \code{HiCExperiment} object}
+
+\item{...}{\code{HiCExperiment} objects. For \code{aggregate}, \code{targets} (a set of
+GRanges or GInteractions).}
 
 \item{focal.size}{Size of the smoothing rectangle}
 
@@ -141,7 +159,7 @@ despeckle(contacts_yeast)
 
 contacts <- contacts_yeast() |> zoom(resolution = 1000)
 centros <- topologicalFeatures(contacts, 'centromeres')
-aggregate(contacts, targets = centros, flanking_bins = 50)
+aggregate(contacts, targets = centros, flankingBins = 51)
 
 #### -----
 #### Enhance long-range interaction signal

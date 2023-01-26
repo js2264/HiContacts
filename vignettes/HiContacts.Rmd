@@ -65,7 +65,7 @@ plotMatrix(hic, use.scores = 'balanced', limits = c(-4, -1), dpi = 120)
 plotMatrix(
     refocus(hic, 'II'),
     use.scores = 'balanced', limits = c(-4, -1), dpi = 120, 
-    max.distance = 200000
+    maxDistance = 200000
 )
 ```
 
@@ -271,7 +271,6 @@ plotPsSlope(ps, ggplot2::aes(x = binned_distance, y = slope, group = sample, col
 ```{r}
 
 ```
-
 
 # Session info
 

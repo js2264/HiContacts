@@ -29,7 +29,7 @@ NULL
 #' @param use.scores Which scores to use in the heatmap
 #' @param scale Any of 'log10', 'log2', 'linear', 'exp0.2' (Default: 'log10')
 #' @param limits color map limits
-#' @param max.distance maximum distance. If provided, the heatmap is plotted 
+#' @param maxDistance maximum distance. If provided, the heatmap is plotted 
 #'   horizontally
 #' @param loops Loops to plot on top of the heatmap, provided as `GInteractions`
 #' @param borders Borders to plot on top of the heatmap, provided as `GRanges`
@@ -77,7 +77,7 @@ setMethod("plotMatrix", "HiCExperiment", function(
     x, 
     use.scores = 'balanced', 
     scale = 'log10', 
-    max.distance = NULL, 
+    maxDistance = NULL, 
     loops = NULL, 
     borders = NULL, 
     limits = NULL, 
@@ -93,7 +93,7 @@ setMethod("plotMatrix", "HiCExperiment", function(
         interactions(x), 
         use.scores = use.scores, 
         scale = scale, 
-        max.distance = max.distance, 
+        maxDistance = maxDistance, 
         loops = loops, 
         borders = borders, 
         limits = limits, 
@@ -126,7 +126,7 @@ setMethod("plotMatrix", "GInteractions", function(
     x, 
     use.scores = NULL, 
     scale = 'log10', 
-    max.distance = NULL, 
+    maxDistance = NULL, 
     loops = NULL, 
     borders = NULL, 
     limits = NULL, 
@@ -209,7 +209,7 @@ setMethod("plotMatrix", "GInteractions", function(
     }
 
     ## -- If loops are provided, filter them and add
-    if (!is.null(loops) & is.null(max.distance)) {
+    if (!is.null(loops) & is.null(maxDistance)) {
         filtered_loops <- tibble::as_tibble(
             loops[anchors(loops)[['first']] %over% gis & anchors(loops)[['second']] %over% gis]
         )
@@ -230,7 +230,7 @@ setMethod("plotMatrix", "GInteractions", function(
     }
 
     ## -- If borders are provided, filter them and add
-    if (!is.null(borders) & is.null(max.distance)) {
+    if (!is.null(borders) & is.null(maxDistance)) {
         filtered_borders <- tibble::as_tibble(
             borders[borders %over% gis]
         )
@@ -255,7 +255,7 @@ setMethod("plotMatrix", "GInteractions", function(
 
     if (nseqnames == 1) { ## Single chromosome coordinates to plot
         
-        if (is.null(max.distance)) { ##### REGULAR SQUARE MATRIX
+        if (is.null(maxDistance)) { ##### REGULAR SQUARE MATRIX
             ## -- Convert gis to table and extract x/y
             mat <- gis |>
                 tibble::as_tibble() |>
@@ -299,7 +299,9 @@ setMethod("plotMatrix", "GInteractions", function(
                 ggplot2::labs(
                     x = unique(mat$seqnames1),
                     y = "Genome coordinates"
-                )
+                ) + 
+                ggplot2::scale_x_continuous(expand = c(0, 0), labels = scales::unit_format(unit = "M", scale = 1e-6), position = 'top') +
+                ggplot2::scale_y_reverse(expand = c(0, 0), labels = scales::unit_format(unit = "M", scale = 1e-6))
         }
         
         else { ##### HORIZONTAL TRIANGULAR MATRIX
@@ -311,7 +313,7 @@ setMethod("plotMatrix", "GInteractions", function(
                     x = center1 + (center2 - center1)/2
                 ) |> 
                 tidyr::drop_na(score) |> 
-                dplyr::filter(diag <= max.distance)
+                dplyr::filter(diag <= maxDistance)
 
             ## -- Clamp scores to limits
             df <- dplyr::mutate(df, score = scales::oob_squish(score, c(m, M)))
@@ -364,7 +366,9 @@ setMethod("plotMatrix", "GInteractions", function(
             ggplot2::labs(
                 x = "Genome coordinates",
                 y = "Genome coordinates"
-            )
+            ) + 
+            ggplot2::scale_x_continuous(expand = c(0, 0), labels = scales::unit_format(unit = "M", scale = 1e-6), position = 'top') +
+            ggplot2::scale_y_reverse(expand = c(0, 0), labels = scales::unit_format(unit = "M", scale = 1e-6))
         if (chrom_lines) {
             p <- p +
                 ggplot2::geom_hline(
@@ -470,6 +474,89 @@ setMethod("plotMatrix", "matrix", function(
     p
 })
 
+#' @rdname plotMatrix
+#' @export
+
+setMethod("plotMatrix", "AggrHiCExperiment", function(
+    x, 
+    use.scores = 'balanced', 
+    scale = 'log10', 
+    maxDistance = NULL, 
+    loops = NULL, 
+    borders = NULL, 
+    limits = NULL, 
+    dpi = 500, 
+    rasterize = TRUE, 
+    chrom_lines = TRUE, 
+    show_grid = FALSE, 
+    cmap = NULL, 
+    caption = TRUE  
+ ) {
+    pairs <- topologicalFeatures(x, 'targets')
+    is1D <- ifelse(is(pairs, 'GRanges'), TRUE, FALSE)
+    p <- plotMatrix(
+        interactions(x), 
+        use.scores = use.scores, 
+        scale = scale, 
+        maxDistance = maxDistance, 
+        loops = loops, 
+        borders = borders, 
+        limits = limits, 
+        dpi = dpi, 
+        rasterize = rasterize, 
+        symmetrical = ifelse(is1D, TRUE, FALSE), 
+        chrom_lines = chrom_lines, 
+        show_grid = show_grid, 
+        cmap = cmap  
+    )
+    if (caption) {
+        p <- p + ggplot2::labs(
+            caption = paste(
+                sep = '\n',
+                paste0('file: ', fileName(x)), 
+                paste0('resolution: ', resolution(x)), 
+                paste0('focus: ', focus(x)),
+                paste0('scores: ', use.scores),
+                paste0('scale: ', scale)
+            )
+        )
+    }
+    return(p)
+})
+
+#' @rdname plotMatrix
+#' @export
+
+setMethod("montage", "AggrHiCExperiment", function(
+    x, 
+    use.scores = 'balanced', 
+    scale = 'log10', 
+    limits = NULL, 
+    dpi = 500, 
+    rasterize = TRUE, 
+    cmap = NULL
+ ) {
+    pairs <- topologicalFeatures(x, 'targets')
+    is1D <- ifelse(is(pairs, 'GRanges'), TRUE, FALSE)
+    sli <- slices(x, use.scores)
+    snips <- lapply(seq_len(dim(sli)[3]), function(K){
+        mat <- sli[, , K]
+        if (is1D) mat[lower.tri(mat)] <- t(mat)[lower.tri(mat)]
+        plotMatrix(
+            mat, 
+            scale = scale, 
+            limits = limits, 
+            dpi = dpi, 
+            rasterize = rasterize, 
+            cmap = cmap
+        ) + 
+            ggplot2::theme_void() + 
+            ggplot2::theme(legend.position = "none") + 
+            ggplot2::theme(plot.margin = margin(.002, .002, .002, .002, "npc"))
+    })
+    p <- patchwork::wrap_plots(snips)
+})
+
 ggMatrix <- function(mat, ticks = TRUE, grid = FALSE, cols = coolerColors(), limits) {
     p <- ggplot2::ggplot(mat, ggplot2::aes(x, y, fill = score))
     p <- p + ggplot2::scale_fill_gradientn(
@@ -477,9 +564,7 @@ ggMatrix <- function(mat, ticks = TRUE, grid = FALSE, cols = coolerColors(), lim
         na.value = "#FFFFFF",
         limits = limits
     ) +
-        ggplot2::scale_x_continuous(expand = c(0, 0), labels = scales::unit_format(unit = "M", scale = 1e-6), position = 'top') +
-        ggplot2::scale_y_reverse(expand = c(0, 0), labels = scales::unit_format(unit = "M", scale = 1e-6)) +
-        ggplot2::guides(fill = ggplot2::guide_colorbar(barheight = ggplot2::unit(5, "cm"), barwidth = 0.5, frame.colour = "black")) + 
+        ggplot2::guides(fill = ggplot2::guide_colorbar(barheight = ggplot2::unit(.25, "npc"), barwidth = 0.5, frame.colour = "black")) + 
         ggplot2::coord_fixed() +
         ggthemeHiContacts(ticks, grid)
     p

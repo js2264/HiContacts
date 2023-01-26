@@ -62,7 +62,7 @@ hic
 ```r
 plotMatrix(hic, use.scores = 'count')
 plotMatrix(hic, use.scores = 'balanced', limits = c(-4, -1))
-plotMatrix(hic, use.scores = 'balanced', limits = c(-4, -1), max.distance = 100000)
+plotMatrix(hic, use.scores = 'balanced', limits = c(-4, -1), maxDistance = 100000)
 ```
 
 ### Plotting matrices with topological features

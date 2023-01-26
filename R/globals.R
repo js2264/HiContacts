@@ -78,5 +78,6 @@ utils::globalVariables(c(
     "bin_id1", 
     "bin_id2", 
     "center", 
+    "margin", 
     "mcols"  
 ))

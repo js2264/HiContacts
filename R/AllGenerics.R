@@ -4,4 +4,6 @@
 
 setGeneric("plotMatrix", function(x, ...) {standardGeneric("plotMatrix")})
 
-setGeneric("fillout", function(x, ...) {standardGeneric("fillout")})
+#' @rdname plotMatrix
+
+setGeneric("montage", function(x, ...) {standardGeneric("montage")})

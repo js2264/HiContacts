@@ -32,17 +32,18 @@ setMethod("normalize", signature(object = "HiCExperiment"), function(
     # - Iterate over max_iter
     mat_iced <- mat[filtered_bins, filtered_bins]
     nonzeros <- data.frame(col = mat_iced@i+1, row = mat_iced@j+1) |> as.matrix()
-    pb <- utils::txtProgressBar(min = 0, max = niters, style = 3, width = 50, char = "-") 
+    c <- utils::txtProgressBar(min = 0, max = niters, style = 3, width = 50, char = "-") 
     for (i in seq_len(niters)) {
         utils::setTxtProgressBar(pb, i)
-        bin_sums <- Matrix::colSums(mat_iced)
-        bin_sums <- bin_sums / stats::median(bin_sums)
+        bin_sums <- Matrix::colSums(mat_iced, na.rm = TRUE)
+        bin_sums <- bin_sums / stats::median(bin_sums, na.rm = TRUE)
         mat_iced@x <- mat_iced@x / {bin_sums[nonzeros[, 'row']] * bin_sums[nonzeros[, 'col']]}
     }
+    cat('\n')
 
     # - Rescale ice-d scores
-    bin_sums <- Matrix::colSums(mat_iced)
-    mat_iced@x <- mat_iced@x / stats::median(bin_sums)
+    bin_sums <- Matrix::colSums(mat_iced, na.rm = TRUE)
+    mat_iced@x <- mat_iced@x / stats::median(bin_sums, na.rm = TRUE)
 
     # - Make upper-tri
     mat_iced <- Matrix::triu(mat_iced)
@@ -66,6 +67,7 @@ setMethod("normalize", signature(object = "HiCExperiment"), function(
     )
     m$ICE[{m$bin_id1 %in% invalid_bins} | {m$bin_id2 %in% invalid_bins}] <- NA
     m <- dplyr::select(m, -bin_id1, -bin_id2, -score)
+
     # - Save new scores
     x@scores <- as.list(m) |> S4Vectors::SimpleList()
 

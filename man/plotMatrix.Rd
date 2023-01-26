@@ -2,18 +2,23 @@
 % Please edit documentation in R/AllGenerics.R, R/plotting.R
 \name{plotMatrix}
 \alias{plotMatrix}
+\alias{montage}
 \alias{plotMatrix,HiCExperiment-method}
 \alias{plotMatrix,GInteractions-method}
 \alias{plotMatrix,matrix-method}
+\alias{plotMatrix,AggrHiCExperiment-method}
+\alias{montage,AggrHiCExperiment-method}
 \title{Plotting a contact matrix}
 \usage{
 plotMatrix(x, ...)
+
+montage(x, ...)
 
 \S4method{plotMatrix}{HiCExperiment}(
   x,
   use.scores = "balanced",
   scale = "log10",
-  max.distance = NULL,
+  maxDistance = NULL,
   loops = NULL,
   borders = NULL,
   limits = NULL,
@@ -30,7 +35,7 @@ plotMatrix(x, ...)
   x,
   use.scores = NULL,
   scale = "log10",
-  max.distance = NULL,
+  maxDistance = NULL,
   loops = NULL,
   borders = NULL,
   limits = NULL,
@@ -50,6 +55,32 @@ plotMatrix(x, ...)
   rasterize = TRUE,
   cmap = NULL
 )
+
+\S4method{plotMatrix}{AggrHiCExperiment}(
+  x,
+  use.scores = "balanced",
+  scale = "log10",
+  maxDistance = NULL,
+  loops = NULL,
+  borders = NULL,
+  limits = NULL,
+  dpi = 500,
+  rasterize = TRUE,
+  chrom_lines = TRUE,
+  show_grid = FALSE,
+  cmap = NULL,
+  caption = TRUE
+)
+
+\S4method{montage}{AggrHiCExperiment}(
+  x,
+  use.scores = "balanced",
+  scale = "log10",
+  limits = NULL,
+  dpi = 500,
+  rasterize = TRUE,
+  cmap = NULL
+)
 }
 \arguments{
 \item{x}{A HiCExperiment object}
@@ -60,7 +91,7 @@ plotMatrix(x, ...)
 
 \item{scale}{Any of 'log10', 'log2', 'linear', 'exp0.2' (Default: 'log10')}
 
-\item{max.distance}{maximum distance. If provided, the heatmap is plotted
+\item{maxDistance}{maximum distance. If provided, the heatmap is plotted
 horizontally}
 
 \item{loops}{Loops to plot on top of the heatmap, provided as \code{GInteractions}}

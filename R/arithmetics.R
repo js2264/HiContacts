@@ -48,13 +48,21 @@
 #' performing ICE matrix balancing
 #' @param mad.max Filter out bins whose log coverage is less than `mad.max` 
 #' median absolute deviations below the median bin log coverage.
+#' @param targets Set of chromosome coordinates for which 
+#'   interaction counts are extracted from the Hi-C contact file, provided
+#'   as a GRanges object (for diagnoal-centered loci) or as a GInteractions
+#'   object (for off-diagonal coordinates).
+#' @param flankingBins Number of bins on each flank of the bins containing 
+#'   input targets.
+#' @param maxDistance Maximum distance to use when compiling distance decay
+#' @param BPPARAM BiocParallel parameters
 #' 
 #' @return a `HiCExperiment` object with extra scores
 #' 
 #' @import InteractionSet
 #' @import stringr
 #' @import tidyr
-#' @importMethodsFrom BiocGenerics normalize
+#' @importFrom BiocGenerics normalize
 #' @importFrom scales rescale
 #' @importFrom tibble as_tibble
 #' @importFrom tibble tibble
@@ -71,7 +79,6 @@
 #' @importFrom GenomicRanges GRanges
 #' @importFrom S4Vectors metadata
 #' @importFrom S4Vectors SimpleList
-#' @importFrom S4Vectors aggregate
 #' @importFrom SummarizedExperiment assay
 #' @importFrom BiocParallel bpparam
 #' 
@@ -122,7 +129,7 @@
 #' 
 #' contacts <- contacts_yeast() |> zoom(resolution = 1000)
 #' centros <- topologicalFeatures(contacts, 'centromeres')
-#' aggregate(contacts, targets = centros, flanking_bins = 50)
+#' aggregate(contacts, targets = centros, flankingBins = 51)
 #' 
 #' #### -----
 #' #### Enhance long-range interaction signal
