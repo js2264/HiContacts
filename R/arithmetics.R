@@ -152,14 +152,23 @@ detrend <- function(x, use.scores = 'balanced') {
     gis <- interactions(x)
     gis$score <- scores(x, use.scores)
     gis$diag <- gis$bin_id2 - gis$bin_id1
+    if (is.null(metadata(x)[['detrending_model']])) {
     expected <- tibble::as_tibble(gis) |> 
         dplyr::group_by(diag) |> 
         dplyr::summarize(average_interaction_per_diag = mean(score, na.rm = TRUE)) |> 
         dplyr::mutate(average_interaction_per_diag = average_interaction_per_diag / 2)
+    }
+    else {
+        expected <- metadata(x)[['detrending_model']]
+        expected$average_interaction_per_diag <- expected$score
+        expected$distance <- NULL
+        expected$score <- NULL
+    }
     gis$expected <- tibble::as_tibble(gis) |> 
         dplyr::left_join(expected, by = 'diag') |> 
         dplyr::pull(average_interaction_per_diag)
     gis$score_over_expected <- log2( {gis$score/sum(gis$score, na.rm = TRUE)} / {gis$expected/sum(gis$expected, na.rm = TRUE)} )
+    # gis$score_over_expected <- log2( {scale(gis$score)} / {scale(gis$expected)} )[,1]
     scores(x, "expected") <- gis$expected
     scores(x, "detrended") <- gis$score_over_expected
     return(x)
