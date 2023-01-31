@@ -153,10 +153,10 @@ detrend <- function(x, use.scores = 'balanced') {
     gis$score <- scores(x, use.scores)
     gis$diag <- gis$bin_id2 - gis$bin_id1
     if (is.null(metadata(x)[['detrending_model']])) {
-    expected <- tibble::as_tibble(gis) |> 
-        dplyr::group_by(diag) |> 
-        dplyr::summarize(average_interaction_per_diag = mean(score, na.rm = TRUE)) |> 
-        dplyr::mutate(average_interaction_per_diag = average_interaction_per_diag / 2)
+        expected <- tibble::as_tibble(gis) |> 
+            dplyr::group_by(diag) |> 
+            dplyr::summarize(average_interaction_per_diag = mean(score, na.rm = TRUE)) |> 
+            dplyr::mutate(average_interaction_per_diag = average_interaction_per_diag / 2)
     }
     else {
         expected <- metadata(x)[['detrending_model']]
@@ -300,38 +300,28 @@ merge <- function(..., use.scores = 'balanced') {
     } 
 
     ## -- Check that all objects are comparable (bins, regions, resolution, seqinfo)
-    is_comparable(...)
+    is_same_seqinfo(...)
+    is_same_resolution(...)
+    is_same_bins(...)
 
     # Unify all the interactions
+    score_names <- names(scores(contacts_list[[1]]))
     ints <- do.call(
         c, lapply(contacts_list, FUN = interactions) 
-    ) |> 
-        unique() |> 
-        sort()
-    
-    # Set all scores for each scores to 0
-    asss <- lapply(names(scores(contacts_list[[1]])), function(name) {
-        rep(0, length(ints))
-    })
-    names(asss) <- names(scores(contacts_list[[1]]))
-    asss <- S4Vectors::SimpleList(asss)
+    ) |> sort()
+    ints_df <- as.data.frame(ints)
+    merged_ints <- dplyr::select(ints_df, !any_of(score_names)) |> 
+        dplyr::distinct() |> 
+        HiCExperiment:::asGInteractions()
 
-    ## -- Iterate over each Contacts in `contacts_list`
-    for (idx in seq_along(contacts_list)) {
-        sub <- S4Vectors::subjectHits(
-            GenomicRanges::findOverlaps(
-                interactions(contacts_list[[idx]]),
-                ints
-            )
-        )
-        sub <- seq_along(ints) %in% sub
-        for (K in seq_along(asss)) {
-            vals <- scores(contacts_list[[idx]], K)
-            vals[is.na(vals)] <- 0
-            asss[[K]][sub] <- asss[[K]][sub] + 
-                vals
-        }
-    }
+    # Group by bin_id1/bin_id2 and merge scores
+    FUN_mean <- function(x) mean(x, na.rm = TRUE)
+    FUN_sum <- function(x) sum(x, na.rm = TRUE)
+    asss <- dplyr::select(ints_df, dplyr::any_of(c('bin_id1', 'bin_id2', score_names))) |> 
+        dplyr::group_by(bin_id1, bin_id2) |>
+        dplyr::summarise(dplyr::across(score_names, FUN_mean), .groups = "drop") |> 
+        dplyr::select(-bin_id1, -bin_id2) |> 
+        as("SimpleList")
 
     ## -- Create a new HiCExperiment object
     files <- paste0(
@@ -340,7 +330,7 @@ merge <- function(..., use.scores = 'balanced') {
     )
     res <- methods::new("HiCExperiment", 
         focus = paste0(
-            basename(unlist(lapply(contacts_list, focus))), 
+            unlist(lapply(contacts_list, focus)), 
             collapse = ', '
         ), 
         metadata = list(
@@ -349,7 +339,7 @@ merge <- function(..., use.scores = 'balanced') {
         ), 
         resolutions = resolutions(contacts_list[[1]]), 
         resolution = resolution(contacts_list[[1]]), 
-        interactions = ints, 
+        interactions = merged_ints, 
         scores = asss, 
         topologicalFeatures = S4Vectors::SimpleList(), 
         pairsFile = NULL, 
