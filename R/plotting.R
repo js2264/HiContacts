@@ -630,26 +630,44 @@ NULL
 #' @export
 
 plotPs <- function(x, mapping, xlim = c(5000, 4.99e5), ylim = c(1e-8, 1e-4)) {
-    gg <- ggplot2::ggplot(x, mapping = mapping) + 
+    p <- ggplot2::ggplot(x, mapping = mapping) + 
         ggplot2::geom_line() + 
         ggplot2::theme_minimal() + 
         ggplot2::theme(panel.border = ggplot2::element_rect(fill = NA)) + 
         ggplot2::theme(panel.grid.minor = ggplot2::element_blank()) +
-        ggplot2::scale_y_log10(
+        ggplot2::annotation_logticks() + 
+        ggplot2::labs(x = "Genomic distance", y = "Contact frequency")
+    if (!is.null(ylim)) {
+        p <- p + ggplot2::scale_y_log10(
             limits = ylim, 
             expand = c(0, 0), 
             breaks = scales::trans_breaks("log10", function(x) 10^x),
             labels = scales::trans_format("log10", scales::math_format(10^.x))
-        ) +
-        ggplot2::scale_x_log10(
+        )
+    }
+    else {
+        p <- p + ggplot2::scale_y_log10(
+            expand = c(0, 0), 
+            breaks = scales::trans_breaks("log10", function(x) 10^x),
+            labels = scales::trans_format("log10", scales::math_format(10^.x))
+        )
+    }
+    if (!is.null(xlim)) {
+        p <- p + ggplot2::scale_x_log10(
             limits = xlim, 
             expand = c(0, 0), 
             breaks = c(1, 10, 100, 1000, 10000, 1e+05, 1e+06, 1e+07, 1e+08, 1e+09, 1e+10),
             labels = c('1', '10', '100', '1kb', '10kb', '100kb', '1Mb', '10Mb', '100Mb', '1Gb', '10Gb')
-        ) + 
-        ggplot2::annotation_logticks() + 
-        ggplot2::labs(x = "Genomic distance", y = "Contact frequency")
-    gg
+        )
+    }
+    else {
+        p <- p + ggplot2::scale_x_log10(
+            expand = c(0, 0), 
+            breaks = c(1, 10, 100, 1000, 10000, 1e+05, 1e+06, 1e+07, 1e+08, 1e+09, 1e+10),
+            labels = c('1', '10', '100', '1kb', '10kb', '100kb', '1Mb', '10Mb', '100Mb', '1Gb', '10Gb')
+        )
+    }
+    p
 }
 
 #' @rdname plotPs
