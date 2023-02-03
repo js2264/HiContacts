@@ -220,10 +220,12 @@ autocorrelate <- function(x, use.scores = 'balanced', detrend = TRUE, ignore_ndi
 #' @rdname arithmetics
 #' @export
 
-divide <- function(x, by, use.scores = 'balanced') {
+divide <- function(x, by, use.scores = 'balanced', pseudocount = 0) {
 
     x_gis <- interactions(x)
+    x_gis$score <- mcols(x_gis)[[use.scores]]
     by_gis <- interactions(by)
+    by_gis$score <- mcols(by_gis)[[use.scores]]
 
     ## -- If regions are different, manually merge them 
     re <- unique(
@@ -237,51 +239,46 @@ divide <- function(x, by, use.scores = 'balanced') {
     is_same_resolution(x, by)
     is_same_bins(x, by)
 
-    ## -- Convert to matrices 
-    m1 <- cm2matrix(gi2cm(x_gis, use.scores), replace_NA = 0)
-    m2 <- cm2matrix(gi2cm(by_gis, use.scores), replace_NA = 0)
-    binsize <- resolution(x)
+    ## -- Join tables, divide, and convert back to GInteractions
+    gis <- full_join(
+        as.data.frame(x_gis) |> dplyr::select(!contains(c('.1', 'chr', 'width', 'strand', 'center'))), 
+        as.data.frame(by_gis) |> dplyr::select(!contains(c('.1', 'chr', 'width', 'strand', 'center'))),
+        by = c(
+            'seqnames1', 'start1', 'end1', 'bin_id1', 
+            'seqnames2', 'start2', 'end2', 'bin_id2'
+        ), 
+        suffix = c(".x", ".by")
+    ) |> 
+        dplyr::mutate(
+            score.x = score.x + pseudocount, 
+            score.by = score.by + pseudocount, 
+            fc = score.x / score.by, 
+            l2fc = log2(fc)
+        ) |> 
+        HiCExperiment::df2gi()
+    S4Vectors::mcols(gis)[[paste0(use.scores, '.fc')]] <- gis$fc
+    S4Vectors::mcols(gis)[[paste0(use.scores, '.l2fc')]] <- gis$l2fc
+    S4Vectors::mcols(gis)[, c('score.x', 'score.by', 'fc', 'l2fc')] <- NULL
+    InteractionSet::replaceRegions(gis) <- re
 
-    # - Compute ratio matrix
-    sK <- m1/m2
-
-    # - Make a full-featured interactions (storing divided scores in `score`)
-    gis <- dplyr::full_join(as_tibble(x_gis), as_tibble(by_gis), 
-        by = c("seqnames1", "start1", "end1", "width1", "strand1", "chr1", 
-        "center1", "bin_id1", "seqnames2", "start2", "end2", "width2",
-        "strand2", "chr2", "center2", "bin_id2")
-    ) |> dplyr::select(!ends_with(c('1.1.x', '1.1.y', '2.1.x', '2.1.y')))
-    mat_ratio <- sK
-    cm_ratio <- InteractionSet::ContactMatrix(
-        mat_ratio, 
-        anchor1 = re, 
-        anchor2 = re, 
-        regions = re
-    )
-    is_ratio <- InteractionSet::deflate(cm_ratio)
-    gis_ratio <- InteractionSet::interactions(is_ratio)
-    gis_ratio$bin_id1 <- HiCExperiment::anchors(gis_ratio)[[1]]$bin_id
-    gis_ratio$bin_id2 <- HiCExperiment::anchors(gis_ratio)[[2]]$bin_id
-    m <- dplyr::left_join(
-        as.data.frame(mcols(gis_ratio)), 
-        gis, 
-        by = c('bin_id1', 'bin_id2')
-    ) |> dplyr::select(ends_with(c('.x', '.y', 'ratio')))
-    m <- dplyr::rename(m, count = 'count.x', balanced = 'balanced.x')
-    m$ratio <- SummarizedExperiment::assay(is_ratio, 1)[, 1]
+    ## -- Export results as HiCExperiment
+    m <- S4Vectors::mcols(gis) |> as.data.frame() |> dplyr::select(-c('bin_id1', 'bin_id2'))
     scores <- as.list(m) |> S4Vectors::SimpleList()
 
     ## -- Create HiCExperiment
     res <- methods::new("HiCExperiment", 
         focus = HiCExperiment::focus(x), 
-        metadata = S4Vectors::metadata(x),
+        metadata = list(
+            hce_list = list(x = x, by = by), 
+            operation = 'divide'
+        ),
         resolutions = binsize, 
         resolution = binsize, 
-        interactions = gis_ratio, 
+        interactions = gis, 
         scores = scores, 
-        topologicalFeatures = HiCExperiment::topologicalFeatures(x), 
+        topologicalFeatures = S4Vectors::SimpleList(), 
         pairsFile = NULL, 
-        fileName = paste0(basename(fileName(x)), ' / ', basename(fileName(by)))
+        fileName = fileName(x)
     )
     return(res)
 
@@ -309,10 +306,14 @@ merge <- function(..., use.scores = 'balanced') {
     ints <- do.call(
         c, lapply(contacts_list, FUN = interactions) 
     ) |> sort()
+    re <- do.call(
+        c, lapply(contacts_list, FUN = regions) 
+    ) |> sort() |> unique()
     ints_df <- as.data.frame(ints)
     merged_ints <- dplyr::select(ints_df, !any_of(score_names)) |> 
         dplyr::distinct() |> 
         HiCExperiment:::asGInteractions()
+    replaceRegions(merged_ints) <- re
 
     # Group by bin_id1/bin_id2 and merge scores
     FUN_mean <- function(x) mean(x, na.rm = TRUE)
@@ -324,26 +325,20 @@ merge <- function(..., use.scores = 'balanced') {
         as("SimpleList")
 
     ## -- Create a new HiCExperiment object
-    files <- paste0(
-        basename(unlist(lapply(contacts_list, fileName))), 
-        collapse = ', '
-    )
+    files <- unlist(lapply(contacts_list, fileName))
     res <- methods::new("HiCExperiment", 
-        focus = paste0(
-            unlist(lapply(contacts_list, focus)), 
-            collapse = ', '
-        ), 
+        focus = focus(contacts_list[[1]]), 
         metadata = list(
-            merging = files, 
+            hce_list = contacts_list, 
             operation = 'sum'
-        ), 
+        ),
         resolutions = resolutions(contacts_list[[1]]), 
         resolution = resolution(contacts_list[[1]]), 
         interactions = merged_ints, 
         scores = asss, 
         topologicalFeatures = S4Vectors::SimpleList(), 
         pairsFile = NULL, 
-        fileName = ""
+        fileName = fileName(contacts_list[[1]])
     )
     return(res)
 
