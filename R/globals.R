@@ -79,5 +79,8 @@ utils::globalVariables(c(
     "bin_id2", 
     "center", 
     "margin", 
-    "mcols"  
+    "mcols", 
+    "score.x", 
+    "score.by", 
+    "fc"
 ))

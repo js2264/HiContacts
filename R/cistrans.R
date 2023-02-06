@@ -33,14 +33,14 @@ cisTransRatio <- function(x) {
     cnts <- rbind(cnts, cnts_dup)
     res <- cnts |> 
         dplyr::group_by(seqnames1, seqnames2) |> 
-        dplyr::summarize(n = sum(score)) |> 
+        dplyr::summarize(n = sum(score, na.rm = TRUE)) |> 
         dplyr::mutate(type = ifelse(seqnames1 == seqnames2, 'cis', 'trans')) |> 
         dplyr::group_by(seqnames1, type) |> 
         dplyr::rename(chr = seqnames1) |>
-        dplyr::summarize(n = sum(n)) |> 
+        dplyr::summarize(n = sum(n, na.rm = TRUE)) |> 
         tidyr::pivot_wider(names_from = type, values_from = n) |> 
         dplyr::mutate(
-            n_total = sum(cis + trans), 
+            n_total = sum(cis + trans, na.rm = TRUE), 
             cis_pct = cis/n_total, 
             trans_pct = trans/n_total
         )

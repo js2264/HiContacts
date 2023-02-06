@@ -9,6 +9,7 @@
 #' @aliases aggregate,HiCExperiment-method
 #' @aliases boost
 #' @aliases subsample
+#' @aliases coarsen
 #' @aliases normalize,HiCExperiment-method
 #' 
 #' @description 
@@ -27,6 +28,7 @@
 #' range interactions (this is adapted from Boost-HiC);
 #'  - `subsample` interactions using a proportion or a fixed number of final 
 #' interactions.
+#'  - `coarsen` a contact matrix to a larger (coarser) resolution
 #' 
 #' @param x,object a `HiCExperiment` object
 #' @param use.scores Which scores to use to perform operations
@@ -52,9 +54,12 @@
 #'   interaction counts are extracted from the Hi-C contact file, provided
 #'   as a GRanges object (for diagnoal-centered loci) or as a GInteractions
 #'   object (for off-diagonal coordinates).
+#' @param pseudocount Add a pseudocount when dividing matrices (Default: 0)
+#' @param bin.size Bin size to coarsen a HiCExperiment at
 #' @param flankingBins Number of bins on each flank of the bins containing 
 #'   input targets.
 #' @param maxDistance Maximum distance to use when compiling distance decay
+#' @param FUN merging function
 #' @param BPPARAM BiocParallel parameters
 #' 
 #' @return a `HiCExperiment` object with extra scores
@@ -71,6 +76,7 @@
 #' @importFrom dplyr pull
 #' @importFrom dplyr mutate
 #' @importFrom dplyr left_join
+#' @importFrom dplyr full_join
 #' @importFrom dplyr rename
 #' @importFrom dplyr n
 #' @importFrom GenomicRanges seqnames
@@ -139,10 +145,11 @@
 #' boost(contacts, alpha = 1)
 #' 
 #' #### -----
-#' #### Subsample interactions 
+#' #### Subsample & "coarsen" contact matrix 
 #' #### -----
 #' 
-#' subsample(contacts, prop = 100000)
+#' subcontacts <- subsample(contacts, prop = 100000)
+#' coarsened_subcontacts <- coarsen(subcontacts, bin.size = 4000)
 NULL
 
 #' @rdname arithmetics
@@ -240,7 +247,7 @@ divide <- function(x, by, use.scores = 'balanced', pseudocount = 0) {
     is_same_bins(x, by)
 
     ## -- Join tables, divide, and convert back to GInteractions
-    gis <- full_join(
+    gis <- dplyr::full_join(
         as.data.frame(x_gis) |> dplyr::select(!contains(c('.1', 'chr', 'width', 'strand', 'center'))), 
         as.data.frame(by_gis) |> dplyr::select(!contains(c('.1', 'chr', 'width', 'strand', 'center'))),
         by = c(
@@ -272,13 +279,13 @@ divide <- function(x, by, use.scores = 'balanced', pseudocount = 0) {
             hce_list = list(x = x, by = by), 
             operation = 'divide'
         ),
-        resolutions = binsize, 
-        resolution = binsize, 
+        resolutions = resolution(x), 
+        resolution = resolution(x), 
         interactions = gis, 
         scores = scores, 
         topologicalFeatures = S4Vectors::SimpleList(), 
         pairsFile = NULL, 
-        fileName = fileName(x)
+        fileName = ""
     )
     return(res)
 
@@ -287,7 +294,7 @@ divide <- function(x, by, use.scores = 'balanced', pseudocount = 0) {
 #' @rdname arithmetics
 #' @export
 
-merge <- function(..., use.scores = 'balanced') {
+merge <- function(..., use.scores = 'balanced', FUN = mean) {
     contacts_list <- list(...)
     
     ## -- Check that at least 2 `HiCExperiment` objects are passed to `merge()`
@@ -316,11 +323,15 @@ merge <- function(..., use.scores = 'balanced') {
     replaceRegions(merged_ints) <- re
 
     # Group by bin_id1/bin_id2 and merge scores
-    FUN_mean <- function(x) mean(x, na.rm = TRUE)
-    FUN_sum <- function(x) sum(x, na.rm = TRUE)
+    if (identical(FUN, mean)) {
+        .FUN <- function(x) mean(x, na.rm = TRUE)
+    }
+    else if (identical(FUN, sum)){
+        .FUN <- function(x) sum(x, na.rm = TRUE)
+    }
     asss <- dplyr::select(ints_df, dplyr::any_of(c('bin_id1', 'bin_id2', score_names))) |> 
         dplyr::group_by(bin_id1, bin_id2) |>
-        dplyr::summarise(dplyr::across(score_names, FUN_mean), .groups = "drop") |> 
+        dplyr::summarise(dplyr::across(score_names, .FUN), .groups = "drop") |> 
         dplyr::select(-bin_id1, -bin_id2) |> 
         as("SimpleList")
 
@@ -330,7 +341,7 @@ merge <- function(..., use.scores = 'balanced') {
         focus = focus(contacts_list[[1]]), 
         metadata = list(
             hce_list = contacts_list, 
-            operation = 'sum'
+            operation = .FUN
         ),
         resolutions = resolutions(contacts_list[[1]]), 
         resolution = resolution(contacts_list[[1]]), 
@@ -338,7 +349,7 @@ merge <- function(..., use.scores = 'balanced') {
         scores = asss, 
         topologicalFeatures = S4Vectors::SimpleList(), 
         pairsFile = NULL, 
-        fileName = fileName(contacts_list[[1]])
+        fileName = ""
     )
     return(res)
 

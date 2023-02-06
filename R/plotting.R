@@ -266,7 +266,7 @@ setMethod("plotMatrix", "GInteractions", function(
                 tidyr::drop_na(score)
 
             ## -- Clamp scores to limits
-            mat <- dplyr::mutate(mat, score = scales::oob_squish(score, c(m, M)))
+            mat$score = scales::oob_squish(mat$score, c(m, M))
 
             ## -- Add lower triangular matrix scores (if symetrical)
             if (symmetrical) {
@@ -493,7 +493,7 @@ setMethod("plotMatrix", "AggrHiCExperiment", function(
     caption = TRUE  
  ) {
     pairs <- topologicalFeatures(x, 'targets')
-    is1D <- ifelse(is(pairs, 'GRanges'), TRUE, FALSE)
+    is1D <- all(S4Vectors::first(pairs) == S4Vectors::second(pairs))
     p <- plotMatrix(
         interactions(x), 
         use.scores = use.scores, 

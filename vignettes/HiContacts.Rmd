@@ -151,7 +151,7 @@ div_hic
 p <- patchwork::wrap_plots(
     plotMatrix(hic_1, use.scores = 'balanced', scale = 'log10', limits = c(-4, -1)),
     plotMatrix(hic_2, use.scores = 'balanced', scale = 'log10', limits = c(-4, -1)),
-    plotMatrix(div_hic, use.scores = 'ratio', scale = 'log2', limits = c(-2, 2), cmap = bwrColors())
+    plotMatrix(div_hic, use.scores = 'balanced.fc', scale = 'log2', limits = c(-2, 2), cmap = bwrColors())
 )
 ```
 
