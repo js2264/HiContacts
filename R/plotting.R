@@ -836,6 +836,7 @@ plotScalogram <- function(x, ylim = c(5e2, 1e5)) {
 #' @param x a HiCExperiment object with a stored `eigens` metadata
 #' @param nbins Number of bins to use to discretize the eigenvectors
 #' @param limits limits for color map being used
+#' @param plotBins Whether to plot the distribution of bins on top of the plot
 #' @param BPPARAM a BiocParallel registered method 
 #' @return ggplot
 NULL
@@ -843,29 +844,26 @@ NULL
 #' @rdname plotSaddle
 #' @export
 
-plotSaddle <- function(x, nbins = 51, limits = c(-1, 1), BPPARAM = BiocParallel::bpparam()) {
+plotSaddle <- function(x, nbins = 50, limits = c(-1, 1), plotBins = FALSE, BPPARAM = BiocParallel::bpparam()) {
     if (is.null(metadata(x)$eigens)) stop(
         "No eigen vector found in metadata. Run getCompartments(x) first."
     )
     eigens <- metadata(x)$eigens
 
     ## -- Filter and bin regions by their eigenvector score
-    filtered_eigens <- eigens[eigens$eigen != 0]
-    filtered_eigens <- filtered_eigens[
-        filtered_eigens$eigen >= stats::quantile(filtered_eigens$eigen, 0.025) & 
-        filtered_eigens$eigen <= stats::quantile(filtered_eigens$eigen, 0.975)
-    ]
-    filtered_eigens$eigen_bin <- cut(
-        filtered_eigens$eigen, breaks = stats::quantile(
-            filtered_eigens$eigen, probs = seq(0, 1, length.out = nbins+1)
-        )
+    eigens$eigen_bin <- cut(
+        eigens$eigen, breaks = stats::quantile(
+            eigens$eigen, probs = seq(0.025, 0.975, length.out = nbins+1)
+        ), 
+        include.lowest = TRUE
     ) |> as.numeric()
 
     ## -- Compute over-expected score in each pair of eigen bins
+    BiocParallel::bpprogressbar(BPPARAM) <- TRUE
     df <- BiocParallel::bplapply(
         BPPARAM = BPPARAM, 
-        as.character(unique(seqnames(filtered_eigens))), 
-        function(chr) {.saddle(x[chr], filtered_eigens)}
+        as.character(unique(seqnames(eigens))), 
+        function(chr) {.saddle(x[chr], eigens)}
     ) |> dplyr::bind_rows()
     dat <- df |> 
         dplyr::group_by(eigen_bin1, eigen_bin2) |> 
@@ -899,9 +897,10 @@ plotSaddle <- function(x, nbins = 51, limits = c(-1, 1), BPPARAM = BiocParallel:
         ggplot2::theme(legend.position = 'bottom') +
         ggplot2::theme(panel.border = ggplot2::element_rect(fill = NA)) + 
         ggplot2::theme(axis.title.x = ggplot2::element_blank()) 
+    if (!plotBins) return(p1)
     
     ## -- Make side barplot 
-    dat2 <- tibble::as_tibble(filtered_eigens) |> 
+    dat2 <- tibble::as_tibble(eigens) |> 
         dplyr::group_by(eigen_bin) |> 
         dplyr::summarize(mean_eigen = mean(eigen)) |> 
         dplyr::mutate(x = eigen_bin / nbins)
@@ -927,18 +926,17 @@ plotSaddle <- function(x, nbins = 51, limits = c(-1, 1), BPPARAM = BiocParallel:
 
 }
 
-.saddle <- function(x_chr, filtered_eigens) {
+.saddle <- function(x_chr, eigens) {
     dx <- detrend(x_chr)
-    df <- as(dx, 'data.frame')
-    df$eigen_bin1 <- df |>
-        dplyr::left_join(as.data.frame(filtered_eigens), by = c('bin_id1' = 'bin_id')) |> 
-        dplyr::pull(eigen_bin)
-    df$eigen_bin2 <- df |>
-        dplyr::left_join(as.data.frame(filtered_eigens), by = c('bin_id2' = 'bin_id')) |> 
-        dplyr::pull(eigen_bin)
-    df <- drop_na(df, eigen_bin1, eigen_bin2, detrended) |> 
+    ints <- interactions(dx)
+    an <- anchors(ints)
+    ints2 <- ints[IRanges::`%over%`(an[[1]], eigens) & IRanges::`%over%`(an[[2]], eigens)]
+    an2 <- anchors(ints2)
+    df <- as(ints2, 'data.frame')
+    df$eigen_bin1 <- eigens[S4Vectors::subjectHits(findOverlaps(an2[[1]], eigens))]$eigen_bin
+    df$eigen_bin2 <- eigens[S4Vectors::subjectHits(findOverlaps(an2[[2]], eigens))]$eigen_bin
+    drop_na(df, eigen_bin1, eigen_bin2, detrended) |> 
         dplyr::select(eigen_bin1, eigen_bin2, detrended)
-    return(df)
 }
 
 ################################################################################
