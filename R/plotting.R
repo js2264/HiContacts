@@ -853,7 +853,8 @@ plotSaddle <- function(x, nbins = 50, limits = c(-1, 1), plotBins = FALSE, BPPAR
     ## -- Filter and bin regions by their eigenvector score
     eigens$eigen_bin <- cut(
         eigens$eigen, breaks = stats::quantile(
-            eigens$eigen, probs = seq(0.025, 0.975, length.out = nbins+1)
+            eigens$eigen[eigens$eigen != 0], 
+            probs = seq(0.025, 0.975, length.out = nbins+1)
         ), 
         include.lowest = TRUE
     ) |> as.numeric()

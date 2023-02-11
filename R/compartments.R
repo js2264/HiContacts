@@ -63,7 +63,7 @@ getCompartments <- function(
         BPPARAM = BPPARAM, 
         l_subs, 
         function(x_chr) {
-            if (length(HiCExperiment::interactions(x_chr)) <= neigens) {
+            if (length(HiCExperiment::regions(x_chr)) <= neigens) {
                 gr <- HiCExperiment::regions(x_chr)
                 if (length(gr)) {
                     for (k in seq_len(neigens)) {

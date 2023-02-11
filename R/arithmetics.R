@@ -69,6 +69,8 @@
 #' @import tidyr
 #' @importFrom BiocGenerics normalize
 #' @importFrom scales rescale
+#' @importFrom scales oob_censor
+#' @importFrom stats quantile
 #' @importFrom tibble as_tibble
 #' @importFrom tibble tibble
 #' @importFrom dplyr group_by
@@ -162,6 +164,9 @@ detrend <- function(x, use.scores = 'balanced') {
     if (is.null(metadata(x)[['detrending_model']])) {
         expected <- tibble::as_tibble(gis) |> 
             dplyr::group_by(diag) |> 
+            dplyr::mutate(score = scales::oob_censor(
+                score, range = stats::quantile(score, c(0.05, 0.95), na.rm = TRUE)
+            )) |> 
             dplyr::summarize(average_interaction_per_diag = mean(score, na.rm = TRUE)) |> 
             dplyr::mutate(average_interaction_per_diag = average_interaction_per_diag / 2)
     }
@@ -329,7 +334,7 @@ merge <- function(..., use.scores = 'balanced', FUN = mean) {
     else if (identical(FUN, sum)){
         .FUN <- function(x) sum(x, na.rm = TRUE)
     }
-    asss <- dplyr::select(ints_df, dplyr::any_of(c('bin_id1', 'bin_id2', score_names))) |> 
+    scores <- dplyr::select(ints_df, dplyr::any_of(c('bin_id1', 'bin_id2', score_names))) |> 
         dplyr::group_by(bin_id1, bin_id2) |>
         dplyr::summarise(dplyr::across(score_names, .FUN), .groups = "drop") |> 
         dplyr::select(-bin_id1, -bin_id2) |> 
@@ -346,10 +351,10 @@ merge <- function(..., use.scores = 'balanced', FUN = mean) {
         resolutions = resolutions(contacts_list[[1]]), 
         resolution = resolution(contacts_list[[1]]), 
         interactions = merged_ints, 
-        scores = asss, 
+        scores = scores, 
         topologicalFeatures = S4Vectors::SimpleList(), 
         pairsFile = NULL, 
-        fileName = ""
+        fileName = fileName(contacts_list[[1]])
     )
     return(res)
 
