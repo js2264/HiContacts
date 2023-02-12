@@ -10,7 +10,6 @@ getCompartments(
   genome = NULL,
   chromosomes = NULL,
   neigens = 3,
-  autocorrelation = TRUE,
   BPPARAM = BiocParallel::bpparam()
 )
 }
@@ -25,9 +24,6 @@ contact matrix.}
 \item{chromosomes}{character or integer vector indicating which}
 
 \item{neigens}{Numver of eigen vectors to extract}
-
-\item{autocorrelation}{Whether to perform matrix autocorrelation prior to
-computing the eigenvectors}
 
 \item{BPPARAM}{BiocParallel parallelization settings}
 }

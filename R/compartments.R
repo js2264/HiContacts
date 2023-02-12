@@ -12,8 +12,6 @@
 #'   contact matrix. 
 #' @param chromosomes character or integer vector indicating which 
 #' @param neigens Numver of eigen vectors to extract
-#' @param autocorrelation Whether to perform matrix autocorrelation prior to 
-#' computing the eigenvectors
 #' @param BPPARAM BiocParallel parallelization settings
 #' @return A `HiCExperiment` object with additional `eigens` metadata containing the
 #' normalized eigenvectors and a new "compartments" topologicalFeatures 
@@ -34,7 +32,6 @@ getCompartments <- function(
     genome = NULL, 
     chromosomes = NULL, 
     neigens = 3, 
-    autocorrelation = TRUE, 
     BPPARAM = BiocParallel::bpparam()
 ) {
     message( "Going through preflight checklist..." )
@@ -85,9 +82,9 @@ getCompartments <- function(
                     x_chr, 
                     genome, 
                     neigens, 
-                    autocorrelation = autocorrelation,
-                    ignore_diags = 2, 
-                    clip_percentile = 0.999
+                    autocorrelation = FALSE,
+                    clip_percentile = 0.999, 
+                    ignore_diags = 2
                 )
             }
         }
@@ -107,7 +104,14 @@ getCompartments <- function(
 
 #' @importFrom RSpectra eigs_sym
 
-.eigChr <- function(x_chr, genome, neigens, autocorrelation, clip_percentile, ignore_diags) {
+.eigChr <- function(
+    x_chr, 
+    genome, 
+    neigens = 3, 
+    autocorrelation = FALSE, 
+    clip_percentile = 0.99, 
+    ignore_diags = 2
+) {
 
     ## -- Get dense detrended matrix (with non-log2-detrended scores)
     if (!autocorrelation) {
@@ -116,7 +120,6 @@ getCompartments <- function(
         gis$score <- HiCExperiment::scores(dx, 'detrended')
         gr <- HiCExperiment::regions(gis)
         m <- HiCExperiment::cm2matrix(HiCExperiment::gi2cm(gis))
-        m <- m - colMeans(m, na.rm = TRUE)
     }
     else {
         dx <- autocorrelate(x_chr, ignore_ndiags = ignore_diags)
@@ -125,6 +128,7 @@ getCompartments <- function(
         gr <- HiCExperiment::regions(gis)
         m <- HiCExperiment::cm2matrix(HiCExperiment::gi2cm(gis))
     }
+    
     ## -- Remove ignored diagonals and NAs
     for (K in seq(-ignore_diags, ignore_diags, by = 1)) {
         sdiag(m, K) <- 0

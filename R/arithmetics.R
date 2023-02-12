@@ -191,7 +191,7 @@ detrend <- function(x, use.scores = 'balanced') {
 
 autocorrelate <- function(x, use.scores = 'balanced', detrend = TRUE, ignore_ndiags = 3) {
     if (!requireNamespace("WGCNA", quietly = TRUE)) {
-        message("Install WGCNA package to perform Boost-HiC.")
+        message("Install WGCNA package to perform autocorrelation.")
         message("install.packages('WGCNA')")
     }
     if (detrend) {

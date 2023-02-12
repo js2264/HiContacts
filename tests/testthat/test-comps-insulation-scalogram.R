@@ -7,8 +7,7 @@ test_that("compartments works", {
     comps_VI <- getCompartments(full_contacts_yeast, chromosomes = "VI")
     expect_no_error(getCompartments(full_contacts_yeast, 
         genome = genome, 
-        chromosomes = "VI", 
-        autocorrelation = FALSE
+        chromosomes = "VI"
     ))
     expect_s4_class(
         comps_VI, 
