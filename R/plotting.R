@@ -26,6 +26,7 @@ NULL
 #' @aliases plotMatrix,matrix-method
 #' 
 #' @param x A HiCExperiment object
+#' @param compare.to Compare to a second HiC matrix in the lower left corner
 #' @param use.scores Which scores to use in the heatmap
 #' @param scale Any of 'log10', 'log2', 'linear', 'exp0.2' (Default: 'log10')
 #' @param limits color map limits
@@ -75,6 +76,7 @@ NULL
 
 setMethod("plotMatrix", "HiCExperiment", function(
     x, 
+    compare.to = NULL, 
     use.scores = 'balanced', 
     scale = 'log10', 
     maxDistance = NULL, 
@@ -89,21 +91,50 @@ setMethod("plotMatrix", "HiCExperiment", function(
     cmap = NULL, 
     caption = TRUE  
  ) {
-    p <- plotMatrix(
-        interactions(x), 
-        use.scores = use.scores, 
-        scale = scale, 
-        maxDistance = maxDistance, 
-        loops = loops, 
-        borders = borders, 
-        limits = limits, 
-        dpi = dpi, 
-        rasterize = rasterize, 
-        symmetrical = symmetrical, 
-        chrom_lines = chrom_lines, 
-        show_grid = show_grid, 
-        cmap = cmap  
-    )
+    if (!is.null(compare.to)) {
+        gis_x <- interactions(x)
+        gis_y <- interactions(compare.to)
+        gis <- c(
+            as(gis_y, 'GInteractions'), 
+            InteractionSet::swapAnchors(
+                as(gis_x, 'GInteractions'), 
+                mode = 'reverse'
+            )
+        )
+        gis <- gis[pairdist(gis) != 0]
+        p <- plotMatrix(
+            gis, 
+            use.scores = use.scores, 
+            scale = scale, 
+            maxDistance = maxDistance, 
+            loops = loops, 
+            borders = borders, 
+            limits = limits, 
+            dpi = dpi, 
+            rasterize = rasterize, 
+            symmetrical = FALSE, 
+            chrom_lines = chrom_lines, 
+            show_grid = show_grid, 
+            cmap = cmap  
+        )
+    }
+    else {
+        p <- plotMatrix(
+            interactions(x), 
+            use.scores = use.scores, 
+            scale = scale, 
+            maxDistance = maxDistance, 
+            loops = loops, 
+            borders = borders, 
+            limits = limits, 
+            dpi = dpi, 
+            rasterize = rasterize, 
+            symmetrical = symmetrical, 
+            chrom_lines = chrom_lines, 
+            show_grid = show_grid, 
+            cmap = cmap  
+        )
+    }
     if (caption) {
         p <- p + ggplot2::labs(
             caption = paste(

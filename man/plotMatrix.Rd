@@ -16,6 +16,7 @@ montage(x, ...)
 
 \S4method{plotMatrix}{HiCExperiment}(
   x,
+  compare.to = NULL,
   use.scores = "balanced",
   scale = "log10",
   maxDistance = NULL,
@@ -86,6 +87,8 @@ montage(x, ...)
 \item{x}{A HiCExperiment object}
 
 \item{...}{Extra arguments passed to the corresponding method.}
+
+\item{compare.to}{Compare to a second HiC matrix in the lower left corner}
 
 \item{use.scores}{Which scores to use in the heatmap}
 
