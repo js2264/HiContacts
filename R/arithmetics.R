@@ -336,7 +336,7 @@ merge <- function(..., use.scores = 'balanced', FUN = mean) {
     }
     scores <- dplyr::select(ints_df, dplyr::any_of(c('bin_id1', 'bin_id2', score_names))) |> 
         dplyr::group_by(bin_id1, bin_id2) |>
-        dplyr::summarise(dplyr::across(score_names, .FUN), .groups = "drop") |> 
+        dplyr::summarise(dplyr::across(dplyr::all_of(score_names), .FUN), .groups = "drop") |> 
         dplyr::select(-bin_id1, -bin_id2) |> 
         as("SimpleList")
 
