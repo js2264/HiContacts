@@ -99,7 +99,11 @@ is_same_bins <- function(...) {
 is_same_regions <- function(...) {
     contacts_list <- list(...)
     all(unlist(lapply(contacts_list, function(x) {
-        identical(regions(contacts_list[[1]]), regions(x))
+        re1 <- regions(contacts_list[[1]])
+        re1$weight <- NULL
+        re2 <- regions(x)
+        re2$weight <- NULL
+        identical(re1, re2)
     })))
 }
 

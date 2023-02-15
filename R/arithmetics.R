@@ -274,7 +274,11 @@ divide <- function(x, by, use.scores = 'balanced', pseudocount = 0) {
     InteractionSet::replaceRegions(gis) <- re
 
     ## -- Export results as HiCExperiment
-    m <- S4Vectors::mcols(gis) |> as.data.frame() |> dplyr::select(-c('bin_id1', 'bin_id2'))
+    m <- S4Vectors::mcols(gis) |> 
+        as.data.frame() |> 
+        dplyr::select(!starts_with('weight'))
+    S4Vectors::mcols(gis) <- m
+    m <- dplyr::select(m, -c('bin_id1', 'bin_id2'))
     scores <- as.list(m) |> S4Vectors::SimpleList()
 
     ## -- Create HiCExperiment
