@@ -40,6 +40,7 @@ Imports:
     utils
 Suggests:
     HiContactsData,
+    HiCool, 
     WGCNA, 
     Rfast,
     terra, 

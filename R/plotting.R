@@ -34,6 +34,7 @@ NULL
 #'   horizontally
 #' @param loops Loops to plot on top of the heatmap, provided as `GInteractions`
 #' @param borders Borders to plot on top of the heatmap, provided as `GRanges`
+#' @param tracks Named list of bigwig tracks imported as `Rle`
 #' @param dpi DPI to create the plot (Default: 500)
 #' @param rasterize Whether the generated heatmap is rasterized or vectorized 
 #' (Default: TRUE)
@@ -82,6 +83,7 @@ setMethod("plotMatrix", "HiCExperiment", function(
     maxDistance = NULL, 
     loops = NULL, 
     borders = NULL, 
+    tracks = NULL, 
     limits = NULL, 
     dpi = 500, 
     rasterize = TRUE, 
@@ -90,7 +92,7 @@ setMethod("plotMatrix", "HiCExperiment", function(
     show_grid = FALSE, 
     cmap = NULL, 
     caption = TRUE  
- ) {
+) {
     if (!is.null(compare.to)) {
         gis_x <- interactions(x)
         gis_y <- interactions(compare.to)
@@ -109,6 +111,7 @@ setMethod("plotMatrix", "HiCExperiment", function(
             maxDistance = maxDistance, 
             loops = loops, 
             borders = borders, 
+            tracks = tracks, 
             limits = limits, 
             dpi = dpi, 
             rasterize = rasterize, 
@@ -126,6 +129,7 @@ setMethod("plotMatrix", "HiCExperiment", function(
             maxDistance = maxDistance, 
             loops = loops, 
             borders = borders, 
+            tracks = tracks, 
             limits = limits, 
             dpi = dpi, 
             rasterize = rasterize, 
@@ -135,7 +139,7 @@ setMethod("plotMatrix", "HiCExperiment", function(
             cmap = cmap  
         )
     }
-    if (caption) {
+    if (caption & is.null(tracks)) {
         p <- p + ggplot2::labs(
             caption = paste(
                 sep = '\n',
@@ -160,6 +164,7 @@ setMethod("plotMatrix", "GInteractions", function(
     maxDistance = NULL, 
     loops = NULL, 
     borders = NULL, 
+    tracks = NULL, 
     limits = NULL, 
     dpi = 500, 
     rasterize = TRUE, 
@@ -207,9 +212,7 @@ setMethod("plotMatrix", "GInteractions", function(
         M <- limits[2]
     }
     else {
-        an <- InteractionSet::anchors(x)
-        diff_an <- an[['first']] != an[['second']]
-        .scores <- gis$score[diff_an]
+        .scores <- gis$score[pairdist(x) != 0 & !is.na(pairdist(x) != 0)]
         .scores <- .scores[!is.na(.scores)]
         .scores <- .scores[!is.infinite(.scores)]
         M <- max(.scores)
@@ -279,12 +282,52 @@ setMethod("plotMatrix", "GInteractions", function(
         p_borders <- NULL
     }
 
+    ## -- If tracks are provided, filter them and add
+    if (!is.null(tracks) & is.null(maxDistance)) {
+        re <- reduce(regions(gis))
+        # if (length(re) > 1) {
+        #     warning("Input track cannot be aligned to interactions with non-contiguous regions.")
+        #     p_tracks <- ggplot2::ggplot() + ggplot2::theme_void()
+        # }
+        # else {
+            ntracks <- length(tracks)
+            step <- GenomicRanges::width(InteractionSet::anchors(gis[1])[[1]])/5
+            filtered_tracks <- purrr::imap(tracks, ~ .x[re] |> 
+                tibble::as_tibble() |> 
+                dplyr::group_by(group=(0:(n()-1))%/%{step}) |> 
+                dplyr::summarize(value = mean(value, na.rm = TRUE)) |> 
+                dplyr::mutate(
+                    # pos = seq(IRanges::start(re), IRanges::end(re), by = step) + step/2, 
+                    track = .y
+                )
+            ) |> dplyr::bind_rows(.id = 'track')
+            p_tracks <- ggplot2::ggplot() + 
+                ggplot2::geom_area(
+                    data = filtered_tracks, 
+                    mapping = ggplot2::aes(x = group, y = value),
+                    fill = "#393939", 
+                    color = NA, 
+                ) + 
+                ggplot2::scale_x_continuous(expand = c(0, 0)) +
+                ggplot2::scale_y_reverse(expand = c(0, 0)) +
+                ggplot2::facet_grid(track~., scales = 'free') + 
+                ggplot2::theme_void() + 
+                ggplot2::theme(
+                    strip.background = ggplot2::element_blank(), 
+                    strip.text = ggplot2::element_blank()
+                )
+        # }
+    }
+    else {
+        p_tracks <- ggplot2::ggplot() + ggplot2::theme_void()
+    }
+
     # -- Check number of chromosomes that were extracted
     nseqnames <- length(unique(as.vector(
-        GenomicRanges::seqnames(InteractionSet::anchors(gis)[['first']])
+        GenomicRanges::seqnames(InteractionSet::regions(gis))
     )))
 
-    if (nseqnames == 1) { ## Single chromosome coordinates to plot
+    if (nseqnames == 1) { ## SINGLE CHROMOSOME MAP
         
         if (is.null(maxDistance)) { ##### REGULAR SQUARE MATRIX
             ## -- Convert gis to table and extract x/y
@@ -333,6 +376,23 @@ setMethod("plotMatrix", "GInteractions", function(
                 ) + 
                 ggplot2::scale_x_continuous(expand = c(0, 0), labels = scales::unit_format(unit = "M", scale = 1e-6), position = 'top') +
                 ggplot2::scale_y_reverse(expand = c(0, 0), labels = scales::unit_format(unit = "M", scale = 1e-6))
+
+            ## -- Add tracks 
+            if (length(p_tracks$layers)) {
+                p <- p + 
+                ggplot2::theme(
+                    plot.margin = grid::unit(c(5.5, 5.5, 5.5 + 10*ntracks, 5.5), "points")
+                ) + patchwork::inset_element(
+                    p_tracks, 
+                    left = 0, 
+                    bottom = -0.1*ntracks, 
+                    right = 1, 
+                    top = 0, 
+                    align_to = 'panel', 
+                    clip = FALSE
+                ) 
+            }
+            
         }
         
         else { ##### HORIZONTAL TRIANGULAR MATRIX
@@ -361,7 +421,13 @@ setMethod("plotMatrix", "GInteractions", function(
         }
     }
 
-    else { ##### SQUARE MATRIX WITH SEVERAL CHROMOSOMES
+    else { ##### MULTI-CHROMOSOMES MAP
+
+        ## -- Abort if more than 1 chr. is plotted AND maxDistance is provided
+        if (!is.null(maxDistance)) stop(
+            "Horizontal, multi-chromosomes maps are not supported."
+        )
+
         chroms <- gis |>
             tidyr::as_tibble() |>
             dplyr::group_by(seqnames2) |>
@@ -411,6 +477,23 @@ setMethod("plotMatrix", "GInteractions", function(
                     colour = "black", alpha = 0.75, linewidth = 0.15
                 )
         }
+
+        ## -- Add tracks 
+        if (length(p_tracks$layers)) {
+            p <- p + 
+            ggplot2::theme(
+                plot.margin = grid::unit(c(5.5, 5.5, 5.5 + 10*ntracks, 5.5), "points")
+            ) + patchwork::inset_element(
+                p_tracks, 
+                left = 0, 
+                bottom = -0.1*ntracks, 
+                right = 1, 
+                top = 0, 
+                align_to = 'panel', 
+                clip = FALSE
+            ) 
+        }
+        
     }
 
     p

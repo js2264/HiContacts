@@ -82,5 +82,7 @@ utils::globalVariables(c(
     "mcols", 
     "score.x", 
     "score.by", 
+    "reduce", 
+    "value", 
     "fc"
 ))

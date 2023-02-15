@@ -22,6 +22,7 @@ montage(x, ...)
   maxDistance = NULL,
   loops = NULL,
   borders = NULL,
+  tracks = NULL,
   limits = NULL,
   dpi = 500,
   rasterize = TRUE,
@@ -39,6 +40,7 @@ montage(x, ...)
   maxDistance = NULL,
   loops = NULL,
   borders = NULL,
+  tracks = NULL,
   limits = NULL,
   dpi = 500,
   rasterize = TRUE,
@@ -100,6 +102,8 @@ horizontally}
 \item{loops}{Loops to plot on top of the heatmap, provided as \code{GInteractions}}
 
 \item{borders}{Borders to plot on top of the heatmap, provided as \code{GRanges}}
+
+\item{tracks}{Named list of bigwig tracks imported as \code{Rle}}
 
 \item{limits}{color map limits}
 
