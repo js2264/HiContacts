@@ -93,6 +93,7 @@ setMethod("plotMatrix", "HiCExperiment", function(
     cmap = NULL, 
     caption = TRUE  
 ) {
+    check_scores(x, use.scores)
     if (!is.null(compare.to)) {
         gis_x <- interactions(x)
         gis_y <- interactions(compare.to)
