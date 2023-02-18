@@ -159,7 +159,7 @@ localDistanceLaw <- function(
                 dplyr::left_join(PsBreaks(), by = c('binned_distance' = 'break_pos')) |> 
                 dplyr::mutate(norm_p = p / binwidth) |>
                 dplyr::mutate(coords = names(coords)[K])
-        }) %>% dplyr::bind_rows()
+        }) |> dplyr::bind_rows()
     }
     else {
         message("Importing pairs file ", pairsFile, " in memory. This may take a while...")
@@ -181,7 +181,7 @@ localDistanceLaw <- function(
                 dplyr::left_join(PsBreaks(), by = c('binned_distance' = 'break_pos')) |> 
                 dplyr::mutate(norm_p = p / binwidth) |>
                 dplyr::mutate(coords = names(coords)[K])
-        }) %>% dplyr::bind_rows()
+        }) |> dplyr::bind_rows()
     }
     d <- dplyr::group_by(d, coords)
     ps <- dplyr::group_split(d) |> 

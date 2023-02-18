@@ -93,7 +93,9 @@ setMethod("plotMatrix", "HiCExperiment", function(
     cmap = NULL, 
     caption = TRUE  
 ) {
-    check_scores(x, use.scores)
+    if (!use.scores %in% names(scores(x))) 
+        stop(paste0("Queried scores not found."))
+
     if (!is.null(compare.to)) {
         gis_x <- interactions(x)
         gis_y <- interactions(compare.to)
@@ -881,8 +883,7 @@ NULL
 #' @export
 
 plotScalogram <- function(x, ylim = c(5e2, 1e5)) {
-    x_ <- x %>%
-        dplyr::mutate(dist_quantile = scales::oob_squish(dist_quantile, c(ylim[[1]], ylim[[2]]))) %>% 
+    x_ <- dplyr::mutate(x, dist_quantile = scales::oob_squish(dist_quantile, c(ylim[[1]], ylim[[2]]))) |>
         dplyr::mutate(y0 = ylim[[1]])
     p <- ggplot2::ggplot() + 
         ggplot2::theme_minimal() + 

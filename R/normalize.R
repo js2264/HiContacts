@@ -2,6 +2,7 @@
 #' @importFrom utils setTxtProgressBar
 #' @importFrom stats median
 #' @rdname arithmetics
+#' @aliases normalize,HiCExperiment-method
 #' @export
 
 setMethod("normalize", signature(object = "HiCExperiment"), function(
