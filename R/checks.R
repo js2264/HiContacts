@@ -12,11 +12,12 @@
 #' @param x A `HiCExperiment` object
 #' @param ... `HiCExperiment` objects
 #' @return Logical
+#' @keywords internal
 NULL
 
 #' @rdname checks
 
-is_symmetrical <- function(x) {
+.is_symmetrical <- function(x) {
     if (is.null(focus(x))) {
         return(TRUE)
     }
@@ -30,19 +31,19 @@ is_symmetrical <- function(x) {
 
 #' @rdname checks
 
-is_comparable <- function(...) {
-    are_HiCExperiment(...)
+.is_comparable <- function(...) {
+    .are_HiCExperiment(...)
     err <- c()
-    if (!is_same_seqinfo(...)) {
+    if (!.is_same_seqinfo(...)) {
         err <- c(err, "seqinfos")
     }
-    if (!is_same_resolution(...)) {
+    if (!.is_same_resolution(...)) {
         err <- c(err, "resolutions")
     }
-    if (!is_same_bins(...)) {
+    if (!.is_same_bins(...)) {
         err <- c(err, "bins")
     }
-    if (!is_same_regions(...)) {
+    if (!.is_same_regions(...)) {
         err <- c(err, "regions")
     }
     if (length(err) > 0) {
@@ -54,7 +55,7 @@ is_comparable <- function(...) {
 
 #' @rdname checks
 
-are_HiCExperiment <- function(...) {
+.are_HiCExperiment <- function(...) {
     args <- list(...)
     if (!all(unlist(lapply(args, is, 'HiCExperiment')))) {
         stop("Provided arguments are not all `HiCExperiment` objects. 
@@ -65,7 +66,7 @@ are_HiCExperiment <- function(...) {
 
 #' @rdname checks
 
-is_same_seqinfo <- function(...) {
+.is_same_seqinfo <- function(...) {
     contacts_list <- list(...)
     all(unlist(lapply(contacts_list, function(x) {
         identical(seqinfo(contacts_list[[1]]), seqinfo(x))
@@ -74,7 +75,7 @@ is_same_seqinfo <- function(...) {
 
 #' @rdname checks
 
-is_same_resolution <- function(...) {
+.is_same_resolution <- function(...) {
     contacts_list <- list(...)
     all(unlist(lapply(contacts_list, function(x) {
         identical(resolution(contacts_list[[1]]), resolution(x))
@@ -83,7 +84,7 @@ is_same_resolution <- function(...) {
 
 #' @rdname checks
 
-is_same_bins <- function(...) {
+.is_same_bins <- function(...) {
     contacts_list <- list(...)
     all(unlist(lapply(contacts_list, function(x) {
         b1 <- bins(contacts_list[[1]])
@@ -96,7 +97,7 @@ is_same_bins <- function(...) {
 
 #' @rdname checks
 
-is_same_regions <- function(...) {
+.is_same_regions <- function(...) {
     contacts_list <- list(...)
     all(unlist(lapply(contacts_list, function(x) {
         re1 <- regions(contacts_list[[1]])

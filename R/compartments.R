@@ -22,7 +22,7 @@
 #' @export
 #' @examples 
 #' library(HiContacts)
-#' full_contacts_yeast <- full_contacts_yeast()
+#' full_contacts_yeast <- contacts_yeast(full = TRUE)
 #' comps <- getCompartments(full_contacts_yeast)
 #' S4Vectors::metadata(comps)$eigens
 
@@ -41,7 +41,7 @@ getCompartments <- function(
     names(chrs) <- chrs
     if (!is.null(chromosomes)) chrs <- chrs[chromosomes]
 
-    ## -- Compute eigens on each chr. separately
+    ## -- Parse contact matrix for each chromosome 
     message( "Parsing intra-chromosomal contacts for each chromosome..." )
     l_subs <- BiocParallel::bplapply(
         BPPARAM = BiocParallel::SerialParam(progressbar = TRUE), 
@@ -149,8 +149,16 @@ getCompartments <- function(
         ), na.rm = TRUE)
     )
 
-    ## -- Get eigen values and vectors 
-    eigen <- RSpectra::eigs_sym(m_no0, k = neigens)
+    ## -- Get eigen values and vectors
+    if (!requireNamespace("RSpectra", quietly = TRUE)) {
+        message("RSpectra package not found. Falling back to base eigenvectors computation.")
+        message("Install RSpectra package to perform faster eigenvectors computation on larger matrices.")
+        message("install.packages('RSpectra')")
+        eigen <- base::eigen(m_no0, symmetric = TRUE)
+    } 
+    else {
+        eigen <- RSpectra::eigs_sym(m_no0, k = neigens)
+    }
     
     ## -- Normalize eigenvector
     eigs <- eigen$vectors

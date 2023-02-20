@@ -57,12 +57,12 @@ test_that("checks and utils work", {
     contacts_yeast_eco1 <- HiCExperiment::contacts_yeast_eco1() |> 
         HiCExperiment::refocus("II:1-30000")
 
-    expect_true(is_symmetrical(contacts_yeast_eco1))
-    expect_true(is_comparable(contacts_yeast, contacts_yeast_eco1))
-    expect_true(are_HiCExperiment(contacts_yeast, contacts_yeast_eco1))
-    expect_true(is_same_seqinfo(contacts_yeast, contacts_yeast_eco1))
-    expect_true(is_same_resolution(contacts_yeast, contacts_yeast_eco1))
-    expect_true(is_same_bins(contacts_yeast, contacts_yeast_eco1))
-    expect_true(is_same_regions(contacts_yeast, contacts_yeast_eco1))
+    expect_true(.is_symmetrical(contacts_yeast_eco1))
+    expect_true(.is_comparable(contacts_yeast, contacts_yeast_eco1))
+    expect_true(.are_HiCExperiment(contacts_yeast, contacts_yeast_eco1))
+    expect_true(.is_same_seqinfo(contacts_yeast, contacts_yeast_eco1))
+    expect_true(.is_same_resolution(contacts_yeast, contacts_yeast_eco1))
+    expect_true(.is_same_bins(contacts_yeast, contacts_yeast_eco1))
+    expect_true(.is_same_regions(contacts_yeast, contacts_yeast_eco1))
 
 })

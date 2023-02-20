@@ -38,21 +38,21 @@ scalogram <- function(x, dist_min = 0, nbins = 250, probs = c(0.25, 0.5, 0.75)) 
     }
     message("Importing pairs file ", pairsFile, " in memory. This may take a while...")
     pairs <- BiocIO::import(pairsFile, format = 'pairs')
-    an_ <- HiCExperiment::anchors(pairs)
+    cispairs <- pairs[InteractionSet::intrachr(pairs)]
+    an_ <- HiCExperiment::anchors(cispairs)
     scalo <- tibble::tibble(
-        dist = pairs$distance, 
+        dist = cispairs$distance, 
         chr = as.vector(GenomicRanges::seqnames(an_[[1]])), 
         pos1 = GenomicRanges::start(an_[[1]]),
         pos2 = GenomicRanges::start(an_[[2]])
-    ) %>% 
-        tidyr::drop_na() %>% 
-        tidyr::pivot_longer(-c(chr, dist), names_to = 'pos_', values_to = 'pos') %>%
-        dplyr::select(-pos_) %>%
+    ) |>
+        tidyr::pivot_longer(-c(chr, dist), names_to = 'pos_', values_to = 'pos') |>
+        dplyr::select(-pos_) |>
         dplyr::filter(dist > dist_min, pos > 1) 
-    seq_ <- seq(1, max(scalo$pos, na.rm = TRUE), length.out = nbins)
-    df <- scalo %>% 
-        dplyr::mutate(binned_pos = seq_[findInterval(pos, vec = seq_)]) %>% 
-        dplyr::group_by(chr, binned_pos) %>% 
+    seq_ <- seq(1, max(scalo$pos, na.rm = TRUE), length.out = nbins + 1)
+    df <- scalo |> 
+        dplyr::mutate(binned_pos = seq_[findInterval(pos, vec = seq_)]) |> 
+        dplyr::group_by(chr, binned_pos) |>
         dplyr::group_modify(~ {
             tibble::tibble(
                 prob = factor(probs, rev(probs)), 

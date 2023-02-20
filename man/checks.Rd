@@ -2,28 +2,28 @@
 % Please edit documentation in R/checks.R
 \name{checks}
 \alias{checks}
-\alias{is_symmetrical}
-\alias{is_comparable}
-\alias{are_HiCExperiment}
-\alias{is_same_seqinfo}
-\alias{is_same_resolution}
-\alias{is_same_bins}
-\alias{is_same_regions}
+\alias{.is_symmetrical}
+\alias{.is_comparable}
+\alias{.are_HiCExperiment}
+\alias{.is_same_seqinfo}
+\alias{.is_same_resolution}
+\alias{.is_same_bins}
+\alias{.is_same_regions}
 \title{Checks functions}
 \usage{
-is_symmetrical(x)
+.is_symmetrical(x)
 
-is_comparable(...)
+.is_comparable(...)
 
-are_HiCExperiment(...)
+.are_HiCExperiment(...)
 
-is_same_seqinfo(...)
+.is_same_seqinfo(...)
 
-is_same_resolution(...)
+.is_same_resolution(...)
 
-is_same_bins(...)
+.is_same_bins(...)
 
-is_same_regions(...)
+.is_same_regions(...)
 }
 \arguments{
 \item{x}{A \code{HiCExperiment} object}
@@ -38,3 +38,4 @@ Useful functions to validate the nature/structure of (m)cool files or
 \code{HiCExperiment} objects.
 All these check functions should return a logical.
 }
+\keyword{internal}

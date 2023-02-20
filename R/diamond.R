@@ -20,7 +20,7 @@
 #' @export
 #' @examples 
 #' library(HiContacts)
-#' hic <- full_contacts_yeast() |> 
+#' hic <- contacts_yeast() |> 
 #'   refocus('II:1-300000') |> 
 #'   zoom(1000)
 #' diams <- getDiamondInsulation(hic)

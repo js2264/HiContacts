@@ -52,7 +52,7 @@ vignette('HiContacts')
 ```r
 mcool_file <- HiContactsData::HiContactsData('yeast_wt', format = 'mcool')
 range <- 'I:20000-80000' # range of interest
-lsCoolResolutions(mcool_file, verbose = TRUE)
+availableResolutions(mcool_file)
 hic <- HiCExperiment::import(mcool_file, format = 'mcool', focus = range, resolution = 1000)
 hic
 ```

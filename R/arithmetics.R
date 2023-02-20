@@ -247,9 +247,9 @@ divide <- function(x, by, use.scores = 'balanced', pseudocount = 0) {
     InteractionSet::replaceRegions(by_gis) <- re
     
     ## -- Check that all objects are comparable (bins, resolution, seqinfo)
-    is_same_seqinfo(x, by)
-    is_same_resolution(x, by)
-    is_same_bins(x, by)
+    .is_same_seqinfo(x, by)
+    .is_same_resolution(x, by)
+    .is_same_bins(x, by)
 
     ## -- Join tables, divide, and convert back to GInteractions
     gis <- dplyr::full_join(
@@ -307,15 +307,15 @@ merge <- function(..., use.scores = 'balanced', FUN = mean) {
     contacts_list <- list(...)
     
     ## -- Check that at least 2 `HiCExperiment` objects are passed to `merge()`
-    are_HiCExperiment(...)
+    .are_HiCExperiment(...)
     if (length(contacts_list) < 2) {
         stop("Please provide at least 2 `HiCExperiment` objects.")
     } 
 
     ## -- Check that all objects are comparable (bins, regions, resolution, seqinfo)
-    is_same_seqinfo(...)
-    is_same_resolution(...)
-    is_same_bins(...)
+    .is_same_seqinfo(...)
+    .is_same_resolution(...)
+    .is_same_bins(...)
 
     # Unify all the interactions
     score_names <- names(scores(contacts_list[[1]]))

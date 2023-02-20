@@ -38,7 +38,7 @@ chromosome compartments.
 }
 \examples{
 library(HiContacts)
-full_contacts_yeast <- full_contacts_yeast()
+full_contacts_yeast <- contacts_yeast(full = TRUE)
 comps <- getCompartments(full_contacts_yeast)
 S4Vectors::metadata(comps)$eigens
 }
