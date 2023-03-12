@@ -1,10 +1,10 @@
-# HiContacts
-
 <!-- badges: start -->
-[![Lifecycle: experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
-[![R-CMD-check-bioc](https://github.com/js2264/HiContacts/actions/workflows/check-bioc.yml/badge.svg)](https://github.com/js2264/HiContacts/actions/workflows/check-bioc.yml)
+[![](https://img.shields.io/badge/lifecycle-maturing-blue.svg)](https://www.tidyverse.org/lifecycle/#maturing)
+[![rworkflows](https://github.com/js2264/HiContacts/actions/workflows/rworkflows.yml/badge.svg)](https://github.com/js2264/HiContacts/actions/workflows/rworkflows.yml)
 [![pkgdown](https://github.com/js2264/HiContacts/workflows/pkgdown/badge.svg)](https://github.com/js2264/HiContacts/actions)
 <!-- badges: end -->
+
+# HiContacts
 
 HiContacts provides tools to investigate `(m)cool` matrices imported in R by `HiCExperiment`. 
 

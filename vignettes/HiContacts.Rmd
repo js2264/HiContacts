@@ -59,12 +59,12 @@ looks for balanced scores. If they are not stored in the original `.(m)/cool` fi
 
 ```{r}
 ## Square matrix
-plotMatrix(hic, use.scores = 'balanced', limits = c(-4, -1), dpi = 120)
+plotMatrix(hic, use.scores = 'balanced', limits = c(-4, -1))
 
 ## Horizontal matrix
 plotMatrix(
     refocus(hic, 'II'),
-    use.scores = 'balanced', limits = c(-4, -1), dpi = 120, 
+    use.scores = 'balanced', limits = c(-4, -1), 
     maxDistance = 200000
 )
 ```
@@ -175,7 +175,7 @@ p <- patchwork::wrap_plots(
 mcool_file <- HiContactsData('yeast_wt', format = 'mcool')
 hic <- import(mcool_file, format = 'mcool', resolution = 16000)
 library(BSgenome.Scerevisiae.UCSC.sacCer3)
-genome <- BSgenome.Scerevisiae.UCSC.sacCer3
+genome <- BSgenome.Scerevisiae.UCSC.sacCer3::BSgenome.Scerevisiae.UCSC.sacCer3
 seqlevelsStyle(genome) <- "NCBI"
 
 # - Get compartments
