@@ -84,5 +84,6 @@ utils::globalVariables(c(
     "score.by", 
     "reduce", 
     "value", 
+    "cnt", 
     "fc"
 ))

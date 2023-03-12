@@ -681,7 +681,7 @@ ggMatrix <- function(mat, ticks = TRUE, grid = FALSE, cols = coolerColors(), lim
         na.value = "#FFFFFF",
         limits = limits
     ) +
-        ggplot2::guides(fill = ggplot2::guide_colorbar(barheight = ggplot2::unit(.25, "npc"), barwidth = 0.5, frame.colour = "black")) + 
+        ggplot2::guides(fill = ggplot2::guide_colorbar(barheight = ggplot2::unit(.1, "npc"), barwidth = 0.5, frame.colour = "black")) + 
         ggplot2::coord_fixed() +
         ggthemeHiContacts(ticks, grid)
     p
@@ -697,7 +697,7 @@ ggHorizontalMatrix <- function(df, cols = coolerColors(), limits) {
     ) +
         ggplot2::scale_x_continuous(expand = c(0, 0), labels = scales::unit_format(unit = "M", scale = 1e-6)) +
         ggplot2::scale_y_continuous(expand = c(0, 0), labels = scales::unit_format(unit = "M", scale = 1e-6)) +
-        ggplot2::guides(fill = ggplot2::guide_colorbar(barheight = ggplot2::unit(.25, "npc"), barwidth = 0.5, frame.colour = "black")) + 
+        ggplot2::guides(fill = ggplot2::guide_colorbar(barheight = ggplot2::unit(.1, "npc"), barwidth = 0.5, frame.colour = "black")) + 
         ggplot2::coord_fixed(ratio = r) +
         ggthemeHiContacts(ticks = TRUE, grid = FALSE)
     p
@@ -958,6 +958,7 @@ plotScalogram <- function(x, ylim = c(5e2, 1e5)) {
 NULL
 
 #' @rdname plotSaddle
+#' @importFrom GenomicRanges resize
 #' @export
 
 plotSaddle <- function(x, nbins = 50, limits = c(-1, 1), plotBins = FALSE, BPPARAM = BiocParallel::bpparam()) {
@@ -1050,8 +1051,16 @@ plotSaddle <- function(x, nbins = 50, limits = c(-1, 1), plotBins = FALSE, BPPAR
     ints2 <- ints[IRanges::`%over%`(an[[1]], eigens) & IRanges::`%over%`(an[[2]], eigens)]
     an2 <- anchors(ints2)
     df <- as(ints2, 'data.frame')
-    df$eigen_bin1 <- eigens[S4Vectors::subjectHits(findOverlaps(an2[[1]], eigens))]$eigen_bin
-    df$eigen_bin2 <- eigens[S4Vectors::subjectHits(findOverlaps(an2[[2]], eigens))]$eigen_bin
+    df$eigen_bin1 <- eigens[S4Vectors::subjectHits(
+        GenomicRanges::findOverlaps(
+            GenomicRanges::resize(an2[[1]], fix = 'center', width = 1), eigens
+        )
+    )]$eigen_bin
+    df$eigen_bin2 <- eigens[S4Vectors::subjectHits(
+        GenomicRanges::findOverlaps(
+            GenomicRanges::resize(an2[[2]], fix = 'center', width = 1), eigens
+        )
+    )]$eigen_bin
     drop_na(df, eigen_bin1, eigen_bin2, detrended) |> 
         dplyr::select(eigen_bin1, eigen_bin2, detrended)
 }

@@ -404,7 +404,7 @@ despeckle <- function(x, use.scores = 'balanced', focal.size = 1) {
         as.data.frame(mcols(gis)), 
         by = c('bin_id1', 'bin_id2')
     ) |> dplyr::select(-bin_id1, -bin_id2, -score)
-    m$despeckled <- SummarizedExperiment::assay(is_despeckled, 1)[, 1]
+    m[[paste0(use.scores, '.despeckled')]] <- SummarizedExperiment::assay(is_despeckled, 1)[, 1]
     l <- as.list(m) |> S4Vectors::SimpleList()
     x@scores <- l
     return(x)

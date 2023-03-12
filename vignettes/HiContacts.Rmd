@@ -162,8 +162,8 @@ hic_1_despeckled <- despeckle(hic_1)
 hic_1_despeckled5 <- despeckle(hic_1, focal.size = 5)
 p <- patchwork::wrap_plots(
     plotMatrix(hic_1, use.scores = 'balanced', scale = 'log10', limits = c(-4, -1)),
-    plotMatrix(hic_1_despeckled, use.scores = 'despeckled', scale = 'log10', limits = c(-4, -1)),
-    plotMatrix(hic_1_despeckled5, use.scores = 'despeckled', scale = 'log10', limits = c(-4, -1))
+    plotMatrix(hic_1_despeckled, use.scores = 'balanced.despeckled', scale = 'log10', limits = c(-4, -1)),
+    plotMatrix(hic_1_despeckled5, use.scores = 'balanced.despeckled', scale = 'log10', limits = c(-4, -1))
 )
 ```
 

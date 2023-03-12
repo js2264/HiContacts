@@ -33,9 +33,10 @@ setMethod("normalize", signature(object = "HiCExperiment"), function(
     # - Iterate over max_iter
     mat_iced <- mat[filtered_bins, filtered_bins]
     nonzeros <- data.frame(col = mat_iced@i+1, row = mat_iced@j+1) |> as.matrix()
-    pb <- utils::txtProgressBar(min = 0, max = niters, style = 3, width = 50, char = "-") 
+    if (interactive()) 
+        pb <- utils::txtProgressBar(min = 0, max = niters, style = 3, width = 50, char = "-") 
     for (i in seq_len(niters)) {
-        utils::setTxtProgressBar(pb, i)
+        if (interactive()) utils::setTxtProgressBar(pb, i)
         bin_sums <- Matrix::colSums(mat_iced, na.rm = TRUE)
         bin_sums <- bin_sums / stats::median(bin_sums, na.rm = TRUE)
         mat_iced@x <- mat_iced@x / {bin_sums[nonzeros[, 'row']] * bin_sums[nonzeros[, 'col']]}
