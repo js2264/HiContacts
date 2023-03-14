@@ -114,12 +114,14 @@ getCompartments <- function(
 ) {
 
     ## -- Get dense detrended matrix (with non-log2-detrended scores)
-    if (!autocorrelation) {
+    if (!autocorrelation) { ## THIS IS THE DEFAULT (NO CORRELATION MATRIX)
         dx <- detrend(x_chr)
         gis <- InteractionSet::interactions(dx)
         gis$score <- HiCExperiment::scores(dx, 'detrended')
         gr <- HiCExperiment::regions(gis)
         m <- HiCExperiment::cm2matrix(HiCExperiment::gi2cm(gis))
+        m <- 2^m ## Return to linear scale
+        m <- m - 1 ## -- Subtract 1
     }
     else {
         dx <- autocorrelate(x_chr, ignore_ndiags = ignore_diags)
@@ -199,24 +201,25 @@ getCompartments <- function(
 
 .eigGCPhasing <- function(gr, neigens) {
     cors <- lapply(seq_len(neigens), function(K) {
-        stats::cor(gr$GC, GenomicRanges::mcols(gr)[, paste0('E', K)])
+        stats::cor(gr$GC, GenomicRanges::mcols(gr)[, paste0('E', K)], method = 'spearman')
     }) |> unlist()
     best_cor <- which.max(abs(cors))
+    fcors <- paste(round(cors, 2), collapse = ' / ')
     if (cors[best_cor] < 0) {
         message(paste0(
             "seqnames `", 
-            GenomicRanges::seqnames(gr)[1], "`: eigen #", 
+            GenomicRanges::seqnames(gr)[1], "` | correlations : ", fcors, " | eigen #", 
             best_cor,
-            ", selected (flipped)"
+            " selected (flipped)"
         ))
         gr$eigen <- -GenomicRanges::mcols(gr)[, paste0('E', best_cor)]
     }
     else {
         message(paste0(
             "seqnames `", 
-            GenomicRanges::seqnames(gr)[1], "`: eigen #", 
+            GenomicRanges::seqnames(gr)[1], "` | correlations : ", fcors, "| eigen #", 
             best_cor,
-            ", selected"
+            " selected"
         ))
         gr$eigen <- GenomicRanges::mcols(gr)[, paste0('E', best_cor)]
     }
