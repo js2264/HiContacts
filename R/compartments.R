@@ -20,6 +20,7 @@
 #'
 #' @importFrom BiocParallel bplapply
 #' @importFrom stats cor
+#' @importFrom GenomicFeatures genes
 #' @export
 #' @examples 
 #' library(HiContacts)
@@ -191,11 +192,18 @@ getCompartments <- function(
                 Biostrings::getSeq(genome, gr), letters = 'GC') / 
                 GenomicRanges::width(gr))
         }
-        if (is(genome, "TxDb")) {
-            ## -- Get GC content
+        else if (is(genome, "TxDb")) {
+            ## -- Get gene density
             cov <- GenomicFeatures::genes(genome) |> 
                 GenomicRanges::coverage()
             gr$phasing <- BiocGenerics::mean(cov[gr])
+        }
+        else if (is(genome, "RleList")) {
+            ## -- Get average coverage per bin
+            gr$phasing <- BiocGenerics::mean(cov[gr])
+        }
+        else {
+            stop("`genome` argument not recognized.")
         }
         ## -- Get matching eigenvector and phase it with GC
         gr <- .eigGCPhasing(gr, neigens, unmasked_bins, sort_eigens)

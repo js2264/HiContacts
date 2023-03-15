@@ -7,3 +7,7 @@ setGeneric("plotMatrix", function(x, ...) {standardGeneric("plotMatrix")})
 #' @rdname plotMatrix
 
 setGeneric("montage", function(x, ...) {standardGeneric("montage")})
+
+#' @rdname Ps
+
+setGeneric("distanceLaw", function(x, coords, ...) {standardGeneric("distanceLaw")})
