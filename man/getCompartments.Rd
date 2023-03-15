@@ -10,6 +10,7 @@ getCompartments(
   genome = NULL,
   chromosomes = NULL,
   neigens = 3,
+  sort_eigens = FALSE,
   BPPARAM = BiocParallel::bpparam()
 )
 }
@@ -24,6 +25,8 @@ contact matrix.}
 \item{chromosomes}{character or integer vector indicating which}
 
 \item{neigens}{Numver of eigen vectors to extract}
+
+\item{sort_eigens}{Can be FALSE or one of c('Spearman', 'Pearson')}
 
 \item{BPPARAM}{BiocParallel parallelization settings}
 }

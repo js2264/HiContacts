@@ -12,6 +12,7 @@
 #'   contact matrix. 
 #' @param chromosomes character or integer vector indicating which 
 #' @param neigens Numver of eigen vectors to extract
+#' @param sort_eigens Can be FALSE or one of c('Spearman', 'Pearson')
 #' @param BPPARAM BiocParallel parallelization settings
 #' @return A `HiCExperiment` object with additional `eigens` metadata containing the
 #' normalized eigenvectors and a new "compartments" topologicalFeatures 
@@ -32,6 +33,7 @@ getCompartments <- function(
     genome = NULL, 
     chromosomes = NULL, 
     neigens = 3, 
+    sort_eigens = FALSE, 
     BPPARAM = BiocParallel::bpparam()
 ) {
     message( "Going through preflight checklist..." )
@@ -82,6 +84,7 @@ getCompartments <- function(
                     x_chr, 
                     genome, 
                     neigens, 
+                    sort_eigens = sort_eigens,
                     autocorrelation = FALSE,
                     clip_percentile = 0.999, 
                     ignore_diags = 2
@@ -106,8 +109,9 @@ getCompartments <- function(
 
 .eigChr <- function(
     x_chr, 
-    genome, 
+    genome = NULL, 
     neigens = 3, 
+    sort_eigens = FALSE,
     autocorrelation = FALSE, 
     clip_percentile = 0.99, 
     ignore_diags = 2
@@ -181,13 +185,20 @@ getCompartments <- function(
     }
 
     if (!is.null(genome)) {
-        ## -- Get GC content
-        gr$GC <- as.numeric(Biostrings::letterFrequency(
-            Biostrings::getSeq(genome, gr), letters = 'GC') / 
-            GenomicRanges::width(gr))
-
+        if (is(genome, "BSgenome") | is(genome, "DNAStringSet")) {
+            ## -- Get GC content
+            gr$phasing <- as.numeric(Biostrings::letterFrequency(
+                Biostrings::getSeq(genome, gr), letters = 'GC') / 
+                GenomicRanges::width(gr))
+        }
+        if (is(genome, "TxDb")) {
+            ## -- Get GC content
+            cov <- GenomicFeatures::genes(genome) |> 
+                GenomicRanges::coverage()
+            gr$phasing <- BiocGenerics::mean(cov[gr])
+        }
         ## -- Get matching eigenvector and phase it with GC
-        gr <- .eigGCPhasing(gr, neigens)
+        gr <- .eigGCPhasing(gr, neigens, unmasked_bins, sort_eigens)
     }
     else {
         message("Caution! No genome is provided. The first eigenvector has ", 
@@ -199,29 +210,59 @@ getCompartments <- function(
 
 }
 
-.eigGCPhasing <- function(gr, neigens) {
-    cors <- lapply(seq_len(neigens), function(K) {
-        stats::cor(gr$GC, GenomicRanges::mcols(gr)[, paste0('E', K)], method = 'spearman')
-    }) |> unlist()
-    best_cor <- which.max(abs(cors))
-    fcors <- paste(round(cors, 2), collapse = ' / ')
-    if (cors[best_cor] < 0) {
-        message(paste0(
-            "seqnames `", 
-            GenomicRanges::seqnames(gr)[1], "` | correlations : ", fcors, " | eigen #", 
-            best_cor,
-            " selected (flipped)"
-        ))
-        gr$eigen <- -GenomicRanges::mcols(gr)[, paste0('E', best_cor)]
+.eigGCPhasing <- function(gr, neigens, unmasked_bins, sort_eigens) {
+    if (isFALSE(sort_eigens)) {
+        method <- 'spearman'
+    }
+    else if (sort_eigens == 'Spearman') {
+        method <- 'spearman'
+    }
+    else if (sort_eigens == 'Pearson') {
+        method <- 'pearson'
     }
     else {
-        message(paste0(
-            "seqnames `", 
-            GenomicRanges::seqnames(gr)[1], "` | correlations : ", fcors, "| eigen #", 
-            best_cor,
-            " selected"
-        ))
-        gr$eigen <- GenomicRanges::mcols(gr)[, paste0('E', best_cor)]
+        stop("`sort_eigens` can be FALSE or one of 'Spearman' or 'Pearson'")
     }
+    cors <- lapply(seq_len(neigens), function(K) {
+        vec <- GenomicRanges::mcols(gr)[, paste0('E', K)]
+        stats::cor(
+            gr$phasing[unmasked_bins], 
+            vec[unmasked_bins], 
+            method = method
+        )
+    }) |> unlist()
+
+    # -- Make all eigens positively correlate with phasing
+    for (i in seq_len(neigens)) {
+        if (cors[i] < 0) {
+            GenomicRanges::mcols(gr)[, paste0('E', i)] <- -GenomicRanges::mcols(gr)[, paste0('E', i)]
+            cors[i] <- -cors[i]
+        }
+    }
+
+    # -- Sort eigens by highest corr.
+    if (!isFALSE(sort_eigens)) {
+        gr0 <- gr
+        cors0 <- cors
+        o <- order(cors, decreasing = TRUE)
+        for (i in seq_len(neigens)) {
+            GenomicRanges::mcols(gr0)[, paste0('E', i)] <- GenomicRanges::mcols(gr)[, paste0('E', o[i])]
+            cors0[i] <- cors[o[i]]
+        }
+        gr <- gr0
+        cors <- cors0
+        gr$eigen <- gr$E1
+    }
+    else {
+        gr$eigen <- gr$E1
+    }
+    
+    # -- Print correlations
+    fcors <- paste(round(cors, 2), collapse = ' / ')
+    message(paste0(
+        "seqnames `", 
+        GenomicRanges::seqnames(gr)[1], "` : ", fcors
+    ))
+
     return(gr)
 }
