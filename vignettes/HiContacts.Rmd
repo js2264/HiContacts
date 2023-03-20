@@ -174,12 +174,9 @@ p <- patchwork::wrap_plots(
 ```{r}
 mcool_file <- HiContactsData('yeast_wt', format = 'mcool')
 hic <- import(mcool_file, format = 'mcool', resolution = 16000)
-library(BSgenome.Scerevisiae.UCSC.sacCer3)
-genome <- BSgenome.Scerevisiae.UCSC.sacCer3::BSgenome.Scerevisiae.UCSC.sacCer3
-seqlevelsStyle(genome) <- "NCBI"
 
 # - Get compartments
-hic <- getCompartments(hic, genome = genome, chromosomes = c('XV', 'XVI'))
+hic <- getCompartments(hic, chromosomes = c('XV', 'XVI'))
 hic
 
 # - Export compartments as bigwig and bed files
