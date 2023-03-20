@@ -100,8 +100,13 @@ p <- HiCExperiment::import(mcool_file, format = 'mcool', focus = 'IV') |>
 ## Plot aggregated matrices over features
 
 ```{r}
-aggr_centros <- aggregate(hic, targets = loops)
-plotMatrix(aggr_centros, use.scores = 'detrended', limits = c(-1, 1), scale = 'linear', cmap = bgrColors())
+aggr_centros <- HiContacts::aggregate(
+    hic, targets = loops, BPPARAM = BiocParallel::SerialParam()
+)
+plotMatrix(
+    aggr_centros, use.scores = 'detrended', limits = c(-1, 1), scale = 'linear', 
+    cmap = bgrColors()
+)
 ```
 
 # Arithmetics
