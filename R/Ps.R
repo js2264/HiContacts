@@ -7,6 +7,7 @@
 #' @name Ps
 #' @aliases distanceLaw,HiCExperiment,missing-method
 #' @aliases distanceLaw,PairsFile,missing-method
+#' @aliases distanceLaw,PairsFile,GRanges-method
 #' @aliases localDistanceLaw
 #' 
 #' @param x A `HiCExperiment` object
@@ -14,7 +15,7 @@
 #' @param filtered_chr filtered_chr
 #' @param chunk_size For pairs files which do not fit in memory, pick a number 
 #' of pairs to parse by chunks (1e7 should be a good compromise)
-#' @param coords GRanges
+#' @param coords GRanges to specify which genomic loci to use when computing P(s)
 #' @param ... Arguments passed to corresponding method
 #' @return a tibble
 #'
@@ -192,6 +193,121 @@ setMethod("distanceLaw", signature(x = "PairsFile", coords = "missing"), functio
         ps <- dplyr::select(ps, binned_distance, p, norm_p, norm_p_unity, slope) |> 
             dplyr::arrange(binned_distance)
     }
+    return(ps)
+})
+
+#' @rdname Ps
+#' @export 
+
+setMethod("distanceLaw", signature(x = "HiCExperiment", coords = "GRanges"), function(
+    x, 
+    coords,
+    chunk_size = 100000
+) {
+    pairsFile <- HiCExperiment::pairsFile(x)
+    if (!is.null(pairsFile)) {
+        distanceLaw(
+            PairsFile(pairsFile), coords = coords, chunk_size = chunk_size
+        )
+    }
+    else {
+        # stop("Please provide a pairsFile for `x`. Aborting now.")
+        message("pairsFile not specified. The P(s) curve will be an approximation.")
+        pairs <- InteractionSet::interactions(x)
+        pairs$score <- HiCExperiment::scores(x, 'count')
+        pairs <- subsetByOverlaps(pairs, coords)
+        df <- tibble::tibble(
+            chr = as.vector(GenomeInfoDb::seqnames(InteractionSet::anchors(pairs)[['first']])),
+            distance = InteractionSet::pairdist(pairs, type = 'gap'),
+            n = pairs$score
+        ) |> 
+            tidyr::drop_na() |> 
+            dplyr::mutate(binned_distance = PsBreaks()$break_pos[findInterval(distance, vec = PsBreaks()$break_pos, all.inside = TRUE)])
+        df <- dplyr::group_by(df, binned_distance)
+        d <- dplyr::summarize(df, ninter = sum(n)) |>
+            dplyr::mutate(p = ninter/sum(ninter)) |> 
+            dplyr::left_join(PsBreaks(), by = c('binned_distance' = 'break_pos')) |> 
+            dplyr::mutate(norm_p = p / binwidth)
+        ps <- dplyr::group_split(d) |> 
+            lapply(function(x) {
+                dplyr::mutate(x, norm_p_unity = norm_p / {dplyr::slice(x, which.min(abs(x$binned_distance - 100000))) |> dplyr::pull(norm_p)}) |> 
+                dplyr::mutate(slope = (log10(dplyr::lead(norm_p)) - log10(norm_p)) / (log10(dplyr::lead(binned_distance)) - log10(binned_distance))) |> 
+                dplyr::mutate(slope = c(0, predict(loess(slope ~ binned_distance, span = 0.5, data = dplyr::pick(slope)))))
+            }) |> 
+            dplyr::bind_rows()
+        ps <- dplyr::select(ps, binned_distance, p, norm_p, norm_p_unity, slope) |> 
+            dplyr::arrange(binned_distance)
+        return(ps)
+    }
+
+})
+
+#' @rdname Ps
+#' @export 
+
+setMethod("distanceLaw", signature(x = "PairsFile", coords = "GRanges"), function(
+    x, 
+    coords,
+    chunk_size = 100000
+) {
+    message("Importing pairs file ", path(x), " in memory. This may take a while...")
+    if (chunk_size == 0) { ### Fit everything in memory
+        pairs <- BiocIO::import(x)
+        pairs <- subsetByOverlaps(pairs, coords)
+        df <- tibble::tibble(
+            chr = as.vector(GenomeInfoDb::seqnames(InteractionSet::anchors(pairs)[['first']])),
+            distance = pairs$distance
+        ) |> 
+            tidyr::drop_na() 
+    }
+    else {
+        f <- function(.x, pos) {
+            pairs <- InteractionSet::GInteractions(
+                GenomicRanges::GRanges(
+                    .x[[2]],
+                    IRanges::IRanges(.x[[3]], width = 1), 
+                    strand = .x[[6]]
+                ), 
+                GenomicRanges::GRanges(
+                    .x[[4]],
+                    IRanges::IRanges(.x[[5]], width = 1), 
+                    strand = .x[[7]]
+                )
+            )
+            pairs <- subsetByOverlaps(pairs, coords)
+            df <- tibble::tibble(
+                chr = as.vector(GenomeInfoDb::seqnames(InteractionSet::anchors(pairs)[['first']])),
+                distance = pairdist(pairs)
+            ) |> 
+                tidyr::drop_na() 
+        }
+        df <- readr::read_tsv_chunked(
+            file = path(x), 
+            callback = readr::DataFrameCallback$new(f), 
+            chunk_size = chunk_size, 
+            col_names = FALSE, 
+            comment = "#", 
+            show_col_types = FALSE
+        ) 
+    }
+    d <- dplyr::mutate(df, 
+        binned_distance = PsBreaks()$break_pos[
+            findInterval(distance, vec = PsBreaks()$break_pos, all.inside = TRUE)
+        ]
+    ) |> dplyr::group_by(binned_distance) |> 
+        dplyr::tally(name = 'ninter') |>
+        dplyr::mutate(p = ninter/sum(ninter)) |> 
+        dplyr::left_join(PsBreaks(), by = c('binned_distance' = 'break_pos')) |> 
+        dplyr::mutate(norm_p = p / binwidth)
+    ps <- dplyr::group_split(d) |> 
+        lapply(function(x) {
+            dplyr::mutate(x, norm_p_unity = norm_p / {dplyr::slice(x, which.min(abs(x$binned_distance - 100000))) |> dplyr::pull(norm_p)}) |> 
+            dplyr::mutate(slope = (log10(dplyr::lead(norm_p)) - log10(norm_p)) / (log10(dplyr::lead(binned_distance)) - log10(binned_distance))) |> 
+            dplyr::mutate(slope = c(0, predict(loess(slope ~ binned_distance, span = 0.5, data = dplyr::pick(slope)))))
+        }) |> 
+        dplyr::bind_rows()
+    ps <- dplyr::select(ps, binned_distance, p, norm_p, norm_p_unity, slope) |> 
+        dplyr::arrange(binned_distance)
     return(ps)
 })
 

@@ -5,7 +5,9 @@
 \alias{Ps}
 \alias{distanceLaw,HiCExperiment,missing-method}
 \alias{distanceLaw,PairsFile,missing-method}
+\alias{distanceLaw,PairsFile,GRanges-method}
 \alias{localDistanceLaw}
+\alias{distanceLaw,HiCExperiment,GRanges-method}
 \title{Compute the law of distance-dependent contact frequency, a.k.a. P(s)}
 \usage{
 distanceLaw(x, coords, ...)
@@ -23,12 +25,16 @@ distanceLaw(x, coords, ...)
   chunk_size = 1e+05
 )
 
+\S4method{distanceLaw}{HiCExperiment,GRanges}(x, coords, chunk_size = 1e+05)
+
+\S4method{distanceLaw}{PairsFile,GRanges}(x, coords, chunk_size = 1e+05)
+
 localDistanceLaw(x, coords = coords)
 }
 \arguments{
 \item{x}{A \code{HiCExperiment} object}
 
-\item{coords}{GRanges}
+\item{coords}{GRanges to specify which genomic loci to use when computing P(s)}
 
 \item{...}{Arguments passed to corresponding method}
 
