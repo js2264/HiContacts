@@ -20,7 +20,6 @@
 #'
 #' @importFrom BiocParallel bplapply
 #' @importFrom stats cor
-#' @importFrom GenomicFeatures genes
 #' @export
 #' @examples 
 #' library(HiContacts)
@@ -194,9 +193,16 @@ getCompartments <- function(
         }
         else if (is(genome, "TxDb")) {
             ## -- Get gene density
-            cov <- GenomicFeatures::genes(genome) |> 
-                GenomicRanges::coverage()
-            gr$phasing <- BiocGenerics::mean(cov[gr])
+            if (!requireNamespace("GenomicFeatures", quietly = TRUE)) {
+                message("Install GenomicFeatures package to phase eigenvector using a `TxDb` object.")
+                message("install.packages('GenomicFeatures')")
+                gr$phasing <- 1
+            } 
+            else {
+                cov <- GenomicFeatures::genes(genome) |> 
+                    GenomicRanges::coverage()
+                gr$phasing <- BiocGenerics::mean(cov[gr])
+            }
         }
         else if (is(genome, "RleList")) {
             ## -- Get average coverage per bin
