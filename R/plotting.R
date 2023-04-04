@@ -977,7 +977,8 @@ plotSaddle <- function(x, nbins = 50, limits = c(-1, 1), plotBins = FALSE, BPPAR
     ) |> as.numeric()
 
     ## -- Compute over-expected score in each pair of eigen bins
-    BiocParallel::bpprogressbar(BPPARAM) <- TRUE
+    if (interactive()) 
+        BiocParallel::bpprogressbar(BPPARAM) <- TRUE
     df <- BiocParallel::bplapply(
         BPPARAM = BPPARAM, 
         as.character(unique(seqnames(eigens))), 

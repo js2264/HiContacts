@@ -45,8 +45,14 @@ getCompartments <- function(
 
     ## -- Parse contact matrix for each chromosome 
     message( "Parsing intra-chromosomal contacts for each chromosome..." )
+    if (interactive()) {
+        bpparam <- BiocParallel::SerialParam(progressbar = TRUE)
+    }
+    else {
+        bpparam <- BiocParallel::SerialParam(progressbar = FALSE)
+    }
     l_subs <- BiocParallel::bplapply(
-        BPPARAM = BiocParallel::SerialParam(progressbar = TRUE), 
+        BPPARAM = bpparam, 
         chrs, 
         function(chr) {
             HiCExperiment::HiCExperiment(
