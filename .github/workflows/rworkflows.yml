@@ -25,8 +25,8 @@ jobs:
         - os: ubuntu-latest
           bioc: devel
           r: auto
-          cont: bioconductor/bioconductor_docker:devel
-          rspm: https://packagemanager.rstudio.com/cran/__linux__/focal/release
+          cont: ~
+          rspm: ~
         # - os: macOS-latest
         #   bioc: devel
         #   r: auto
