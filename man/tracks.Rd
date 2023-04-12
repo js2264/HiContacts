@@ -2,21 +2,26 @@
 % Please edit documentation in R/tracks.R
 \name{tracks}
 \alias{tracks}
-\alias{alignTrack}
-\title{Aligning tracks with contact maps}
+\alias{coverage,HiCExperiment-method}
+\title{Aligning tracks with HiCExperiment objects}
 \usage{
-alignTrack(x, bw, track.name = "track")
+\S4method{coverage}{HiCExperiment}(x, use.pairs = FALSE, bin.size = resolution(x))
 }
 \arguments{
 \item{x}{A \code{HiCExperiment} object over a full genome}
 
-\item{bw}{a bigwig track imported as 'Rle'}
+\item{use.pairs}{logical. Whether to use pairsFile to compute Hi-C coverage}
 
-\item{track.name}{Name to give to the track in regions metadata}
+\item{bin.size}{if \code{use.pairs == TRUE}, to which resolution}
 }
 \value{
 A \code{HiCExperiment} object with 2 added columns in \code{regions(x)}
 }
 \description{
-Aligning tracks with contact maps
+Aligning tracks with HiCExperiment objects
+}
+\examples{
+mcool_file <- HiContactsData::HiContactsData('yeast_wt', format = 'mcool')
+hic <- import(mcool_file, format = 'mcool', resolution = 1000)
+coverage(hic)
 }
