@@ -41,7 +41,6 @@ Imports:
     utils
 Suggests:
     HiContactsData,
-    HiCool, 
     rtracklayer, 
     GenomicFeatures,
     Biostrings, 
