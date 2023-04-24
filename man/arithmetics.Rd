@@ -6,7 +6,7 @@
 \alias{detrend}
 \alias{autocorrelate}
 \alias{divide}
-\alias{merge}
+\alias{merge,HiCExperiment,HiCExperiment-method}
 \alias{despeckle}
 \alias{aggregate,HiCExperiment-method}
 \alias{boost}
@@ -29,7 +29,7 @@ autocorrelate(x, use.scores = "balanced", detrend = TRUE, ignore_ndiags = 3)
 
 divide(x, by, use.scores = "balanced", pseudocount = 0)
 
-merge(..., use.scores = "balanced", FUN = mean)
+\S4method{merge}{HiCExperiment,HiCExperiment}(x, y, ..., use.scores = "balanced", FUN = mean)
 
 despeckle(x, use.scores = "balanced", focal.size = 1)
 
@@ -48,7 +48,7 @@ coarsen(x, bin.size)
 subsample(x, prop)
 }
 \arguments{
-\item{x, object}{a \code{HiCExperiment} object}
+\item{x, y, object}{a \code{HiCExperiment} object}
 
 \item{targets}{Set of chromosome coordinates for which
 interaction counts are extracted from the Hi-C contact file, provided

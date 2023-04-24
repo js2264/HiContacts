@@ -4,7 +4,7 @@
 #' @aliases detrend
 #' @aliases autocorrelate
 #' @aliases divide
-#' @aliases merge
+#' @aliases merge,HiCExperiment,HiCExperiment-method
 #' @aliases despeckle
 #' @aliases aggregate,HiCExperiment-method
 #' @aliases boost
@@ -30,7 +30,7 @@
 #' interactions.
 #'  - `coarsen` a contact matrix to a larger (coarser) resolution
 #' 
-#' @param x,object a `HiCExperiment` object
+#' @param x,y,object a `HiCExperiment` object
 #' @param use.scores Which scores to use to perform operations
 #' @param ... `HiCExperiment` objects. For `aggregate`, `targets` (a set of 
 #' GRanges or GInteractions).
@@ -303,19 +303,22 @@ divide <- function(x, by, use.scores = 'balanced', pseudocount = 0) {
 #' @rdname arithmetics
 #' @export
 
-merge <- function(..., use.scores = 'balanced', FUN = mean) {
-    contacts_list <- list(...)
+setMethod("merge", signature(x = "HiCExperiment", y = "HiCExperiment"), definition = function(
+    x, y, ..., use.scores = 'balanced', FUN = mean) 
+{
+
+    contacts_list <- list(x, y, ...)
     
     ## -- Check that at least 2 `HiCExperiment` objects are passed to `merge()`
-    .are_HiCExperiment(...)
+    .are_HiCExperiment(x, y, ...)
     if (length(contacts_list) < 2) {
         stop("Please provide at least 2 `HiCExperiment` objects.")
     } 
 
     ## -- Check that all objects are comparable (bins, regions, resolution, seqinfo)
-    .is_same_seqinfo(...)
-    .is_same_resolution(...)
-    .is_same_bins(...)
+    .is_same_seqinfo(x, y, ...)
+    .is_same_resolution(x, y, ...)
+    .is_same_bins(x, y, ...)
 
     # Unify all the interactions
     score_names <- names(scores(contacts_list[[1]]))
@@ -362,7 +365,7 @@ merge <- function(..., use.scores = 'balanced', FUN = mean) {
     )
     return(res)
 
-}
+})
 
 #' @rdname arithmetics
 #' @export
