@@ -39,11 +39,15 @@ file in R. The `HiContactsData` package gives access to a range of toy
 datasets stored by Bioconductor in the `ExperimentHub`. 
 
 ```{r}
+library(dplyr)
+library(ggplot2)
 library(HiCExperiment)
 library(HiContacts)
 library(HiContactsData)
+library(rtracklayer)
+library(InteractionSet)
 cool_file <- HiContactsData('yeast_wt', format = 'cool')
-hic <- HiCExperiment::import(cool_file, format = 'cool')
+hic <- import(cool_file, format = 'cool')
 hic
 ```
 
@@ -82,9 +86,9 @@ and converted into `GInteractions` with the
 ```{r}
 mcool_file <- HiContactsData('yeast_wt', format = 'mcool')
 loops <- system.file("extdata", 'S288C-loops.bedpe', package = 'HiCExperiment') |> 
-    rtracklayer::import() |> 
-    InteractionSet::makeGInteractionsFromGRangesPairs()
-p <- HiCExperiment::import(mcool_file, format = 'mcool', focus = 'IV') |> 
+    import() |> 
+    makeGInteractionsFromGRangesPairs()
+p <- import(mcool_file, format = 'mcool', focus = 'IV') |> 
     plotMatrix(loops = loops, limits = c(-4, -1), dpi = 120)
 ```
 
@@ -92,8 +96,8 @@ p <- HiCExperiment::import(mcool_file, format = 'mcool', focus = 'IV') |>
 
 ```{r}
 borders <- system.file("extdata", 'S288C-borders.bed', package = 'HiCExperiment') |> 
-    BiocIO::import()
-p <- HiCExperiment::import(mcool_file, format = 'mcool', focus = 'IV') |> 
+    import()
+p <- import(mcool_file, format = 'mcool', focus = 'IV') |> 
     plotMatrix(loops = loops, borders = borders, limits = c(-4, -1), dpi = 120)
 ```
 
@@ -185,12 +189,12 @@ hic <- getCompartments(hic, chromosomes = c('XV', 'XVI'))
 hic
 
 # - Export compartments as bigwig and bed files
-rtracklayer::export(IRanges::coverage(metadata(hic)$eigens, weight = 'eigen'), 'compartments.bw')
-rtracklayer::export(
+export(IRanges::coverage(metadata(hic)$eigens, weight = 'eigen'), 'compartments.bw')
+export(
     topologicalFeatures(hic, 'compartments')[topologicalFeatures(hic, 'compartments')$compartment == 'A'], 
     'A-compartments.bed'
 )
-rtracklayer::export(
+export(
     topologicalFeatures(hic, 'compartments')[topologicalFeatures(hic, 'compartments')$compartment == 'B'], 
     'B-compartments.bed'
 )
@@ -210,8 +214,8 @@ hic <- refocus(hic, 'II:1-300000') |>
 hic
 
 # - Export insulation as bigwig track and borders as bed file
-rtracklayer::export(IRanges::coverage(metadata(hic)$insulation, weight = 'insulation'), 'insulation.bw')
-rtracklayer::export(topologicalFeatures(hic, 'borders'), 'borders.bed')
+export(IRanges::coverage(metadata(hic)$insulation, weight = 'insulation'), 'insulation.bw')
+export(topologicalFeatures(hic, 'borders'), 'borders.bed')
 ```
 
 # Contact map analysis
@@ -222,7 +226,7 @@ rtracklayer::export(topologicalFeatures(hic, 'borders'), 'borders.bed')
 mcool_file <- HiContactsData('mESCs', format = 'mcool')
 hic <- import(mcool_file, format = 'mcool', focus = 'chr18:20000000-35000000', resolution = 40000)
 v4C <- virtual4C(hic, viewpoint = GRanges('chr18:31000000-31050000'))
-plot4C(v4C, aes(x = center, y = score))
+plot4C(v4C, ggplot2::aes(x = center, y = score))
 ```
 
 ## Cis-trans ratios
@@ -266,12 +270,6 @@ ps_2 <- distanceLaw(c2) |> mutate(sample = 'Eco1-AID')
 ps <- rbind(ps_1, ps_2)
 plotPs(ps, ggplot2::aes(x = binned_distance, y = norm_p, group = sample, color = sample))
 plotPsSlope(ps, ggplot2::aes(x = binned_distance, y = slope, group = sample, color = sample))
-```
-
-## Scalograms 
-
-```{r}
-
 ```
 
 # Session info

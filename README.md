@@ -68,13 +68,14 @@ plotMatrix(hic, use.scores = 'balanced', limits = c(-4, -1), maxDistance = 10000
 ### Plotting matrices with topological features
 
 ```r
+library(rtracklayer)
 mcool_file <- HiContactsData::HiContactsData('yeast_wt', format = 'mcool')
-hic <- HiCExperiment::import(mcool_file, format = 'mcool', focus = 'IV')
+hic <- import(mcool_file, format = 'mcool', focus = 'IV')
 loops <- system.file("extdata", 'S288C-loops.bedpe', package = 'HiContacts') |> 
-    BiocIO::import() |> 
+    import() |> 
     InteractionSet::makeGInteractionsFromGRangesPairs()
 borders <- system.file("extdata", 'S288C-borders.bed', package = 'HiContacts') |> 
-    BiocIO::import()
+    import()
 p <- plotMatrix(
     hic, loops = loops, borders = borders, 
     limits = c(-4, -1), dpi = 120
@@ -95,7 +96,7 @@ plotMatrix(aggr_centros, use.scores = 'detrended', limits = c(-1, 1), scale = 'l
 ### Chromosome compartments 
 
 ```r
-microC_mcool <- fourDNData::fourDNDataFiles('4DNES14CNC1I', 'mcool')
+microC_mcool <- fourDNData::fourDNData('4DNES14CNC1I', 'mcool')
 hic <- import(microC_mcool, format = 'mcool', resolution = 10000000)
 genome <- BSgenome.Mmusculus.UCSC.mm10::BSgenome.Mmusculus.UCSC.mm10
 
@@ -105,12 +106,12 @@ hic <- getCompartments(
 )
 
 # - Export compartments as bigwig and bed files
-rtracklayer::export(IRanges::coverage(metadata(hic)$eigens, weight = 'eigen'), 'microC_compartments.bw')
-rtracklayer::export(
+export(IRanges::coverage(metadata(hic)$eigens, weight = 'eigen'), 'microC_compartments.bw')
+export(
     topologicalFeatures(hic, 'compartments')[topologicalFeatures(hic, 'compartments')$compartment == 'A'], 
     'microC_A-compartments.bed'
 )
-rtracklayer::export(
+export(
     topologicalFeatures(hic, 'compartments')[topologicalFeatures(hic, 'compartments')$compartment == 'B'], 
     'microC_B-compartments.bed'
 )
@@ -129,8 +130,8 @@ hic <- refocus(hic, 'chr19:1-30000000') |>
     getBorders()
 
 # - Export insulation as bigwig track and borders as bed file
-rtracklayer::export(IRanges::coverage(metadata(hic)$insulation, weight = 'insulation'), 'microC_insulation.bw')
-rtracklayer::export(topologicalFeatures(hic, 'borders'), 'microC_borders.bed')
+export(IRanges::coverage(metadata(hic)$insulation, weight = 'insulation'), 'microC_insulation.bw')
+export(topologicalFeatures(hic, 'borders'), 'microC_borders.bed')
 ```
 
 ## In-depth analysis of `HiCExperiment` objects
@@ -145,27 +146,26 @@ rtracklayer::export(topologicalFeatures(hic, 'borders'), 'microC_borders.bed')
 ### Distance law, a.k.a. P(s)
 
 ```r
-hic <- Contacts(
+hic <- import(CoolFile(
     mcool_file, 
-    pairs = HiContactsData::HiContactsData('yeast_wt', format = 'pairs')
-)
+    pairs = HiContactsData::HiContactsData('yeast_wt', format = 'pairs.gz')
+))
 ps <- distanceLaw(hic)
-plotPs(ps, aes(x = binned_distance, y = norm_p))
+plotPs(ps, ggplot2::aes(x = binned_distance, y = norm_p))
 ```
 
 ### Virtual 4C
 
 ```r
-hic <- Contacts(mcool_file, res = 1000)
+hic <- import(CoolFile(mcool_file))
 v4C <- virtual4C(hic, viewpoint = GRanges('V:150000-170000'))
-gg4C(v4C, aes(x = center, y = score, col = chr)) + 
-    facet_wrap(~chr, scales = 'free_x')
+plot4C(v4C)
 ```
 
 ### Cis-trans ratios
 
 ```r
-hic <- Contacts(mcool_file, res = 1000)
+hic <- import(CoolFile(mcool_file))
 cisTransRatio(hic)
 ```
 
