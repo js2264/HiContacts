@@ -22,16 +22,10 @@
     <loc>/index.html</loc>
   </url>
   <url>
-    <loc>/reference/Contacts-plot.html</loc>
-  </url>
-  <url>
     <loc>/reference/Contacts.html</loc>
   </url>
   <url>
-    <loc>/reference/HiContacts-package.html</loc>
-  </url>
-  <url>
-    <loc>/reference/Ps-plot.html</loc>
+    <loc>/reference/HiContacts-plots.html</loc>
   </url>
   <url>
     <loc>/reference/Ps.html</loc>
@@ -46,10 +40,13 @@
     <loc>/reference/cisTransRatio.html</loc>
   </url>
   <url>
-    <loc>/reference/datasets.html</loc>
+    <loc>/reference/getCompartments.html</loc>
   </url>
   <url>
-    <loc>/reference/ggplot2-extra.html</loc>
+    <loc>/reference/getDiamondInsulation.html</loc>
+  </url>
+  <url>
+    <loc>/reference/getLoops.html</loc>
   </url>
   <url>
     <loc>/reference/index.html</loc>
@@ -58,13 +55,28 @@
     <loc>/reference/palettes.html</loc>
   </url>
   <url>
-    <loc>/reference/parse.html</loc>
+    <loc>/reference/plot4C.html</loc>
   </url>
   <url>
-    <loc>/reference/utils.html</loc>
+    <loc>/reference/plotMatrix.html</loc>
   </url>
   <url>
-    <loc>/reference/virtual4C-plot.html</loc>
+    <loc>/reference/plotPs.html</loc>
+  </url>
+  <url>
+    <loc>/reference/plotSaddle.html</loc>
+  </url>
+  <url>
+    <loc>/reference/plotScalogram.html</loc>
+  </url>
+  <url>
+    <loc>/reference/reexports.html</loc>
+  </url>
+  <url>
+    <loc>/reference/scalogram.html</loc>
+  </url>
+  <url>
+    <loc>/reference/tracks.html</loc>
   </url>
   <url>
     <loc>/reference/virtual4C.html</loc>

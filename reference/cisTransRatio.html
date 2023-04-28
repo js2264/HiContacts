@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">HiContacts</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.99.11</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.3.0</span>
       </span>
     </div>
 
@@ -59,7 +59,7 @@
     <div id="arguments">
     <h2>Arguments</h2>
     <dl><dt>x</dt>
-<dd><p>A <code>Contacts</code> object over the full genome</p></dd>
+<dd><p>A <code>HiCExperiment</code> object over the full genome</p></dd>
 
 </dl></div>
     <div id="value">
@@ -72,8 +72,7 @@
     <div id="ref-examples">
     <h2>Examples</h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/js2264/HiContacts" class="external-link">HiContacts</a></span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">full_contacts_yeast</span> <span class="op">&lt;-</span> <span class="fu"><a href="datasets.html">full_contacts_yeast</a></span><span class="op">(</span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> snapshotDate(): 2022-10-03</span>
+<span class="r-in"><span><span class="va">full_contacts_yeast</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/HiCExperiment/man/data.html" class="external-link">contacts_yeast</a></span><span class="op">(</span>full <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> see ?HiContactsData and browseVignettes('HiContactsData') for documentation</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> loading from cache</span>
 <span class="r-in"><span><span class="fu">cisTransRatio</span><span class="op">(</span><span class="va">full_contacts_yeast</span><span class="op">)</span></span></span>
@@ -82,21 +81,21 @@
 <span class="r-out co"><span class="r-pr">#&gt;</span>    chr       cis  trans n_total cis_pct trans_pct</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;fct&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 1</span> I      <span style="text-decoration: underline;">186</span>326  <span style="text-decoration: underline;">96</span>738  <span style="text-decoration: underline;">283</span>064   0.658     0.342</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 2</span> II     <span style="text-decoration: underline;">942</span>728 <span style="text-decoration: underline;">273</span>965 1<span style="text-decoration: underline;">216</span>693   0.775     0.225</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 2</span> II     <span style="text-decoration: underline;">942</span>728 <span style="text-decoration: underline;">273</span>966 1<span style="text-decoration: underline;">216</span>694   0.775     0.225</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 3</span> III    <span style="text-decoration: underline;">303</span>980 <span style="text-decoration: underline;">127</span>087  <span style="text-decoration: underline;">431</span>067   0.705     0.295</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 4</span> IV    1<span style="text-decoration: underline;">858</span>062 <span style="text-decoration: underline;">418</span>218 2<span style="text-decoration: underline;">276</span>280   0.816     0.184</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 5</span> V      <span style="text-decoration: underline;">607</span>090 <span style="text-decoration: underline;">220</span>873  <span style="text-decoration: underline;">827</span>963   0.733     0.267</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 6</span> VI     <span style="text-decoration: underline;">280</span>282 <span style="text-decoration: underline;">127</span>771  <span style="text-decoration: underline;">408</span>053   0.687     0.313</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 7</span> VII   1<span style="text-decoration: underline;">228</span>532 <span style="text-decoration: underline;">335</span>908 1<span style="text-decoration: underline;">564</span>440   0.785     0.215</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 7</span> VII   1<span style="text-decoration: underline;">228</span>532 <span style="text-decoration: underline;">335</span>909 1<span style="text-decoration: underline;">564</span>441   0.785     0.215</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 8</span> VIII   <span style="text-decoration: underline;">574</span>086 <span style="text-decoration: underline;">205</span>122  <span style="text-decoration: underline;">779</span>208   0.737     0.263</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 9</span> IX     <span style="text-decoration: underline;">474</span>182 <span style="text-decoration: underline;">179</span>280  <span style="text-decoration: underline;">653</span>462   0.726     0.274</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">10</span> X      <span style="text-decoration: underline;">834</span>656 <span style="text-decoration: underline;">259</span>240 1<span style="text-decoration: underline;">093</span>896   0.763     0.237</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">11</span> XI     <span style="text-decoration: underline;">775</span>240 <span style="text-decoration: underline;">245</span>899 1<span style="text-decoration: underline;">021</span>139   0.759     0.241</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">12</span> XII   1<span style="text-decoration: underline;">182</span>742 <span style="text-decoration: underline;">278</span>064 1<span style="text-decoration: underline;">460</span>806   0.810     0.190</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">13</span> XIII  1<span style="text-decoration: underline;">084</span>810 <span style="text-decoration: underline;">296</span>350 1<span style="text-decoration: underline;">381</span>160   0.785     0.215</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">12</span> XII   1<span style="text-decoration: underline;">182</span>742 <span style="text-decoration: underline;">278</span>065 1<span style="text-decoration: underline;">460</span>807   0.810     0.190</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">13</span> XIII  1<span style="text-decoration: underline;">084</span>810 <span style="text-decoration: underline;">296</span>351 1<span style="text-decoration: underline;">381</span>161   0.785     0.215</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">14</span> XIV    <span style="text-decoration: underline;">852</span>516 <span style="text-decoration: underline;">256</span>639 1<span style="text-decoration: underline;">109</span>155   0.769     0.231</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">15</span> XV    1<span style="text-decoration: underline;">274</span>070 <span style="text-decoration: underline;">351</span>129 1<span style="text-decoration: underline;">625</span>199   0.784     0.216</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">16</span> XVI   1<span style="text-decoration: underline;">070</span>698 <span style="text-decoration: underline;">313</span>515 1<span style="text-decoration: underline;">384</span>213   0.774     0.226</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">15</span> XV    1<span style="text-decoration: underline;">274</span>070 <span style="text-decoration: underline;">351</span>132 1<span style="text-decoration: underline;">625</span>202   0.784     0.216</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">16</span> XVI   1<span style="text-decoration: underline;">070</span>700 <span style="text-decoration: underline;">313</span>520 1<span style="text-decoration: underline;">384</span>220   0.774     0.226</span>
 </code></pre></div>
     </div>
   </div>
@@ -111,7 +110,7 @@
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.9000.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
 </div>
 
       </footer></div>
