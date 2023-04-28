@@ -181,7 +181,7 @@ cisTransRatio(hic)
 Read more about the `HiCExperiment` class and handling Hi-C data in R 
 [here](https://github.com/js2264/HiCExperiment).
 
-![](https://raw.githubusercontent.com/js2264/HiCExperiment/master/man/figures/HiCExperiment_ecosystem.png)
+![](https://raw.githubusercontent.com/js2264/HiCExperiment/devel/man/figures/HiCExperiment_ecosystem.png)
 
 - [HiCExperiment](https://github.com/js2264/HiCExperiment): Parsing Hi-C files in R
 - [HiCool](https://github.com/js2264/HiCool): End-to-end integrated workflow to process fastq files into .cool and .pairs files

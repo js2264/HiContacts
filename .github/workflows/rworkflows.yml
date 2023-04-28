@@ -6,11 +6,13 @@ name: rworkflows
   push:
     branches:
     - master
+    - devel
     - main
     - RELEASE_**
   pull_request:
     branches:
     - master
+    - devel
     - main
     - RELEASE_**
 jobs:
