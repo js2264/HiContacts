@@ -37,8 +37,8 @@ boost <- function(x, use.scores = 'balanced', alpha = 1, full.replace = FALSE) {
     gis_boosted$bin_id2 <- HiCExperiment::anchors(gis_boosted)[[2]]$bin_id
     HiCExperiment::interactions(x) <- gis_boosted
     m <- dplyr::left_join(
-        as.data.frame(mcols(gis_boosted)), 
-        as.data.frame(mcols(gis)), 
+        as.data.frame(GenomicRanges::mcols(gis_boosted)), 
+        as.data.frame(GenomicRanges::mcols(gis)), 
         by = c('bin_id1', 'bin_id2')
     ) |> dplyr::select(-bin_id1, -bin_id2, -score)
     m$boosted <- SummarizedExperiment::assay(is_boosted, 1)[, 1]

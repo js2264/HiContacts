@@ -29,8 +29,8 @@ subsample <- function(x, prop) {
     gis_subsampled$bin_id2 <- HiCExperiment::anchors(gis_subsampled)[[2]]$bin_id
     HiCExperiment::interactions(x) <- gis_subsampled
     m <- dplyr::left_join(
-        as.data.frame(mcols(gis_subsampled)), 
-        as.data.frame(mcols(gis)), 
+        as.data.frame(GenomicRanges::mcols(gis_subsampled)), 
+        as.data.frame(GenomicRanges::mcols(gis)), 
         by = c('bin_id1', 'bin_id2')
     ) |> dplyr::select(-bin_id1, -bin_id2, -score)
     n <- data.frame(

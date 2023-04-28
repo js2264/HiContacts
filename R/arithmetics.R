@@ -87,6 +87,7 @@
 #' @importFrom GenomicRanges GRanges
 #' @importFrom S4Vectors metadata
 #' @importFrom S4Vectors SimpleList
+#' @importFrom S4Vectors mcols
 #' @importFrom SummarizedExperiment assay
 #' @importFrom BiocParallel bpparam
 #' 
@@ -235,9 +236,9 @@ autocorrelate <- function(x, use.scores = 'balanced', detrend = TRUE, ignore_ndi
 divide <- function(x, by, use.scores = 'balanced', pseudocount = 0) {
 
     x_gis <- interactions(x)
-    x_gis$score <- mcols(x_gis)[[use.scores]]
+    x_gis$score <- S4Vectors::mcols(x_gis)[[use.scores]]
     by_gis <- interactions(by)
-    by_gis$score <- mcols(by_gis)[[use.scores]]
+    by_gis$score <- S4Vectors::mcols(by_gis)[[use.scores]]
 
     ## -- If regions are different, manually merge them 
     re <- unique(
@@ -403,8 +404,8 @@ despeckle <- function(x, use.scores = 'balanced', focal.size = 1) {
     gis_despeckled$bin_id2 <- HiCExperiment::anchors(gis_despeckled)[[2]]$bin_id
     HiCExperiment::interactions(x) <- gis_despeckled
     m <- dplyr::left_join(
-        as.data.frame(mcols(gis_despeckled)), 
-        as.data.frame(mcols(gis)), 
+        as.data.frame(S4Vectors::mcols(gis_despeckled)), 
+        as.data.frame(S4Vectors::mcols(gis)), 
         by = c('bin_id1', 'bin_id2')
     ) |> dplyr::select(-bin_id1, -bin_id2, -score)
     m[[paste0(use.scores, '.despeckled')]] <- SummarizedExperiment::assay(is_despeckled, 1)[, 1]

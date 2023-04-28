@@ -63,8 +63,8 @@ setMethod("normalize", signature(object = "HiCExperiment"), function(
     gis_iced$bin_id2 <- HiCExperiment::anchors(gis_iced)[[2]]$bin_id
     gis_iced$ICE <- SummarizedExperiment::assay(is_iced, 1)[, 1]
     m <- dplyr::left_join(
-        as.data.frame(mcols(gis)), 
-        as.data.frame(mcols(gis_iced)), 
+        as.data.frame(GenomicRanges::mcols(gis)), 
+        as.data.frame(GenomicRanges::mcols(gis_iced)), 
         by = c('bin_id1', 'bin_id2')
     )
     m$ICE[{m$bin_id1 %in% invalid_bins} | {m$bin_id2 %in% invalid_bins}] <- NA
