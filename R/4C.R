@@ -33,7 +33,12 @@ virtual4C <- function(x, viewpoint, use.scores = 'balanced') {
     regions_in_viewpoint <- seq_along(regions) %in% S4Vectors::queryHits(
         GenomicRanges::findOverlaps(regions, viewpoint)
     )
-    score <- rowSums(cm[, regions_in_viewpoint], na.rm = TRUE)
+    if (sum(regions_in_viewpoint) > 1) {
+        score <- rowSums(cm[, regions_in_viewpoint], na.rm = TRUE)
+    } 
+    else {
+        score <- cm[, regions_in_viewpoint]
+    }
     GenomicRanges::GRanges(
         seqnames = as.vector(GenomicRanges::seqnames(regions)),
         IRanges::IRanges(
