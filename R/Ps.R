@@ -35,6 +35,7 @@
 #' @importFrom dplyr lead
 #' @importFrom dplyr cur_data
 #' @importFrom BiocIO import
+#' @importFrom BiocGenerics path
 #' @importFrom readr read_tsv_chunked
 #' @importFrom readr DataFrameCallback
 #' @examples 
@@ -127,7 +128,7 @@ setMethod("distanceLaw", signature(x = "PairsFile", coords = "missing"), functio
     filtered_chr = c('XII', 'chrXII', 'chr12', '12', 'Mito', 'MT', 'chrM'), 
     chunk_size = 100000
 ) {
-    message("Importing pairs file ", path(x), " in memory. This may take a while...")
+    message("Importing pairs file ", BiocGenerics::path(x), " in memory. This may take a while...")
     if (chunk_size == 0) { ### Fit everything in memory
         pairs <- BiocIO::import(x)
         df <- tibble::tibble(
@@ -145,7 +146,7 @@ setMethod("distanceLaw", signature(x = "PairsFile", coords = "missing"), functio
             )
         }
         df <- readr::read_tsv_chunked(
-            file = path(x), 
+            file = BiocGenerics::path(x), 
             callback = readr::DataFrameCallback$new(f), 
             chunk_size = chunk_size, 
             col_names = FALSE, 
@@ -250,7 +251,7 @@ setMethod("distanceLaw", signature(x = "PairsFile", coords = "GRanges"), functio
     coords,
     chunk_size = 100000
 ) {
-    message("Importing pairs file ", path(x), " in memory. This may take a while...")
+    message("Importing pairs file ", BiocGenerics::path(x), " in memory. This may take a while...")
     if (chunk_size == 0) { ### Fit everything in memory
         pairs <- BiocIO::import(x)
         pairs <- subsetByOverlaps(pairs, coords)
@@ -282,7 +283,7 @@ setMethod("distanceLaw", signature(x = "PairsFile", coords = "GRanges"), functio
                 tidyr::drop_na() 
         }
         df <- readr::read_tsv_chunked(
-            file = path(x), 
+            file = BiocGenerics::path(x), 
             callback = readr::DataFrameCallback$new(f), 
             chunk_size = chunk_size, 
             col_names = FALSE, 
