@@ -11,11 +11,11 @@ test_that("v4C works", {
     contacts_yeast <- HiCExperiment::contacts_yeast() |> 
         HiCExperiment::refocus("II")
     expect_s4_class(
-        virtual4C(contacts_yeast, GRanges('II:495000-505000')),
+        virtual4C(contacts_yeast, GRanges('II:495001-505000')),
         'GRanges'
     )
     expect_s3_class({
-        v4C <- virtual4C(contacts_yeast, GRanges('II:495000-505000'))
+        v4C <- virtual4C(contacts_yeast, GRanges('II:495001-505000'))
         plot4C(v4C, ggplot2::aes(x = center, y = score))
     }, 'gg')
 })

@@ -17,7 +17,7 @@
 #' @param resolution Resolution to use with mcool file
 #' @param focus focus Chr. coordinates for which 
 #'   interaction counts are extracted from the .(m)cool file, provided
-#'   as a character string (e.g. "II:4000-5000"). If not provided, 
+#'   as a character string (e.g. "II:4001-5000"). If not provided, 
 #'   the entire (m)cool file will be imported. 
 #' @param metadata list of metadata
 #' @param topologicalFeatures topologicalFeatures provided as a named SimpleList

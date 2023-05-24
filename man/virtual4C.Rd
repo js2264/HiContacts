@@ -24,6 +24,6 @@ using a user-specified \code{viewpoint}.
 \examples{
 library(HiContacts)
 contacts_yeast <- contacts_yeast()
-v4C <- virtual4C(contacts_yeast, GenomicRanges::GRanges('II:490000-510000'))
+v4C <- virtual4C(contacts_yeast, GenomicRanges::GRanges('II:490001-510000'))
 v4C
 }

@@ -60,7 +60,7 @@ ps
 local_ps <- localDistanceLaw(
     contacts_yeast,
     GenomicRanges::GRanges(
-        c("telomere" = "II:1-20000", "arm" = "II:300000-700000")
+        c("telomere" = "II:1-20000", "arm" = "II:300001-700000")
     )
 )
 local_ps

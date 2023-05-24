@@ -831,7 +831,7 @@ plotPsSlope <- function(x, mapping, xlim = c(5000, 4.99e5), ylim = c(-3, 0)) {
 #' @importFrom scales unit_format
 #' @examples 
 #' contacts_yeast <- contacts_yeast()
-#' v4C <- virtual4C(contacts_yeast, GenomicRanges::GRanges('II:490000-510000'))
+#' v4C <- virtual4C(contacts_yeast, GenomicRanges::GRanges('II:490001-510000'))
 #' plot4C(v4C)
 NULL
 
