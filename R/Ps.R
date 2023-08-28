@@ -5,6 +5,7 @@
 #' using `pairsFile(x) <- "..."`. 
 #' 
 #' @name Ps
+#' @aliases distanceLaw,GInteractions,missing-method
 #' @aliases distanceLaw,HiCExperiment,missing-method
 #' @aliases distanceLaw,PairsFile,missing-method
 #' @aliases distanceLaw,PairsFile,GRanges-method
@@ -50,6 +51,59 @@
 #' )
 #' local_ps
 NULL
+
+#' @rdname Ps
+#' @export 
+
+setMethod("distanceLaw", signature(x = "GInteractions", coords = "missing"), function(
+    x, 
+    by_chr = FALSE 
+) {
+    df <- tibble::tibble(
+        chr = as.vector(GenomeInfoDb::seqnames(InteractionSet::anchors(x)[['first']])),
+        distance = InteractionSet::pairdist(x, type = 'gap')
+    ) |> 
+        tidyr::drop_na() |> 
+        dplyr::mutate(binned_distance = PsBreaks()$break_pos[findInterval(distance, vec = PsBreaks()$break_pos, all.inside = TRUE)])
+    if (by_chr) {
+        df <- dplyr::group_by(df, chr, binned_distance)
+    } 
+    else {
+        df <- dplyr::group_by(df, binned_distance)
+    }
+    d <- dplyr::tally(df, name = 'ninter') |>
+        dplyr::mutate(p = ninter/sum(ninter)) |> 
+        dplyr::left_join(PsBreaks(), by = c('binned_distance' = 'break_pos')) |> 
+        dplyr::mutate(norm_p = p / binwidth)
+    if (by_chr) {
+        d <- dplyr::group_by(d, chr)
+    } 
+    else {
+        d <- d
+    }
+    if (by_chr) {
+        d <- dplyr::group_by(d, chr)
+    } 
+    else {
+        d <- d
+    }
+    ps <- dplyr::group_split(d) |> 
+        lapply(function(x) {
+            dplyr::mutate(x, norm_p_unity = norm_p / {dplyr::slice(x, which.min(abs(x$binned_distance - 100000))) |> dplyr::pull(norm_p)}) |> 
+            dplyr::mutate(slope = (log10(dplyr::lead(norm_p)) - log10(norm_p)) / (log10(dplyr::lead(binned_distance)) - log10(binned_distance))) |> 
+            dplyr::mutate(slope = c(0, predict(loess(slope ~ binned_distance, span = 0.5, data = dplyr::pick(slope)))))
+        }) |> 
+        dplyr::bind_rows()
+    if (by_chr) {
+        ps <- dplyr::select(ps, chr, binned_distance, p, norm_p, norm_p_unity, slope) |> 
+            dplyr::arrange(binned_distance)
+    } 
+    else {
+        ps <- dplyr::select(ps, binned_distance, p, norm_p, norm_p_unity, slope) |> 
+            dplyr::arrange(binned_distance)
+    }
+    return(ps)
+})
 
 #' @rdname Ps
 #' @export 

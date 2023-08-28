@@ -3,6 +3,7 @@
 \name{distanceLaw}
 \alias{distanceLaw}
 \alias{Ps}
+\alias{distanceLaw,GInteractions,missing-method}
 \alias{distanceLaw,HiCExperiment,missing-method}
 \alias{distanceLaw,PairsFile,missing-method}
 \alias{distanceLaw,PairsFile,GRanges-method}
@@ -11,6 +12,8 @@
 \title{Compute the law of distance-dependent contact frequency, a.k.a. P(s)}
 \usage{
 distanceLaw(x, coords, ...)
+
+\S4method{distanceLaw}{GInteractions,missing}(x, by_chr = FALSE)
 
 \S4method{distanceLaw}{HiCExperiment,missing}(
   x,
