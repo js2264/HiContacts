@@ -215,7 +215,7 @@ setMethod("plotMatrix", "GInteractions", function(
         M <- limits[2]
     }
     else {
-        .scores <- gis$score[pairdist(x) != 0 & !is.na(pairdist(x) != 0)]
+        .scores <- gis$score[pairdist(gis) != 0 & !is.na(pairdist(gis) != 0)]
         .scores <- .scores[!is.na(.scores)]
         .scores <- .scores[!is.infinite(.scores)]
         M <- max(.scores)

@@ -43,6 +43,22 @@ getCompartments <- function(
     names(chrs) <- chrs
     if (!is.null(chromosomes)) chrs <- chrs[chromosomes]
 
+    # - If HiCExperiment comes from HiC-Pro object, make sure that the 
+    #   imported matrix is genome-wide, and that `balanced` scores are available
+    if ('regions' %in% names(metadata(x))) {
+        if (!is.null(focus(x))) {
+            message('Re-importing genome-wide HiCExperiment from HiC-Pro data files.')
+            x <- HiCExperiment::HiCExperiment(
+                fileName(x), bed = metadata(x)$regions
+            )
+        }
+        if (!"balanced" %in% names(x)) {
+            message('Balancing genome-wide matrix.')
+            x <- normalize(x)
+            scores(x, 'balanced') <- scores(x, 'ICE') 
+        }
+    }
+
     ## -- Parse contact matrix for each chromosome 
     message( "Parsing intra-chromosomal contacts for each chromosome..." )
     if (interactive()) {
@@ -55,9 +71,14 @@ getCompartments <- function(
         BPPARAM = bpparam, 
         chrs, 
         function(chr) {
-            HiCExperiment::HiCExperiment(
-                fileName(x), resolution = resolution, focus = chr
-            )
+            if ('regions' %in% names(metadata(x))) {
+                x[chr]
+            }
+            else {
+                HiCExperiment::HiCExperiment(
+                    fileName(x), resolution = resolution, focus = chr
+                )
+            }
         }
     )
     names(l_subs) <- chrs
