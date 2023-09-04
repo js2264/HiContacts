@@ -1,13 +1,23 @@
 <!-- badges: start -->
 [![](https://img.shields.io/badge/lifecycle-maturing-blue.svg)](https://www.tidyverse.org/lifecycle/#maturing)
+[![](https://img.shields.io/badge/license-MIT-green.svg)](https://opensource.org/licenses/MIT)
 [![rworkflows](https://github.com/js2264/HiContacts/actions/workflows/rworkflows.yml/badge.svg)](https://github.com/js2264/HiContacts/actions/workflows/rworkflows.yml)
+[![Documentation](https://github.com/js2264/HiContacts/workflows/pkgdown/badge.svg)](https://js2264.github.io/HiContacts)
+[![OHCA book](https://github.com/js2264/OHCA/actions/workflows/pages/pages-build-deployment/badge.svg)](https://js2264.github.io/OHCA/)
+<a href=http://bioconductor.org/packages/release/bioc/html/HiContacts.html><img alt="Static Badge" src="https://img.shields.io/badge/Bioc_(release)-Landing_page-green?link=http%3A%2F%2Fbioconductor.org%2FcheckResults%2Fdevel%2Fbioc-LATEST%2FHiContacts%2F"></a>
+<a href=http://bioconductor.org/checkResults/release/bioc-LATEST/HiContacts/><img alt="Bioc build (release)" src="https://img.shields.io/badge/dynamic/yaml?url=https%3A%2F%2Fbioconductor.org%2FcheckResults%2Frelease%2Fbioc-LATEST%2FHiContacts%2Fraw-results%2Fnebbiolo1%2Fbuildsrc-summary.dcf&query=%24.Status&label=Bioc%20build%20(release)&link=https%3A%2F%2Fbioconductor.org%2FcheckResults%2Frelease%2Fbioc-LATEST%2FHiContacts%2F"></a>
+<a href=http://bioconductor.org/checkResults/devel/bioc-LATEST/HiContacts/><img alt="Bioc build (devel)" src="https://img.shields.io/badge/dynamic/yaml?url=https%3A%2F%2Fbioconductor.org%2FcheckResults%2Fdevel%2Fbioc-LATEST%2FHiContacts%2Fraw-results%2Fnebbiolo2%2Fbuildsrc-summary.dcf&query=%24.Status&label=Bioc%20build%20(devel)&link=https%3A%2F%2Fbioconductor.org%2FcheckResults%2Fdevel%2Fbioc-LATEST%2FHiContacts%2F"></a>
 <!-- badges: end -->
 
 # HiContacts
 
+[👉 OHCA book 📖](https://js2264.github.io/OHCA/)
+
+---
+
 HiContacts provides tools to investigate `(m)cool` matrices imported in R by `HiCExperiment`. 
 
-It leverages the `HiCExperiment` class of objects, built on pre-existing Bioconductor objects, namely `InteractionSet`, `GenomicInterations` and `ContactMatrix` (`Lun, Perry & Ing-Simmons, F1000Research 2016`), and provides **analytical** and **visualization** tools to investigate contact maps. 
+It leverages the `HiCExperiment` class of objects, built on pre-existing Bioconductor objects, namely `InteractionSet`, `GInterations` and `ContactMatrix` (`Lun, Perry & Ing-Simmons, F1000Research 2016`), and provides **analytical** and **visualization** tools to investigate contact maps. 
 
 ## Installation
 
