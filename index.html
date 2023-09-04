@@ -71,8 +71,10 @@
 <div class="section level1">
 <div class="page-header"><h1 id="hicontacts">HiContacts<a class="anchor" aria-label="anchor" href="#hicontacts"></a>
 </h1></div>
+<p><a href="https://js2264.github.io/OHCA/" class="external-link">👉 OHCA book 📖</a></p>
+<hr>
 <p>HiContacts provides tools to investigate <code>(m)cool</code> matrices imported in R by <code>HiCExperiment</code>.</p>
-<p>It leverages the <code>HiCExperiment</code> class of objects, built on pre-existing Bioconductor objects, namely <code>InteractionSet</code>, <code>GenomicInterations</code> and <code>ContactMatrix</code> (<code>Lun, Perry &amp; Ing-Simmons, F1000Research 2016</code>), and provides <strong>analytical</strong> and <strong>visualization</strong> tools to investigate contact maps.</p>
+<p>It leverages the <code>HiCExperiment</code> class of objects, built on pre-existing Bioconductor objects, namely <code>InteractionSet</code>, <code>GInterations</code> and <code>ContactMatrix</code> (<code>Lun, Perry &amp; Ing-Simmons, F1000Research 2016</code>), and provides <strong>analytical</strong> and <strong>visualization</strong> tools to investigate contact maps.</p>
 <div class="section level2">
 <h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
 </h2>
@@ -169,12 +171,12 @@
 <span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># - Export compartments as bigwig and bed files</span></span>
-<span><span class="fu">export</span><span class="op">(</span><span class="fu">IRanges</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/IRanges/man/coverage-methods.html" class="external-link">coverage</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/S4Vectors/man/Annotated-class.html" class="external-link">metadata</a></span><span class="op">(</span><span class="va">hic</span><span class="op">)</span><span class="op">$</span><span class="va">eigens</span>, weight <span class="op">=</span> <span class="st">'eigen'</span><span class="op">)</span>, <span class="st">'microC_compartments.bw'</span><span class="op">)</span></span>
-<span><span class="fu">export</span><span class="op">(</span></span>
+<span><span class="fu"><a href="https://rdrr.io/pkg/BiocIO/man/IO.html" class="external-link">export</a></span><span class="op">(</span><span class="fu">IRanges</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/IRanges/man/coverage-methods.html" class="external-link">coverage</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/S4Vectors/man/Annotated-class.html" class="external-link">metadata</a></span><span class="op">(</span><span class="va">hic</span><span class="op">)</span><span class="op">$</span><span class="va">eigens</span>, weight <span class="op">=</span> <span class="st">'eigen'</span><span class="op">)</span>, <span class="st">'microC_compartments.bw'</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/pkg/BiocIO/man/IO.html" class="external-link">export</a></span><span class="op">(</span></span>
 <span>    <span class="fu"><a href="https://rdrr.io/pkg/HiCExperiment/man/AllGenerics.html" class="external-link">topologicalFeatures</a></span><span class="op">(</span><span class="va">hic</span>, <span class="st">'compartments'</span><span class="op">)</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/pkg/HiCExperiment/man/AllGenerics.html" class="external-link">topologicalFeatures</a></span><span class="op">(</span><span class="va">hic</span>, <span class="st">'compartments'</span><span class="op">)</span><span class="op">$</span><span class="va">compartment</span> <span class="op">==</span> <span class="st">'A'</span><span class="op">]</span>, </span>
 <span>    <span class="st">'microC_A-compartments.bed'</span></span>
 <span><span class="op">)</span></span>
-<span><span class="fu">export</span><span class="op">(</span></span>
+<span><span class="fu"><a href="https://rdrr.io/pkg/BiocIO/man/IO.html" class="external-link">export</a></span><span class="op">(</span></span>
 <span>    <span class="fu"><a href="https://rdrr.io/pkg/HiCExperiment/man/AllGenerics.html" class="external-link">topologicalFeatures</a></span><span class="op">(</span><span class="va">hic</span>, <span class="st">'compartments'</span><span class="op">)</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/pkg/HiCExperiment/man/AllGenerics.html" class="external-link">topologicalFeatures</a></span><span class="op">(</span><span class="va">hic</span>, <span class="st">'compartments'</span><span class="op">)</span><span class="op">$</span><span class="va">compartment</span> <span class="op">==</span> <span class="st">'B'</span><span class="op">]</span>, </span>
 <span>    <span class="st">'microC_B-compartments.bed'</span></span>
 <span><span class="op">)</span></span>
@@ -193,8 +195,8 @@
 <span>    <span class="fu"><a href="reference/getDiamondInsulation.html">getBorders</a></span><span class="op">(</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># - Export insulation as bigwig track and borders as bed file</span></span>
-<span><span class="fu">export</span><span class="op">(</span><span class="fu">IRanges</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/IRanges/man/coverage-methods.html" class="external-link">coverage</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/S4Vectors/man/Annotated-class.html" class="external-link">metadata</a></span><span class="op">(</span><span class="va">hic</span><span class="op">)</span><span class="op">$</span><span class="va">insulation</span>, weight <span class="op">=</span> <span class="st">'insulation'</span><span class="op">)</span>, <span class="st">'microC_insulation.bw'</span><span class="op">)</span></span>
-<span><span class="fu">export</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/HiCExperiment/man/AllGenerics.html" class="external-link">topologicalFeatures</a></span><span class="op">(</span><span class="va">hic</span>, <span class="st">'borders'</span><span class="op">)</span>, <span class="st">'microC_borders.bed'</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu"><a href="https://rdrr.io/pkg/BiocIO/man/IO.html" class="external-link">export</a></span><span class="op">(</span><span class="fu">IRanges</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/IRanges/man/coverage-methods.html" class="external-link">coverage</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/S4Vectors/man/Annotated-class.html" class="external-link">metadata</a></span><span class="op">(</span><span class="va">hic</span><span class="op">)</span><span class="op">$</span><span class="va">insulation</span>, weight <span class="op">=</span> <span class="st">'insulation'</span><span class="op">)</span>, <span class="st">'microC_insulation.bw'</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/pkg/BiocIO/man/IO.html" class="external-link">export</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/HiCExperiment/man/AllGenerics.html" class="external-link">topologicalFeatures</a></span><span class="op">(</span><span class="va">hic</span>, <span class="st">'borders'</span><span class="op">)</span>, <span class="st">'microC_borders.bed'</span><span class="op">)</span></span></code></pre></div>
 </div>
 </div>
 <div class="section level2">
@@ -312,7 +314,13 @@
 <h2 data-toc-skip>Dev status</h2>
 <ul class="list-unstyled">
 <li><a href="https://www.tidyverse.org/lifecycle/#maturing" class="external-link"><img src="https://img.shields.io/badge/lifecycle-maturing-blue.svg"></a></li>
+<li><a href="https://opensource.org/licenses/MIT" class="external-link"><img src="https://img.shields.io/badge/license-MIT-green.svg"></a></li>
 <li><a href="https://github.com/js2264/HiContacts/actions/workflows/rworkflows.yml" class="external-link"><img src="https://github.com/js2264/HiContacts/actions/workflows/rworkflows.yml/badge.svg" alt="rworkflows"></a></li>
+<li><a href="https://js2264.github.io/HiContacts" class="external-link"><img src="https://github.com/js2264/HiContacts/workflows/pkgdown/badge.svg" alt="Documentation"></a></li>
+<li><a href="https://js2264.github.io/OHCA/" class="external-link"><img src="https://github.com/js2264/OHCA/actions/workflows/pages/pages-build-deployment/badge.svg" alt="OHCA book"></a></li>
+<li><a href="http://bioconductor.org/packages/release/bioc/html/HiContacts.html" class="external-link"><img alt="Static Badge" src="https://img.shields.io/badge/Bioc_(release)-Landing_page-green?link=http%3A%2F%2Fbioconductor.org%2FcheckResults%2Fdevel%2Fbioc-LATEST%2FHiContacts%2F"></a></li>
+<li><a href="http://bioconductor.org/checkResults/release/bioc-LATEST/HiContacts/" class="external-link"><img alt="Bioc build (release)" src="https://img.shields.io/badge/dynamic/yaml?url=https%3A%2F%2Fbioconductor.org%2FcheckResults%2Frelease%2Fbioc-LATEST%2FHiContacts%2Fraw-results%2Fnebbiolo1%2Fbuildsrc-summary.dcf&amp;query=%24.Status&amp;label=Bioc%20build%20(release)&amp;link=https%3A%2F%2Fbioconductor.org%2FcheckResults%2Frelease%2Fbioc-LATEST%2FHiContacts%2F"></a></li>
+<li><a href="http://bioconductor.org/checkResults/devel/bioc-LATEST/HiContacts/" class="external-link"><img alt="Bioc build (devel)" src="https://img.shields.io/badge/dynamic/yaml?url=https%3A%2F%2Fbioconductor.org%2FcheckResults%2Fdevel%2Fbioc-LATEST%2FHiContacts%2Fraw-results%2Fnebbiolo2%2Fbuildsrc-summary.dcf&amp;query=%24.Status&amp;label=Bioc%20build%20(devel)&amp;link=https%3A%2F%2Fbioconductor.org%2FcheckResults%2Fdevel%2Fbioc-LATEST%2FHiContacts%2F"></a></li>
 </ul>
 </div>
 
