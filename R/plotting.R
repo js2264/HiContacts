@@ -330,7 +330,10 @@ setMethod("plotMatrix", "GInteractions", function(
         GenomicRanges::seqnames(InteractionSet::regions(gis))
     )))
 
-    if (nseqnames == 1) { ## SINGLE CHROMOSOME MAP
+    if (nseqnames == 1 | {nseqnames == 2 & all(
+        GenomicRanges::seqnames(InteractionSet::anchors(gis, "first")) != 
+        GenomicRanges::seqnames(InteractionSet::anchors(gis, "second"))
+    )}) { ## SINGLE CHROMOSOME MAP or 2 CHROMOSOMES TRANS INTERSECTION
         
         if (is.null(maxDistance)) { ##### REGULAR SQUARE MATRIX
             ## -- Convert gis to table and extract x/y
