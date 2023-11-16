@@ -89,32 +89,32 @@ along the imported genomic range.</p>
 <span class="r-in"><span><span class="va">v4C</span> <span class="op">&lt;-</span> <span class="fu">virtual4C</span><span class="op">(</span><span class="va">contacts_yeast</span>, <span class="fu">GenomicRanges</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/GenomicRanges/man/GRanges-class.html" class="external-link">GRanges</a></span><span class="op">(</span><span class="st">'II:490001-510000'</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">v4C</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> GRanges object with 763 ranges and 4 metadata columns:</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>         seqnames        ranges strand |      score        viewpoint    center</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>            &lt;Rle&gt;     &lt;IRanges&gt;  &lt;Rle&gt; |  &lt;numeric&gt;      &lt;character&gt; &lt;numeric&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     [1]        I       1-16000      * | 0.00359351 II:490001-510000    8000.5</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     [2]        I   16001-32000      * | 0.00222557 II:490001-510000   24000.5</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     [3]        I   32001-48000      * | 0.00422662 II:490001-510000   40000.5</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     [4]        I   48001-64000      * | 0.00248154 II:490001-510000   56000.5</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     [5]        I   64001-80000      * | 0.00260842 II:490001-510000   72000.5</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     ...      ...           ...    ... .        ...              ...       ...</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   [759]      XVI 880001-896000      * | 0.00301663 II:490001-510000    888000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   [760]      XVI 896001-912000      * | 0.00397464 II:490001-510000    904000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   [761]      XVI 912001-928000      * | 0.00546521 II:490001-510000    920000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   [762]      XVI 928001-944000      * | 0.00501920 II:490001-510000    936000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   [763]      XVI 944001-948066      * | 0.00000000 II:490001-510000    946034</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>         in_viewpoint</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>            &lt;logical&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     [1]        FALSE</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     [2]        FALSE</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     [3]        FALSE</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     [4]        FALSE</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     [5]        FALSE</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     ...          ...</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   [759]        FALSE</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   [760]        FALSE</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   [761]        FALSE</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   [762]        FALSE</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   [763]        FALSE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>         seqnames        ranges strand |      score    center in_viewpoint</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>            &lt;Rle&gt;     &lt;IRanges&gt;  &lt;Rle&gt; |  &lt;numeric&gt; &lt;numeric&gt;    &lt;logical&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     [1]        I       1-16000      * | 0.00359351    8000.5        FALSE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     [2]        I   16001-32000      * | 0.00222557   24000.5        FALSE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     [3]        I   32001-48000      * | 0.00422662   40000.5        FALSE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     [4]        I   48001-64000      * | 0.00248154   56000.5        FALSE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     [5]        I   64001-80000      * | 0.00260842   72000.5        FALSE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     ...      ...           ...    ... .        ...       ...          ...</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   [759]      XVI 880001-896000      * | 0.00301663    888000        FALSE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   [760]      XVI 896001-912000      * | 0.00397464    904000        FALSE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   [761]      XVI 912001-928000      * | 0.00546521    920000        FALSE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   [762]      XVI 928001-944000      * | 0.00501920    936000        FALSE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   [763]      XVI 944001-948066      * | 0.00000000    946034        FALSE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                viewpoint</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>              &lt;character&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     [1] II:490001-510000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     [2] II:490001-510000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     [3] II:490001-510000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     [4] II:490001-510000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     [5] II:490001-510000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     ...              ...</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   [759] II:490001-510000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   [760] II:490001-510000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   [761] II:490001-510000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   [762] II:490001-510000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   [763] II:490001-510000</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   -------</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   seqinfo: 16 sequences from an unspecified genome; no seqlengths</span>
 </code></pre></div>
