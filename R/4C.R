@@ -39,16 +39,19 @@ virtual4C <- function(x, viewpoint, use.scores = 'balanced') {
     else {
         score <- cm[, regions_in_viewpoint]
     }
-    GenomicRanges::GRanges(
+    gr <- GenomicRanges::GRanges(
         seqnames = as.vector(GenomicRanges::seqnames(regions)),
         IRanges::IRanges(
             GenomicRanges::start(regions), 
             GenomicRanges::end(regions)
         ), 
         score = score,
-        viewpoint = as.character(viewpoint), 
         center = GenomicRanges::start(regions) + 
             (GenomicRanges::end(regions) - GenomicRanges::start(regions))/2, 
         in_viewpoint = regions_in_viewpoint
     )
+    if (length(as.character(viewpoint)) == 1) {
+        gr$viewpoint <- as.character(viewpoint)
+    }
+    return(gr)
 }
