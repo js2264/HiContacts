@@ -143,10 +143,15 @@ setMethod("plotMatrix", "HiCExperiment", function(
         )
     }
     if (caption & is.null(tracks)) {
+        f <- fileName(x)
+        if (!is.null(compare.to)) {
+            f <- paste0(fileName(x), ' | ', fileName(compare.to))
+            print(f)
+        }
         p <- p + ggplot2::labs(
             caption = paste(
                 sep = '\n',
-                paste0('file: ', fileName(x)), 
+                paste0('file: ', f), 
                 paste0('resolution: ', resolution(x)), 
                 paste0('focus: ', focus(x)),
                 paste0('scores: ', use.scores),
