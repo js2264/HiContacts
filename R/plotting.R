@@ -183,8 +183,12 @@ setMethod("plotMatrix", "GInteractions", function(
 ) {
     `%over%` <- IRanges::`%over%`
 
-    ## -- Extract scores
+    ## -- Switch `symmetrical` to FALSE if only trans interactions
     gis <- x
+    onlyTRANS <- !any(S4Vectors::first(gis) == S4Vectors::second(gis))
+    if (onlyTRANS & symmetrical) symmetrical <- FALSE
+
+    ## -- Extract scores
     if (!is.null(use.scores)) {
         gis$score <- S4Vectors::mcols(gis)[, use.scores]
     }
@@ -220,7 +224,12 @@ setMethod("plotMatrix", "GInteractions", function(
         M <- limits[2]
     }
     else {
-        .scores <- gis$score[pairdist(gis) != 0 & !is.na(pairdist(gis) != 0)]
+        if (onlyTRANS) {
+            .scores <- gis$score
+        } 
+        else {
+            .scores <- gis$score[pairdist(gis) != 0 & !is.na(pairdist(gis) != 0)]
+        }
         .scores <- .scores[!is.na(.scores)]
         .scores <- .scores[!is.infinite(.scores)]
         M <- max(.scores)
@@ -340,7 +349,7 @@ setMethod("plotMatrix", "GInteractions", function(
         GenomicRanges::seqnames(InteractionSet::anchors(gis, "second"))
     )}) { ## SINGLE CHROMOSOME MAP or 2 CHROMOSOMES TRANS INTERSECTION
         
-        if (is.null(maxDistance)) { ##### REGULAR SQUARE MATRIX
+        if (is.null(maxDistance)) { ##### REGULAR SQUARE/RECTANGULAR (IF TRANS ONLY) MATRIX
             ## -- Convert gis to table and extract x/y
             mat <- gis |>
                 tibble::as_tibble() |>
