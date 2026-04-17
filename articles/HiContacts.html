@@ -32,7 +32,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">HiContacts</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.9.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.13.0</span>
       </span>
     </div>
 
@@ -69,7 +69,7 @@
                         <h4 data-toc-skip class="author">Jacques
 Serizay</h4>
             
-            <h4 data-toc-skip class="date">2025-03-18</h4>
+            <h4 data-toc-skip class="date">2026-04-17</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/js2264/HiContacts/blob/devel/vignettes/HiContacts.Rmd" class="external-link"><code>vignettes/HiContacts.Rmd</code></a></small>
       <div class="hidden name"><code>HiContacts.Rmd</code></div>
@@ -178,7 +178,7 @@ gives access to a range of toy datasets stored by Bioconductor in the
 <span><span class="va">hic</span></span>
 <span><span class="co">#&gt; `HiCExperiment` object with 8,757,906 contacts over 12,079 regions </span></span>
 <span><span class="co">#&gt; -------</span></span>
-<span><span class="co">#&gt; fileName: "/github/home/.cache/R/ExperimentHub/b1323725d3e0_7751" </span></span>
+<span><span class="co">#&gt; fileName: "/github/home/.cache/R/ExperimentHub/57cf1c09f6a0_7751" </span></span>
 <span><span class="co">#&gt; focus: "whole genome" </span></span>
 <span><span class="co">#&gt; resolutions(1): 1000</span></span>
 <span><span class="co">#&gt; active resolution: 1000 </span></span>
@@ -205,7 +205,7 @@ first scores available.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">## Square matrix</span></span>
 <span><span class="fu"><a href="../reference/plotMatrix.html">plotMatrix</a></span><span class="op">(</span><span class="va">hic</span>, use.scores <span class="op">=</span> <span class="st">'balanced'</span>, limits <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">4</span>, <span class="op">-</span><span class="fl">1</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<p><img src="HiContacts_files/figure-html/unnamed-chunk-4-1.png" width="700"></p>
+<p><img src="HiContacts_files/figure-html/unnamed-chunk-4-1.png" class="r-plt" alt="" width="700"></p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
 <span><span class="co">## Horizontal matrix</span></span>
@@ -214,7 +214,7 @@ first scores available.</p>
 <span>    use.scores <span class="op">=</span> <span class="st">'balanced'</span>, limits <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">4</span>, <span class="op">-</span><span class="fl">1</span><span class="op">)</span>, </span>
 <span>    maxDistance <span class="op">=</span> <span class="fl">200000</span></span>
 <span><span class="op">)</span></span></code></pre></div>
-<p><img src="HiContacts_files/figure-html/unnamed-chunk-4-2.png" width="700"></p>
+<p><img src="HiContacts_files/figure-html/unnamed-chunk-4-2.png" class="r-plt" alt="" width="700"></p>
 </div>
 <div class="section level3">
 <h3 id="plot-loops">Plot loops<a class="anchor" aria-label="anchor" href="#plot-loops"></a>
@@ -261,7 +261,7 @@ function.</p>
 <span>    <span class="va">aggr_centros</span>, use.scores <span class="op">=</span> <span class="st">'detrended'</span>, limits <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">1</span>, <span class="fl">1</span><span class="op">)</span>, scale <span class="op">=</span> <span class="st">'linear'</span>, </span>
 <span>    cmap <span class="op">=</span> <span class="fu"><a href="../reference/palettes.html">bgrColors</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="op">)</span></span></code></pre></div>
-<p><img src="HiContacts_files/figure-html/unnamed-chunk-7-1.png" width="700"></p>
+<p><img src="HiContacts_files/figure-html/unnamed-chunk-7-1.png" class="r-plt" alt="" width="700"></p>
 </div>
 </div>
 <div class="section level2">
@@ -276,15 +276,14 @@ function.</p>
 <span><span class="co">#&gt; loading from cache</span></span>
 <span><span class="va">hic</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/BiocIO/man/IO.html" class="external-link">import</a></span><span class="op">(</span><span class="va">mcool_file</span>, format <span class="op">=</span> <span class="st">'mcool'</span>, focus <span class="op">=</span> <span class="st">'chr2'</span>, resolution <span class="op">=</span> <span class="fl">160000</span><span class="op">)</span></span>
 <span><span class="va">hic</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/arithmetics.html">autocorrelate</a></span><span class="op">(</span><span class="va">hic</span><span class="op">)</span></span>
-<span><span class="co">#&gt; </span></span>
 <span><span class="fu"><a href="https://rdrr.io/pkg/HiCExperiment/man/AllGenerics.html" class="external-link">scores</a></span><span class="op">(</span><span class="va">hic</span><span class="op">)</span></span>
 <span><span class="co">#&gt; List of length 5</span></span>
 <span><span class="co">#&gt; names(5): count balanced expected detrended autocorrelated</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/HiCExperiment/man/AllGenerics.html" class="external-link">scores</a></span><span class="op">(</span><span class="va">hic</span>, <span class="st">'autocorrelated'</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="co">#&gt;    Min. 1st Qu.  Median    Mean 3rd Qu.    Max.    NA's </span></span>
-<span><span class="co">#&gt; -0.4988 -0.0967  0.0400  0.0431  0.1723  1.0000    7739</span></span>
+<span><span class="co">#&gt;     Min.  1st Qu.   Median     Mean  3rd Qu.     Max.      NAs </span></span>
+<span><span class="co">#&gt; -0.49882 -0.09666  0.03997  0.04311  0.17228  1.00000     7739</span></span>
 <span><span class="fu"><a href="../reference/plotMatrix.html">plotMatrix</a></span><span class="op">(</span><span class="va">hic</span>, use.scores <span class="op">=</span> <span class="st">'autocorrelated'</span>, limits <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">1</span>, <span class="fl">1</span><span class="op">)</span>, scale <span class="op">=</span> <span class="st">'linear'</span><span class="op">)</span></span></code></pre></div>
-<p><img src="HiContacts_files/figure-html/unnamed-chunk-8-1.png" width="700"></p>
+<p><img src="HiContacts_files/figure-html/unnamed-chunk-8-1.png" class="r-plt" alt="" width="700"></p>
 </div>
 <div class="section level3">
 <h3 id="detrending-contact-map-map-of-scores-over-expected">Detrending contact map (map of scores over expected)<a class="anchor" aria-label="anchor" href="#detrending-contact-map-map-of-scores-over-expected"></a>
@@ -296,7 +295,7 @@ function.</p>
 <span>    <span class="fu"><a href="../reference/plotMatrix.html">plotMatrix</a></span><span class="op">(</span><span class="va">detrended_hic</span>, use.scores <span class="op">=</span> <span class="st">'expected'</span>, scale <span class="op">=</span> <span class="st">'log10'</span>, limits <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">3</span>, <span class="op">-</span><span class="fl">1</span><span class="op">)</span>, dpi <span class="op">=</span> <span class="fl">120</span><span class="op">)</span>,</span>
 <span>    <span class="fu"><a href="../reference/plotMatrix.html">plotMatrix</a></span><span class="op">(</span><span class="va">detrended_hic</span>, use.scores <span class="op">=</span> <span class="st">'detrended'</span>, scale <span class="op">=</span> <span class="st">'linear'</span>, limits <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">1</span>, <span class="fl">1</span><span class="op">)</span>, dpi <span class="op">=</span> <span class="fl">120</span><span class="op">)</span></span>
 <span><span class="op">)</span></span></code></pre></div>
-<p><img src="HiContacts_files/figure-html/unnamed-chunk-9-1.png" width="700"></p>
+<p><img src="HiContacts_files/figure-html/unnamed-chunk-9-1.png" class="r-plt" alt="" width="700"></p>
 </div>
 <div class="section level3">
 <h3 id="summing-two-maps">Summing two maps<a class="anchor" aria-label="anchor" href="#summing-two-maps"></a>
@@ -314,7 +313,7 @@ function.</p>
 <span><span class="va">hic_1</span></span>
 <span><span class="co">#&gt; `HiCExperiment` object with 301,285 contacts over 150 regions </span></span>
 <span><span class="co">#&gt; -------</span></span>
-<span><span class="co">#&gt; fileName: "/github/home/.cache/R/ExperimentHub/b13210f4fa7c_7754" </span></span>
+<span><span class="co">#&gt; fileName: "/github/home/.cache/R/ExperimentHub/57cf7d6f683_7754" </span></span>
 <span><span class="co">#&gt; focus: "II:1-300,000" </span></span>
 <span><span class="co">#&gt; resolutions(5): 1000 2000 4000 8000 16000</span></span>
 <span><span class="co">#&gt; active resolution: 2000 </span></span>
@@ -326,7 +325,7 @@ function.</p>
 <span><span class="va">hic_2</span></span>
 <span><span class="co">#&gt; `HiCExperiment` object with 146,812 contacts over 150 regions </span></span>
 <span><span class="co">#&gt; -------</span></span>
-<span><span class="co">#&gt; fileName: "/github/home/.cache/R/ExperimentHub/b13267d1ded5_7752" </span></span>
+<span><span class="co">#&gt; fileName: "/github/home/.cache/R/ExperimentHub/57cf7a9a82fe_7752" </span></span>
 <span><span class="co">#&gt; focus: "II:1-300,000" </span></span>
 <span><span class="co">#&gt; resolutions(5): 1000 2000 4000 8000 16000</span></span>
 <span><span class="co">#&gt; active resolution: 2000 </span></span>
@@ -338,7 +337,7 @@ function.</p>
 <span><span class="va">merged_hic</span></span>
 <span><span class="co">#&gt; `HiCExperiment` object with 229,926 contacts over 150 regions </span></span>
 <span><span class="co">#&gt; -------</span></span>
-<span><span class="co">#&gt; fileName: "/github/home/.cache/R/ExperimentHub/b13210f4fa7c_7754" </span></span>
+<span><span class="co">#&gt; fileName: "/github/home/.cache/R/ExperimentHub/57cf7d6f683_7754" </span></span>
 <span><span class="co">#&gt; focus: "II:1-300,000" </span></span>
 <span><span class="co">#&gt; resolutions(5): 1000 2000 4000 8000 16000</span></span>
 <span><span class="co">#&gt; active resolution: 2000 </span></span>
@@ -406,7 +405,7 @@ function.</p>
 <span><span class="va">hic</span></span>
 <span><span class="co">#&gt; `HiCExperiment` object with 8,757,906 contacts over 763 regions </span></span>
 <span><span class="co">#&gt; -------</span></span>
-<span><span class="co">#&gt; fileName: "/github/home/.cache/R/ExperimentHub/b13267d1ded5_7752" </span></span>
+<span><span class="co">#&gt; fileName: "/github/home/.cache/R/ExperimentHub/57cf7a9a82fe_7752" </span></span>
 <span><span class="co">#&gt; focus: "whole genome" </span></span>
 <span><span class="co">#&gt; resolutions(5): 1000 2000 4000 8000 16000</span></span>
 <span><span class="co">#&gt; active resolution: 16000 </span></span>
@@ -429,7 +428,7 @@ function.</p>
 <span></span>
 <span><span class="co"># - Generate saddle plot</span></span>
 <span><span class="fu"><a href="../reference/plotSaddle.html">plotSaddle</a></span><span class="op">(</span><span class="va">hic</span><span class="op">)</span></span></code></pre></div>
-<p><img src="HiContacts_files/figure-html/unnamed-chunk-13-1.png" width="700"></p>
+<p><img src="HiContacts_files/figure-html/unnamed-chunk-13-1.png" class="r-plt" alt="" width="700"></p>
 </div>
 <div class="section level3">
 <h3 id="diamond-insulation-score-and-chromatin-domains-borders">Diamond insulation score and chromatin domains borders<a class="anchor" aria-label="anchor" href="#diamond-insulation-score-and-chromatin-domains-borders"></a>
@@ -446,7 +445,7 @@ function.</p>
 <span><span class="va">hic</span></span>
 <span><span class="co">#&gt; `HiCExperiment` object with 146,812 contacts over 300 regions </span></span>
 <span><span class="co">#&gt; -------</span></span>
-<span><span class="co">#&gt; fileName: "/github/home/.cache/R/ExperimentHub/b13267d1ded5_7752" </span></span>
+<span><span class="co">#&gt; fileName: "/github/home/.cache/R/ExperimentHub/57cf7a9a82fe_7752" </span></span>
 <span><span class="co">#&gt; focus: "II:1-300,000" </span></span>
 <span><span class="co">#&gt; resolutions(5): 1000 2000 4000 8000 16000</span></span>
 <span><span class="co">#&gt; active resolution: 1000 </span></span>
@@ -474,7 +473,7 @@ function.</p>
 <span><span class="va">hic</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/BiocIO/man/IO.html" class="external-link">import</a></span><span class="op">(</span><span class="va">mcool_file</span>, format <span class="op">=</span> <span class="st">'mcool'</span>, focus <span class="op">=</span> <span class="st">'chr18:20000000-35000000'</span>, resolution <span class="op">=</span> <span class="fl">40000</span><span class="op">)</span></span>
 <span><span class="va">v4C</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/virtual4C.html">virtual4C</a></span><span class="op">(</span><span class="va">hic</span>, viewpoint <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/GenomicRanges/man/GRanges-class.html" class="external-link">GRanges</a></span><span class="op">(</span><span class="st">'chr18:31000000-31050000'</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu"><a href="../reference/plot4C.html">plot4C</a></span><span class="op">(</span><span class="va">v4C</span>, <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">center</span>, y <span class="op">=</span> <span class="va">score</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<p><img src="HiContacts_files/figure-html/unnamed-chunk-15-1.png" width="700"></p>
+<p><img src="HiContacts_files/figure-html/unnamed-chunk-15-1.png" class="r-plt" alt="" width="700"></p>
 </div>
 <div class="section level3">
 <h3 id="cis-trans-ratios">Cis-trans ratios<a class="anchor" aria-label="anchor" href="#cis-trans-ratios"></a>
@@ -520,7 +519,7 @@ function.</p>
 <span><span class="fu"><a href="../reference/plotPs.html">plotPs</a></span><span class="op">(</span><span class="va">ps</span>, <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">binned_distance</span>, y <span class="op">=</span> <span class="va">norm_p</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Warning: Removed 18 rows containing missing values or values outside the scale range</span></span>
 <span><span class="co">#&gt; (`geom_line()`).</span></span></code></pre></div>
-<p><img src="HiContacts_files/figure-html/unnamed-chunk-17-1.png" width="700"></p>
+<p><img src="HiContacts_files/figure-html/unnamed-chunk-17-1.png" class="r-plt" alt="" width="700"></p>
 <div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
 <span><span class="co"># With a pairs file</span></span>
@@ -528,16 +527,16 @@ function.</p>
 <span><span class="co">#&gt; see ?HiContactsData and browseVignettes('HiContactsData') for documentation</span></span>
 <span><span class="co">#&gt; loading from cache</span></span>
 <span><span class="va">ps</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/Ps.html">distanceLaw</a></span><span class="op">(</span><span class="va">hic</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Importing pairs file /github/home/.cache/R/ExperimentHub/b1321da7c724_7753 in memory. This may take a while...</span></span>
+<span><span class="co">#&gt; Importing pairs file /github/home/.cache/R/ExperimentHub/57cf592dd20d_7753 in memory. This may take a while...</span></span>
 <span><span class="fu"><a href="../reference/plotPs.html">plotPs</a></span><span class="op">(</span><span class="va">ps</span>, <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">binned_distance</span>, y <span class="op">=</span> <span class="va">norm_p</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Warning: Removed 67 rows containing missing values or values outside the scale range</span></span>
 <span><span class="co">#&gt; (`geom_line()`).</span></span></code></pre></div>
-<p><img src="HiContacts_files/figure-html/unnamed-chunk-17-2.png" width="700"></p>
+<p><img src="HiContacts_files/figure-html/unnamed-chunk-17-2.png" class="r-plt" alt="" width="700"></p>
 <div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/plotPs.html">plotPsSlope</a></span><span class="op">(</span><span class="va">ps</span>, <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">binned_distance</span>, y <span class="op">=</span> <span class="va">slope</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Warning: Removed 67 rows containing missing values or values outside the scale range</span></span>
 <span><span class="co">#&gt; (`geom_line()`).</span></span></code></pre></div>
-<p><img src="HiContacts_files/figure-html/unnamed-chunk-17-3.png" width="700"></p>
+<p><img src="HiContacts_files/figure-html/unnamed-chunk-17-3.png" class="r-plt" alt="" width="700"></p>
 <div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
 <span><span class="co"># Comparing P(s) curves</span></span>
@@ -562,19 +561,19 @@ function.</p>
 <span><span class="co">#&gt; see ?HiContactsData and browseVignettes('HiContactsData') for documentation</span></span>
 <span><span class="co">#&gt; loading from cache</span></span>
 <span><span class="va">ps_1</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/Ps.html">distanceLaw</a></span><span class="op">(</span><span class="va">c1</span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>sample <span class="op">=</span> <span class="st">'WT'</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Importing pairs file /github/home/.cache/R/ExperimentHub/b1321da7c724_7753 in memory. This may take a while...</span></span>
+<span><span class="co">#&gt; Importing pairs file /github/home/.cache/R/ExperimentHub/57cf592dd20d_7753 in memory. This may take a while...</span></span>
 <span><span class="va">ps_2</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/Ps.html">distanceLaw</a></span><span class="op">(</span><span class="va">c2</span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>sample <span class="op">=</span> <span class="st">'Eco1-AID'</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Importing pairs file /github/home/.cache/R/ExperimentHub/b1324be9f040_7755 in memory. This may take a while...</span></span>
+<span><span class="co">#&gt; Importing pairs file /github/home/.cache/R/ExperimentHub/57cf3bbf849_7755 in memory. This may take a while...</span></span>
 <span><span class="va">ps</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">rbind</a></span><span class="op">(</span><span class="va">ps_1</span>, <span class="va">ps_2</span><span class="op">)</span></span>
 <span><span class="fu"><a href="../reference/plotPs.html">plotPs</a></span><span class="op">(</span><span class="va">ps</span>, <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">binned_distance</span>, y <span class="op">=</span> <span class="va">norm_p</span>, group <span class="op">=</span> <span class="va">sample</span>, color <span class="op">=</span> <span class="va">sample</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Warning: Removed 134 rows containing missing values or values outside the scale range</span></span>
 <span><span class="co">#&gt; (`geom_line()`).</span></span></code></pre></div>
-<p><img src="HiContacts_files/figure-html/unnamed-chunk-17-4.png" width="700"></p>
+<p><img src="HiContacts_files/figure-html/unnamed-chunk-17-4.png" class="r-plt" alt="" width="700"></p>
 <div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/plotPs.html">plotPsSlope</a></span><span class="op">(</span><span class="va">ps</span>, <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">binned_distance</span>, y <span class="op">=</span> <span class="va">slope</span>, group <span class="op">=</span> <span class="va">sample</span>, color <span class="op">=</span> <span class="va">sample</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Warning: Removed 135 rows containing missing values or values outside the scale range</span></span>
 <span><span class="co">#&gt; (`geom_line()`).</span></span></code></pre></div>
-<p><img src="HiContacts_files/figure-html/unnamed-chunk-17-5.png" width="700"></p>
+<p><img src="HiContacts_files/figure-html/unnamed-chunk-17-5.png" class="r-plt" alt="" width="700"></p>
 </div>
 </div>
 <div class="section level2">
@@ -582,9 +581,9 @@ function.</p>
 </h2>
 <div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/sessionInfo.html" class="external-link">sessionInfo</a></span><span class="op">(</span><span class="op">)</span></span>
-<span><span class="co">#&gt; R Under development (unstable) (2025-03-08 r87910)</span></span>
+<span><span class="co">#&gt; R Under development (unstable) (2026-04-12 r89873)</span></span>
 <span><span class="co">#&gt; Platform: x86_64-pc-linux-gnu</span></span>
-<span><span class="co">#&gt; Running under: Ubuntu 24.04.1 LTS</span></span>
+<span><span class="co">#&gt; Running under: Ubuntu 24.04.4 LTS</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Matrix products: default</span></span>
 <span><span class="co">#&gt; BLAS:   /usr/lib/x86_64-linux-gnu/openblas-pthread/libblas.so.3 </span></span>
@@ -606,61 +605,62 @@ function.</p>
 <span><span class="co">#&gt; [8] base     </span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; other attached packages:</span></span>
-<span><span class="co">#&gt;  [1] InteractionSet_1.35.0       SummarizedExperiment_1.37.0</span></span>
-<span><span class="co">#&gt;  [3] Biobase_2.67.0              MatrixGenerics_1.19.1      </span></span>
-<span><span class="co">#&gt;  [5] matrixStats_1.5.0           rtracklayer_1.67.1         </span></span>
-<span><span class="co">#&gt;  [7] HiContacts_1.9.0            HiContactsData_1.9.0       </span></span>
-<span><span class="co">#&gt;  [9] ExperimentHub_2.15.0        AnnotationHub_3.15.0       </span></span>
-<span><span class="co">#&gt; [11] BiocFileCache_2.15.1        dbplyr_2.5.0               </span></span>
-<span><span class="co">#&gt; [13] HiCExperiment_1.7.0         GenomicRanges_1.59.1       </span></span>
-<span><span class="co">#&gt; [15] GenomeInfoDb_1.43.4         IRanges_2.41.3             </span></span>
-<span><span class="co">#&gt; [17] S4Vectors_0.45.4            BiocGenerics_0.53.6        </span></span>
-<span><span class="co">#&gt; [19] generics_0.1.3              dplyr_1.1.4                </span></span>
-<span><span class="co">#&gt; [21] ggplot2_3.5.1               BiocStyle_2.35.0           </span></span>
+<span><span class="co">#&gt;  [1] InteractionSet_1.39.0       SummarizedExperiment_1.41.1</span></span>
+<span><span class="co">#&gt;  [3] Biobase_2.71.0              MatrixGenerics_1.23.0      </span></span>
+<span><span class="co">#&gt;  [5] matrixStats_1.5.0           rtracklayer_1.71.3         </span></span>
+<span><span class="co">#&gt;  [7] HiContacts_1.13.0           HiContactsData_1.13.0      </span></span>
+<span><span class="co">#&gt;  [9] ExperimentHub_3.1.0         AnnotationHub_4.1.0        </span></span>
+<span><span class="co">#&gt; [11] BiocFileCache_3.1.0         dbplyr_2.5.2               </span></span>
+<span><span class="co">#&gt; [13] HiCExperiment_1.11.0        GenomicRanges_1.63.2       </span></span>
+<span><span class="co">#&gt; [15] Seqinfo_1.1.0               IRanges_2.45.0             </span></span>
+<span><span class="co">#&gt; [17] S4Vectors_0.49.1-1          BiocGenerics_0.57.0        </span></span>
+<span><span class="co">#&gt; [19] generics_0.1.4              dplyr_1.2.1                </span></span>
+<span><span class="co">#&gt; [21] ggplot2_4.0.2               BiocStyle_2.39.0           </span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; loaded via a namespace (and not attached):</span></span>
-<span><span class="co">#&gt;   [1] strawr_0.0.92            rstudioapi_0.17.1        jsonlite_1.9.1          </span></span>
-<span><span class="co">#&gt;   [4] magrittr_2.0.3           ggbeeswarm_0.7.2         farver_2.1.2            </span></span>
-<span><span class="co">#&gt;   [7] rmarkdown_2.29           fs_1.6.5                 BiocIO_1.17.1           </span></span>
-<span><span class="co">#&gt;  [10] ragg_1.3.3               vctrs_0.6.5              memoise_2.0.1           </span></span>
-<span><span class="co">#&gt;  [13] Cairo_1.6-2              Rsamtools_2.23.1         RCurl_1.98-1.16         </span></span>
-<span><span class="co">#&gt;  [16] terra_1.8-29             base64enc_0.1-3          htmltools_0.5.8.1       </span></span>
-<span><span class="co">#&gt;  [19] S4Arrays_1.7.3           dynamicTreeCut_1.63-1    curl_6.2.1              </span></span>
-<span><span class="co">#&gt;  [22] Rhdf5lib_1.29.1          Formula_1.2-5            SparseArray_1.7.6       </span></span>
-<span><span class="co">#&gt;  [25] rhdf5_2.51.2             sass_0.4.9               bslib_0.9.0             </span></span>
-<span><span class="co">#&gt;  [28] htmlwidgets_1.6.4        desc_1.4.3               impute_1.81.0           </span></span>
-<span><span class="co">#&gt;  [31] cachem_1.1.0             GenomicAlignments_1.43.0 mime_0.13               </span></span>
-<span><span class="co">#&gt;  [34] lifecycle_1.0.4          iterators_1.0.14         pkgconfig_2.0.3         </span></span>
-<span><span class="co">#&gt;  [37] Matrix_1.7-3             R6_2.6.1                 fastmap_1.2.0           </span></span>
-<span><span class="co">#&gt;  [40] GenomeInfoDbData_1.2.14  digest_0.6.37            colorspace_2.1-1        </span></span>
-<span><span class="co">#&gt;  [43] patchwork_1.3.0          AnnotationDbi_1.69.0     RSpectra_0.16-2         </span></span>
-<span><span class="co">#&gt;  [46] Hmisc_5.2-3              textshaping_1.0.0        RSQLite_2.3.9           </span></span>
-<span><span class="co">#&gt;  [49] filelock_1.0.3           labeling_0.4.3           httr_1.4.7              </span></span>
-<span><span class="co">#&gt;  [52] abind_1.4-8              compiler_4.5.0           bit64_4.6.0-1           </span></span>
-<span><span class="co">#&gt;  [55] withr_3.0.2              doParallel_1.0.17        backports_1.5.0         </span></span>
-<span><span class="co">#&gt;  [58] htmlTable_2.4.3          BiocParallel_1.41.2      DBI_1.2.3               </span></span>
-<span><span class="co">#&gt;  [61] rappdirs_0.3.3           DelayedArray_0.33.6      rjson_0.2.23            </span></span>
-<span><span class="co">#&gt;  [64] tools_4.5.0              foreign_0.8-88           vipor_0.4.7             </span></span>
-<span><span class="co">#&gt;  [67] beeswarm_0.4.0           nnet_7.3-20              glue_1.8.0              </span></span>
-<span><span class="co">#&gt;  [70] restfulr_0.0.15          rhdf5filters_1.19.2      grid_4.5.0              </span></span>
-<span><span class="co">#&gt;  [73] checkmate_2.3.2          cluster_2.1.8.1          gtable_0.3.6            </span></span>
-<span><span class="co">#&gt;  [76] tzdb_0.5.0               preprocessCore_1.69.0    tidyr_1.3.1             </span></span>
-<span><span class="co">#&gt;  [79] data.table_1.17.0        hms_1.1.3                WGCNA_1.73              </span></span>
-<span><span class="co">#&gt;  [82] utf8_1.2.4               XVector_0.47.2           BiocVersion_3.21.1      </span></span>
-<span><span class="co">#&gt;  [85] foreach_1.5.2            pillar_1.10.1            stringr_1.5.1           </span></span>
-<span><span class="co">#&gt;  [88] vroom_1.6.5              splines_4.5.0            lattice_0.22-6          </span></span>
-<span><span class="co">#&gt;  [91] survival_3.8-3           bit_4.6.0                tidyselect_1.2.1        </span></span>
-<span><span class="co">#&gt;  [94] GO.db_3.21.0             Biostrings_2.75.4        knitr_1.50              </span></span>
-<span><span class="co">#&gt;  [97] gridExtra_2.3            bookdown_0.42            xfun_0.51               </span></span>
-<span><span class="co">#&gt; [100] stringi_1.8.4            UCSC.utils_1.3.1         yaml_2.3.10             </span></span>
-<span><span class="co">#&gt; [103] evaluate_1.0.3           codetools_0.2-20         tibble_3.2.1            </span></span>
-<span><span class="co">#&gt; [106] BiocManager_1.30.25      cli_3.6.4                rpart_4.1.24            </span></span>
-<span><span class="co">#&gt; [109] systemfonts_1.2.1        munsell_0.5.1            jquerylib_0.1.4         </span></span>
-<span><span class="co">#&gt; [112] Rcpp_1.0.14              png_0.1-8                XML_3.99-0.18           </span></span>
-<span><span class="co">#&gt; [115] fastcluster_1.2.6        ggrastr_1.0.2            parallel_4.5.0          </span></span>
-<span><span class="co">#&gt; [118] pkgdown_2.1.1            readr_2.1.5              blob_1.2.4              </span></span>
-<span><span class="co">#&gt; [121] bitops_1.0-9             scales_1.3.0             purrr_1.0.4             </span></span>
-<span><span class="co">#&gt; [124] crayon_1.5.3             rlang_1.1.5              KEGGREST_1.47.0</span></span></code></pre></div>
+<span><span class="co">#&gt;   [1] RColorBrewer_1.1-3       strawr_0.0.92            rstudioapi_0.18.0       </span></span>
+<span><span class="co">#&gt;   [4] jsonlite_2.0.0           magrittr_2.0.5           ggbeeswarm_0.7.3        </span></span>
+<span><span class="co">#&gt;   [7] farver_2.1.2             rmarkdown_2.31           fs_2.0.1                </span></span>
+<span><span class="co">#&gt;  [10] BiocIO_1.21.0            ragg_1.5.2               vctrs_0.7.3             </span></span>
+<span><span class="co">#&gt;  [13] memoise_2.0.1            Cairo_1.7-0              Rsamtools_2.27.2        </span></span>
+<span><span class="co">#&gt;  [16] RCurl_1.98-1.18          terra_1.9-11             base64enc_0.1-6         </span></span>
+<span><span class="co">#&gt;  [19] htmltools_0.5.9          S4Arrays_1.11.1          dynamicTreeCut_1.63-1   </span></span>
+<span><span class="co">#&gt;  [22] curl_7.0.0               Rhdf5lib_1.33.6          Formula_1.2-5           </span></span>
+<span><span class="co">#&gt;  [25] SparseArray_1.11.13      rhdf5_2.55.16            sass_0.4.10             </span></span>
+<span><span class="co">#&gt;  [28] bslib_0.10.0             htmlwidgets_1.6.4        desc_1.4.3              </span></span>
+<span><span class="co">#&gt;  [31] httr2_1.2.2              impute_1.85.0            cachem_1.1.0            </span></span>
+<span><span class="co">#&gt;  [34] GenomicAlignments_1.47.0 lifecycle_1.0.5          iterators_1.0.14        </span></span>
+<span><span class="co">#&gt;  [37] pkgconfig_2.0.3          Matrix_1.7-5             R6_2.6.1                </span></span>
+<span><span class="co">#&gt;  [40] fastmap_1.2.0            digest_0.6.39            colorspace_2.1-2        </span></span>
+<span><span class="co">#&gt;  [43] patchwork_1.3.2          AnnotationDbi_1.73.1     RSpectra_0.16-2         </span></span>
+<span><span class="co">#&gt;  [46] Hmisc_5.2-5              textshaping_1.0.5        RSQLite_2.4.6           </span></span>
+<span><span class="co">#&gt;  [49] filelock_1.0.3           labeling_0.4.3           httr_1.4.8              </span></span>
+<span><span class="co">#&gt;  [52] abind_1.4-8              compiler_4.7.0           bit64_4.6.0-1           </span></span>
+<span><span class="co">#&gt;  [55] withr_3.0.2              doParallel_1.0.17        backports_1.5.1         </span></span>
+<span><span class="co">#&gt;  [58] htmlTable_2.4.3          S7_0.2.1-1               BiocParallel_1.45.0     </span></span>
+<span><span class="co">#&gt;  [61] DBI_1.3.0                rappdirs_0.3.4           DelayedArray_0.37.1     </span></span>
+<span><span class="co">#&gt;  [64] rjson_0.2.23             tools_4.7.0              foreign_0.8-91          </span></span>
+<span><span class="co">#&gt;  [67] vipor_0.4.7              otel_0.2.0               beeswarm_0.4.0          </span></span>
+<span><span class="co">#&gt;  [70] nnet_7.3-20              glue_1.8.1               restfulr_0.0.16         </span></span>
+<span><span class="co">#&gt;  [73] rhdf5filters_1.23.3      grid_4.7.0               checkmate_2.3.4         </span></span>
+<span><span class="co">#&gt;  [76] cluster_2.1.8.2          gtable_0.3.6             tzdb_0.5.0              </span></span>
+<span><span class="co">#&gt;  [79] preprocessCore_1.73.0    tidyr_1.3.2              data.table_1.18.2.1     </span></span>
+<span><span class="co">#&gt;  [82] hms_1.1.4                WGCNA_1.74               utf8_1.2.6              </span></span>
+<span><span class="co">#&gt;  [85] XVector_0.51.0           BiocVersion_3.23.1       foreach_1.5.2           </span></span>
+<span><span class="co">#&gt;  [88] pillar_1.11.1            stringr_1.6.0            vroom_1.7.1             </span></span>
+<span><span class="co">#&gt;  [91] splines_4.7.0            lattice_0.22-9           survival_3.8-6          </span></span>
+<span><span class="co">#&gt;  [94] bit_4.6.0                tidyselect_1.2.1         Biostrings_2.79.5       </span></span>
+<span><span class="co">#&gt;  [97] knitr_1.51               gridExtra_2.3            bookdown_0.46           </span></span>
+<span><span class="co">#&gt; [100] xfun_0.57                UCSC.utils_1.7.1         stringi_1.8.7           </span></span>
+<span><span class="co">#&gt; [103] yaml_2.3.12              evaluate_1.0.5           codetools_0.2-20        </span></span>
+<span><span class="co">#&gt; [106] cigarillo_1.1.0          tibble_3.3.1             BiocManager_1.30.27     </span></span>
+<span><span class="co">#&gt; [109] cli_3.6.6                rpart_4.1.27             systemfonts_1.3.2       </span></span>
+<span><span class="co">#&gt; [112] jquerylib_0.1.4          GenomeInfoDb_1.47.2      Rcpp_1.1.1-1            </span></span>
+<span><span class="co">#&gt; [115] png_0.1-9                XML_3.99-0.23            fastcluster_1.3.0       </span></span>
+<span><span class="co">#&gt; [118] ggrastr_1.0.2            parallel_4.7.0           pkgdown_2.2.0           </span></span>
+<span><span class="co">#&gt; [121] readr_2.2.0              blob_1.3.0               bitops_1.0-9            </span></span>
+<span><span class="co">#&gt; [124] scales_1.4.0             purrr_1.2.2              crayon_1.5.3            </span></span>
+<span><span class="co">#&gt; [127] rlang_1.2.0              KEGGREST_1.51.1</span></span></code></pre></div>
 </div>
   </div>
 
@@ -679,7 +679,7 @@ function.</p>
 
 <div class="pkgdown">
   <p></p>
-<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.1.</p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
 </div>
 
       </footer>

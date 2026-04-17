@@ -19,7 +19,7 @@ using pairsFile(x) &amp;lt;- "...".'><!-- mathjax --><script src="https://cdnjs.
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">HiContacts</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.9.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.13.0</span>
       </span>
     </div>
 
@@ -149,6 +149,14 @@ of pairs to parse by chunks (1e7 should be a good compromise)</p></dd>
 <span class="r-in"><span>    <span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> pairsFile not specified. The P(s) curve will be an approximation.</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>There was 1 warning in `dplyr::mutate()`.</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> In argument: `slope = c(0, predict(loess(slope ~ binned_distance, span = 0.5,</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span>   data = dplyr::cur_data())))`.</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> Caused by warning:</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> `cur_data()` was deprecated in dplyr 1.1.0.</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Please use `pick()` instead.</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> The deprecated feature was likely used in the <span style="color: #0000BB;">HiContacts</span> package.</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span>   Please report the issue at <span style="color: #0000BB; font-style: italic;">&lt;https://github.com/js2264/HiContacts/issues&gt;</span>.</span>
 <span class="r-in"><span><span class="va">local_ps</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 54 × 6</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    coords   binned_distance      p     norm_p norm_p_unity slope</span>
@@ -178,7 +186,7 @@ of pairs to parse by chunks (1e7 should be a good compromise)</p></dd>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.1.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
 </div>
 
       </footer></div>
