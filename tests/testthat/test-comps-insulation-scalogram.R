@@ -26,6 +26,21 @@ test_that("compartments works", {
     )
 })
 
+test_that("compartments can be phased with an RleList track", {
+    full_contacts_yeast <- HiCExperiment::contacts_yeast(full = TRUE)
+    full_contacts_yeast_VI <- full_contacts_yeast["VI"]
+    VI_regions <- HiCExperiment::regions(full_contacts_yeast_VI)
+    cov_track <- IRanges::RleList(VI = IRanges::Rle(
+        seq_len(max(GenomicRanges::end(VI_regions)))
+    ))
+
+    expect_no_error(getCompartments(
+        full_contacts_yeast,
+        genome = cov_track,
+        chromosomes = "VI"
+    ))
+})
+
 test_that("insulation works", {
     hic <- HiCExperiment::contacts_yeast() |> 
         HiCExperiment::refocus('II:1-300000') |> 

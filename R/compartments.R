@@ -8,8 +8,8 @@
 #'
 #' @param x A `HiCExperiment` object over a full genome
 #' @param resolution Which resolution to use to compute eigen vectors
-#' @param genome a BSgenome of DNAStringSet object associated with the Hi-C 
-#'   contact matrix. 
+#' @param genome a `BSgenome`, `DNAStringSet`, `TxDb` or `RleList` object
+#'   associated with the Hi-C contact matrix.
 #' @param chromosomes character or integer vector indicating which 
 #' @param neigens Numver of eigen vectors to extract
 #' @param sort_eigens Can be FALSE or one of c('Spearman', 'Pearson')
@@ -234,6 +234,7 @@ getCompartments <- function(
         }
         else if (is(genome, "RleList")) {
             ## -- Get average coverage per bin
+            cov <- genome
             gr$phasing <- BiocGenerics::mean(cov[gr])
         }
         else {
