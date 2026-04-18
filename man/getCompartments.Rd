@@ -24,7 +24,7 @@ object associated with the Hi-C contact matrix.}
 
 \item{chromosomes}{character or integer vector indicating which}
 
-\item{neigens}{Numver of eigen vectors to extract}
+\item{neigens}{Number of eigen vectors to extract}
 
 \item{sort_eigens}{Can be FALSE or one of c('Spearman', 'Pearson')}
 

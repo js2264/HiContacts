@@ -11,7 +11,7 @@
 #' @param genome a `BSgenome`, `DNAStringSet`, `TxDb` or `RleList` object
 #'   associated with the Hi-C contact matrix.
 #' @param chromosomes character or integer vector indicating which 
-#' @param neigens Numver of eigen vectors to extract
+#' @param neigens Number of eigen vectors to extract
 #' @param sort_eigens Can be FALSE or one of c('Spearman', 'Pearson')
 #' @param BPPARAM BiocParallel parallelization settings
 #' @return A `HiCExperiment` object with additional `eigens` metadata containing the
