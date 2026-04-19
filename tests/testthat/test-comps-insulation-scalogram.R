@@ -27,8 +27,7 @@ test_that("compartments works", {
 })
 
 test_that("compartments can be phased with an RleList track", {
-    library(BSgenome.Scerevisiae.UCSC.sacCer3)
-    genome <- BSgenome.Scerevisiae.UCSC.sacCer3
+    genome <- BSgenome.Scerevisiae.UCSC.sacCer3::BSgenome.Scerevisiae.UCSC.sacCer3
     GenomeInfoDb::seqlevelsStyle(genome) <- "NCBI"
     smooth_bin <- 100L
     smooth_span <- smooth_bin - 1L
@@ -41,9 +40,9 @@ test_that("compartments can be phased with an RleList track", {
         left_pad <- floor(smooth_span / 2L)
         right_pad <- ceiling(smooth_span / 2L)
         gc_smoothed <- c(
-            rep(gc_sliding[[1]], left_pad),
+            rep(gc_sliding[1], left_pad),
             gc_sliding,
-            rep(gc_sliding[[length(gc_sliding)]], right_pad)
+            rep(gc_sliding[length(gc_sliding)], right_pad)
         )
         S4Vectors::Rle(gc_smoothed)
     })
