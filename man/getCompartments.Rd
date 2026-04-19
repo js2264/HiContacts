@@ -19,12 +19,12 @@ getCompartments(
 
 \item{resolution}{Which resolution to use to compute eigen vectors}
 
-\item{genome}{a BSgenome of DNAStringSet object associated with the Hi-C
-contact matrix.}
+\item{genome}{a \code{BSgenome}, \code{DNAStringSet}, \code{TxDb} or \code{RleList}
+object associated with the Hi-C contact matrix.}
 
 \item{chromosomes}{character or integer vector indicating which}
 
-\item{neigens}{Numver of eigen vectors to extract}
+\item{neigens}{Number of eigen vectors to extract}
 
 \item{sort_eigens}{Can be FALSE or one of c('Spearman', 'Pearson')}
 

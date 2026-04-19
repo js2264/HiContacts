@@ -26,6 +26,36 @@ test_that("compartments works", {
     )
 })
 
+test_that("compartments can be phased with an RleList track", {
+    yeast_bsgenome <- BSgenome.Scerevisiae.UCSC.sacCer3::BSgenome.Scerevisiae.UCSC.sacCer3
+    GenomeInfoDb::seqlevelsStyle(yeast_bsgenome) <- "NCBI"
+    smooth_bin <- 100L
+    smooth_span <- smooth_bin - 1L
+    full_contacts_yeast <- HiCExperiment::contacts_yeast(full = TRUE)
+    chr_ids <- as.character(GenomeInfoDb::seqnames(GenomeInfoDb::seqinfo(full_contacts_yeast)))
+    gc_content <- lapply(Biostrings::getSeq(yeast_bsgenome, chr_ids), function(chr_seq) {
+        gc_sliding <- as.numeric(
+            Biostrings::letterFrequencyInSlidingView(chr_seq, smooth_bin, "GC")
+        ) / smooth_bin
+        left_pad <- floor(smooth_span / 2L)
+        right_pad <- ceiling(smooth_span / 2L)
+        gc_smoothed <- c(
+            rep(gc_sliding[1], left_pad),
+            gc_sliding,
+            rep(gc_sliding[length(gc_sliding)], right_pad)
+        )
+        S4Vectors::Rle(gc_smoothed)
+    })
+    cov_track <- IRanges::RleList(gc_content)
+    names(cov_track) <- chr_ids
+
+    expect_no_error(getCompartments(
+        full_contacts_yeast,
+        genome = cov_track,
+        chromosomes = "VI"
+    ))
+})
+
 test_that("insulation works", {
     hic <- HiCExperiment::contacts_yeast() |> 
         HiCExperiment::refocus('II:1-300000') |> 
