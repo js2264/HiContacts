@@ -30,15 +30,16 @@ test_that("compartments can be phased with an RleList track", {
     library(BSgenome.Scerevisiae.UCSC.sacCer3)
     genome <- BSgenome.Scerevisiae.UCSC.sacCer3
     GenomeInfoDb::seqlevelsStyle(genome) <- "NCBI"
+    smooth_bin <- 100L
+    smooth_span <- smooth_bin - 1L
     full_contacts_yeast <- HiCExperiment::contacts_yeast(full = TRUE)
     chr_ids <- as.character(GenomeInfoDb::seqnames(GenomeInfoDb::seqinfo(full_contacts_yeast)))
     gc_cov <- lapply(Biostrings::getSeq(genome, chr_ids), function(seq_chr) {
-        smooth_bin <- 100L
         gc_sliding <- as.numeric(
             Biostrings::letterFrequencyInSlidingView(seq_chr, smooth_bin, "GC")
         ) / smooth_bin
-        left_pad <- floor((smooth_bin - 1L) / 2L)
-        right_pad <- ceiling((smooth_bin - 1L) / 2L)
+        left_pad <- floor(smooth_span / 2L)
+        right_pad <- ceiling(smooth_span / 2L)
         gc_smoothed <- c(
             rep(gc_sliding[[1]], left_pad),
             gc_sliding,
