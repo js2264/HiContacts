@@ -27,13 +27,13 @@ test_that("compartments works", {
 })
 
 test_that("compartments can be phased with an RleList track", {
-    genome <- BSgenome.Scerevisiae.UCSC.sacCer3::BSgenome.Scerevisiae.UCSC.sacCer3
-    GenomeInfoDb::seqlevelsStyle(genome) <- "NCBI"
+    yeast_genome <- BSgenome.Scerevisiae.UCSC.sacCer3::BSgenome.Scerevisiae.UCSC.sacCer3
+    GenomeInfoDb::seqlevelsStyle(yeast_genome) <- "NCBI"
     smooth_bin <- 100L
     smooth_span <- smooth_bin - 1L
     full_contacts_yeast <- HiCExperiment::contacts_yeast(full = TRUE)
     chr_ids <- as.character(GenomeInfoDb::seqnames(GenomeInfoDb::seqinfo(full_contacts_yeast)))
-    gc_cov <- lapply(Biostrings::getSeq(genome, chr_ids), function(seq_chr) {
+    gc_content <- lapply(Biostrings::getSeq(yeast_genome, chr_ids), function(seq_chr) {
         gc_sliding <- as.numeric(
             Biostrings::letterFrequencyInSlidingView(seq_chr, smooth_bin, "GC")
         ) / smooth_bin
@@ -46,7 +46,7 @@ test_that("compartments can be phased with an RleList track", {
         )
         S4Vectors::Rle(gc_smoothed)
     })
-    cov_track <- IRanges::RleList(gc_cov)
+    cov_track <- IRanges::RleList(gc_content)
     names(cov_track) <- chr_ids
 
     expect_no_error(getCompartments(
