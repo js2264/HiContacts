@@ -163,7 +163,7 @@ detrend <- function(x, use.scores = 'balanced') {
     gis$score <- scores(x, use.scores)
     gis$diag <- gis$bin_id2 - gis$bin_id1
     if (is.null(metadata(x)[['detrending_model']])) {
-        expected <- tibble::as_tibble(gis) |> 
+        expected <- tibble::as_tibble(BiocGenerics::as.data.frame(gis)) |> 
             dplyr::group_by(diag) |> 
             dplyr::mutate(score = scales::oob_censor(
                 score, range = stats::quantile(score, c(0.05, 0.95), na.rm = TRUE)
@@ -177,7 +177,7 @@ detrend <- function(x, use.scores = 'balanced') {
         expected$distance <- NULL
         expected$score <- NULL
     }
-    gis$expected <- tibble::as_tibble(gis) |> 
+    gis$expected <- tibble::as_tibble(BiocGenerics::as.data.frame(gis)) |> 
         dplyr::left_join(expected, by = 'diag') |> 
         dplyr::pull(average_interaction_per_diag)
     gis$score_over_expected <- log2( {gis$score/sum(gis$score, na.rm = TRUE)} / {gis$expected/sum(gis$expected, na.rm = TRUE)} )
@@ -225,7 +225,7 @@ autocorrelate <- function(x, use.scores = 'balanced', detrend = TRUE, ignore_ndi
         by = c(y = 'region')
     ) |> pull(id)
     scores(x, 'autocorrelated') <- left_join(
-        as_tibble(gis), mat2, by = c("bin_id1", "bin_id2")
+        as_tibble(BiocGenerics::as.data.frame(gis)), mat2, by = c("bin_id1", "bin_id2")
     ) |> pull(corr)
     return(x)
 }

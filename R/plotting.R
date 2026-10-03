@@ -261,9 +261,9 @@ setMethod("plotMatrix", "GInteractions", function(
 
     ## -- If loops are provided, filter them and add
     if (!is.null(loops) & is.null(maxDistance)) {
-        filtered_loops <- tibble::as_tibble(
+        filtered_loops <- tibble::as_tibble(BiocGenerics::as.data.frame(
             loops[anchors(loops)[['first']] %over% gis & anchors(loops)[['second']] %over% gis]
-        )
+        ))
         p_loops <- ggplot2::geom_point(
             data = filtered_loops, 
             mapping = ggplot2::aes(
@@ -352,6 +352,7 @@ setMethod("plotMatrix", "GInteractions", function(
         if (is.null(maxDistance)) { ##### REGULAR SQUARE/RECTANGULAR (IF TRANS ONLY) MATRIX
             ## -- Convert gis to table and extract x/y
             mat <- gis |>
+                BiocGenerics::as.data.frame() |>
                 tibble::as_tibble() |>
                 dplyr::mutate(
                     x = floor(end1 - (end1 - start1) / 2),
@@ -418,6 +419,7 @@ setMethod("plotMatrix", "GInteractions", function(
         else { ##### HORIZONTAL TRIANGULAR MATRIX
             ## -- Convert gis to table and extract x/y
             df <- gis |>
+                BiocGenerics::as.data.frame() |>
                 tibble::as_tibble() |>
                 dplyr::mutate(
                     diag = center2 - center1, 
@@ -449,6 +451,7 @@ setMethod("plotMatrix", "GInteractions", function(
         )
 
         chroms <- gis |>
+            BiocGenerics::as.data.frame() |>
             tidyr::as_tibble() |>
             dplyr::group_by(seqnames2) |>
             dplyr::slice_max(order_by = end2, n = 1) |>
@@ -457,6 +460,7 @@ setMethod("plotMatrix", "GInteractions", function(
         chroms$cumlength <- cumsum(c(0, chroms$end2)[seq_len(nrow(chroms))])
         chroms$end2 <- NULL
         mat <- gis |>
+            BiocGenerics::as.data.frame() |>
             tibble::as_tibble() |>
             dplyr::left_join(chroms, by = c(seqnames1 = "seqnames2")) |>
             dplyr::rename(cumlength_x = cumlength) |>
