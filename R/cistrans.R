@@ -25,6 +25,7 @@ cisTransRatio <- function(x) {
     gis <- InteractionSet::interactions(x)
     gis$score <- HiCExperiment::scores(x, 'count')
     cnts <- gis |> 
+        BiocGenerics::as.data.frame() |> 
         tibble::as_tibble() |> 
         dplyr::relocate(c(seqnames1, seqnames2))
     cnts_dup <- cnts |> 
