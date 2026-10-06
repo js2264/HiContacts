@@ -44,10 +44,13 @@ test_that("arithmetics works", {
         validObject(aggr_contacts)
     })
 
-    expect_true({
-        x <- boost(contacts_yeast)
-        validObject(x)
-    })
+    ## Rfast is suggested: boost() needs it to be installed and loadable
+    if (requireNamespace("Rfast", quietly = TRUE)) {
+        expect_true({
+            x <- boost(contacts_yeast)
+            validObject(x)
+        })
+    }
 
     expect_true({
         x <- subsample(contacts_yeast, prop = 0.1)

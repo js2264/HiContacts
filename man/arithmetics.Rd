@@ -176,7 +176,7 @@ aggregate(contacts, targets = centros, flankingBins = 51)
 #### -----
 
 contacts <- contacts_yeast() |> zoom(resolution = 1000) |> refocus('II')
-boost(contacts, alpha = 1)
+if (requireNamespace('Rfast', quietly = TRUE)) boost(contacts, alpha = 1)
 
 #### -----
 #### Subsample & "coarsen" contact matrix 
