@@ -4,8 +4,11 @@
 boost <- function(x, use.scores = 'balanced', alpha = 1, full.replace = FALSE) {
 
     if (!requireNamespace("Rfast", quietly = TRUE)) {
-        message("Install Rfast package to perform Boost-HiC.")
-        message("install.packages('Rfast')")
+        stop(
+            "boost() needs the Rfast package, which is not installed or ",
+            "cannot be loaded. Install it with install.packages('Rfast').",
+            call. = FALSE
+        )
     }
     gis <- HiCExperiment::interactions(x)
     gis$score <- HiCExperiment::scores(x, use.scores)
